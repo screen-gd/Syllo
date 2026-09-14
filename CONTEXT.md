@@ -1,21 +1,21 @@
-# Roadmap Studio
+# Closure
 
-Roadmap Studio turns source material into workspaces where a learner can plan, study, and track progress.
+Closure is an open-source workspace where product teams publish roadmaps and changelogs and collect user feedback in one linked system.
 
 ## Language
 
-**Workspace**:
-The learner's editable collection of sections, tasks, resources, progress, and settings for one goal.
-_Avoid_: Course, project
+**Product Workspace**:
+A team's shared space for one product, linking its roadmap, changelog, and feedback.
+_Avoid_: Course, learning workspace, project
 
-**Learning Session**:
-A period in which a learner works in one Workspace and produces progress, review, timing, or achievement changes.
-_Avoid_: Visit, browser session
+**Roadmap Item**:
+A unit of planned work with a status of Under review, Planned, In progress, or Shipped.
+_Avoid_: Module, task, milestone
 
-**Learning Record**:
-The durable history of learning activity across Workspaces, including streaks, achievements, and daily task counts.
-_Avoid_: Analytics data, usage data
+**Feedback Post**:
+A user-submitted request or issue that anyone can submit and upvote without login.
+_Avoid_: Note, review, comment
 
-**Roadmap Intake**:
-The conversion of source material and learner choices into a validated Workspace draft.
-_Avoid_: Parsing, generation
+**Changelog Entry**:
+A published record of a shipped change, derived from a Roadmap Item that reached Shipped.
+_Avoid_: Achievement, progress update, announcement

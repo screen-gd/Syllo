@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>ZNS RoadMap Studio</title>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F7CFF"/>
+      <stop offset="100%" stop-color="#C69B5A"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="#0E1726"/>
+  <rect x="16" y="16" width="96" height="96" rx="24" fill="url(#bg)" opacity="0.18"/>
+  <path d="M30 38h68v12L50 92H30l48-42H30z" fill="#F4F7FB"/>
+  <path d="M58 38h40v12L70 76h28v14H46V78l30-26H58z" fill="#C69B5A"/>
+</svg>
