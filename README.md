@@ -1,4 +1,4 @@
-# ZNS RoadMap Studio
+# Syllo
 
 ZNS RoadMap Studio turns raw guides, playbooks, curricula, and notes into interactive learning workspaces. Paste content or upload a markdown file, let the AI structure it, and work through modules, tasks, resources, notes, and progress tracking in one place.
 
