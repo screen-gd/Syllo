@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import type { Roadmap } from "@/types";
 import { getRoadmapCompletionRate, getRoadmapTaskTotals } from "@/lib/analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,7 +67,7 @@ export default function ModuleCompletionTable({ roadmaps }: { roadmaps: Roadmap[
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4">
-                                                <Link href={`/workspace/${roadmap.id}`} className="button-secondary text-xs">
+                                                <Link to="/workspace/$id" params={{ id: roadmap.id }} className="button-secondary text-xs">
                                                     Open
                                                 </Link>
                                             </td>

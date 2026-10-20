@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
 import { ArrowRight, CopyPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { usePathname, useSearchParams } from "@/lib/router-nav";
 import type { PublicRoadmapCard } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +16,7 @@ const difficultyTone: Record<string, string> = {
 };
 
 export default function GalleryCard({ item }: { item: PublicRoadmapCard }) {
-    const router = useRouter();
+    const navigate = useNavigate();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
@@ -34,11 +35,11 @@ export default function GalleryCard({ item }: { item: PublicRoadmapCard }) {
                 const payload = await response.json().catch(() => ({ success: false }));
                 if (!response.ok || !payload.success || !payload.roadmap?.id) {
                     const nextPath = `${pathname}${searchParams.size > 0 ? `?${searchParams.toString()}` : ""}`;
-                    router.push(`/auth?next=${encodeURIComponent(nextPath)}`);
+                    window.location.assign(`/auth?next=${encodeURIComponent(nextPath)}`);
                     return;
                 }
 
-                router.push(`/workspace/${payload.roadmap.id}`);
+                navigate({ to: "/workspace/$id", params: { id: payload.roadmap.id } });
             } catch {
                 setMessage("Sign in to continue.");
             }

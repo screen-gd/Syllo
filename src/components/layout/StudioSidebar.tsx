@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@tanstack/react-router";
+import { usePathname } from "@/lib/router-nav";
 import { BarChart2, LayoutDashboard, LayoutGrid, PlusCircle, Settings2 } from "lucide-react";
 import CreditBadge from "@/components/credits/CreditBadge";
 import { cn } from "@/lib/utils";
@@ -25,7 +25,7 @@ export default function StudioSidebar() {
                         return (
                             <Link
                                 key={item.href}
-                                href={item.href}
+                                to={item.href}
                                 aria-current={active ? "page" : undefined}
                                 className={cn(
                                     "group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold tracking-wide transition-all duration-300 ease-out overflow-hidden hover:scale-[1.02]",
@@ -62,7 +62,7 @@ export default function StudioSidebar() {
                     </div>
 
                     <Link
-                        href="/settings"
+                        to="/settings"
                         aria-current={pathname === "/settings" ? "page" : undefined}
                         className={cn(
                             "group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold tracking-wide transition-all duration-300 ease-out hover:scale-[1.02]",

@@ -25,10 +25,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
-import Link from "next/link";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { SECTION_LABELS } from "@/lib/constants";
 import { Search, Settings, Home, ArrowRight, CheckCircle2, Circle, LayoutDashboard, SearchCode, BookOpen, Video, ListTodo, Trophy, Layers, Calendar, Clock, Lock, Target, Flame, Info, Plus, Share, RefreshCw, HardDrive, BarChart2, HelpCircle, X, FileText, Braces, Printer, History, ChevronDown, Key } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { exportAsMarkdown, exportAsJSON, exportAsPDF } from "@/lib/export";
 import { saveVersion, getVersions } from "@/lib/versioning";
 import { getWorkspacePersistence } from "@/lib/workspace-persistence";
@@ -55,7 +54,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
     const { currentStreak, isAtRisk, logActivity, tasksCompletedToday, tasksCompletedYesterday } = useStreak();
     const { unlockedBadges, unlockBadge, recentBadge, clearRecentBadge, getBadges } = useAchievements();
     const { sessionTimeMs, getModuleTime } = useTimeTracker(activeSectionId !== "dashboard" ? activeSectionId : undefined);
-    const router = useRouter();
+    const navigate = useNavigate();
     const [userConfig, setUserConfig] = useState<any>(null);
     const [srsItems, setSrsItems] = useState<SrsItem[]>([]);
     const [isSrsModalOpen, setIsSrsModalOpen] = useState(false);
@@ -597,7 +596,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 {logoUrl && (
                                     <>
                                         {/* next/image is not practical here because the logo URL is fully user-defined. */}
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img src={logoUrl} alt="Logo" className="w-5 h-5 object-contain" />
                                     </>
                                 )}
@@ -745,14 +743,14 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         {sidebarOpen ? (
                             <>
                                 {!isEmbed && (
-                                    <Link href="/" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-white hover:bg-white/5 transition-colors">
+                                    <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-white hover:bg-white/5 transition-colors">
                                         <Home size={16} />
                                         <span>Back to Home</span>
                                     </Link>
                                 )}
                                 {!isEmbed && !isReadOnly && (
                                     <>
-                                        <Link href="/settings" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-white hover:bg-white/5 transition-colors">
+                                        <Link to="/settings" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-white hover:bg-white/5 transition-colors">
                                             <Settings size={16} />
                                             <span>Settings</span>
                                         </Link>
@@ -799,13 +797,13 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         ) : (
                             <>
                                 {!isEmbed && (
-                                    <Link href="/" className="flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors" title="Back to Home">
+                                    <Link to="/" className="flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors" title="Back to Home">
                                         <Home size={18} />
                                     </Link>
                                 )}
                                 {!isEmbed && !isReadOnly && (
                                     <>
-                                        <Link href="/settings" className="flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors" title="Settings">
+                                        <Link to="/settings" className="flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors" title="Settings">
                                             <Settings size={18} />
                                         </Link>
                                         {userConfig?.useCustomKey && (
@@ -937,7 +935,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                     Your content generated a minimal workspace. For richer results, try adding more detail to your content or use a longer guide.
                                 </span>
                                 <button
-                                    onClick={() => router.push('/create')}
+                                    onClick={() => navigate({ to: "/create" })}
                                     className="px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 font-bold rounded flex items-center gap-2 transition-colors whitespace-nowrap"
                                 >
                                     Improve my content <ArrowRight size={14} />

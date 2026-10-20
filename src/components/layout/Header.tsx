@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@tanstack/react-router";
+import { usePathname } from "@/lib/router-nav";
 import { Menu, X, Search } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ export default function Header() {
             )}
         >
             <div className="page-shell-wide flex h-16 items-center justify-between gap-4">
-                <Link href="/" className="flex min-w-0 items-center gap-3">
+                <Link to="/" className="flex min-w-0 items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center border border-white/10 rounded-lg bg-white/5 shadow-sm">
                         <Logo />
                     </span>
@@ -62,7 +62,7 @@ export default function Header() {
                 </div>
 
                 <div className="hidden items-center gap-5 lg:flex">
-                    <Link href="/create" passHref className="px-5 py-2 text-[12px] font-bold tracking-widest uppercase rounded bg-emerald-600 text-white shadow-lg hover:bg-emerald-500 hover:scale-[1.02] transition-all duration-300">
+                    <Link to="/create" className="px-5 py-2 text-[12px] font-bold tracking-widest uppercase rounded bg-emerald-600 text-white shadow-lg hover:bg-emerald-500 hover:scale-[1.02] transition-all duration-300">
                         New Roadmap
                     </Link>
                 </div>
@@ -89,7 +89,7 @@ export default function Header() {
                             return (
                                 <Link
                                     key={item.href}
-                                    href={item.href}
+                                    to={item.href}
                                     aria-current={active ? "page" : undefined}
                                     className={cn(
                                         "border-b px-0 py-2 text-[12px] font-semibold uppercase tracking-[0.16em] transition-all",
@@ -103,7 +103,7 @@ export default function Header() {
                             );
                         })}
                         <div className="pt-4 flex gap-4 items-center">
-                            <Link href="/create" passHref className="px-4 py-2 text-[13px] font-semibold uppercase rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300">
+                            <Link to="/create" className="px-4 py-2 text-[13px] font-semibold uppercase rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300">
                                 New Roadmap
                             </Link>
                         </div>

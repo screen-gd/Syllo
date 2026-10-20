@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, PencilLine, Trash2 } from "lucide-react";
 import {
     AlertDialog,
@@ -99,7 +99,7 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
                         </div>
                         <div className="flex items-center gap-3">
                             <Button asChild variant="ghost" size="sm" aria-label={`Open ${displayTitle}`}>
-                                <Link href={`/workspace/${roadmap.id}`}>
+                                <Link to="/workspace/$id" params={{ id: roadmap.id }}>
                                     Open
                                     <ArrowRight size={14} />
                                 </Link>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
 import { Search } from "lucide-react";
+import { useSearchParams } from "@/lib/router-nav";
 import { cn } from "@/lib/utils";
 
 const modeOptions = [
@@ -21,8 +22,7 @@ const typeOptions = [
 ];
 
 export default function GalleryFilters() {
-    const router = useRouter();
-    const pathname = usePathname();
+    const navigate = useNavigate();
     const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
     const [query, setQuery] = useState(searchParams.get("q") ?? "");
@@ -41,7 +41,7 @@ export default function GalleryFilters() {
         }
 
         startTransition(() => {
-            router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname);
+            navigate({ to: ".", search: Object.fromEntries(params), replace: true });
         });
     };
 

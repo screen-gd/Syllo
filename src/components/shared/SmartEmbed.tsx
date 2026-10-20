@@ -109,7 +109,6 @@ export default function SmartEmbed({ url, title, description }: SmartEmbedProps)
         return (
             <div className="w-full border border-border-subtle bg-obsidian-elevated/60 p-6 flex items-center gap-5 transition-all hover:border-indigo-500/30 hover:bg-obsidian-elevated/80 group">
                 {/* next/image is not practical here because favicon domains are fully dynamic. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={getFaviconUrl(url)}
                     alt=""

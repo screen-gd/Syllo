@@ -87,7 +87,6 @@ export default function Videos({ section, onUpdate }: Props) {
                                         {imgUrl ? (
                                             <>
                                                 {/* next/image is not practical here because thumbnail hosts are provider-controlled. */}
-                                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                                 <img src={imgUrl} alt={video.title} className="absolute inset-0 w-full h-full object-cover" />
                                             </>
                                         ) : (

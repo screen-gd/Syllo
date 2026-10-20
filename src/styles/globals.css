@@ -1,4 +1,16 @@
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 @import "tailwindcss";
+
+/*
+ * The Next build injected these variables from `next/font`. Under Vite the
+ * fonts are self-hosted by Fontsource, so the same variable names are declared
+ * here to keep every existing `font-sans` / `font-mono` utility unchanged.
+ */
+:root {
+    --font-geist-sans: "Geist Variable";
+    --font-geist-mono: "Geist Mono Variable";
+}
 
 @theme {
     --color-page: #0a0a0a;

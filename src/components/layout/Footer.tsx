@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { Logo } from "@/components/shared/Logo";
 import { FOOTER_NAV_GROUPS } from "@/lib/navigation";
 
@@ -24,7 +24,7 @@ export default function Footer() {
                     {links.map((link) => (
                         <Link
                             key={link.href}
-                            href={link.href}
+                            to={link.href}
                             className="border-b border-transparent pb-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:border-border hover:text-text"
                         >
                             {link.label}

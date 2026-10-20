@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { deductCredits } from "@/lib/server/credits";
 import { generateStructuredJson, testAiConnection } from "@/lib/server/ai";
 import { getAiProviderInvalidKeyMessage, isAiProvider } from "@/lib/ai-config";
@@ -390,13 +389,13 @@ function isInvalidKeyError(error: unknown) {
     );
 }
 
-export async function handleRoadmapIntake(req: NextRequest) {
+export async function handleRoadmapIntake(req: Request) {
     try {
         const body = await req.json();
         const { content, mode, title, goal, difficulty, estimatedDuration, userApiKey, userProvider, userModel, testOnly } = body;
 
         if (!content || typeof content !== "string") {
-            return NextResponse.json(
+            return Response.json(
                 { success: false, error: "Content is required" },
                 { status: 400 }
             );
@@ -418,15 +417,15 @@ export async function handleRoadmapIntake(req: NextRequest) {
                         }
                         : undefined,
                 );
-                return NextResponse.json({ success: true, ok: true });
+                return Response.json({ success: true, ok: true });
             } catch (aiError) {
                 if (isInvalidKeyError(aiError)) {
-                    return NextResponse.json(
+                    return Response.json(
                         { success: false, error: "invalid_key", message: getAiProviderInvalidKeyMessage(sanitizedProvider) },
                         { status: 401 }
                     );
                 }
-                return NextResponse.json(
+                return Response.json(
                     {
                         success: false,
                         error: "provider_error",
@@ -447,7 +446,7 @@ export async function handleRoadmapIntake(req: NextRequest) {
             });
 
             if (!creditResult.charged && creditResult.reason === "insufficient") {
-                return NextResponse.json(
+                return Response.json(
                     {
                         error: "limit_reached",
                         plan: creditResult.status.planId,
@@ -479,7 +478,7 @@ export async function handleRoadmapIntake(req: NextRequest) {
             );
         } catch (aiError) {
             if (isInvalidKeyError(aiError)) {
-                return NextResponse.json(
+                return Response.json(
                     { success: false, error: "invalid_key", message: getAiProviderInvalidKeyMessage(sanitizedProvider) },
                     { status: 401 }
                 );
@@ -488,7 +487,7 @@ export async function handleRoadmapIntake(req: NextRequest) {
         }
 
         if (!rawContent) {
-            return NextResponse.json(
+            return Response.json(
                 { success: false, error: "AI returned an empty or invalid response structure" },
                 { status: 500 }
             );
@@ -501,7 +500,7 @@ export async function handleRoadmapIntake(req: NextRequest) {
             parsed = JSON.parse(cleaned);
         } catch (parseError) {
             console.error("Failed to parse AI JSON:", rawContent, parseError);
-            return NextResponse.json(
+            return Response.json(
                 { success: false, error: "AI response was not valid JSON" },
                 { status: 500 }
             );
@@ -509,16 +508,16 @@ export async function handleRoadmapIntake(req: NextRequest) {
 
         const normalized = normalizeRoadmapPayload(parsed, { title, mode, goal, difficulty, estimatedDuration });
         if (!normalized) {
-            return NextResponse.json(
+            return Response.json(
                 { success: false, error: "AI response did not match the roadmap schema" },
                 { status: 500 }
             );
         }
 
-        return NextResponse.json({ success: true, roadmap: normalized });
+        return Response.json({ success: true, roadmap: normalized });
     } catch (err) {
         console.error("Parse roadmap error:", err);
-        return NextResponse.json(
+        return Response.json(
             { success: false, error: "Internal server error" },
             { status: 500 }
         );
