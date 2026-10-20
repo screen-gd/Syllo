@@ -1,10 +1,10 @@
 node_modules
-.next
+dist
+.tanstack
 .env
 .env.local
-.env.example
+.env.*.local
 coverage
-dist
 *.log
 *.tsbuildinfo
 .agents\skills
