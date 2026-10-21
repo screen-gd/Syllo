@@ -5,6 +5,7 @@ dist
 .env.local
 .env.*.local
 coverage
+.data
 *.log
 *.tsbuildinfo
 .agents\skills
