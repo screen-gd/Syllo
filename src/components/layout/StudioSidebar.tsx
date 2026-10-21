@@ -2,13 +2,14 @@
 
 import { Link } from "@tanstack/react-router";
 import { usePathname } from "@/lib/router-nav";
-import { BarChart2, LayoutDashboard, LayoutGrid, PlusCircle, Settings2 } from "lucide-react";
+import { BarChart2, LayoutDashboard, LayoutGrid, PlusCircle, Settings2, Sparkles } from "lucide-react";
 import CreditBadge from "@/components/credits/CreditBadge";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_ITEMS = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/create", label: "Create", icon: PlusCircle },
+    { href: "/scout", label: "Scout", icon: Sparkles },
     { href: "/workspaces", label: "Workspaces", icon: LayoutGrid },
     { href: "/analytics", label: "Analytics", icon: BarChart2 },
 ] as const;

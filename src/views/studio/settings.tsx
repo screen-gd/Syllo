@@ -5,6 +5,7 @@ import { useSearchParams } from "@/lib/router-nav";
 import {
     ArrowUpRight,
     Check,
+    Copy,
     Download,
     ExternalLink,
     Eye,
@@ -32,11 +33,13 @@ import {
     type UserConfig,
 } from "@/lib/userConfig";
 import { getRoadmapsBackupJson, getStorage, getStorageStatus } from "@/lib/storage";
+import { scoutApi } from "@/lib/scout/api-client";
+import type { ScoutAgentConnection, ScoutAgentStatus } from "@/lib/scout/types";
 import type { CreditStatus, CreditTransaction, PrivacySettings, StorageStatus } from "@/types";
 
 const ACCENT_COLORS = ["#4F7CFF", "#C69B5A", "#2FA67D", "#D96868", "#7C67FF", "#D9A441", "#0EA5E9", "#EC4899"];
 
-type Category = "general" | "billing" | "privacy" | "ai";
+type Category = "general" | "billing" | "privacy" | "ai" | "agents";
 type ToastState = { tone: "success" | "neutral" | "error"; message: string } | null;
 
 function formatDate(value: string | null | undefined) {
@@ -203,6 +206,10 @@ function SettingsContent() {
     const [exporting, setExporting] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [toast, setToast] = useState<ToastState>(null);
+    const [agents, setAgents] = useState<ScoutAgentStatus[]>([]);
+    const [agentConnections, setAgentConnections] = useState<ScoutAgentConnection[]>([]);
+    const [agentsLoading, setAgentsLoading] = useState(false);
+    const [agentsError, setAgentsError] = useState<string | null>(null);
 
     useEffect(() => {
         setConfig(getUserConfig());
@@ -219,12 +226,41 @@ function SettingsContent() {
     useEffect(() => {
         const tab = searchParams.get("tab");
 
-        if (tab === "billing" || tab === "privacy" || tab === "ai") {
+        if (tab === "billing" || tab === "privacy" || tab === "ai" || tab === "agents") {
             setActiveCategory(tab);
         } else if (tab === "account" || tab === "appearance" || tab === "general") {
             setActiveCategory("general");
         }
     }, [searchParams]);
+
+    // Agent detection spawns short `--version` probes, so it only runs when the
+    // learner opens this tab.
+    useEffect(() => {
+        if (activeCategory !== "agents") return;
+
+        let active = true;
+        setAgentsLoading(true);
+        setAgentsError(null);
+
+        void (async () => {
+            try {
+                const result = await scoutApi.getAgents();
+                if (!active) return;
+                setAgents(result.agents);
+                setAgentConnections(result.connections);
+            } catch (error) {
+                if (active) {
+                    setAgentsError(error instanceof Error && error.message ? error.message : "Could not check agents.");
+                }
+            } finally {
+                if (active) setAgentsLoading(false);
+            }
+        })();
+
+        return () => {
+            active = false;
+        };
+    }, [activeCategory]);
 
     useEffect(() => {
         let active = true;
@@ -388,6 +424,15 @@ function SettingsContent() {
         }
     }
 
+    async function handleCopy(value: string, label: string) {
+        try {
+            await navigator.clipboard.writeText(value);
+            setToast({ tone: "success", message: `${label} copied.` });
+        } catch {
+            setToast({ tone: "error", message: "Copy failed. Select the text instead." });
+        }
+    }
+
     const categoryButtons = [
         {
             id: "general" as const,
@@ -398,6 +443,11 @@ function SettingsContent() {
             id: "ai" as const,
             label: "AI / API Key",
             description: "Choose shared studio AI or your own provider key.",
+        },
+        {
+            id: "agents" as const,
+            label: "Agents",
+            description: "Connect opencode, Codex or Claude, and give them Scout's library tools.",
         },
         {
             id: "privacy" as const,
@@ -852,6 +902,105 @@ function SettingsContent() {
                                     {savingConfig ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
                                     Save changes
                                 </Button>
+                            </div>
+                        </SectionCard>
+                    )}
+
+                    {activeCategory === "agents" && (
+                        <SectionCard
+                            title="Agents"
+                            description="Scout can ask a coding agent you already use to research resources. Your agent can also add and search Scout's library over MCP. No keys move between them."
+                        >
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between gap-3">
+                                    <h3 className="text-sm font-semibold text-text-primary">Installed agents</h3>
+                                    {agentsLoading ? <Loader2 size={14} className="animate-spin text-text-secondary" /> : null}
+                                </div>
+
+                                {agentsError ? (
+                                    <p className="rounded-[18px] border border-red-200 bg-red-50 px-4 py-3 text-sm leading-7 text-red-700">
+                                        {agentsError}
+                                    </p>
+                                ) : agents.length === 0 && !agentsLoading ? (
+                                    <p className="text-sm leading-7 text-text-secondary">
+                                        No agents detected yet. Install opencode, Codex or Claude Code and reopen this tab.
+                                    </p>
+                                ) : (
+                                    <ul className="space-y-2">
+                                        {agents.map((agent) => (
+                                            <li
+                                                key={agent.id}
+                                                className="flex flex-wrap items-center justify-between gap-3 rounded-[18px] border border-border bg-surface px-4 py-3"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className={`h-2 w-2 rounded-full ${agent.available ? "bg-emerald-500" : "bg-zinc-400"}`}
+                                                    />
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-text-primary">{agent.label}</p>
+                                                        <p className="mt-0.5 font-mono text-[11px] text-text-secondary">
+                                                            {agent.available
+                                                                ? agent.version ?? "Installed"
+                                                                : `${agent.command ?? agent.id} not found on PATH`}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${
+                                                        agent.available
+                                                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                                            : "border-border bg-surface text-text-secondary"
+                                                    }`}
+                                                >
+                                                    {agent.available ? "Ready" : "Not installed"}
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+
+                                <p className="text-xs leading-5 text-text-secondary">
+                                    Scout runs agents with an explicit folder, a timeout, and no auto-approve flags. The goal is the
+                                    only thing sent to the agent.
+                                </p>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="text-sm font-semibold text-text-primary">Give your agent Scout&apos;s tools</h3>
+                                    <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                        Add this MCP server to your agent, then ask it to save links or search what you already have.
+                                        The server reads the same local database as Scout.
+                                    </p>
+                                </div>
+
+                                {agentConnections.map((connection) => (
+                                    <div key={connection.id} className="rounded-[18px] border border-border bg-surface">
+                                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
+                                            <div>
+                                                <p className="text-sm font-semibold text-text-primary">{connection.label}</p>
+                                                <p className="mt-0.5 font-mono text-[11px] text-text-secondary">{connection.file}</p>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => void handleCopy(connection.snippet, `${connection.label} config`)}
+                                            >
+                                                <Copy size={14} /> Copy
+                                            </Button>
+                                        </div>
+                                        <pre className="overflow-x-auto px-4 py-3 text-[11px] leading-5 text-text-secondary">
+                                            <code>{connection.snippet}</code>
+                                        </pre>
+                                        <p className="border-t border-border px-4 py-2 text-xs leading-5 text-text-secondary">
+                                            {connection.note}
+                                        </p>
+                                    </div>
+                                ))}
                             </div>
                         </SectionCard>
                     )}
