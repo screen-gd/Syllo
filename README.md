@@ -36,9 +36,6 @@ npm install
 # Public origin used in metadata, robots.txt and sitemap.xml
 VITE_APP_URL=http://localhost:3000
 
-# Access gate (password lock) - required to pass /gate
-GATE_PASSWORD=change-me-to-a-strong-password
-
 # Optional server-side OpenAI key used as a fallback for studio AI
 OPENAI_API_KEY=
 ```
@@ -49,7 +46,7 @@ OPENAI_API_KEY=
 npm run dev
 ```
 
-The app runs on [http://localhost:3000](http://localhost:3000). The password gate is in front of every route; set `GATE_PASSWORD` before opening it, because an empty password fails closed.
+The app runs on [http://localhost:3000](http://localhost:3000). There is no login. `npm start` listens on `127.0.0.1` by default; set `HOST` only if you mean to expose it.
 
 ## Scripts
 
@@ -95,7 +92,7 @@ src/
   components/   Shared UI (layout, workspace, marketing, ui primitives)
   lib/          Client utilities, storage, AI config
   lib/scout/    Scout pipeline, SQLite layer, prompts, provider clients
-  lib/server/   Server-only stores, AI calls, gate, server functions
+  lib/server/   Server-only stores, AI calls, server functions
   styles/       Tailwind entry and theme tokens
 mcp/            Stdio MCP server (`add_resource`, `search_library`)
 prompts/scout/  Versioned Scout prompts

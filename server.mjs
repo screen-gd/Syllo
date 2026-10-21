@@ -15,7 +15,9 @@ import { Readable } from "node:stream";
 import handler from "./dist/server/server.js";
 
 const PORT = Number(process.env.PORT ?? 3000);
-const HOST = process.env.HOST ?? "0.0.0.0";
+// Loopback by default: there is no access gate, so expose the app to other
+// machines only by setting HOST explicitly.
+const HOST = process.env.HOST ?? "127.0.0.1";
 const CLIENT_ROOT = resolve(import.meta.dirname, "dist/client");
 
 const MIME_TYPES = {

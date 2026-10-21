@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MarketingRouteImport } from './routes/_marketing'
 import { Route as StudioRouteImport } from './routes/_studio'
-import { Route as GateRouteImport } from './routes/gate'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
@@ -27,7 +26,6 @@ import { Route as StudioNotesRouteImport } from './routes/_studio/notes'
 import { Route as StudioScoutRouteImport } from './routes/_studio/scout'
 import { Route as StudioSettingsRouteImport } from './routes/_studio/settings'
 import { Route as StudioWorkspacesRouteImport } from './routes/_studio/workspaces'
-import { Route as ApiGateRouteImport } from './routes/api/gate'
 import { Route as ApiParseRoadmapRouteImport } from './routes/api/parse-roadmap'
 import { Route as EmbedIdRouteImport } from './routes/embed.$id'
 import { Route as ShareIdRouteImport } from './routes/share.$id'
@@ -59,11 +57,6 @@ const MarketingRoute = MarketingRouteImport.update({
 } as any)
 const StudioRoute = StudioRouteImport.update({
   id: '/_studio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GateRoute = GateRouteImport.update({
-  id: '/gate',
-  path: '/gate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -140,11 +133,6 @@ const StudioWorkspacesRoute = StudioWorkspacesRouteImport.update({
   id: '/workspaces',
   path: '/workspaces',
   getParentRoute: () => StudioRoute,
-} as any)
-const ApiGateRoute = ApiGateRouteImport.update({
-  id: '/api/gate',
-  path: '/api/gate',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiParseRoadmapRoute = ApiParseRoadmapRouteImport.update({
   id: '/api/parse-roadmap',
@@ -269,7 +257,6 @@ const ApiScoutPacksIdApproveRoute = ApiScoutPacksIdApproveRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
-  '/gate': typeof GateRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/contact': typeof MarketingContactRoute
@@ -284,7 +271,6 @@ export interface FileRoutesByFullPath {
   '/scout': typeof StudioScoutRoute
   '/settings': typeof StudioSettingsRoute
   '/workspaces': typeof StudioWorkspacesRoute
-  '/api/gate': typeof ApiGateRoute
   '/api/parse-roadmap': typeof ApiParseRoadmapRoute
   '/embed/$id': typeof EmbedIdRoute
   '/share/$id': typeof ShareIdRoute
@@ -312,7 +298,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
-  '/gate': typeof GateRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/contact': typeof MarketingContactRoute
@@ -327,7 +312,6 @@ export interface FileRoutesByTo {
   '/scout': typeof StudioScoutRoute
   '/settings': typeof StudioSettingsRoute
   '/workspaces': typeof StudioWorkspacesRoute
-  '/api/gate': typeof ApiGateRoute
   '/api/parse-roadmap': typeof ApiParseRoadmapRoute
   '/embed/$id': typeof EmbedIdRoute
   '/share/$id': typeof ShareIdRoute
@@ -357,7 +341,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_marketing': typeof MarketingRouteWithChildren
   '/_studio': typeof StudioRouteWithChildren
-  '/gate': typeof GateRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_marketing/contact': typeof MarketingContactRoute
@@ -372,7 +355,6 @@ export interface FileRoutesById {
   '/_studio/scout': typeof StudioScoutRoute
   '/_studio/settings': typeof StudioSettingsRoute
   '/_studio/workspaces': typeof StudioWorkspacesRoute
-  '/api/gate': typeof ApiGateRoute
   '/api/parse-roadmap': typeof ApiParseRoadmapRoute
   '/embed/$id': typeof EmbedIdRoute
   '/share/$id': typeof ShareIdRoute
@@ -403,7 +385,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/gate'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/contact'
@@ -418,7 +399,6 @@ export interface FileRouteTypes {
     | '/scout'
     | '/settings'
     | '/workspaces'
-    | '/api/gate'
     | '/api/parse-roadmap'
     | '/embed/$id'
     | '/share/$id'
@@ -446,7 +426,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/gate'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/contact'
@@ -461,7 +440,6 @@ export interface FileRouteTypes {
     | '/scout'
     | '/settings'
     | '/workspaces'
-    | '/api/gate'
     | '/api/parse-roadmap'
     | '/embed/$id'
     | '/share/$id'
@@ -490,7 +468,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_marketing'
     | '/_studio'
-    | '/gate'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/_marketing/contact'
@@ -505,7 +482,6 @@ export interface FileRouteTypes {
     | '/_studio/scout'
     | '/_studio/settings'
     | '/_studio/workspaces'
-    | '/api/gate'
     | '/api/parse-roadmap'
     | '/embed/$id'
     | '/share/$id'
@@ -536,10 +512,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   MarketingRoute: typeof MarketingRouteWithChildren
   StudioRoute: typeof StudioRouteWithChildren
-  GateRoute: typeof GateRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  ApiGateRoute: typeof ApiGateRoute
   ApiParseRoadmapRoute: typeof ApiParseRoadmapRoute
   EmbedIdRoute: typeof EmbedIdRoute
   ShareIdRoute: typeof ShareIdRoute
@@ -579,13 +553,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof StudioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gate': {
-      id: '/gate'
-      path: '/gate'
-      fullPath: '/gate'
-      preLoaderRoute: typeof GateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -692,13 +659,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/workspaces'
       preLoaderRoute: typeof StudioWorkspacesRouteImport
       parentRoute: typeof StudioRoute
-    }
-    '/api/gate': {
-      id: '/api/gate'
-      path: '/api/gate'
-      fullPath: '/api/gate'
-      preLoaderRoute: typeof ApiGateRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/parse-roadmap': {
       id: '/api/parse-roadmap'
@@ -931,10 +891,8 @@ const ApiScoutPacksIdRouteWithChildren = ApiScoutPacksIdRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   MarketingRoute: MarketingRouteWithChildren,
   StudioRoute: StudioRouteWithChildren,
-  GateRoute: GateRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  ApiGateRoute: ApiGateRoute,
   ApiParseRoadmapRoute: ApiParseRoadmapRoute,
   EmbedIdRoute: EmbedIdRoute,
   ShareIdRoute: ShareIdRoute,
