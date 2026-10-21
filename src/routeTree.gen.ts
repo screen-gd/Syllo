@@ -24,6 +24,7 @@ import { Route as StudioAnalyticsRouteImport } from './routes/_studio/analytics'
 import { Route as StudioCreateRouteImport } from './routes/_studio/create'
 import { Route as StudioDashboardRouteImport } from './routes/_studio/dashboard'
 import { Route as StudioNotesRouteImport } from './routes/_studio/notes'
+import { Route as StudioScoutRouteImport } from './routes/_studio/scout'
 import { Route as StudioSettingsRouteImport } from './routes/_studio/settings'
 import { Route as StudioWorkspacesRouteImport } from './routes/_studio/workspaces'
 import { Route as ApiGateRouteImport } from './routes/api/gate'
@@ -38,10 +39,19 @@ import { Route as ApiGalleryForkRouteImport } from './routes/api/gallery/fork'
 import { Route as ApiGalleryListRouteImport } from './routes/api/gallery/list'
 import { Route as ApiGallerySetPublicRouteImport } from './routes/api/gallery/set-public'
 import { Route as ApiQuizGenerateRouteImport } from './routes/api/quiz/generate'
+import { Route as ApiScoutAgentsRouteImport } from './routes/api/scout/agents'
+import { Route as ApiScoutDigestRouteImport } from './routes/api/scout/digest'
+import { Route as ApiScoutRecentRouteImport } from './routes/api/scout/recent'
+import { Route as ApiScoutResourcesRouteImport } from './routes/api/scout/resources'
+import { Route as ApiScoutSettingsRouteImport } from './routes/api/scout/settings'
+import { Route as ApiScoutSourcesRouteImport } from './routes/api/scout/sources'
+import { Route as ApiScoutStartRouteImport } from './routes/api/scout/start'
 import { Route as ApiSettingsDeleteRouteImport } from './routes/api/settings/delete'
 import { Route as ApiSettingsExportRouteImport } from './routes/api/settings/export'
 import { Route as ApiSettingsPrivacyRouteImport } from './routes/api/settings/privacy'
 import { Route as ApiSrsSaveRouteImport } from './routes/api/srs/save'
+import { Route as ApiScoutPacksIdRouteImport } from './routes/api/scout/packs.$id'
+import { Route as ApiScoutPacksIdApproveRouteImport } from './routes/api/scout/packs.$id.approve'
 
 const MarketingRoute = MarketingRouteImport.update({
   id: '/_marketing',
@@ -116,6 +126,11 @@ const StudioNotesRoute = StudioNotesRouteImport.update({
   path: '/notes',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioScoutRoute = StudioScoutRouteImport.update({
+  id: '/scout',
+  path: '/scout',
+  getParentRoute: () => StudioRoute,
+} as any)
 const StudioSettingsRoute = StudioSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -186,6 +201,41 @@ const ApiQuizGenerateRoute = ApiQuizGenerateRouteImport.update({
   path: '/api/quiz/generate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiScoutAgentsRoute = ApiScoutAgentsRouteImport.update({
+  id: '/api/scout/agents',
+  path: '/api/scout/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScoutDigestRoute = ApiScoutDigestRouteImport.update({
+  id: '/api/scout/digest',
+  path: '/api/scout/digest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScoutRecentRoute = ApiScoutRecentRouteImport.update({
+  id: '/api/scout/recent',
+  path: '/api/scout/recent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScoutResourcesRoute = ApiScoutResourcesRouteImport.update({
+  id: '/api/scout/resources',
+  path: '/api/scout/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScoutSettingsRoute = ApiScoutSettingsRouteImport.update({
+  id: '/api/scout/settings',
+  path: '/api/scout/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScoutSourcesRoute = ApiScoutSourcesRouteImport.update({
+  id: '/api/scout/sources',
+  path: '/api/scout/sources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScoutStartRoute = ApiScoutStartRouteImport.update({
+  id: '/api/scout/start',
+  path: '/api/scout/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSettingsDeleteRoute = ApiSettingsDeleteRouteImport.update({
   id: '/api/settings/delete',
   path: '/api/settings/delete',
@@ -206,6 +256,16 @@ const ApiSrsSaveRoute = ApiSrsSaveRouteImport.update({
   path: '/api/srs/save',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiScoutPacksIdRoute = ApiScoutPacksIdRouteImport.update({
+  id: '/api/scout/packs/$id',
+  path: '/api/scout/packs/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScoutPacksIdApproveRoute = ApiScoutPacksIdApproveRouteImport.update({
+  id: '/approve',
+  path: '/approve',
+  getParentRoute: () => ApiScoutPacksIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
@@ -221,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/create': typeof StudioCreateRoute
   '/dashboard': typeof StudioDashboardRoute
   '/notes': typeof StudioNotesRoute
+  '/scout': typeof StudioScoutRoute
   '/settings': typeof StudioSettingsRoute
   '/workspaces': typeof StudioWorkspacesRoute
   '/api/gate': typeof ApiGateRoute
@@ -235,10 +296,19 @@ export interface FileRoutesByFullPath {
   '/api/gallery/list': typeof ApiGalleryListRoute
   '/api/gallery/set-public': typeof ApiGallerySetPublicRoute
   '/api/quiz/generate': typeof ApiQuizGenerateRoute
+  '/api/scout/agents': typeof ApiScoutAgentsRoute
+  '/api/scout/digest': typeof ApiScoutDigestRoute
+  '/api/scout/recent': typeof ApiScoutRecentRoute
+  '/api/scout/resources': typeof ApiScoutResourcesRoute
+  '/api/scout/settings': typeof ApiScoutSettingsRoute
+  '/api/scout/sources': typeof ApiScoutSourcesRoute
+  '/api/scout/start': typeof ApiScoutStartRoute
   '/api/settings/delete': typeof ApiSettingsDeleteRoute
   '/api/settings/export': typeof ApiSettingsExportRoute
   '/api/settings/privacy': typeof ApiSettingsPrivacyRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
+  '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
+  '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
 }
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
@@ -254,6 +324,7 @@ export interface FileRoutesByTo {
   '/create': typeof StudioCreateRoute
   '/dashboard': typeof StudioDashboardRoute
   '/notes': typeof StudioNotesRoute
+  '/scout': typeof StudioScoutRoute
   '/settings': typeof StudioSettingsRoute
   '/workspaces': typeof StudioWorkspacesRoute
   '/api/gate': typeof ApiGateRoute
@@ -268,10 +339,19 @@ export interface FileRoutesByTo {
   '/api/gallery/list': typeof ApiGalleryListRoute
   '/api/gallery/set-public': typeof ApiGallerySetPublicRoute
   '/api/quiz/generate': typeof ApiQuizGenerateRoute
+  '/api/scout/agents': typeof ApiScoutAgentsRoute
+  '/api/scout/digest': typeof ApiScoutDigestRoute
+  '/api/scout/recent': typeof ApiScoutRecentRoute
+  '/api/scout/resources': typeof ApiScoutResourcesRoute
+  '/api/scout/settings': typeof ApiScoutSettingsRoute
+  '/api/scout/sources': typeof ApiScoutSourcesRoute
+  '/api/scout/start': typeof ApiScoutStartRoute
   '/api/settings/delete': typeof ApiSettingsDeleteRoute
   '/api/settings/export': typeof ApiSettingsExportRoute
   '/api/settings/privacy': typeof ApiSettingsPrivacyRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
+  '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
+  '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -289,6 +369,7 @@ export interface FileRoutesById {
   '/_studio/create': typeof StudioCreateRoute
   '/_studio/dashboard': typeof StudioDashboardRoute
   '/_studio/notes': typeof StudioNotesRoute
+  '/_studio/scout': typeof StudioScoutRoute
   '/_studio/settings': typeof StudioSettingsRoute
   '/_studio/workspaces': typeof StudioWorkspacesRoute
   '/api/gate': typeof ApiGateRoute
@@ -304,10 +385,19 @@ export interface FileRoutesById {
   '/api/gallery/list': typeof ApiGalleryListRoute
   '/api/gallery/set-public': typeof ApiGallerySetPublicRoute
   '/api/quiz/generate': typeof ApiQuizGenerateRoute
+  '/api/scout/agents': typeof ApiScoutAgentsRoute
+  '/api/scout/digest': typeof ApiScoutDigestRoute
+  '/api/scout/recent': typeof ApiScoutRecentRoute
+  '/api/scout/resources': typeof ApiScoutResourcesRoute
+  '/api/scout/settings': typeof ApiScoutSettingsRoute
+  '/api/scout/sources': typeof ApiScoutSourcesRoute
+  '/api/scout/start': typeof ApiScoutStartRoute
   '/api/settings/delete': typeof ApiSettingsDeleteRoute
   '/api/settings/export': typeof ApiSettingsExportRoute
   '/api/settings/privacy': typeof ApiSettingsPrivacyRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
+  '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
+  '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -325,6 +415,7 @@ export interface FileRouteTypes {
     | '/create'
     | '/dashboard'
     | '/notes'
+    | '/scout'
     | '/settings'
     | '/workspaces'
     | '/api/gate'
@@ -339,10 +430,19 @@ export interface FileRouteTypes {
     | '/api/gallery/list'
     | '/api/gallery/set-public'
     | '/api/quiz/generate'
+    | '/api/scout/agents'
+    | '/api/scout/digest'
+    | '/api/scout/recent'
+    | '/api/scout/resources'
+    | '/api/scout/settings'
+    | '/api/scout/sources'
+    | '/api/scout/start'
     | '/api/settings/delete'
     | '/api/settings/export'
     | '/api/settings/privacy'
     | '/api/srs/save'
+    | '/api/scout/packs/$id'
+    | '/api/scout/packs/$id/approve'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -358,6 +458,7 @@ export interface FileRouteTypes {
     | '/create'
     | '/dashboard'
     | '/notes'
+    | '/scout'
     | '/settings'
     | '/workspaces'
     | '/api/gate'
@@ -372,10 +473,19 @@ export interface FileRouteTypes {
     | '/api/gallery/list'
     | '/api/gallery/set-public'
     | '/api/quiz/generate'
+    | '/api/scout/agents'
+    | '/api/scout/digest'
+    | '/api/scout/recent'
+    | '/api/scout/resources'
+    | '/api/scout/settings'
+    | '/api/scout/sources'
+    | '/api/scout/start'
     | '/api/settings/delete'
     | '/api/settings/export'
     | '/api/settings/privacy'
     | '/api/srs/save'
+    | '/api/scout/packs/$id'
+    | '/api/scout/packs/$id/approve'
   id:
     | '__root__'
     | '/_marketing'
@@ -392,6 +502,7 @@ export interface FileRouteTypes {
     | '/_studio/create'
     | '/_studio/dashboard'
     | '/_studio/notes'
+    | '/_studio/scout'
     | '/_studio/settings'
     | '/_studio/workspaces'
     | '/api/gate'
@@ -407,10 +518,19 @@ export interface FileRouteTypes {
     | '/api/gallery/list'
     | '/api/gallery/set-public'
     | '/api/quiz/generate'
+    | '/api/scout/agents'
+    | '/api/scout/digest'
+    | '/api/scout/recent'
+    | '/api/scout/resources'
+    | '/api/scout/settings'
+    | '/api/scout/sources'
+    | '/api/scout/start'
     | '/api/settings/delete'
     | '/api/settings/export'
     | '/api/settings/privacy'
     | '/api/srs/save'
+    | '/api/scout/packs/$id'
+    | '/api/scout/packs/$id/approve'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -431,10 +551,18 @@ export interface RootRouteChildren {
   ApiGalleryListRoute: typeof ApiGalleryListRoute
   ApiGallerySetPublicRoute: typeof ApiGallerySetPublicRoute
   ApiQuizGenerateRoute: typeof ApiQuizGenerateRoute
+  ApiScoutAgentsRoute: typeof ApiScoutAgentsRoute
+  ApiScoutDigestRoute: typeof ApiScoutDigestRoute
+  ApiScoutRecentRoute: typeof ApiScoutRecentRoute
+  ApiScoutResourcesRoute: typeof ApiScoutResourcesRoute
+  ApiScoutSettingsRoute: typeof ApiScoutSettingsRoute
+  ApiScoutSourcesRoute: typeof ApiScoutSourcesRoute
+  ApiScoutStartRoute: typeof ApiScoutStartRoute
   ApiSettingsDeleteRoute: typeof ApiSettingsDeleteRoute
   ApiSettingsExportRoute: typeof ApiSettingsExportRoute
   ApiSettingsPrivacyRoute: typeof ApiSettingsPrivacyRoute
   ApiSrsSaveRoute: typeof ApiSrsSaveRoute
+  ApiScoutPacksIdRoute: typeof ApiScoutPacksIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -544,6 +672,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioNotesRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/_studio/scout': {
+      id: '/_studio/scout'
+      path: '/scout'
+      fullPath: '/scout'
+      preLoaderRoute: typeof StudioScoutRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/_studio/settings': {
       id: '/_studio/settings'
       path: '/settings'
@@ -642,6 +777,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiQuizGenerateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/scout/agents': {
+      id: '/api/scout/agents'
+      path: '/api/scout/agents'
+      fullPath: '/api/scout/agents'
+      preLoaderRoute: typeof ApiScoutAgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/digest': {
+      id: '/api/scout/digest'
+      path: '/api/scout/digest'
+      fullPath: '/api/scout/digest'
+      preLoaderRoute: typeof ApiScoutDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/recent': {
+      id: '/api/scout/recent'
+      path: '/api/scout/recent'
+      fullPath: '/api/scout/recent'
+      preLoaderRoute: typeof ApiScoutRecentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/resources': {
+      id: '/api/scout/resources'
+      path: '/api/scout/resources'
+      fullPath: '/api/scout/resources'
+      preLoaderRoute: typeof ApiScoutResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/settings': {
+      id: '/api/scout/settings'
+      path: '/api/scout/settings'
+      fullPath: '/api/scout/settings'
+      preLoaderRoute: typeof ApiScoutSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/sources': {
+      id: '/api/scout/sources'
+      path: '/api/scout/sources'
+      fullPath: '/api/scout/sources'
+      preLoaderRoute: typeof ApiScoutSourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/start': {
+      id: '/api/scout/start'
+      path: '/api/scout/start'
+      fullPath: '/api/scout/start'
+      preLoaderRoute: typeof ApiScoutStartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/settings/delete': {
       id: '/api/settings/delete'
       path: '/api/settings/delete'
@@ -669,6 +853,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/srs/save'
       preLoaderRoute: typeof ApiSrsSaveRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/packs/$id': {
+      id: '/api/scout/packs/$id'
+      path: '/api/scout/packs/$id'
+      fullPath: '/api/scout/packs/$id'
+      preLoaderRoute: typeof ApiScoutPacksIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/packs/$id/approve': {
+      id: '/api/scout/packs/$id/approve'
+      path: '/approve'
+      fullPath: '/api/scout/packs/$id/approve'
+      preLoaderRoute: typeof ApiScoutPacksIdApproveRouteImport
+      parentRoute: typeof ApiScoutPacksIdRoute
     }
   }
 }
@@ -700,6 +898,7 @@ interface StudioRouteChildren {
   StudioCreateRoute: typeof StudioCreateRoute
   StudioDashboardRoute: typeof StudioDashboardRoute
   StudioNotesRoute: typeof StudioNotesRoute
+  StudioScoutRoute: typeof StudioScoutRoute
   StudioSettingsRoute: typeof StudioSettingsRoute
   StudioWorkspacesRoute: typeof StudioWorkspacesRoute
 }
@@ -709,12 +908,25 @@ const StudioRouteChildren: StudioRouteChildren = {
   StudioCreateRoute: StudioCreateRoute,
   StudioDashboardRoute: StudioDashboardRoute,
   StudioNotesRoute: StudioNotesRoute,
+  StudioScoutRoute: StudioScoutRoute,
   StudioSettingsRoute: StudioSettingsRoute,
   StudioWorkspacesRoute: StudioWorkspacesRoute,
 }
 
 const StudioRouteWithChildren =
   StudioRoute._addFileChildren(StudioRouteChildren)
+
+interface ApiScoutPacksIdRouteChildren {
+  ApiScoutPacksIdApproveRoute: typeof ApiScoutPacksIdApproveRoute
+}
+
+const ApiScoutPacksIdRouteChildren: ApiScoutPacksIdRouteChildren = {
+  ApiScoutPacksIdApproveRoute: ApiScoutPacksIdApproveRoute,
+}
+
+const ApiScoutPacksIdRouteWithChildren = ApiScoutPacksIdRoute._addFileChildren(
+  ApiScoutPacksIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   MarketingRoute: MarketingRouteWithChildren,
@@ -734,10 +946,18 @@ const rootRouteChildren: RootRouteChildren = {
   ApiGalleryListRoute: ApiGalleryListRoute,
   ApiGallerySetPublicRoute: ApiGallerySetPublicRoute,
   ApiQuizGenerateRoute: ApiQuizGenerateRoute,
+  ApiScoutAgentsRoute: ApiScoutAgentsRoute,
+  ApiScoutDigestRoute: ApiScoutDigestRoute,
+  ApiScoutRecentRoute: ApiScoutRecentRoute,
+  ApiScoutResourcesRoute: ApiScoutResourcesRoute,
+  ApiScoutSettingsRoute: ApiScoutSettingsRoute,
+  ApiScoutSourcesRoute: ApiScoutSourcesRoute,
+  ApiScoutStartRoute: ApiScoutStartRoute,
   ApiSettingsDeleteRoute: ApiSettingsDeleteRoute,
   ApiSettingsExportRoute: ApiSettingsExportRoute,
   ApiSettingsPrivacyRoute: ApiSettingsPrivacyRoute,
   ApiSrsSaveRoute: ApiSrsSaveRoute,
+  ApiScoutPacksIdRoute: ApiScoutPacksIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
