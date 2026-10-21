@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronDown, ChevronUp, FileUp, KeyRound, Loader2, Wand2, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Segmented } from "@/components/ui/segmented";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getStorage } from "@/lib/storage";
@@ -158,28 +159,35 @@ function CreatePageContent() {
                 )}
 
                 {creationStep === "input" && (
-                    <div className="max-w-4xl max-w-full">
-                        <div className="mb-6 grid gap-6 md:grid-cols-2">
-                             <div>
-                                <label className="mb-2 block text-sm font-medium text-text">Workspace Title</label>
+                    <div className="flex flex-col gap-[14px]">
+                        <div className="flex flex-wrap items-end gap-[14px]">
+                            <div className="min-w-[240px] flex-1">
+                                <label htmlFor="create-title" className="field-label">Workspace title</label>
                                 <Input
+                                    id="create-title"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="e.g. Master Next.js 15"
-                                    className="bg-[var(--color-surface)]"
+                                    placeholder="Optional. Taken from the content if empty."
                                 />
-                             </div>
-                             <div>
-                                <p className="mb-2 block text-sm font-medium text-text">Parsing Mode</p>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <Button type="button" variant={mode === "general" ? "default" : "outline"} onClick={() => setMode("general")}>Standard</Button>
-                                    <Button type="button" variant={mode === "intern" ? "default" : "outline"} onClick={() => setMode("intern")}>Structured</Button>
-                                </div>
+                            </div>
+                            <div>
+                                <p className="field-label">Parsing</p>
+                                <Segmented
+                                    label="Parsing mode"
+                                    value={mode}
+                                    onChange={setMode}
+                                    className="h-10"
+                                    options={[
+                                        { key: "general", label: "Standard" },
+                                        { key: "intern", label: "Structured" },
+                                    ]}
+                                />
                             </div>
                         </div>
 
                         <div className="relative">
                             <Textarea
+                                aria-label="Guide or notes"
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -189,33 +197,38 @@ function CreatePageContent() {
                                     setIsDragging(false);
                                     if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
                                 }}
-                                placeholder="Paste your raw notes, guides, or course curriculum here..."
+                                placeholder="Paste a guide, course outline or notes"
                                 className={cn(
-"min-h-[400px] w-full resize-y rounded-2xl border border-dashed bg-surface p-6 text-[15px] leading-relaxed outline-none transition-colors",
-                                    isDragging ? "border-text-soft bg-surface-subtle" : "border-border-strong hover:border-[#555555]"
+                                    "min-h-[420px] resize-y rounded-2xl border-dashed p-5 text-[15px] leading-relaxed",
+                                    isDragging ? "border-text-soft bg-surface-subtle" : "border-border-strong",
                                 )}
                             />
-                            
+
                             {!content && (
-                                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-text-soft opacity-80 group/dropzone transition-all">
-                                    <div className="mb-4">
-                                        <FileUp size={32} strokeWidth={1.5} className="text-text-soft" />
-                                    </div>
-                                    <p className="text-sm font-medium text-text-muted">Drag & Drop Note/MD</p>
+                                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 text-text-soft">
+                                    <FileUp size={28} strokeWidth={1.5} />
+                                    <p className="text-[13px]">or drop a .md or .txt file</p>
                                 </div>
                             )}
                         </div>
 
                         {error && (
-                            <div className="mt-4 rounded-xl border border-[var(--color-danger)]/25 bg-[var(--color-danger)]/5 p-4 text-sm text-[var(--color-danger)]">
+                            <p role="alert" className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">
                                 {error}
-                            </div>
+                            </p>
                         )}
 
-                        <div className="mt-8 flex items-center justify-between">
-                            <Button type="button" variant="secondary" onClick={() => fileInputRef.current?.click()}>
-                                <FileUp size={16} className="mr-2" /> Upload File
-                            </Button>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <Button type="button" variant="secondary" onClick={() => fileInputRef.current?.click()}>
+                                    <FileUp size={15} /> Upload file
+                                </Button>
+                                {hasContent ? (
+                                    <span className="text-[13px] tabular-nums text-text-soft">
+                                        {content.trim().split(/s+/).length.toLocaleString()} words
+                                    </span>
+                                ) : null}
+                            </div>
                             <input
                                 ref={fileInputRef}
                                 type="file"
@@ -223,14 +236,9 @@ function CreatePageContent() {
                                 className="hidden"
                                 onChange={(e) => e.target.files?.[0] && processFile(e.target.files[0])}
                             />
-                            
-                            <Button 
-                                type="button" 
-                                onClick={handleGenerate} 
-                                disabled={!hasContent}
-                                className="ps-6 pe-5 h-12"
-                            >
-                                Generate Roadmap <Wand2 size={16} className="ml-2" />
+
+                            <Button type="button" onClick={handleGenerate} disabled={!hasContent}>
+                                <Wand2 size={15} /> Generate roadmap
                             </Button>
                         </div>
                     </div>

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Flame, TrendingUp, CheckCircle2, BookOpen, Trophy, Calendar, ArrowRight, Star } from "lucide-react";
 import { getStorage } from "@/lib/storage";
 import { getRoadmapStats } from "@/lib/workspace-stats";
 import type { Roadmap, ModuleSection } from "@/types";
@@ -144,116 +143,86 @@ function extractMilestones(roadmaps: Roadmap[]): Milestone[] {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function ConsistencyMatrix({ cells }: { cells: DayCell[] }) {
-    const LEVEL_COLORS = [
-"bg-[var(--color-surface-muted)]",  // 0 – empty
-"bg-accent-soft/60",                  // 1 – light
-"bg-accent/70",                  // 2 – medium
-"bg-accent",                     // 3 – strong
-"bg-accent",                     // 4 – max
-    ];
+// Intensity buckets for the matrix: one hue, stepped by opacity.
+const LEVEL_COLORS = ["bg-surface-muted", "bg-accent/25", "bg-accent/50", "bg-accent/75", "bg-accent"] as const;
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAYS = ["", "Mon", "", "Wed", "", "Fri", ""];
 
-    // Build columns (weeks)
+/** A year of activity, one column per week, stretched to the panel's width. */
+function ConsistencyMatrix({ cells }: { cells: DayCell[] }) {
     const weeks: DayCell[][] = [];
     for (let i = 0; i < cells.length; i += 7) {
         weeks.push(cells.slice(i, i + 7));
     }
 
-    const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const DAYS = ["S", "M", "T", "W", "T", "F", "S"];
-
-    // Month labels
-    const monthLabels: { label: string; col: number }[] = [];
+    const monthLabels = new Map<number, string>();
     let lastMonth = -1;
-    weeks.forEach((week, colIdx) => {
-        const firstCell = week[0];
-        if (firstCell) {
-            const m = new Date(firstCell.date).getMonth();
-            if (m !== lastMonth) {
-                monthLabels.push({ label: MONTHS[m], col: colIdx });
-                lastMonth = m;
-            }
+    weeks.forEach((week, column) => {
+        const first = week[0];
+        if (!first) return;
+        const month = new Date(first.date).getMonth();
+        if (month !== lastMonth) {
+            // Skip a label squeezed against the previous one at the left edge.
+            if (column > 1 || monthLabels.size === 0) monthLabels.set(column, MONTHS[month]);
+            lastMonth = month;
         }
     });
 
     const todayStr = today();
+    const columns = { gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` };
 
     return (
-        <div className="overflow-x-auto no-scrollbar">
-            <div className="min-w-[700px]">
-                {/* Month labels */}
-                <div className="flex mb-1 pl-7">
-                    {weeks.map((_, colIdx) => {
-                        const label = monthLabels.find((m) => m.col === colIdx);
-                        return (
-                            <div key={colIdx} className="w-[14px] mx-[1px] text-xs text-text-muted shrink-0">
-                                {label ? label.label : ""}
-                            </div>
-                        );
-                    })}
+        <div className="overflow-x-auto">
+            <div className="grid min-w-[640px] grid-cols-[32px_minmax(0,1fr)] gap-x-2">
+                <span />
+                <div className="mb-1.5 grid gap-[3px]" style={columns}>
+                    {weeks.map((_, column) => (
+                        <span key={column} className="overflow-visible whitespace-nowrap text-xs text-text-soft">
+                            {monthLabels.get(column) ?? ""}
+                        </span>
+                    ))}
                 </div>
 
-                <div className="flex gap-0">
-                    {/* Day-of-week labels */}
-                    <div className="flex flex-col mr-1 shrink-0">
-                        {DAYS.map((d, i) => (
-                            <div key={i} className={`h-[14px] my-[1px] text-xs text-text-muted w-5 flex items-center ${i % 2 === 1 ? "" : "invisible"}`}>
-                                {d}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Grid */}
-                    {weeks.map((week, weekIdx) => (
-                        <div key={weekIdx} className="flex flex-col">
-                            {week.map((cell, dayIdx) => (
+                <div className="grid grid-rows-7 gap-[3px]">
+                    {DAYS.map((day, index) => (
+                        <span key={index} className="flex items-center text-xs text-text-soft">
+                            {day}
+                        </span>
+                    ))}
+                </div>
+                <div className="grid gap-[3px]" style={columns}>
+                    {weeks.map((week, column) => (
+                        <div key={column} className="grid grid-rows-7 gap-[3px]">
+                            {week.map((cell) => (
                                 <div
-                                    key={dayIdx}
-                                    title={`${cell.date}: ${cell.count} activity`}
-                                    className={`
-                                        w-[14px] h-[14px] mx-[1px] my-[1px] rounded-sm shrink-0 transition-all cursor-default
-                                        ${LEVEL_COLORS[cell.level]}
-                                        ${cell.date === todayStr ? "ring-1 ring-border-strong ring-offset-1 ring-offset-[var(--color-page)]" : ""}
-`}
+                                    key={cell.date}
+                                    title={`${cell.date}: ${cell.count} completed`}
+                                    className={`aspect-square rounded-[3px] ${LEVEL_COLORS[cell.level]} ${
+                                        cell.date === todayStr ? "outline outline-1 outline-text-soft" : ""
+                                    }`}
                                 />
                             ))}
                         </div>
                     ))}
                 </div>
+            </div>
 
-                {/* Legend */}
-                <div className="flex items-center gap-2 mt-3 justify-end">
-                    <span className="text-xs text-text-muted">Less</span>
-                    {LEVEL_COLORS.map((cls, i) => (
-                        <div key={i} className={`w-[12px] h-[12px] rounded-sm ${cls}`} />
-                    ))}
-                    <span className="text-xs text-text-muted">More</span>
-                </div>
+            <div className="mt-4 flex items-center justify-end gap-1.5 text-xs text-text-soft">
+                <span className="mr-1">Less</span>
+                {LEVEL_COLORS.map((cls) => (
+                    <span key={cls} className={`h-3 w-3 rounded-[3px] ${cls}`} />
+                ))}
+                <span className="ml-1">More</span>
             </div>
         </div>
     );
 }
 
-function MilestoneTypeIcon({ type }: { type: Milestone["type"] }) {
-    if (type === "roadmap-complete") return <Trophy size={16} className="text-warning" />;
-    if (type === "halfway") return <Star size={16} className="text-accent" />;
-    return <CheckCircle2 size={16} className="text-accent" />;
-}
-
-function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string | number; sub?: string }) {
-    return (
-        <div className="border border-border bg-surface rounded-2xl p-6 flex flex-col items-start gap-4 hover:bg-surface-muted hover:border-border-strong transition-all duration-300 group">
-            <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0 text-text-muted group-hover:text-accent group-hover:bg-accent/10 transition-colors">
-                {icon}
-            </div>
-            <div>
-                <p className="text-xs font-bold text-text-soft">{label}</p>
-                <p className="text-3xl font-display text-text leading-tight mt-1 tracking-tight">{value}</p>
-                {sub && <p className="text-xs text-text-muted mt-1">{sub}</p>}
-            </div>
-        </div>
-    );
-}
+const MILESTONE_LABELS: Record<Milestone["type"], string> = {
+    "roadmap-complete": "Workspace done",
+    "module-complete": "Module done",
+    halfway: "Halfway",
+};
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -307,195 +276,143 @@ export default function AnalyticsPage() {
             .slice(0, 5);
     }, [roadmaps]);
 
+    const kpis = [
+        {
+            label: "Overall completion",
+            value: `${globalStats.overallPct}`,
+            unit: "%",
+            sub: `${globalStats.completedTasks} of ${globalStats.totalTasks} tasks`,
+        },
+        { label: "Streak", value: `${streak}`, unit: streak === 1 ? "day" : "days", sub: `${tasksToday} tasks today` },
+        { label: "Active days", value: `${activeDays}`, unit: "", sub: "in the last year" },
+        {
+            label: "Workspaces done",
+            value: `${globalStats.completedRoadmaps}`,
+            unit: "",
+            sub: `${globalStats.inProgressRoadmaps} in progress`,
+        },
+    ];
+
     return (
         <div className="studio-page">
-            {/* Header */}
             <header className="app-header-block">
                 <h1>Analytics</h1>
                 <p className="text-sm text-text-muted">Consistency and progress across your workspaces.</p>
             </header>
 
             {mounted ? (
-                <div className="space-y-6">
-                    {/* ── Stat Cards ── */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <StatCard
-                            icon={<Flame size={20} className="text-[var(--color-warning)]" />}
-                            label="Day Streak"
-                            value={streak}
-                            sub={tasksToday > 0 ? `${tasksToday} tasks today` : "No tasks yet today"}
-                        />
-                        <StatCard
-                            icon={<CheckCircle2 size={20} className="text-accent" />}
-                            label="Tasks Done"
-                            value={globalStats.completedTasks}
-                            sub={`of ${globalStats.totalTasks} total`}
-                        />
-                        <StatCard
-                            icon={<Calendar size={20} />}
-                            label="Active Days"
-                            value={activeDays}
-                            sub="in the last year"
-                        />
-                        <StatCard
-                            icon={<Trophy size={20} className="text-warning" />}
-                            label="Completed"
-                            value={globalStats.completedRoadmaps}
-                            sub={`${globalStats.inProgressRoadmaps} in progress`}
-                        />
-                    </div>
+                <>
+                    <dl className="app-stat-grid grid-cols-2 md:grid-cols-4 xl:grid-cols-4">
+                        {kpis.map((kpi) => (
+                            <div key={kpi.label} className="app-stat-card">
+                                <dt className="text-[13px] text-text-soft">{kpi.label}</dt>
+                                <dd className="text-2xl tabular-nums text-text">
+                                    {kpi.value}
+                                    {kpi.unit ? <span className="ml-1 text-sm text-text-soft">{kpi.unit}</span> : null}
+                                </dd>
+                                <dd className="text-xs tabular-nums text-text-soft">{kpi.sub}</dd>
+                            </div>
+                        ))}
+                    </dl>
 
-                    {/* ── Consistency Matrix ── */}
-                    <section>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-sm font-semibold text-text-muted">
-                                Consistency Matrix
+                    <section aria-labelledby="matrix-heading" className="rounded-2xl bg-surface p-[22px]">
+                        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+                            <h2 id="matrix-heading" className="text-base text-text">
+                                Consistency
                             </h2>
-                            <span className="text-xs text-text-muted">{activeDays} active day{activeDays !== 1 ? "s" : ""} in the past year</span>
+                            <span className="text-xs tabular-nums text-text-soft">
+                                {activeDays} active day{activeDays === 1 ? "" : "s"} in the last year
+                            </span>
                         </div>
-                        <div className="border border-border bg-[var(--color-surface)] rounded-xl p-6">
-                            {cells.length === 0 ? (
-                                <div className="py-12 text-center text-text-muted text-sm">No activity recorded yet. Start completing tasks to fill this in!</div>
-                            ) : (
-                                <ConsistencyMatrix cells={cells} />
-                            )}
-                        </div>
+                        <ConsistencyMatrix cells={cells} />
                     </section>
 
-                    {/* ── Two Columns: Top Roadmaps + Milestones ── */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-                        {/* Top Roadmaps */}
-                        <section>
-                            <h2 className="text-sm font-semibold text-text-muted mb-4 border-b border-border pb-2">
-                                Roadmap Progress
-                            </h2>
-                            <div className="space-y-3">
-                                {topRoadmaps.length === 0 ? (
-                                    <div className="border border-border bg-[var(--color-surface)] rounded-xl p-6 text-center">
-                                        <p className="text-text-muted text-sm mb-3">No workspaces yet.</p>
-                                        <Link to="/create" className="text-xs text-accent hover:text-accent underline underline-offset-2">
-                                            Create your first roadmap →
-                                        </Link>
-                                    </div>
-                                ) : (
-                                    topRoadmaps.map(({ roadmap, stats }) => (
-                                        <Link
-                                            key={roadmap.id}
-                                            to="/workspace/$id"
-                                            params={{ id: roadmap.id }}
-                                            className="flex items-center gap-4 p-4 border border-border bg-[var(--color-surface)] rounded-xl hover:border-text-soft transition-colors group"
-                                        >
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between mb-2 gap-2">
-                                                    <h3 className="font-medium text-sm text-text truncate">{roadmap.title || "Untitled Workspace"}</h3>
-                                                    <span className="text-xs text-text-muted shrink-0">{stats.percent}%</span>
+                    <div className="grid items-start gap-[14px] lg:grid-cols-2">
+                        <section aria-labelledby="progress-heading" className="rounded-2xl bg-surface p-[22px]">
+                            <div className="flex items-baseline justify-between gap-2">
+                                <h2 id="progress-heading" className="text-base text-text">
+                                    Workspace progress
+                                </h2>
+                                <Link to="/workspaces" className="text-xs text-text-muted hover:text-text">
+                                    View all
+                                </Link>
+                            </div>
+                            {topRoadmaps.length === 0 ? (
+                                <p className="studio-empty mt-4 px-4 py-3 text-[13px] text-text-soft">
+                                    No workspace has tasks yet.
+                                </p>
+                            ) : (
+                                <ul className="mt-2">
+                                    {topRoadmaps.map(({ roadmap, stats }) => (
+                                        <li key={roadmap.id} className="border-t border-border first:border-t-0">
+                                            <Link
+                                                to="/workspace/$id"
+                                                params={{ id: roadmap.id }}
+                                                className="block py-3 text-text hover:text-text-muted"
+                                            >
+                                                <div className="flex items-baseline justify-between gap-3">
+                                                    <span className="truncate text-sm">{roadmap.title || "Untitled workspace"}</span>
+                                                    <span className="shrink-0 text-[13px] tabular-nums">{stats.percent}%</span>
                                                 </div>
-                                                <div className="h-1.5 bg-[var(--color-surface-muted)] rounded-full overflow-hidden">
+                                                <div className="mt-2 h-1 overflow-hidden rounded-full bg-raised">
                                                     <div
-                                                        className={`h-full rounded-full transition-all duration-500 ${
-                                                            stats.progressState === "completed"
-                                                                ? "bg-accent"
-                                                                : "bg-accent"
-                                                        }`}
+                                                        className={`h-full rounded-full ${stats.progressState === "completed" ? "bg-success" : "bg-accent"}`}
                                                         style={{ width: `${stats.percent}%` }}
                                                     />
                                                 </div>
-                                                <p className="text-xs text-text-muted mt-1.5">
-                                                    {stats.completedTasks} / {stats.totalTasks} tasks · {stats.moduleCount} module{stats.moduleCount !== 1 ? "s" : ""}
+                                                <p className="mt-1.5 text-xs tabular-nums text-text-soft">
+                                                    {stats.completedTasks} of {stats.totalTasks} tasks · {stats.moduleCount} module
+                                                    {stats.moduleCount === 1 ? "" : "s"}
                                                 </p>
-                                            </div>
-                                            <ArrowRight size={14} className="text-text-muted group-hover:text-text transition-colors shrink-0" />
-                                        </Link>
-                                    ))
-                                )}
-                            </div>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </section>
 
-                        {/* Milestones Timeline */}
-                        <section>
-                            <h2 className="text-sm font-semibold text-text-muted mb-4 border-b border-border pb-2">
+                        <section aria-labelledby="milestones-heading" className="rounded-2xl bg-surface p-[22px]">
+                            <h2 id="milestones-heading" className="text-base text-text">
                                 Milestones
                             </h2>
                             {milestones.length === 0 ? (
-                                <div className="border border-border bg-[var(--color-surface)] rounded-xl p-6 text-center">
-                                    <BookOpen size={24} className="text-text-muted mx-auto mb-3" />
-                                    <p className="text-text-muted text-sm">Complete modules and roadmaps to unlock milestones.</p>
-                                </div>
+                                <p className="studio-empty mt-4 px-4 py-3 text-[13px] text-text-soft">
+                                    Finish a module to record your first milestone.
+                                </p>
                             ) : (
-                                <div className="relative border-l-2 border-border ml-4 space-y-0">
-                                    {milestones.map((ms, idx) => (
-                                        <div key={ms.id} className="relative pl-6 pb-6 group">
-                                            {/* Dot */}
-                                            <div className="absolute -left-[11px] top-0 w-5 h-5 rounded-full border-2 border-border bg-[var(--color-page)] flex items-center justify-center group-hover:border-accent transition-colors">
-                                                <MilestoneTypeIcon type={ms.type} />
+                                <ul className="mt-2">
+                                    {milestones.slice(0, 6).map((ms) => (
+                                        <li
+                                            key={ms.id}
+                                            className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 border-t border-border py-3 first:border-t-0"
+                                        >
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm text-text">{ms.label}</p>
+                                                <Link
+                                                    to="/workspace/$id"
+                                                    params={{ id: ms.roadmapId }}
+                                                    className="mt-0.5 block truncate text-xs text-text-soft hover:text-text"
+                                                >
+                                                    {MILESTONE_LABELS[ms.type]} · {ms.roadmapTitle}
+                                                </Link>
                                             </div>
-
-                                            <div className="border border-border bg-[var(--color-surface)] rounded-lg p-3 hover:border-text-soft transition-colors">
-                                                <p className="text-sm text-text leading-snug">{ms.label}</p>
-                                                <div className="flex items-center gap-2 mt-1.5">
-                                                    <span className="text-xs text-text-muted">
-                                                        {new Date(ms.completedAt).toLocaleDateString("en-US", {
-                                                            month: "short",
-                                                            day: "numeric",
-                                                            year: "numeric",
-                                                        })}
-                                                    </span>
-                                                    <span className="text-xs text-text-muted">·</span>
-                                                    <Link
-                                                        to="/workspace/$id"
-                                                        params={{ id: ms.roadmapId }}
-                                                        className="text-xs text-accent hover:text-accent truncate max-w-[160px]"
-                                                    >
-                                                        {ms.roadmapTitle}
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            <time dateTime={ms.completedAt} className="text-xs tabular-nums text-text-soft">
+                                                {new Date(ms.completedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                            </time>
+                                        </li>
                                     ))}
-                                </div>
+                                </ul>
                             )}
                         </section>
                     </div>
-
-                    {/* ── Overall Summary Bar ── */}
-                    <section className="border border-border bg-[var(--color-surface)] rounded-xl p-6">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                            <div>
-                                <h2 className="text-sm font-semibold text-text-muted">Overall Completion</h2>
-                                <p className="text-3xl font-display text-text mt-1">{globalStats.overallPct}%</p>
-                            </div>
-                            <div className="flex gap-3 text-xs text-text-muted">
-                                <span className="flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-accent inline-block" />
-                                    {globalStats.completedTasks} completed
-                                </span>
-                                <span className="flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-[var(--color-surface-muted)] border border-border inline-block" />
-                                    {globalStats.totalTasks - globalStats.completedTasks} remaining
-                                </span>
-                            </div>
-                        </div>
-                        <div className="h-3 bg-[var(--color-surface-muted)] rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-accent rounded-full transition-all duration-700"
-                                style={{ width: `${globalStats.overallPct}%` }}
-                            />
-                        </div>
-                    </section>
-                </div>
+                </>
             ) : (
-                /* Skeleton */
-                <div className="mt-8 space-y-8">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {[...Array(4)].map((_, i) => (
-                            <div key={i} className="h-20 bg-[var(--color-surface-muted)] rounded-xl" />
-                        ))}
-                    </div>
-                    <div className="h-48 bg-[var(--color-surface-muted)] rounded-xl" />
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="h-64 bg-[var(--color-surface-muted)] rounded-xl" />
-                        <div className="h-64 bg-[var(--color-surface-muted)] rounded-xl" />
+                <div className="flex flex-col gap-[14px]" aria-hidden="true">
+                    <div className="skeleton h-[106px] rounded-2xl" />
+                    <div className="skeleton h-56 rounded-2xl" />
+                    <div className="grid gap-[14px] lg:grid-cols-2">
+                        <div className="skeleton h-48 rounded-2xl" />
+                        <div className="skeleton h-48 rounded-2xl" />
                     </div>
                 </div>
             )}

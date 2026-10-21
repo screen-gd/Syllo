@@ -31,10 +31,10 @@ export default function PickList({ resources, selected, onToggle }: PickListProp
 "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border transition-colors",
                                     checked
                                         ? "border-text bg-text text-page"
-                                        : "border-[var(--color-border-strong)] text-transparent hover:border-[var(--color-text)]",
+                                        : "border-border-strong hover:border-text-soft",
                                 )}
                             >
-                                <Check size={13} strokeWidth={3} />
+                                {checked ? <Check size={13} strokeWidth={3} /> : null}
                             </button>
 
                             <div className="min-w-0 flex-1">

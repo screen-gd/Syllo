@@ -33,6 +33,16 @@ function errorMessage(error: unknown) {
     return error instanceof Error && error.message ? error.message : "Scout ran into a problem.";
 }
 
+/** How a past goal reads in the list: one pale pill per state. */
+const PACK_STATUS: Record<ScoutPack["status"], { label: string; className: string }> = {
+    discovering: { label: "Finding", className: "studio-badge" },
+    processing: { label: "Reading", className: "studio-badge" },
+    review: { label: "Needs review", className: "studio-badge bg-warning-soft text-warning" },
+    building: { label: "Building", className: "studio-badge" },
+    ready: { label: "Built", className: "studio-badge bg-success-soft text-success" },
+    failed: { label: "Stopped", className: "studio-badge bg-danger-soft text-danger" },
+};
+
 export default function ScoutPage() {
     const navigate = useNavigate();
     const [goal, setGoal] = useState("");
@@ -46,6 +56,7 @@ export default function ScoutPage() {
     const [spend, setSpend] = useState<SpendSummary | null>(null);
     const [sources, setSources] = useState<ScoutSource[]>([]);
     const [books, setBooks] = useState<ScoutResource[]>([]);
+    const [recentPacks, setRecentPacks] = useState<ScoutPack[]>([]);
     const [lastPackTitle, setLastPackTitle] = useState<string | null>(null);
     const [lastPackHref, setLastPackHref] = useState<string | null>(null);
 
@@ -80,6 +91,7 @@ export default function ScoutPage() {
 
             if (recentResult.status !== "fulfilled") return;
             const packs = recentResult.value.packs;
+            setRecentPacks(packs);
             const active = packs.find((item) =>
                 ["discovering", "processing", "review", "building"].includes(item.status),
             );
@@ -280,7 +292,7 @@ export default function ScoutPage() {
                 </p>
             </header>
 
-            <div className="grid gap-[14px] xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
+            <div className="grid gap-[14px] xl:grid-cols-[minmax(0,1fr)_24rem] xl:items-start">
                 <div className="min-w-0 rounded-2xl bg-surface p-[22px]">
                     <ScoutProgress step={step} detail={pack && RUNNING_STAGE[pack.status] ? pack.stage : undefined} />
 
@@ -331,21 +343,44 @@ export default function ScoutPage() {
                                     </p>
                                 </div>
 
-                                {lastPackHref ? (
+                                {recentPacks.length > 0 ? (
                                     <div className="border-t border-border pt-5">
-                                        <p className="text-xs text-text-soft">
-                                            Last Scout workspace
-                                        </p>
-                                        <div className="mt-2 flex flex-wrap items-center gap-3">
-                                            <Link
-                                                to="/workspace/$id"
-                                                params={{ id: lastPackHref }}
-                                                className="text-sm text-text underline-offset-4 hover:underline"
-                                            >
-                                                {lastPackTitle ?? "Open workspace"}
-                                            </Link>
-                                            <ArrowRight size={14} className="text-text-soft" aria-hidden="true" />
-                                        </div>
+                                        <h3 className="text-[13px] text-text-soft">Past goals</h3>
+                                        <ul className="mt-1">
+                                            {recentPacks.slice(0, 6).map((item) => (
+                                                <li
+                                                    key={item.id}
+                                                    className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 border-t border-border py-2.5 first:border-t-0"
+                                                >
+                                                    {item.roadmapId && item.status === "ready" ? (
+                                                        <Link
+                                                            to="/workspace/$id"
+                                                            params={{ id: item.roadmapId }}
+                                                            className="truncate text-sm text-text hover:underline hover:underline-offset-4"
+                                                        >
+                                                            {item.goal}
+                                                        </Link>
+                                                    ) : (
+                                                        <span className="truncate text-sm text-text-muted">{item.goal}</span>
+                                                    )}
+                                                    <span className={PACK_STATUS[item.status].className}>{PACK_STATUS[item.status].label}</span>
+                                                    <time dateTime={item.createdAt} className="text-xs tabular-nums text-text-soft">
+                                                        {new Date(item.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                                    </time>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ) : lastPackHref ? (
+                                    <div className="border-t border-border pt-5">
+                                        <p className="text-[13px] text-text-soft">Last Scout workspace</p>
+                                        <Link
+                                            to="/workspace/$id"
+                                            params={{ id: lastPackHref }}
+                                            className="mt-2 inline-flex items-center gap-2 text-sm text-text hover:underline hover:underline-offset-4"
+                                        >
+                                            {lastPackTitle ?? "Open workspace"} <ArrowRight size={14} className="text-text-soft" />
+                                        </Link>
                                     </div>
                                 ) : null}
                             </section>

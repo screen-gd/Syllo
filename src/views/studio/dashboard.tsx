@@ -199,11 +199,9 @@ export default function DashboardPage() {
                                         </li>
                                     ))}
                                 </ul>
-                            ) : (
-                                <p className="mt-2 text-[13px] text-text-soft">New resources land here after the nightly check.</p>
-                            )}
+                            ) : null}
 
-                            {digest ? (
+                            {digest && digest.newResources > 0 ? (
                                 <p className="mt-auto pt-4 text-xs tabular-nums text-text-soft">
                                     {digest.newResources} new resource{digest.newResources === 1 ? "" : "s"}
                                 </p>
@@ -261,10 +259,10 @@ export default function DashboardPage() {
                                                                     "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border transition-colors",
                                                                     checked
                                                                         ? "border-text bg-text text-page"
-                                                                        : "border-border-strong text-transparent hover:border-text-soft",
+                                                                        : "border-border-strong hover:border-text-soft",
                                                                 )}
                                                             >
-                                                                <Check size={10} strokeWidth={3} />
+                                                                {checked ? <Check size={10} strokeWidth={3} /> : null}
                                                             </button>
                                                             <span className={cn("text-[13px] leading-5", checked ? "text-text-soft line-through" : "text-text-muted")}>
                                                                 {chapter.title}

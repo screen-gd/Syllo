@@ -30,8 +30,8 @@ const KIND_LABEL: Record<ScoutSourceKind, string> = {
 };
 
 const ADD_KINDS: Array<{ value: ScoutSourceKind; label: string; placeholder: string }> = [
-    { value: "creator", label: "Creator", placeholder: "@handle, channel URL, or name" },
-    { value: "youtube_channel", label: "Channel", placeholder: "@handle or youtube.com/@handle" },
+    { value: "creator", label: "Creator", placeholder: "@handle or name" },
+    { value: "youtube_channel", label: "Channel", placeholder: "Channel URL" },
     { value: "site", label: "Site", placeholder: "developer.mozilla.org" },
 ];
 
@@ -72,10 +72,10 @@ export default function SourcesPanel({
     }
 
     return (
-        <aside className="space-y-7 rounded-2xl bg-surface p-[22px] xl:sticky xl:top-6 xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto">
+        <aside className="space-y-7 rounded-2xl bg-surface p-[22px]">
             <div>
                 <h2 className="text-base text-text">Sources & settings</h2>
-                <p className="mt-1 text-xs leading-5 text-[var(--color-text-muted)]">
+                <p className="mt-1 text-xs leading-5 text-text-muted">
                     Scout watches these places. Creators and channels feed new videos; sites feed articles and docs.
                 </p>
             </div>
@@ -85,40 +85,33 @@ export default function SourcesPanel({
                     Watching
                 </h3>
 
-                <ul className="space-y-1.5">
+                <ul>
                     {sources.map((source) => (
-                        <li key={source.id} className="flex items-center gap-2 border-b border-[var(--color-border)] py-1.5 last:border-b-0">
-                            <button
-                                type="button"
-                                role="switch"
-                                aria-checked={source.enabled}
-                                aria-label={`${source.enabled ? "Pause" : "Resume"} ${source.label}`}
-                                onClick={() => run(source.id, () => onToggleSource(source.id, !source.enabled))}
-                                className={cn(
-"h-2.5 w-2.5 shrink-0 rounded-full border transition-colors",
-                                    source.enabled
-                                        ? "border-success bg-success"
-                                        : "border-[var(--color-border-strong)] bg-transparent",
-                                )}
-                            />
+                        <li key={source.id} className="flex items-center gap-3 border-b border-border py-2 last:border-b-0">
                             <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm text-[var(--color-text)]">{source.label}</p>
-                                <p className="truncate text-xs text-[var(--color-text-soft)]">
+                                <p className={cn("truncate text-sm", source.enabled ? "text-text" : "text-text-soft")}>{source.label}</p>
+                                <p className="truncate text-xs text-text-soft">
                                     {KIND_LABEL[source.kind]}
                                 </p>
                             </div>
+                            <Switch
+                                aria-label={`Watch ${source.label}`}
+                                checked={source.enabled}
+                                disabled={working !== null}
+                                onCheckedChange={(checked) => run(source.id, () => onToggleSource(source.id, checked))}
+                            />
                             <button
                                 type="button"
                                 aria-label={`Remove ${source.label}`}
                                 onClick={() => run(source.id, () => onRemoveSource(source.id))}
-                                className="text-[var(--color-text-soft)] transition-colors hover:text-danger"
+                                className="text-text-soft transition-colors hover:text-danger"
                             >
                                 <Trash2 size={13} />
                             </button>
                         </li>
                     ))}
                     {sources.length === 0 ? (
-                        <li className="text-xs text-[var(--color-text-soft)]">Nothing yet. Add a creator or a site.</li>
+                        <li className="text-xs text-text-soft">Nothing yet. Add a creator or a site.</li>
                     ) : null}
                 </ul>
 
@@ -168,14 +161,14 @@ export default function SourcesPanel({
                 {books.length > 0 ? (
                     <ul className="space-y-1">
                         {books.slice(0, 6).map((book) => (
-                            <li key={book.id} className="truncate text-xs text-[var(--color-text-muted)]">
+                            <li key={book.id} className="truncate text-xs text-text-muted">
                                 {book.title}
-                                {book.chapters.length > 0 ? <span className="text-[var(--color-text-soft)]"> · {book.chapters.length} chapters</span> : null}
+                                {book.chapters.length > 0 ? <span className="text-text-soft"> · {book.chapters.length} chapters</span> : null}
                             </li>
                         ))}
                     </ul>
                 ) : (
-                    <p className="text-xs text-[var(--color-text-soft)]">Add a book and its chapters become reading tasks.</p>
+                    <p className="text-xs text-text-soft">Add a book and its chapters become reading tasks.</p>
                 )}
 
                 <Input
@@ -256,8 +249,8 @@ export default function SourcesPanel({
 
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <p className="text-sm text-[var(--color-text)]">Auto-check</p>
-                        <p className="text-xs leading-5 text-[var(--color-text-soft)]">Nightly at 3:00 AM, Asia/Dubai.</p>
+                        <p className="text-sm text-text">Auto-check</p>
+                        <p className="text-xs leading-5 text-text-soft">Nightly at 3:00 AM, Asia/Dubai.</p>
                     </div>
                     <Switch
                         aria-label="Auto-check nightly"
@@ -269,8 +262,8 @@ export default function SourcesPanel({
 
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <p className="text-sm text-[var(--color-text)]">Pause Scout</p>
-                        <p className="text-xs leading-5 text-[var(--color-text-soft)]">Stops the nightly check, keeps your library.</p>
+                        <p className="text-sm text-text">Pause Scout</p>
+                        <p className="text-xs leading-5 text-text-soft">Stops the nightly check, keeps your library.</p>
                     </div>
                     <Switch
                         aria-label="Pause Scout"

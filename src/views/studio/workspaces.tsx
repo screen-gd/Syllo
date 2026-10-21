@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowUpDown, HardDrive, Plus, SlidersHorizontal } from "lucide-react";
+import { Plus } from "lucide-react";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
 import { Button } from "@/components/ui/button";
+import { Segmented } from "@/components/ui/segmented";
 import { getStorage } from "@/lib/storage";
 import { getRoadmapStats } from "@/lib/workspace-stats";
 import type { Roadmap } from "@/types";
@@ -52,160 +53,89 @@ export default function WorkspacesPage() {
         return nextRoadmaps;
     }, [filter, roadmaps, sortMode]);
 
-    const filterOptions: { key: LibraryFilter; label: string }[] = [
-        { key: "all", label: "All" },
-        { key: "in-progress", label: "In progress" },
-        { key: "completed", label: "Completed" },
-    ];
+    const counts = useMemo(() => {
+        const states = roadmaps.map((roadmap) => getRoadmapStats(roadmap).progressState);
+        return {
+            all: roadmaps.length,
+            "in-progress": states.filter((state) => state === "in-progress").length,
+            completed: states.filter((state) => state === "completed").length,
+        } satisfies Record<LibraryFilter, number>;
+    }, [roadmaps]);
 
-    const sortOptions: { key: SortMode; label: string }[] = [
+    const filterOptions = (
+        [
+            { key: "all", label: "All" },
+            { key: "in-progress", label: "In progress" },
+            { key: "completed", label: "Completed" },
+        ] as const
+    ).map((option) => ({ key: option.key, label: mounted ? `${option.label} ${counts[option.key]}` : option.label }));
+
+    const sortOptions = [
         { key: "recent", label: "Recent" },
         { key: "title", label: "Title" },
-        { key: "completion", label: "Completion" },
-    ];
+        { key: "completion", label: "Progress" },
+    ] as const satisfies readonly { key: SortMode; label: string }[];
 
     return (
         <div className="studio-page">
-            <header className="app-header-block">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                    <div className="flex max-w-2xl flex-col gap-1.5">
-                        <h1>Workspaces</h1>
-                        <p className="text-sm text-text-muted">Open, sort and continue your workspaces.</p>
-                    </div>
-
-                    <Link to="/create" className="button-primary shrink-0">
-                        <Plus size={16} />
-                        New workspace
-                    </Link>
+            <header className="flex flex-wrap items-end justify-between gap-4">
+                <div className="app-header-block">
+                    <h1>Workspaces</h1>
+                    <p className="text-sm text-text-muted">Saved in this browser. Nothing is synced.</p>
                 </div>
+
+                <Link to="/create" className="button-primary shrink-0">
+                    <Plus size={16} />
+                    New workspace
+                </Link>
             </header>
 
-            <section className="section-space-compact">
-                <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-5 py-4">
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                            <HardDrive size={18} />
-                        </div>
-                        <div>
-                            <p className="text-sm font-semibold text-text">Local-only storage</p>
-                            <p className="mt-1 text-sm leading-6 text-text-muted">
-                                Everything stays in this browser. No account or cloud sync required.
-                            </p>
-                        </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <Segmented label="Filter workspaces" value={filter} options={filterOptions} onChange={setFilter} />
+                <Segmented label="Sort workspaces" value={sortMode} options={sortOptions} onChange={setSortMode} />
+            </div>
+
+            {mounted ? (
+                filteredRoadmaps.length > 0 ? (
+                    <div className="overflow-hidden rounded-2xl bg-surface">
+                        {filteredRoadmaps.map((roadmap) => (
+                            <WorkspaceLibraryCard
+                                key={roadmap.id}
+                                roadmap={roadmap}
+                                onDelete={(id) => {
+                                    getStorage().deleteRoadmap(id);
+                                    setRoadmaps(getStorage().getRoadmaps());
+                                }}
+                                onRename={(id, nextTitle) => {
+                                    getStorage().updateRoadmap(id, { title: nextTitle });
+                                    setRoadmaps(getStorage().getRoadmaps());
+                                }}
+                            />
+                        ))}
                     </div>
-                </div>
-            </section>
-
-            <section className="space-y-8 py-2">
-                <div className="filter-bar">
-                    <div className="flex flex-wrap items-center gap-5">
-                        <div className="flex items-center gap-3 text-sm text-text-muted">
-                            <SlidersHorizontal size={15} />
-                            <span>Filter</span>
-                        </div>
-
-                        <div className="flex flex-wrap gap-4">
-                            {filterOptions.map((option) => (
-                                <Button
-                                    key={option.key}
-                                    type="button"
-                                    onClick={() => setFilter(option.key)}
-                                    variant={filter === option.key ? "default" : "ghost"}
-                                    size="sm"
-                                >
-                                    {option.label}
+                ) : (
+                    <div className="studio-empty flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+                        <p className="text-sm text-text-muted">
+                            {roadmaps.length === 0
+                                ? "No workspaces yet. Create one from a guide, or let Scout build one."
+                                : "No workspace matches this filter."}
+                        </p>
+                        <div className="flex gap-2">
+                            {roadmaps.length > 0 ? (
+                                <Button type="button" variant="secondary" size="sm" onClick={() => setFilter("all")}>
+                                    Show all
                                 </Button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-5">
-                        <div className="flex items-center gap-3 text-sm text-text-muted">
-                            <ArrowUpDown size={15} />
-                            <span>Sort</span>
-                        </div>
-
-                        <div className="flex flex-wrap gap-4">
-                            {sortOptions.map((option) => (
-                                <Button
-                                    key={option.key}
-                                    type="button"
-                                    onClick={() => setSortMode(option.key)}
-                                    variant={sortMode === option.key ? "default" : "ghost"}
-                                    size="sm"
-                                >
-                                    {option.label}
+                            ) : (
+                                <Button asChild variant="secondary" size="sm">
+                                    <Link to="/scout">Open Scout</Link>
                                 </Button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {mounted && filteredRoadmaps.length > 0 && (
-                    <div className="flex items-center border-b border-border pb-3">
-                        <div className="inline-flex items-center gap-3 text-xs font-semibold text-text">
-                            <span>{filteredRoadmaps.length}</span>
-                            <span>{filteredRoadmaps.length === 1 ? "workspace" : "workspaces"}</span>
-                            {filter !== "all" && (
-                                <span className="ml-1 text-text-muted">
-                                    • {filterOptions.find(f => f.key === filter)?.label}
-                                </span>
                             )}
                         </div>
                     </div>
-                )}
-
-                {mounted ? (
-                    filteredRoadmaps.length > 0 ? (
-                        <div className="space-y-0">
-                            {filteredRoadmaps.map((roadmap) => (
-                                <WorkspaceLibraryCard
-                                    key={roadmap.id}
-                                    roadmap={roadmap}
-                                    onDelete={(id) => {
-                                        getStorage().deleteRoadmap(id);
-                                        setRoadmaps(getStorage().getRoadmaps());
-                                    }}
-                                    onRename={(id, nextTitle) => {
-                                        getStorage().updateRoadmap(id, { title: nextTitle });
-                                        setRoadmaps(getStorage().getRoadmaps());
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="studio-empty mt-8 py-12">
-                            <h2 className="text-2xl font-display text-text">
-                                {roadmaps.length === 0 ? "No workspaces yet." : "Nothing matches the current view."}
-                            </h2>
-                            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-text-muted">
-                                {roadmaps.length === 0
-                                    ? "Create the first workspace and it will appear here as a clean, sortable library."
-                                    : "Adjust the filters or sorting to bring another set of workspaces back into view."}
-                            </p>
-                            <div className="mt-6 flex justify-center gap-3">
-                                <Button asChild>
-                                    <Link to="/create">
-                                        <Plus size={16} />
-                                        New workspace
-                                    </Link>
-                                </Button>
-                                {roadmaps.length > 0 ? (
-                                    <Button type="button" variant="secondary" onClick={() => setFilter("all")}>
-                                        Show all
-                                    </Button>
-                                ) : null}
-                            </div>
-                        </div>
-                    )
-                ) : (
-                    <div className="space-y-0 border-t border-border">
-                        {[1, 2, 3, 4].map((item) => (
-                            <div key={item} className="h-40 border-b border-border skeleton" />
-                        ))}
-                    </div>
-                )}
-            </section>
+                )
+            ) : (
+                <div className="skeleton h-64 rounded-2xl" aria-hidden="true" />
+            )}
         </div>
     );
 }

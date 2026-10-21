@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, PencilLine, Trash2 } from "lucide-react";
+import { PencilLine, Trash2 } from "lucide-react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -50,144 +50,116 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
         onDelete(roadmap.id);
     };
 
+    const updated = getRelativeTimeLabel(roadmap.updatedAt || roadmap.createdAt);
+
+    if (isRenaming) {
+        return (
+            <article className="border-t border-border px-5 py-4 first:border-t-0">
+                <label htmlFor={`rename-${roadmap.id}`} className="field-label">
+                    Rename workspace
+                </label>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                    <Input
+                        id={`rename-${roadmap.id}`}
+                        value={nextTitle}
+                        autoFocus
+                        onChange={(event) => setNextTitle(event.target.value)}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter") handleRename();
+                        }}
+                    />
+                    <div className="flex gap-2">
+                        <Button type="button" size="sm" className="h-10" onClick={handleRename}>
+                            Save
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="h-10"
+                            onClick={() => {
+                                setNextTitle(displayTitle);
+                                setIsRenaming(false);
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            </article>
+        );
+    }
+
+    /** One row: identity on the left, progress in a fixed column, actions last. */
     return (
-        <article className="interactive-row border-b border-border py-6">
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(280px,0.9fr)] xl:items-start">
-                {isRenaming ? (
-                    <div className="space-y-3 xl:col-span-2">
-                        <label htmlFor={`rename-${roadmap.id}`} className="block text-xs font-semibold text-text-muted">
-                            Rename workspace
-                        </label>
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-                            <div className="min-w-0 flex-1">
-                                <Input
-                                    id={`rename-${roadmap.id}`}
-                                    value={nextTitle}
-                                    onChange={(event) => setNextTitle(event.target.value)}
-                                />
-                            </div>
-                            <div className="flex gap-3">
-                                <Button type="button" size="sm" onClick={handleRename}>
-                                    Save
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => {
-                                        setNextTitle(displayTitle);
-                                        setIsRenaming(false);
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
+        <article className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 border-t border-border px-5 py-4 transition-colors first:border-t-0 hover:bg-surface-subtle md:grid-cols-[minmax(0,1fr)_220px_auto]">
+            <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                    <Link
+                        to="/workspace/$id"
+                        params={{ id: roadmap.id }}
+                        className="truncate text-[15px] font-medium text-text after:absolute after:inset-0 hover:underline hover:underline-offset-4"
+                    >
+                        {displayTitle}
+                    </Link>
+                    {roadmap.packVersion ? <span className="studio-badge">Built by Scout</span> : null}
+                </div>
+                <p className="mt-1 truncate text-[13px] text-text-soft">
+                    {stats.moduleCount} module{stats.moduleCount === 1 ? "" : "s"} · {getRoadmapStateLabel(stats.progressState)} · {updated}
+                </p>
+            </div>
+
+            <div className="hidden flex-col gap-1.5 md:flex">
+                <div className="flex items-baseline justify-between text-[13px] tabular-nums">
+                    <span className="text-text">{stats.percent}%</span>
+                    <span className="text-text-soft">
+                        {stats.completedTasks} of {stats.totalTasks}
+                    </span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-raised">
+                    <div
+                        className={cn("h-full rounded-full", stats.progressState === "completed" ? "bg-success" : "bg-accent")}
+                        style={{ width: `${stats.percent}%` }}
+                    />
+                </div>
+            </div>
+
+            <div className="relative z-10 flex items-center gap-1">
+                {onRename ? (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Rename ${displayTitle}`}
+                        onClick={() => {
+                            setNextTitle(displayTitle);
+                            setIsRenaming(true);
+                        }}
+                    >
+                        <PencilLine size={15} />
+                    </Button>
                 ) : null}
-
-                <div className="min-w-0 space-y-5">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                        <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                                <h2 className="truncate font-display text-[1.65rem] leading-none text-text">{displayTitle}</h2>
-                                <span className="text-xs font-semibold text-text-muted">
-                                    {roadmap.mode === "intern" ? "Intern" : "General"}
-                                </span>
-                            </div>
-                            <p className="mt-3 text-sm text-text-muted">{getRoadmapStateLabel(stats.progressState)}</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <Button asChild variant="ghost" size="sm" aria-label={`Open ${displayTitle}`}>
-                                <Link to="/workspace/$id" params={{ id: roadmap.id }}>
-                                    Open
-                                    <ArrowRight size={14} />
-                                </Link>
+                {onDelete ? (
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button type="button" variant="ghost" size="icon" aria-label={`Delete ${displayTitle}`}>
+                                <Trash2 size={15} />
                             </Button>
-                        </div>
-                    </div>
-
-                    <div className="grid gap-3 text-xs font-semibold text-text-muted sm:grid-cols-4">
-                        <span>{stats.moduleCount} modules</span>
-                        <span>{getRelativeTimeLabel(roadmap.updatedAt || roadmap.createdAt)}</span>
-                        <span>
-                            {stats.completedTasks}/{stats.totalTasks} tasks
-                        </span>
-                        <span>{stats.percent}% complete</span>
-                    </div>
-
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between text-xs text-text-muted">
-                            <span>Progress</span>
-                            <span>{stats.percent}%</span>
-                        </div>
-                        <div className="h-px overflow-hidden bg-[var(--color-surface-muted)]">
-                            <div
-                                className={cn(
-"h-full transition-[width] duration-300",
-                                    stats.progressState === "completed"
-                                        ? "bg-[var(--color-text)]"
-                                        : stats.progressState === "in-progress"
-                                          ? "bg-[var(--color-text-muted)]"
-                                          : "bg-[var(--color-text-soft)]",
-                                )}
-                                style={{ width: `${stats.percent}%` }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="space-y-5 xl:pl-6">
-                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-                        <div className="border-t border-border pt-3">
-                            <p className="text-xs font-semibold text-text-muted">State</p>
-                            <p className="mt-2 text-sm text-text">{getRoadmapStateLabel(stats.progressState)}</p>
-                        </div>
-                        <div className="border-t border-border pt-3">
-                            <p className="text-xs font-semibold text-text-muted">Updated</p>
-                            <p className="mt-2 text-sm text-text">{getRelativeTimeLabel(roadmap.updatedAt || roadmap.createdAt)}</p>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-3 border-t border-border pt-4">
-                        {onRename ? (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                    setNextTitle(displayTitle);
-                                    setIsRenaming((current) => !current);
-                                }}
-                            >
-                                <PencilLine size={14} />
-                                {isRenaming ? "Editing" : "Rename"}
-                            </Button>
-                        ) : null}
-                        {onDelete ? (
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button type="button" variant="ghost" size="sm">
-                                        <Trash2 size={14} />
-                                        Delete
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete workspace?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This removes the workspace from your library. This action cannot be undone.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={handleDelete}>Delete workspace</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        ) : null}
-                    </div>
-                </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete {displayTitle}?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This removes the workspace and its progress from this browser. It cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDelete}>Delete workspace</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                ) : null}
             </div>
         </article>
     );
