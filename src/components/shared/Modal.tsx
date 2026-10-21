@@ -43,11 +43,11 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "ma
                 if (e.target === overlayRef.current) onClose();
             }}
         >
-            <div className="absolute inset-0 bg-[color:color-mix(in_srgb,var(--color-page)_74%,transparent)] backdrop-blur-md" />
+            <div className="absolute inset-0 bg-black/70" />
 
-            <Card className={`relative ${maxWidth} w-full`} style={{ overscrollBehavior: "contain" }}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border p-4">
-                    <CardTitle className="font-display text-base font-semibold text-text-primary">{title}</CardTitle>
+            <Card className={`relative ${maxWidth} w-full shadow-[0_12px_32px_rgba(0,0,0,0.6)]`} style={{ overscrollBehavior: "contain" }}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border px-5 py-4">
+                    <CardTitle className="font-display text-base font-semibold text-text">{title}</CardTitle>
                     <Button
                         type="button"
                         variant="ghost"
@@ -59,7 +59,7 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "ma
                         <X className="h-4 w-4" />
                     </Button>
                 </CardHeader>
-                <CardContent className="p-4">{children}</CardContent>
+                <CardContent className="p-5">{children}</CardContent>
             </Card>
         </div>
     );

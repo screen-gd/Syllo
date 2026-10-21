@@ -146,11 +146,11 @@ function extractMilestones(roadmaps: Roadmap[]): Milestone[] {
 
 function ConsistencyMatrix({ cells }: { cells: DayCell[] }) {
     const LEVEL_COLORS = [
-        "bg-[var(--color-surface-muted)]",  // 0 – empty
-        "bg-indigo-900/60",                  // 1 – light
-        "bg-indigo-700/70",                  // 2 – medium
-        "bg-indigo-500",                     // 3 – strong
-        "bg-indigo-400",                     // 4 – max
+"bg-[var(--color-surface-muted)]",  // 0 – empty
+"bg-accent-soft/60",                  // 1 – light
+"bg-accent/70",                  // 2 – medium
+"bg-accent",                     // 3 – strong
+"bg-accent",                     // 4 – max
     ];
 
     // Build columns (weeks)
@@ -186,7 +186,7 @@ function ConsistencyMatrix({ cells }: { cells: DayCell[] }) {
                     {weeks.map((_, colIdx) => {
                         const label = monthLabels.find((m) => m.col === colIdx);
                         return (
-                            <div key={colIdx} className="w-[14px] mx-[1px] text-[9px] text-text-muted shrink-0">
+                            <div key={colIdx} className="w-[14px] mx-[1px] text-xs text-text-muted shrink-0">
                                 {label ? label.label : ""}
                             </div>
                         );
@@ -197,7 +197,7 @@ function ConsistencyMatrix({ cells }: { cells: DayCell[] }) {
                     {/* Day-of-week labels */}
                     <div className="flex flex-col mr-1 shrink-0">
                         {DAYS.map((d, i) => (
-                            <div key={i} className={`h-[14px] my-[1px] text-[9px] text-text-muted w-5 flex items-center ${i % 2 === 1 ? "" : "invisible"}`}>
+                            <div key={i} className={`h-[14px] my-[1px] text-xs text-text-muted w-5 flex items-center ${i % 2 === 1 ? "" : "invisible"}`}>
                                 {d}
                             </div>
                         ))}
@@ -213,8 +213,8 @@ function ConsistencyMatrix({ cells }: { cells: DayCell[] }) {
                                     className={`
                                         w-[14px] h-[14px] mx-[1px] my-[1px] rounded-sm shrink-0 transition-all cursor-default
                                         ${LEVEL_COLORS[cell.level]}
-                                        ${cell.date === todayStr ? "ring-1 ring-indigo-400 ring-offset-1 ring-offset-[var(--color-page)]" : ""}
-                                    `}
+                                        ${cell.date === todayStr ? "ring-1 ring-border-strong ring-offset-1 ring-offset-[var(--color-page)]" : ""}
+`}
                                 />
                             ))}
                         </div>
@@ -223,11 +223,11 @@ function ConsistencyMatrix({ cells }: { cells: DayCell[] }) {
 
                 {/* Legend */}
                 <div className="flex items-center gap-2 mt-3 justify-end">
-                    <span className="text-[10px] text-text-muted">Less</span>
+                    <span className="text-xs text-text-muted">Less</span>
                     {LEVEL_COLORS.map((cls, i) => (
                         <div key={i} className={`w-[12px] h-[12px] rounded-sm ${cls}`} />
                     ))}
-                    <span className="text-[10px] text-text-muted">More</span>
+                    <span className="text-xs text-text-muted">More</span>
                 </div>
             </div>
         </div>
@@ -235,21 +235,21 @@ function ConsistencyMatrix({ cells }: { cells: DayCell[] }) {
 }
 
 function MilestoneTypeIcon({ type }: { type: Milestone["type"] }) {
-    if (type === "roadmap-complete") return <Trophy size={16} className="text-amber-400" />;
-    if (type === "halfway") return <Star size={16} className="text-indigo-400" />;
-    return <CheckCircle2 size={16} className="text-emerald-400" />;
+    if (type === "roadmap-complete") return <Trophy size={16} className="text-warning" />;
+    if (type === "halfway") return <Star size={16} className="text-accent" />;
+    return <CheckCircle2 size={16} className="text-accent" />;
 }
 
 function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string | number; sub?: string }) {
     return (
-        <div className="border border-white/10 bg-white/5 rounded-2xl p-6 flex flex-col items-start gap-4 shadow-[0_0_20px_rgba(255,255,255,0.02)] hover:bg-white/10 hover:shadow-[0_0_25px_rgba(255,255,255,0.05)] hover:border-white/20 hover:scale-[1.02] transition-all duration-300 group">
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-zinc-400 group-hover:text-emerald-400 group-hover:bg-emerald-500/10 transition-colors">
+        <div className="border border-border bg-surface rounded-2xl p-6 flex flex-col items-start gap-4 hover:bg-surface-muted hover:border-border-strong transition-all duration-300 group">
+            <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0 text-text-muted group-hover:text-accent group-hover:bg-accent/10 transition-colors">
                 {icon}
             </div>
             <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{label}</p>
-                <p className="text-3xl font-display text-zinc-100 leading-tight mt-1 tracking-tight">{value}</p>
-                {sub && <p className="text-xs text-zinc-400 mt-1">{sub}</p>}
+                <p className="text-xs font-bold text-text-soft">{label}</p>
+                <p className="text-3xl font-display text-text leading-tight mt-1 tracking-tight">{value}</p>
+                {sub && <p className="text-xs text-text-muted mt-1">{sub}</p>}
             </div>
         </div>
     );
@@ -311,17 +311,12 @@ export default function AnalyticsPage() {
         <div className="studio-page">
             {/* Header */}
             <header className="app-header-block">
-                <p className="eyebrow">Analytics</p>
-                <h1 className="mt-3 text-4xl font-display leading-none text-text-primary md:text-5xl">
-                    Learning Progress
-                </h1>
-                <p className="mt-4 text-sm leading-7 text-text-secondary max-w-xl">
-                    Track your consistency, celebrate milestones, and see the full picture of your learning journey.
-                </p>
+                <h1>Analytics</h1>
+                <p className="text-sm text-text-muted">Consistency and progress across your workspaces.</p>
             </header>
 
             {mounted ? (
-                <div className="mt-8 space-y-10">
+                <div className="space-y-6">
                     {/* ── Stat Cards ── */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <StatCard
@@ -331,7 +326,7 @@ export default function AnalyticsPage() {
                             sub={tasksToday > 0 ? `${tasksToday} tasks today` : "No tasks yet today"}
                         />
                         <StatCard
-                            icon={<CheckCircle2 size={20} className="text-emerald-400" />}
+                            icon={<CheckCircle2 size={20} className="text-accent" />}
                             label="Tasks Done"
                             value={globalStats.completedTasks}
                             sub={`of ${globalStats.totalTasks} total`}
@@ -343,7 +338,7 @@ export default function AnalyticsPage() {
                             sub="in the last year"
                         />
                         <StatCard
-                            icon={<Trophy size={20} className="text-amber-400" />}
+                            icon={<Trophy size={20} className="text-warning" />}
                             label="Completed"
                             value={globalStats.completedRoadmaps}
                             sub={`${globalStats.inProgressRoadmaps} in progress`}
@@ -353,7 +348,7 @@ export default function AnalyticsPage() {
                     {/* ── Consistency Matrix ── */}
                     <section>
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-text-secondary">
+                            <h2 className="text-sm font-semibold text-text-muted">
                                 Consistency Matrix
                             </h2>
                             <span className="text-xs text-text-muted">{activeDays} active day{activeDays !== 1 ? "s" : ""} in the past year</span>
@@ -372,14 +367,14 @@ export default function AnalyticsPage() {
 
                         {/* Top Roadmaps */}
                         <section>
-                            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-text-secondary mb-4 border-b border-border pb-2">
+                            <h2 className="text-sm font-semibold text-text-muted mb-4 border-b border-border pb-2">
                                 Roadmap Progress
                             </h2>
                             <div className="space-y-3">
                                 {topRoadmaps.length === 0 ? (
                                     <div className="border border-border bg-[var(--color-surface)] rounded-xl p-6 text-center">
                                         <p className="text-text-muted text-sm mb-3">No workspaces yet.</p>
-                                        <Link to="/create" className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
+                                        <Link to="/create" className="text-xs text-accent hover:text-accent underline underline-offset-2">
                                             Create your first roadmap →
                                         </Link>
                                     </div>
@@ -393,24 +388,24 @@ export default function AnalyticsPage() {
                                         >
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between mb-2 gap-2">
-                                                    <h3 className="font-medium text-sm text-text-primary truncate">{roadmap.title || "Untitled Workspace"}</h3>
+                                                    <h3 className="font-medium text-sm text-text truncate">{roadmap.title || "Untitled Workspace"}</h3>
                                                     <span className="text-xs text-text-muted shrink-0">{stats.percent}%</span>
                                                 </div>
                                                 <div className="h-1.5 bg-[var(--color-surface-muted)] rounded-full overflow-hidden">
                                                     <div
                                                         className={`h-full rounded-full transition-all duration-500 ${
                                                             stats.progressState === "completed"
-                                                                ? "bg-emerald-500"
-                                                                : "bg-indigo-500"
+                                                                ? "bg-accent"
+                                                                : "bg-accent"
                                                         }`}
                                                         style={{ width: `${stats.percent}%` }}
                                                     />
                                                 </div>
-                                                <p className="text-[10px] text-text-muted mt-1.5">
+                                                <p className="text-xs text-text-muted mt-1.5">
                                                     {stats.completedTasks} / {stats.totalTasks} tasks · {stats.moduleCount} module{stats.moduleCount !== 1 ? "s" : ""}
                                                 </p>
                                             </div>
-                                            <ArrowRight size={14} className="text-text-muted group-hover:text-text-primary transition-colors shrink-0" />
+                                            <ArrowRight size={14} className="text-text-muted group-hover:text-text transition-colors shrink-0" />
                                         </Link>
                                     ))
                                 )}
@@ -419,7 +414,7 @@ export default function AnalyticsPage() {
 
                         {/* Milestones Timeline */}
                         <section>
-                            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-text-secondary mb-4 border-b border-border pb-2">
+                            <h2 className="text-sm font-semibold text-text-muted mb-4 border-b border-border pb-2">
                                 Milestones
                             </h2>
                             {milestones.length === 0 ? (
@@ -432,25 +427,25 @@ export default function AnalyticsPage() {
                                     {milestones.map((ms, idx) => (
                                         <div key={ms.id} className="relative pl-6 pb-6 group">
                                             {/* Dot */}
-                                            <div className="absolute -left-[11px] top-0 w-5 h-5 rounded-full border-2 border-border bg-[var(--color-page)] flex items-center justify-center group-hover:border-indigo-500 transition-colors">
+                                            <div className="absolute -left-[11px] top-0 w-5 h-5 rounded-full border-2 border-border bg-[var(--color-page)] flex items-center justify-center group-hover:border-accent transition-colors">
                                                 <MilestoneTypeIcon type={ms.type} />
                                             </div>
 
                                             <div className="border border-border bg-[var(--color-surface)] rounded-lg p-3 hover:border-text-soft transition-colors">
-                                                <p className="text-sm text-text-primary leading-snug">{ms.label}</p>
+                                                <p className="text-sm text-text leading-snug">{ms.label}</p>
                                                 <div className="flex items-center gap-2 mt-1.5">
-                                                    <span className="text-[10px] text-text-muted">
+                                                    <span className="text-xs text-text-muted">
                                                         {new Date(ms.completedAt).toLocaleDateString("en-US", {
                                                             month: "short",
                                                             day: "numeric",
                                                             year: "numeric",
                                                         })}
                                                     </span>
-                                                    <span className="text-[10px] text-text-muted">·</span>
+                                                    <span className="text-xs text-text-muted">·</span>
                                                     <Link
                                                         to="/workspace/$id"
                                                         params={{ id: ms.roadmapId }}
-                                                        className="text-[10px] text-indigo-400 hover:text-indigo-300 truncate max-w-[160px]"
+                                                        className="text-xs text-accent hover:text-accent truncate max-w-[160px]"
                                                     >
                                                         {ms.roadmapTitle}
                                                     </Link>
@@ -467,12 +462,12 @@ export default function AnalyticsPage() {
                     <section className="border border-border bg-[var(--color-surface)] rounded-xl p-6">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
                             <div>
-                                <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-text-secondary">Overall Completion</h2>
-                                <p className="text-3xl font-display text-text-primary mt-1">{globalStats.overallPct}%</p>
+                                <h2 className="text-sm font-semibold text-text-muted">Overall Completion</h2>
+                                <p className="text-3xl font-display text-text mt-1">{globalStats.overallPct}%</p>
                             </div>
                             <div className="flex gap-3 text-xs text-text-muted">
                                 <span className="flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                                    <span className="w-2 h-2 rounded-full bg-accent inline-block" />
                                     {globalStats.completedTasks} completed
                                 </span>
                                 <span className="flex items-center gap-1.5">
@@ -483,7 +478,7 @@ export default function AnalyticsPage() {
                         </div>
                         <div className="h-3 bg-[var(--color-surface-muted)] rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-gradient-to-r from-indigo-600 to-emerald-500 rounded-full transition-all duration-700"
+                                className="h-full bg-accent rounded-full transition-all duration-700"
                                 style={{ width: `${globalStats.overallPct}%` }}
                             />
                         </div>
@@ -491,7 +486,7 @@ export default function AnalyticsPage() {
                 </div>
             ) : (
                 /* Skeleton */
-                <div className="mt-8 space-y-8 animate-pulse">
+                <div className="mt-8 space-y-8">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         {[...Array(4)].map((_, i) => (
                             <div key={i} className="h-20 bg-[var(--color-surface-muted)] rounded-xl" />

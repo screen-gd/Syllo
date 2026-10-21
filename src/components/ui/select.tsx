@@ -14,7 +14,7 @@ const SelectTrigger = React.forwardRef<
     <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-            "flex h-10 w-full items-center justify-between rounded-none border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-sm text-[var(--color-text)] transition-[border-color,box-shadow,background-color] hover:border-[var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+"flex h-10 w-full items-center justify-between rounded-[10px] border border-[#2e2e2e] bg-surface px-3 text-sm text-text transition-[border-color] hover:border-[#4a4a4a] focus:border-[#4a4a4a] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
             className
         )}
         {...props}
@@ -55,9 +55,9 @@ const SelectContent = React.forwardRef<
         <SelectPrimitive.Content
             ref={ref}
             className={cn(
-                "relative z-50 max-h-96 min-w-[8rem] overflow-hidden border border-[var(--color-border)] bg-[var(--color-page)] text-[var(--color-text)] shadow-none",
+"relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-xl bg-surface-muted text-text shadow-[0_12px_32px_rgba(0,0,0,0.6)]",
                 position === "popper" &&
-                    "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+"data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
                 className
             )}
             position={position}
@@ -90,7 +90,7 @@ const SelectItem = React.forwardRef<
     <SelectPrimitive.Item
         ref={ref}
         className={cn(
-            "relative flex w-full cursor-default select-none items-center py-2 pl-8 pr-2 text-sm outline-none focus:bg-[var(--color-accent-soft)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+"relative flex w-full cursor-default select-none items-center py-2 pl-8 pr-2 text-sm outline-none rounded-lg focus:bg-raised data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
             className
         )}
         {...props}

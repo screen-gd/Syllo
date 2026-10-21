@@ -7,7 +7,7 @@ export default function GalleryGrid({ items }: { items: PublicRoadmapCard[] }) {
         return (
             <Card className="border-dashed">
                 <CardContent className="px-8 py-16 text-center">
-                    <p className="text-sm text-text-secondary">No items match this view.</p>
+                    <p className="text-sm text-text-muted">No items match this view.</p>
                 </CardContent>
             </Card>
         );

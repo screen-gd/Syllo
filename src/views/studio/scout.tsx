@@ -273,28 +273,25 @@ export default function ScoutPage() {
     return (
         <div className="studio-page">
             <header className="app-header-block">
-                <p className="eyebrow">Scout</p>
-                <h1 className="mt-3 max-w-3xl text-4xl font-display leading-[0.98] tracking-tight text-[var(--color-text)] md:text-5xl">
-                    Free resources, arranged into a path.
-                </h1>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--color-text-muted)]">
-                    Scout reads free videos, articles and docs, tags the skills they teach, and turns the picks you keep into a
-                    workspace. Videos are never re-hosted, and raw transcripts stay on this machine.
+                <h1>Scout</h1>
+                <p className="max-w-2xl text-sm text-text-muted">
+                    Turns free videos, articles and docs into a workspace. Videos are never re-hosted, and raw transcripts stay
+                    on this machine.
                 </p>
             </header>
 
-            <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
-                <div className="min-w-0">
+            <div className="grid gap-[14px] xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
+                <div className="min-w-0 rounded-2xl bg-surface p-[22px]">
                     <ScoutProgress step={step} detail={pack && RUNNING_STAGE[pack.status] ? pack.stage : undefined} />
 
                     <div aria-live="polite" className="mt-6">
                         {!pack ? (
                             <section aria-labelledby="scout-goal-heading" className="space-y-5">
                                 <div>
-                                    <h2 id="scout-goal-heading" className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--color-text-soft)]">
+                                    <h2 id="scout-goal-heading" className="text-base text-text">
                                         What do you want to learn?
                                     </h2>
-                                    <p className="mt-1 text-sm leading-6 text-[var(--color-text-muted)]">
+                                    <p className="mt-1 text-sm leading-6 text-text-muted">
                                         One sentence is enough. Scout will find a mix of videos, articles and docs.
                                     </p>
                                 </div>
@@ -307,7 +304,7 @@ export default function ScoutPage() {
                                         if (event.key === "Enter" && !starting) void start();
                                     }}
                                     placeholder="UI design for developers"
-                                    className="h-12 text-base"
+                                    className="h-11 text-[15px]"
                                     maxLength={400}
                                 />
 
@@ -317,7 +314,7 @@ export default function ScoutPage() {
                                             key={example}
                                             type="button"
                                             onClick={() => setGoal(example)}
-                                            className="border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-border-strong)] hover:text-[var(--color-text)]"
+                                            className="rounded-full border border-border-strong px-3 py-1 text-[13px] text-text-muted transition-colors hover:text-text"
                                         >
                                             {example}
                                         </button>
@@ -329,25 +326,25 @@ export default function ScoutPage() {
                                         {starting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
                                         {starting ? "Starting" : "Start Scout"}
                                     </Button>
-                                    <p className="text-xs text-[var(--color-text-soft)]">
+                                    <p className="text-xs text-text-soft">
                                         Uses your provider key from Settings. DeepSeek is the default.
                                     </p>
                                 </div>
 
                                 {lastPackHref ? (
-                                    <div className="border-t border-[var(--color-border)] pt-5">
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
+                                    <div className="border-t border-border pt-5">
+                                        <p className="text-xs text-text-soft">
                                             Last Scout workspace
                                         </p>
                                         <div className="mt-2 flex flex-wrap items-center gap-3">
                                             <Link
                                                 to="/workspace/$id"
                                                 params={{ id: lastPackHref }}
-                                                className="text-sm text-[var(--color-text)] underline-offset-4 hover:underline"
+                                                className="text-sm text-text underline-offset-4 hover:underline"
                                             >
                                                 {lastPackTitle ?? "Open workspace"}
                                             </Link>
-                                            <ArrowRight size={14} className="text-[var(--color-text-soft)]" aria-hidden="true" />
+                                            <ArrowRight size={14} className="text-text-soft" aria-hidden="true" />
                                         </div>
                                     </div>
                                 ) : null}
@@ -357,34 +354,34 @@ export default function ScoutPage() {
                         {pack && ["discovering", "processing", "building"].includes(pack.status) ? (
                             <section aria-labelledby="scout-running-heading" className="space-y-6">
                                 <div className="flex items-center gap-3">
-                                    <Loader2 size={16} className="animate-spin text-[var(--color-accent)]" />
-                                    <h2 id="scout-running-heading" className="font-display text-2xl text-[var(--color-text)]">
+                                    <Loader2 size={16} className="animate-spin text-text-soft" />
+                                    <h2 id="scout-running-heading" className="text-lg text-text">
                                         {pack.status === "building" ? "Building your roadmap" : "Finding your resources"}
                                     </h2>
                                 </div>
-                                <p className="text-sm leading-7 text-[var(--color-text-muted)]">{pack.stage}</p>
+                                <p className="text-sm leading-6 text-text-muted">{pack.stage}</p>
 
-                                <div className="h-1.5 overflow-hidden border border-[var(--color-border)] bg-black/40">
+                                <div className="h-1.5 overflow-hidden rounded-full bg-raised">
                                     <div
-                                        className="h-full bg-[var(--color-accent)] transition-[width] duration-700"
+                                        className="h-full rounded-full bg-accent transition-[width] duration-700"
                                         style={{ width: `${Math.max(4, Math.min(100, pack.progress))}%` }}
                                     />
                                 </div>
 
-                                <p className="text-xs leading-5 text-[var(--color-text-soft)]">
+                                <p className="text-xs leading-5 text-text-soft">
                                     You can close this tab. Scout keeps working on the server; come back to approve the picks.
                                 </p>
 
                                 {pack.resources.length > 0 ? (
                                     <div>
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
+                                        <p className="text-xs text-text-soft">
                                             Found so far
                                         </p>
                                         <ul className="mt-2 space-y-1.5">
                                             {pack.resources.slice(0, 8).map((resource) => (
-                                                <li key={resource.id} className="flex items-baseline justify-between gap-4 border-b border-[var(--color-border)] py-1.5 text-sm last:border-b-0">
-                                                    <span className="truncate text-[var(--color-text-muted)]">{resource.title}</span>
-                                                    <span className="shrink-0 text-[10px] uppercase tracking-[0.14em] text-[var(--color-text-soft)]">
+                                                <li key={resource.id} className="flex items-baseline justify-between gap-4 border-b border-border py-1.5 text-sm last:border-b-0">
+                                                    <span className="truncate text-text-muted">{resource.title}</span>
+                                                    <span className="shrink-0 text-xs text-text-soft">
                                                         {resource.kind}
                                                     </span>
                                                 </li>
@@ -399,10 +396,10 @@ export default function ScoutPage() {
                             <section aria-labelledby="scout-review-heading" className="space-y-5">
                                 <div className="flex flex-wrap items-end justify-between gap-3">
                                     <div>
-                                        <h2 id="scout-review-heading" className="font-display text-2xl text-[var(--color-text)]">
+                                        <h2 id="scout-review-heading" className="text-lg text-text">
                                             Keep the picks worth your time
                                         </h2>
-                                        <p className="mt-1 text-sm leading-6 text-[var(--color-text-muted)]">
+                                        <p className="mt-1 text-sm leading-6 text-text-muted">
                                             {picks.length} found · {selected.size} kept
                                             {selectedMinutes > 0 ? ` · ~${humanDuration(selectedMinutes * 60)} of video` : ""}
                                         </p>
@@ -423,15 +420,15 @@ export default function ScoutPage() {
                                 </div>
 
                                 {failedResources > 0 ? (
-                                    <p className="border-l-2 border-amber-400 pl-3 text-xs leading-5 text-amber-300/90">
+                                    <p className="rounded-xl bg-warning-soft px-3 py-2 text-[13px] text-warning">
                                         {failedResources} resource{failedResources === 1 ? "" : "s"} could not be read and will be skipped.
                                     </p>
                                 ) : null}
 
                                 <PickList resources={picks} selected={selected} onToggle={togglePick} />
 
-                                <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--color-border)] pt-5">
-                                    <p className="text-xs text-[var(--color-text-soft)]">
+                                <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
+                                    <p className="text-xs text-text-soft">
                                         Roadmap and review cards are built only from the picks you keep.
                                     </p>
                                     <Button type="button" onClick={() => void approve()} disabled={approving || selected.size === 0}>
@@ -443,7 +440,7 @@ export default function ScoutPage() {
                                 <button
                                     type="button"
                                     onClick={reset}
-                                    className="text-xs text-[var(--color-text-soft)] underline-offset-4 hover:text-[var(--color-text)] hover:underline"
+                                    className="text-xs text-text-soft underline-offset-4 hover:text-text hover:underline"
                                 >
                                     Start over with a different goal
                                 </button>
@@ -452,10 +449,10 @@ export default function ScoutPage() {
 
                         {pack?.status === "ready" ? (
                             <section aria-labelledby="scout-ready-heading" className="space-y-4">
-                                <h2 id="scout-ready-heading" className="font-display text-2xl text-[var(--color-text)]">
+                                <h2 id="scout-ready-heading" className="text-lg text-text">
                                     Your workspace is ready
                                 </h2>
-                                <p className="text-sm leading-7 text-[var(--color-text-muted)]">
+                                <p className="text-sm leading-6 text-text-muted">
                                     Opening it now. If nothing happens, use the link below.
                                 </p>
                                 {pack.roadmapId ? (
@@ -470,10 +467,10 @@ export default function ScoutPage() {
 
                         {pack?.status === "failed" ? (
                             <section aria-labelledby="scout-failed-heading" className="space-y-4">
-                                <h2 id="scout-failed-heading" className="font-display text-2xl text-[var(--color-text)]">
+                                <h2 id="scout-failed-heading" className="text-lg text-text">
                                     Scout could not finish that pack
                                 </h2>
-                                <p className="text-sm leading-7 text-[var(--color-text-muted)]">
+                                <p className="text-sm leading-6 text-text-muted">
                                     {pack.error ?? "The run stopped early. Your library and settings are unchanged."}
                                 </p>
                                 <Button type="button" variant="secondary" onClick={reset}>
@@ -483,13 +480,13 @@ export default function ScoutPage() {
                         ) : null}
 
                         {error ? (
-                            <p role="alert" className="mt-5 border-l-2 border-red-400 pl-3 text-sm leading-6 text-red-300">
+                            <p role="alert" className="mt-5 rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
                                 {error}
                             </p>
                         ) : null}
 
                         {pack && pack.costCents > 0 ? (
-                            <p className="mt-6 text-[11px] text-[var(--color-text-soft)]">
+                            <p className="mt-6 text-xs text-text-soft">
                                 This pack has used an estimated ${(pack.costCents / 100).toFixed(4)} so far.
                             </p>
                         ) : null}

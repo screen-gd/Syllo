@@ -22,8 +22,8 @@ export function WorkspaceView({ id }: { id: string }) {
                         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-md border border-border bg-[var(--color-surface)] text-text-muted">
                             <Search size={20} />
                         </div>
-                        <h2 className="mt-6 text-3xl font-display tracking-[-0.03em] text-text-primary">Workspace not found</h2>
-                        <p className="mt-3 text-sm leading-7 text-text-secondary">
+                        <h2 className="mt-6 text-3xl font-display tracking-[-0.03em] text-text">Workspace not found</h2>
+                        <p className="mt-3 text-sm leading-7 text-text-muted">
                             This workspace does not exist anymore, or the link no longer points to saved content.
                         </p>
                         <div className="mt-6 flex justify-center">

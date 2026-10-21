@@ -54,20 +54,20 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
         <div className="flex h-full w-full overflow-hidden animate-in fade-in duration-300">
             {/* LEFT PANE: 60% TIMELINE */}
             <div className={cn(
-                "flex-1 overflow-y-auto no-scrollbar border-r border-white/10 transition-all duration-300",
+"flex-1 overflow-y-auto no-scrollbar border-r border-border transition-all duration-300",
                 selectedNode ? "lg:w-[65%] lg:flex-none lg:max-w-[65%]" : "w-full"
             )}>
                 <div className="max-w-3xl mx-auto p-8 lg:p-12 pb-32 space-y-12">
                     
                     <header className="mb-8">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-semibold text-emerald-400 uppercase tracking-widest mb-4 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 border border-accent/20 rounded-full text-xs font-semibold text-accent mb-4">
                            Timeline View
                         </div>
-                        <h1 className="text-3xl font-display text-zinc-100 tracking-tight">Active Roadmap</h1>
-                        <p className="text-zinc-400 mt-2">Follow the path and complete your tasks. Select any item to view its details.</p>
+                        <h1 className="text-3xl font-display text-text tracking-tight">Active Roadmap</h1>
+                        <p className="text-text-muted mt-2">Follow the path and complete your tasks. Select any item to view its details.</p>
                     </header>
 
-                    <div className="relative border-l-2 border-white/10 ml-4 space-y-12">
+                    <div className="relative border-l-2 border-border ml-4 space-y-12">
                         {modules.map((mod, i) => {
                             const progress = getModuleProgress(mod);
                             const isModuleSelected = selectedNode?.type === "module" && selectedNode.id === mod.id;
@@ -76,12 +76,12 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                             return (
                                 <div key={mod.id} id={`module-${mod.id}`} className="relative group">
                                     {/* Timeline dot */}
-                                    <div className="absolute -left-[29px] top-4 w-14 h-14 bg-zinc-950 rounded-full flex items-center justify-center">
+                                    <div className="absolute -left-[29px] top-4 w-14 h-14 bg-page rounded-full flex items-center justify-center">
                                         <div className={cn(
-                                            "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)]",
-                                            progress === 100 ? "bg-emerald-500 border-emerald-400 text-zinc-950 shadow-[0_0_15px_rgba(16,185,129,0.4)]" : 
-                                            progress > 0 ? "border-emerald-500 text-emerald-400 bg-emerald-500/10 shadow-[0_0_10px_rgba(16,185,129,0.2)]" : 
-                                            "border-white/10 text-zinc-500 bg-white/5"
+"w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all ",
+                                            progress === 100 ? "bg-accent border-accent text-page " : 
+                                            progress > 0 ? "border-accent text-accent bg-accent/10 " : 
+"border-border text-text-soft bg-surface"
                                         )}>
                                             {progress === 100 ? <CheckCircle2 size={20} /> : i + 1}
                                         </div>
@@ -92,16 +92,16 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                         <button 
                                             onClick={() => setSelectedNode({ type: "module", id: mod.id, data: mod })}
                                             className={cn(
-                                                "w-full text-left p-6 rounded-2xl border transition-all duration-300 ease-in-out hover:scale-[1.01] hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]",
-                                                isModuleSelected ? "border-emerald-500/50 bg-emerald-500/5 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "border-white/10 bg-white/5 hover:border-white/20"
+"w-full text-left p-6 rounded-2xl border transition-all duration-300 ease-in-out",
+                                                isModuleSelected ? "border-accent/50 bg-accent/5 " : "border-border bg-surface hover:border-border-strong"
                                             )}
                                         >
                                             <div className="flex justify-between items-start mb-4">
-                                                <h3 className="font-display text-xl text-zinc-100">{mod.title || "Untitled Module"}</h3>
-                                                <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">{progress}%</span>
+                                                <h3 className="font-display text-xl text-text">{mod.title || "Untitled Module"}</h3>
+                                                <span className="text-xs font-semibold text-accent bg-accent/10 px-2 py-1 rounded-full border border-accent/20">{progress}%</span>
                                             </div>
                                             {mod.data.description && (
-                                                <p className="text-sm text-text-secondary line-clamp-2">{mod.data.description}</p>
+                                                <p className="text-sm text-text-muted line-clamp-2">{mod.data.description}</p>
                                             )}
                                             
                                             {/* Condensed tasks preview if not expanded into details */}
@@ -116,8 +116,8 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                                                 setSelectedNode({ type: "task", id: task.id, moduleId: mod.id, data: task });
                                                             }}
                                                             className={cn(
-                                                                "group/task flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 cursor-pointer",
-                                                                isTaskSelected ? "border-emerald-500/40 bg-emerald-500/10" : "border-white/5 bg-white/5 hover:border-white/10 hover:bg-white/10"
+"group/task flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 cursor-pointer",
+                                                                isTaskSelected ? "border-accent/40 bg-accent/10" : "border-border bg-surface hover:border-border hover:bg-surface-muted"
                                                             )}
                                                         >
                                                             <button 
@@ -126,25 +126,25 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                                                     onUpdateTask(mod.id, task.id);
                                                                 }}
                                                                 className={cn(
-                                                                    "mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded-sm border transition-all duration-300 cursor-pointer",
-                                                                    task.completed ? "bg-emerald-500 border-emerald-400 text-zinc-950 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "border-zinc-600 bg-zinc-900 hover:border-emerald-500/50"
+"mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded-sm border transition-all duration-300 cursor-pointer",
+                                                                    task.completed ? "bg-accent border-accent text-page " : "border-border-strong bg-surface hover:border-accent/50"
                                                                 )}
                                                             >
                                                                 {task.completed && <CheckCircle2 size={14} />}
                                                             </button>
                                                             <div className="flex-1">
-                                                                <h4 className={cn("text-sm font-medium transition-all duration-300", task.completed ? "text-zinc-500 line-through" : "text-zinc-200")}>
+                                                                <h4 className={cn("text-sm font-medium transition-all duration-300", task.completed ? "text-text-soft line-through" : "text-text")}>
                                                                     {task.title}
                                                                 </h4>
                                                                 {(task.subtasks || []).length > 0 && (
                                                                     <div className="mt-2 flex gap-1.5 flex-wrap">
                                                                         {task.subtasks!.map(sub => (
-                                                                            <span key={sub.id} className={cn("w-2 h-2 rounded-full transition-all duration-300", sub.completed ? "bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" : "bg-zinc-700")} />
+                                                                            <span key={sub.id} className={cn("w-2 h-2 rounded-full transition-all duration-300", sub.completed ? "bg-accent " : "bg-raised")} />
                                                                         ))}
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            <ChevronRight size={16} className={cn("text-zinc-600 transition-transform duration-300", isTaskSelected && "text-emerald-400 translate-x-1", "group-hover/task:text-zinc-400 group-hover/task:translate-x-0.5")} />
+                                                            <ChevronRight size={16} className={cn("text-text-soft transition-transform duration-300", isTaskSelected && "text-accent translate-x-1", "group-hover/task:text-text-muted group-hover/task:translate-x-0.5")} />
                                                         </div>
                                                     )
                                                 })}
@@ -157,8 +157,8 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
 
                         {/* End of Timeline marker */}
                         <div className="relative !mt-6">
-                            <div className="absolute -left-[14px] top-0 w-8 h-8 rounded-full border-2 border-dashed border-white/20 bg-zinc-950 flex items-center justify-center pointer-events-none">
-                                <Target size={14} className="text-zinc-500" />
+                            <div className="absolute -left-[14px] top-0 w-8 h-8 rounded-full border-2 border-dashed border-border-strong bg-page flex items-center justify-center pointer-events-none">
+                                <Target size={14} className="text-text-soft" />
                             </div>
                         </div>
                     </div>
@@ -167,7 +167,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
 
             {/* RIGHT PANE: 35% CONTEXT */}
             {selectedNode ? (
-                <div className="w-[35%] bg-zinc-950/50 backdrop-blur-xl flex flex-col h-full hidden lg:flex border-l border-white/10 animate-in slide-in-from-right-8 duration-500 shadow-2xl">
+                <div className="w-[35%] bg-page/50 flex flex-col h-full hidden lg:flex border-l border-border animate-in slide-in-from-right-8 duration-500 shadow-2xl">
                     <ContextPanel 
                         selectedNode={selectedNode} 
                         roadmap={roadmap}
@@ -178,12 +178,12 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                     />
                 </div>
             ) : (
-                <div className="w-[35%] bg-zinc-950/50 backdrop-blur-xl hidden lg:flex flex-col items-center justify-center p-12 text-center border-l border-white/10 shadow-inner">
-                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-500 mb-6 drop-shadow-md">
+                <div className="w-[35%] bg-page/50 hidden lg:flex flex-col items-center justify-center p-12 text-center border-l border-border shadow-inner">
+                    <div className="w-16 h-16 rounded-2xl bg-surface border border-border flex items-center justify-center text-text-soft mb-6 drop-shadow-md">
                         <BookOpen size={24} />
                     </div>
-                    <h3 className="text-xl font-display text-zinc-100 mb-2 tracking-tight">Context Panel</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Select any module or task on the timeline to view its details, resources, and take notes here.</p>
+                    <h3 className="text-xl font-display text-text mb-2 tracking-tight">Context Panel</h3>
+                    <p className="text-text-muted text-sm leading-relaxed">Select any module or task on the timeline to view its details, resources, and take notes here.</p>
                 </div>
             )}
             

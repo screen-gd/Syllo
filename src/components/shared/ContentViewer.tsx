@@ -31,25 +31,25 @@ export default function ContentViewer({ url, title, onClose }: ContentViewerProp
         <div className="fixed inset-0 z-50 flex">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/60"
                 onClick={onClose}
                 role="presentation"
             />
 
             {/* Panel */}
             <div
-                className="relative ml-auto w-full max-w-4xl h-full bg-obsidian-light border-l border-border flex flex-col animate-slide-in-right"
+                className="relative ml-auto w-full max-w-4xl h-full bg-surface-muted border-l border-border flex flex-col animate-slide-in-right"
                 style={{ overscrollBehavior: "contain" }}
             >
                 {/* Toolbar */}
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-obsidian-surface">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-surface">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className="flex gap-1.5">
-                            <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                            <div className="w-3 h-3 rounded-full bg-white/20" />
-                            <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                            <div className="w-3 h-3 rounded-full bg-danger/80" />
+                            <div className="w-3 h-3 rounded-full bg-raised" />
+                            <div className="w-3 h-3 rounded-full bg-accent/80" />
                         </div>
-                        <p className="text-text-secondary text-sm truncate flex-1">
+                        <p className="text-text-muted text-sm truncate flex-1">
                             {title || url}
                         </p>
                     </div>
@@ -87,7 +87,7 @@ export default function ContentViewer({ url, title, onClose }: ContentViewerProp
                         <iframe
                             src={url}
                             title={title || "Content Viewer"}
-                            className="w-full h-full bg-white"
+                            className="w-full h-full bg-text"
                             sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
                             loading="lazy"
                         />

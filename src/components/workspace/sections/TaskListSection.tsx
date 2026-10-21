@@ -104,10 +104,10 @@ export default function TaskListSection({ section, onUpdate }: Props) {
     return (
         <div className="max-w-4xl mx-auto space-y-10">
             <div className="text-center sm:text-left">
-                <h2 className="font-display text-3xl font-black text-text-primary mb-2 drop-shadow-md">
+                <h2 className="text-2xl font-semibold text-text mb-2 drop-shadow-md">
                     ✅ {section.title}
                 </h2>
-                <p className="text-text-secondary text-sm">Actionable items to keep you moving forward.</p>
+                <p className="text-text-muted text-sm">Actionable items to keep you moving forward.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -118,22 +118,22 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                     return (
                         <div
                             key={group.id}
-                            className="surface rounded-2xl p-5 sm:p-6 shadow-lg shadow-black/20 hover:shadow-indigo-500/5 transition-all duration-300 border border-border animate-slide-up hover:-translate-y-1 group"
+                            className="surface rounded-2xl p-5 sm:p-6 shadow-lg transition-all duration-300 border border-border animate-slide-up hover:-translate-y-1 group"
                             style={{ animationDelay: `${i * 0.05}s` }}
                         >
                             <div className="flex items-center justify-between mb-5">
-                                <h3 className="font-display font-bold text-text-primary text-sm text-text-primary uppercase tracking-widest flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                                <h3 className="font-display font-bold text-text text-sm text-text flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-accent" />
                                     {group.title}
                                 </h3>
                                 <div className="flex items-center gap-3">
-                                    <span className="bg-obsidian-elevated px-2.5 py-1 rounded-full text-[12px] font-bold text-text-secondary border border-border shadow-inner">
+                                    <span className="bg-surface-muted px-2.5 py-1 rounded-full text-[12px] font-bold text-text-muted border border-border shadow-inner">
                                         {completedCount} / {totalCount} done
                                     </span>
                                     {completedCount > 0 && (
                                         <button
                                             onClick={() => clearCompleted(group.id)}
-                                            className="text-xs uppercase font-bold text-indigo-400 hover:text-indigo-300 transition-colors opacity-0 group-hover:opacity-100 px-2 py-1 hover:bg-indigo-500/10 rounded"
+                                            className="text-xs font-bold text-accent hover:text-accent transition-colors opacity-0 group-hover:opacity-100 px-2 py-1 hover:bg-accent/10 rounded"
                                         >
                                             Clear Done
                                         </button>
@@ -142,15 +142,15 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                             </div>
 
                             {(group.tasks || []).length === 0 ? (
-                                <div className="py-8 text-center border border-dashed border-border-subtle rounded-xl bg-obsidian-surface/60">
-                                    <p className="text-text-secondary text-sm italic">All tasks completed! 🎉</p>
+                                <div className="py-8 text-center border border-dashed border-border rounded-xl bg-surface/60">
+                                    <p className="text-text-muted text-sm italic">All tasks completed! 🎉</p>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
                                     {(group.tasks || []).map((task) => (
                                         <div
                                             key={task.id}
-                                            className={`relative bg-obsidian-elevated/40 border rounded-xl p-3 sm:p-4 transition-all duration-500 ease-out hover:bg-obsidian-hover hover:border-border-subtle ${task.completed ? "opacity-40 scale-[0.98] grayscale" : "opacity-100 scale-100"} ${focusedTaskPath?.g === section.data.indexOf(group) && focusedTaskPath?.t === group.tasks.indexOf(task) ? "border-indigo-500 shadow-[0_0_0_1px_rgba(99,102,241,0.5)]" : "border-border"}`}
+                                            className={`relative bg-surface-muted/40 border rounded-xl p-3 sm:p-4 transition-all duration-500 ease-out hover:bg-surface-subtle hover:border-border ${task.completed ? "opacity-40  grayscale" : "opacity-100 "} ${focusedTaskPath?.g === section.data.indexOf(group) && focusedTaskPath?.t === group.tasks.indexOf(task) ? "border-accent " : "border-border"}`}
                                         >
                                             <label className="flex items-start gap-3 cursor-pointer group/label">
                                                 <div className="relative flex items-center justify-center w-5 h-5 mt-0.5 shrink-0">
@@ -158,29 +158,29 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                                         type="checkbox"
                                                         checked={task.completed}
                                                         onChange={() => toggleComplete(group.id, task.id)}
-                                                        className="peer appearance-none w-5 h-5 rounded-md border border-white/20 bg-obsidian-surface checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer hover:border-indigo-400 shadow-inner"
+                                                        className="peer appearance-none w-5 h-5 rounded-md border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-all cursor-pointer hover:border-accent shadow-inner"
                                                     />
-                                                    <span className="absolute text-white text-[12px] font-black pointer-events-none opacity-0 peer-checked:opacity-100 drop-shadow-md">✓</span>
+                                                    <span className="absolute text-text text-[12px] font-semibold pointer-events-none opacity-0 peer-checked:opacity-100 drop-shadow-md">✓</span>
                                                 </div>
                                                 <div className="flex-1 min-w-0 pt-0.5">
                                                     <span
                                                         className={`block text-sm sm:text-base transition-all duration-300 font-medium ${task.completed
-                                                            ? "text-text-secondary line-through decoration-white/20"
-                                                            : "text-text-primary group-hover/label:text-indigo-100"
+                                                            ? "text-text-muted line-through decoration-text-soft"
+                                                            : "text-text group-hover/label:text-accent-strong"
                                                             }`}
                                                     >
                                                         {task.title}
                                                         {task.priority && (
-                                                            <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium ${
-                                                                task.priority === 'core' ? 'bg-indigo-500/10 text-indigo-400' :
-                                                                task.priority === 'optional' ? 'bg-zinc-500/10 text-zinc-400' :
-                                                                task.priority === 'advanced' ? 'bg-amber-500/10 text-amber-400' : ''
+                                                            <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${
+                                                                task.priority === 'core' ? 'bg-accent/10 text-accent' :
+                                                                task.priority === 'optional' ? 'bg-raised/10 text-text-muted' :
+                                                                task.priority === 'advanced' ? 'bg-warning/10 text-warning' : ''
                                                             }`}>
                                                                 {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
                                                             </span>
                                                         )}
                                                         {task.estimatedTime && (
-                                                            <span className="ml-3 inline-flex items-center gap-1 text-[12px] text-text-secondary opacity-70">
+                                                            <span className="ml-3 inline-flex items-center gap-1 text-[12px] text-text-muted opacity-70">
                                                                 <Clock size={12} />
                                                                 {task.estimatedTime}
                                                             </span>
@@ -191,7 +191,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
 
                                             {/* Subtasks */}
                                             {!task.completed && task.subtasks && task.subtasks.length > 0 && (
-                                                <div className="mt-3 ml-8 space-y-2 border-l border-border-subtle pl-3">
+                                                <div className="mt-3 ml-8 space-y-2 border-l border-border pl-3">
                                                     {(task.subtasks || []).map((st) => (
                                                         <label
                                                             key={st.id}
@@ -202,14 +202,14 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                                                     type="checkbox"
                                                                     checked={st.completed}
                                                                     onChange={() => toggleComplete(group.id, task.id, st.id)}
-                                                                    className="peer appearance-none w-4 h-4 rounded border border-white/20 bg-obsidian-surface checked:bg-indigo-500 checked:border-indigo-500 transition-all cursor-pointer hover:border-indigo-400"
+                                                                    className="peer appearance-none w-4 h-4 rounded border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-all cursor-pointer hover:border-accent"
                                                                 />
-                                                                <span className="absolute text-white text-[8px] font-black pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
+                                                                <span className="absolute text-text text-xs font-semibold pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
                                                             </div>
                                                             <span
                                                                 className={`text-xs transition-colors duration-200 mt-0.5 ${st.completed
-                                                                    ? "text-text-secondary line-through"
-                                                                    : "text-text-secondary group-hover/sub:text-text-primary"
+                                                                    ? "text-text-muted line-through"
+                                                                    : "text-text-muted group-hover/sub:text-text"
                                                                     }`}
                                                             >
                                                                 {st.title}

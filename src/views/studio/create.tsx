@@ -11,10 +11,10 @@ import type { Roadmap } from "@/types";
 import { cn } from "@/lib/utils";
 
 const LOADING_MESSAGES = [
-    "Reading your material...",
-    "Extracting key concepts...",
-    "Structuring modules...",
-    "Finalizing steps..."
+"Reading your material...",
+"Extracting key concepts...",
+"Structuring modules...",
+"Finalizing steps..."
 ];
 
 export default function CreatePage() {
@@ -147,15 +147,12 @@ function CreatePageContent() {
 
     return (
         <>
-            <div className="page-shell-wide py-8">
+            <div className="studio-page">
                 {creationStep !== "review" && (
-                    <section className="app-header-block mb-8">
-                        <p className="eyebrow">Content Import</p>
-                        <h1 className="text-3xl font-display leading-tight text-text-primary md:text-5xl">
-                            Turn scattered notes into a roadmap.
-                        </h1>
-                        <p className="mt-4 max-w-2xl text-sm leading-7 text-text-secondary">
-                            Drop in your guides, PDFs (as text for now), or markdown. We&apos;ll extract the steps and modules.
+                    <section className="app-header-block">
+                        <h1>Create</h1>
+                        <p className="max-w-2xl text-sm text-text-muted">
+                            Paste a guide, notes or markdown. The steps and modules become a workspace.
                         </p>
                     </section>
                 )}
@@ -164,7 +161,7 @@ function CreatePageContent() {
                     <div className="max-w-4xl max-w-full">
                         <div className="mb-6 grid gap-6 md:grid-cols-2">
                              <div>
-                                <label className="mb-2 block text-sm font-medium text-text-primary">Workspace Title</label>
+                                <label className="mb-2 block text-sm font-medium text-text">Workspace Title</label>
                                 <Input
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
@@ -173,7 +170,7 @@ function CreatePageContent() {
                                 />
                              </div>
                              <div>
-                                <p className="mb-2 block text-sm font-medium text-text-primary">Parsing Mode</p>
+                                <p className="mb-2 block text-sm font-medium text-text">Parsing Mode</p>
                                 <div className="grid grid-cols-2 gap-2">
                                     <Button type="button" variant={mode === "general" ? "default" : "outline"} onClick={() => setMode("general")}>Standard</Button>
                                     <Button type="button" variant={mode === "intern" ? "default" : "outline"} onClick={() => setMode("intern")}>Structured</Button>
@@ -194,17 +191,17 @@ function CreatePageContent() {
                                 }}
                                 placeholder="Paste your raw notes, guides, or course curriculum here..."
                                 className={cn(
-                                    "mono-surface min-h-[400px] w-full resize-y bg-white/5 p-6 text-[15px] leading-relaxed shadow-sm transition-all duration-300 border-2 border-dashed rounded-xl outline-none focus:ring-2 focus:ring-emerald-500/50",
-                                    isDragging ? "border-emerald-500 bg-emerald-500/10 shadow-[0_0_30px_rgba(16,185,129,0.2)]" : "border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/5 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+"min-h-[400px] w-full resize-y rounded-2xl border border-dashed bg-surface p-6 text-[15px] leading-relaxed outline-none transition-colors",
+                                    isDragging ? "border-text-soft bg-surface-subtle" : "border-border-strong hover:border-[#555555]"
                                 )}
                             />
                             
                             {!content && (
-                                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-zinc-500 opacity-80 group/dropzone transition-all">
-                                    <div className="p-4 rounded-full bg-white/5 border border-white/10 mb-4 animate-bounce hover:bg-white/10 transition-colors shadow-lg">
-                                        <FileUp size={40} className="stroke-[1.5] text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-text-soft opacity-80 group/dropzone transition-all">
+                                    <div className="mb-4">
+                                        <FileUp size={32} strokeWidth={1.5} className="text-text-soft" />
                                     </div>
-                                    <p className="text-sm font-medium uppercase tracking-[0.15em] text-zinc-400">Drag & Drop Note/MD</p>
+                                    <p className="text-sm font-medium text-text-muted">Drag & Drop Note/MD</p>
                                 </div>
                             )}
                         </div>
@@ -242,18 +239,17 @@ function CreatePageContent() {
                 {creationStep === "generating" && (
                     <div className="flex flex-col items-center justify-center py-32 space-y-8 animate-in fade-in duration-500">
                         <div className="relative">
-                            <div className="absolute inset-0 animate-ping opacity-20 rounded-full bg-emerald-500 blur-xl" />
-                            <Loader2 size={48} className="animate-spin text-emerald-400 relative z-10 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                            <Loader2 size={32} className="animate-spin text-text-soft" />
                         </div>
                         <div className="text-center">
-                            <h2 className="text-2xl font-display text-zinc-100 tracking-tight">{LOADING_MESSAGES[loadingStep]}</h2>
-                            <p className="mt-2 text-zinc-400 text-sm">Please wait while the AI breaks down your content.</p>
+                            <h2 className="text-lg text-text">{LOADING_MESSAGES[loadingStep]}</h2>
+                            <p className="mt-2 text-text-muted text-sm">Please wait while the AI breaks down your content.</p>
                         </div>
                         
                         <div className="max-w-md w-full pt-8 space-y-4">
-                            <div className="h-4 bg-[var(--color-surface)] rounded-md animate-pulse w-3/4" />
-                            <div className="h-4 bg-[var(--color-surface)] rounded-md animate-pulse" />
-                            <div className="h-4 bg-[var(--color-surface)] rounded-md animate-pulse w-5/6" />
+                            <div className="h-4 bg-[var(--color-surface)] rounded-md w-3/4" />
+                            <div className="h-4 bg-[var(--color-surface)] rounded-md" />
+                            <div className="h-4 bg-[var(--color-surface)] rounded-md w-5/6" />
                         </div>
                     </div>
                 )}
@@ -262,8 +258,8 @@ function CreatePageContent() {
                     <div className="h-[calc(100vh-8rem)] flex flex-col pt-2 animate-in slide-in-from-bottom-4 duration-500">
                         <header className="flex items-center justify-between border-b border-border pb-4 mb-6">
                             <div>
-                                <h1 className="text-2xl font-display text-text-primary truncate">{draftRoadmap.title}</h1>
-                                <p className="text-sm text-text-secondary">Review the generated structure before creating your workspace.</p>
+                                <h1 className="text-2xl font-display text-text truncate">{draftRoadmap.title}</h1>
+                                <p className="text-sm text-text-muted">Review the generated structure before creating your workspace.</p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <Button variant="ghost" onClick={() => setCreationStep("input")}>
@@ -276,18 +272,18 @@ function CreatePageContent() {
                         </header>
                         
                         <div className="flex-1 min-h-0 grid lg:grid-cols-2 gap-8">
-                            <div className="flex flex-col h-full bg-[var(--color-surface)] border border-border rounded-xl shadow-sm overflow-hidden">
+                            <div className="flex flex-col h-full bg-[var(--color-surface)] border border-border rounded-xl overflow-hidden">
                                 <div className="px-5 py-3 border-b border-border bg-[var(--color-page)] flex justify-between items-center">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">Source Text</span>
+                                    <span className="text-xs font-semibold text-text-muted">Source Text</span>
                                 </div>
-                                <div className="p-5 overflow-y-auto flex-1 mono-surface text-sm leading-relaxed text-text-secondary whitespace-pre-wrap">
+                                <div className="p-5 overflow-y-auto flex-1 mono-surface text-sm leading-relaxed text-text-muted whitespace-pre-wrap">
                                     {content}
                                 </div>
                             </div>
                             
-                            <div className="flex flex-col h-full bg-[var(--color-page)] border border-border rounded-xl shadow-sm overflow-hidden">
+                            <div className="flex flex-col h-full bg-[var(--color-page)] border border-border rounded-xl overflow-hidden">
                                 <div className="px-5 py-3 border-b border-border bg-[var(--color-page)] flex justify-between items-center">
-                                    <span className="text-xs font-semibold uppercase tracking-wider text-text-primary">Generated Modules</span>
+                                    <span className="text-xs font-semibold text-text">Generated Modules</span>
                                     <span className="text-xs text-text-muted">You can edit these later</span>
                                 </div>
                                 <div className="p-5 overflow-y-auto flex-1 space-y-6">
@@ -295,11 +291,11 @@ function CreatePageContent() {
                                         const mod = s as import("@/types").ModuleSection;
                                         return (
                                         <div key={i} className="group border-l-2 border-border pl-4 ml-2 hover:border-text-primary transition-colors">
-                                            <h3 className="font-display text-lg text-text-primary mb-2">Module {i+1}: {mod.title || "Untitled"}</h3>
+                                            <h3 className="font-display text-lg text-text mb-2">Module {i+1}: {mod.title || "Untitled"}</h3>
                                             <div className="space-y-2">
                                                 {mod.data?.tasks && Array.isArray(mod.data.tasks) && mod.data.tasks.map((task, j) => (
-                                                    <div key={j} className="text-sm text-text-secondary flex items-start gap-2 bg-[var(--color-surface)] p-2 rounded border border-border/50 group-hover:border-border transition-colors">
-                                                        <span className="text-text-muted mt-[2px] text-[10px]">■</span>
+                                                    <div key={j} className="text-sm text-text-muted flex items-start gap-2 bg-[var(--color-surface)] p-2 rounded border border-border/50 group-hover:border-border transition-colors">
+                                                        <span className="text-text-muted mt-[2px] text-xs">■</span>
                                                         <span className="truncate">{task.title}</span>
                                                     </div>
                                                 ))}
@@ -317,7 +313,7 @@ function CreatePageContent() {
             {upgradeMessage && (
                 <div className="fixed inset-x-0 bottom-0 z-[80] flex justify-center p-4 sm:p-6">
                     <div className="w-full max-w-lg rounded-2xl border border-border bg-surface p-5 shadow-2xl">
-                        <p className="text-sm leading-6 text-text-primary">{upgradeMessage}</p>
+                        <p className="text-sm leading-6 text-text">{upgradeMessage}</p>
                         <div className="mt-4 flex flex-wrap gap-3">
                             <Link to="/settings" search={{ tab: "ai" }} className="button-primary">
                                 <KeyRound size={14} />

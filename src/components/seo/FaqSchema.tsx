@@ -5,13 +5,13 @@ type FaqItem = {
 
 export default function FaqSchema({ faqs }: { faqs: FaqItem[] }) {
     const schema = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
+"@context": "https://schema.org",
+"@type": "FAQPage",
         mainEntity: faqs.map((faq) => ({
-            "@type": "Question",
+"@type": "Question",
             name: faq.question,
             acceptedAnswer: {
-                "@type": "Answer",
+"@type": "Answer",
                 text: faq.answer,
             },
         })),

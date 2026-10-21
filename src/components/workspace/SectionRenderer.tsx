@@ -36,7 +36,7 @@ export default function SectionRenderer({ section, roadmap, onUpdate, onNavigate
             case "glossary": return <GlossarySection section={section} onUpdate={onUpdate} />;
             case "submissions": return <SubmissionsSection section={section} onUpdate={onUpdate} />;
             case "custom": return <CustomSection section={section} onUpdate={onUpdate} />;
-            default: return <div className="text-center py-8 text-text-secondary">Unknown section type</div>;
+            default: return <div className="text-center py-8 text-text-muted">Unknown section type</div>;
         }
     };
 

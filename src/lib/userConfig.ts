@@ -24,13 +24,15 @@ function createProviderMap(defaultValue: string): ProviderMap {
     }, {} as ProviderMap);
 }
 
+const LEGACY_DEFAULT_ACCENT = "#4F7CFF";
+
 export const DEFAULT_CONFIG: UserConfig = {
     apiKeys: createProviderMap(""),
     modelByProvider: { ...DEFAULT_PROVIDER_MODELS },
     provider: "gemini",
     useCustomKey: false,
     theme: "dark",
-    accentColor: "#4F7CFF",
+    accentColor: "#4CB3F0",
     showProgressNotice: true,
     measurementStyle: "tasks",
     visualDensity: "default",
@@ -77,7 +79,12 @@ export function getUserConfig(): UserConfig {
             provider,
             useCustomKey: Boolean(parsed.useCustomKey && apiKeys[provider]),
             theme: "dark",
-            accentColor: typeof parsed.accentColor === "string" ? parsed.accentColor : DEFAULT_CONFIG.accentColor,
+            // "#4F7CFF" was the previous theme's default, saved by anyone who opened
+            // Settings; treat it as unset so they get the current default.
+            accentColor:
+                typeof parsed.accentColor === "string" && parsed.accentColor.toUpperCase() !== LEGACY_DEFAULT_ACCENT
+                    ? parsed.accentColor
+                    : DEFAULT_CONFIG.accentColor,
             showProgressNotice: parsed.showProgressNotice ?? DEFAULT_CONFIG.showProgressNotice,
             measurementStyle: (["tasks", "time", "both"] as const).includes(parsed.measurementStyle as any)
                 ? (parsed.measurementStyle as UserConfig["measurementStyle"])

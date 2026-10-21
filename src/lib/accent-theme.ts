@@ -1,4 +1,4 @@
-const DEFAULT_ACCENT = "#4F7CFF";
+const DEFAULT_ACCENT = "#4CB3F0";
 
 function clamp(value: number, min: number, max: number) {
     return Math.min(max, Math.max(min, value));
@@ -47,13 +47,14 @@ function mixHex(base: string, target: string, weight: number) {
     });
 }
 
+/** Derives the three accent tokens for the true-black theme from one colour. */
 export function buildAccentTheme(accentColor: string) {
     const accent = normalizeHex(accentColor);
 
     return {
         accent,
-        accentStrong: mixHex(accent, "#0F172A", 0.22),
-        accentSoft: mixHex(accent, "#FFFFFF", 0.9),
+        accentStrong: mixHex(accent, "#FFFFFF", 0.3),
+        accentSoft: mixHex(accent, "#000000", 0.82),
     };
 }
 

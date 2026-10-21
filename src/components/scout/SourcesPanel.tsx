@@ -72,16 +72,16 @@ export default function SourcesPanel({
     }
 
     return (
-        <aside className="space-y-8 border border-[var(--color-border)] bg-[var(--color-surface)] p-5 xl:sticky xl:top-24 xl:max-h-[calc(100vh-8rem)] xl:overflow-y-auto">
+        <aside className="space-y-7 rounded-2xl bg-surface p-[22px] xl:sticky xl:top-6 xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto">
             <div>
-                <h2 className="font-display text-xl text-[var(--color-text)]">Sources & settings</h2>
+                <h2 className="text-base text-text">Sources & settings</h2>
                 <p className="mt-1 text-xs leading-5 text-[var(--color-text-muted)]">
                     Scout watches these places. Creators and channels feed new videos; sites feed articles and docs.
                 </p>
             </div>
 
             <section aria-labelledby="scout-sources-heading" className="space-y-3">
-                <h3 id="scout-sources-heading" className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
+                <h3 id="scout-sources-heading" className="text-xs text-text-soft">
                     Watching
                 </h3>
 
@@ -95,15 +95,15 @@ export default function SourcesPanel({
                                 aria-label={`${source.enabled ? "Pause" : "Resume"} ${source.label}`}
                                 onClick={() => run(source.id, () => onToggleSource(source.id, !source.enabled))}
                                 className={cn(
-                                    "h-2.5 w-2.5 shrink-0 rounded-full border transition-colors",
+"h-2.5 w-2.5 shrink-0 rounded-full border transition-colors",
                                     source.enabled
-                                        ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
+                                        ? "border-success bg-success"
                                         : "border-[var(--color-border-strong)] bg-transparent",
                                 )}
                             />
                             <div className="min-w-0 flex-1">
                                 <p className="truncate text-sm text-[var(--color-text)]">{source.label}</p>
-                                <p className="truncate text-[10px] uppercase tracking-[0.14em] text-[var(--color-text-soft)]">
+                                <p className="truncate text-xs text-[var(--color-text-soft)]">
                                     {KIND_LABEL[source.kind]}
                                 </p>
                             </div>
@@ -111,7 +111,7 @@ export default function SourcesPanel({
                                 type="button"
                                 aria-label={`Remove ${source.label}`}
                                 onClick={() => run(source.id, () => onRemoveSource(source.id))}
-                                className="text-[var(--color-text-soft)] transition-colors hover:text-red-400"
+                                className="text-[var(--color-text-soft)] transition-colors hover:text-danger"
                             >
                                 <Trash2 size={13} />
                             </button>
@@ -127,7 +127,7 @@ export default function SourcesPanel({
                         aria-label="Source kind"
                         value={kind}
                         onChange={(event) => setKind(event.target.value as ScoutSourceKind)}
-                        className="h-9 shrink-0 border-0 border-b border-[var(--color-border)] bg-transparent px-0 text-xs text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-0"
+                        className="h-9 shrink-0 rounded-[10px] border border-[#2e2e2e] bg-surface px-2 text-xs text-text focus:border-[#4a4a4a] focus:outline-none"
                     >
                         {ADD_KINDS.map((item) => (
                             <option key={item.value} value={item.value} className="bg-[#111]">
@@ -161,7 +161,7 @@ export default function SourcesPanel({
             </section>
 
             <section aria-labelledby="scout-books-heading" className="space-y-3">
-                <h3 id="scout-books-heading" className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
+                <h3 id="scout-books-heading" className="flex items-center gap-2 text-xs text-text-soft">
                     <BookOpen size={12} /> Reading shelf
                 </h3>
 
@@ -215,7 +215,7 @@ export default function SourcesPanel({
             </section>
 
             <section aria-labelledby="scout-url-heading" className="space-y-3">
-                <h3 id="scout-url-heading" className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
+                <h3 id="scout-url-heading" className="flex items-center gap-2 text-xs text-text-soft">
                     <Link2 size={12} /> Add a URL
                 </h3>
                 <Input
@@ -250,14 +250,14 @@ export default function SourcesPanel({
             </section>
 
             <section aria-labelledby="scout-settings-heading" className="space-y-3">
-                <h3 id="scout-settings-heading" className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-soft)]">
+                <h3 id="scout-settings-heading" className="text-xs text-text-soft">
                     Settings
                 </h3>
 
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <p className="text-sm text-[var(--color-text)]">Auto-check</p>
-                        <p className="text-[11px] leading-5 text-[var(--color-text-soft)]">Nightly at 3:00 AM, Asia/Dubai.</p>
+                        <p className="text-xs leading-5 text-[var(--color-text-soft)]">Nightly at 3:00 AM, Asia/Dubai.</p>
                     </div>
                     <Switch
                         aria-label="Auto-check nightly"
@@ -270,7 +270,7 @@ export default function SourcesPanel({
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <p className="text-sm text-[var(--color-text)]">Pause Scout</p>
-                        <p className="text-[11px] leading-5 text-[var(--color-text-soft)]">Stops the nightly check, keeps your library.</p>
+                        <p className="text-xs leading-5 text-[var(--color-text-soft)]">Stops the nightly check, keeps your library.</p>
                     </div>
                     <Switch
                         aria-label="Pause Scout"
@@ -284,7 +284,7 @@ export default function SourcesPanel({
             {spend ? <CostMeter monthCents={spend.monthCents} budgetCents={spend.budgetCents} packCents={spend.packCents} /> : null}
 
             {localError ? (
-                <p role="alert" className="border-l-2 border-red-400 pl-3 text-xs leading-5 text-red-300">
+                <p role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-xs text-danger">
                     {localError}
                 </p>
             ) : null}

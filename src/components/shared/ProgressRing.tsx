@@ -60,7 +60,7 @@ export default function ProgressRing({
                 </svg>
             </div>
             {/* Percentage text */}
-            <span className="absolute text-[12px] font-bold font-display text-text-primary tabular-nums">
+            <span className="absolute text-[12px] font-bold font-display text-text tabular-nums">
                 {percent}%
             </span>
         </div>

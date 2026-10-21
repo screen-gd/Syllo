@@ -9,7 +9,7 @@ export function Logo() {
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-text-primary"
+            className="text-text"
         >
             <path d="M4 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
             <path d="M4 15V9a2 2 0 0 1 2-2h2" />

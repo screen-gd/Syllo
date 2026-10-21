@@ -55,7 +55,7 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(280px,0.9fr)] xl:items-start">
                 {isRenaming ? (
                     <div className="space-y-3 xl:col-span-2">
-                        <label htmlFor={`rename-${roadmap.id}`} className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+                        <label htmlFor={`rename-${roadmap.id}`} className="block text-xs font-semibold text-text-muted">
                             Rename workspace
                         </label>
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -90,12 +90,12 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                         <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                                <h2 className="truncate font-display text-[1.65rem] leading-none text-text-primary">{displayTitle}</h2>
-                                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+                                <h2 className="truncate font-display text-[1.65rem] leading-none text-text">{displayTitle}</h2>
+                                <span className="text-xs font-semibold text-text-muted">
                                     {roadmap.mode === "intern" ? "Intern" : "General"}
                                 </span>
                             </div>
-                            <p className="mt-3 text-sm text-text-secondary">{getRoadmapStateLabel(stats.progressState)}</p>
+                            <p className="mt-3 text-sm text-text-muted">{getRoadmapStateLabel(stats.progressState)}</p>
                         </div>
                         <div className="flex items-center gap-3">
                             <Button asChild variant="ghost" size="sm" aria-label={`Open ${displayTitle}`}>
@@ -107,7 +107,7 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
                         </div>
                     </div>
 
-                    <div className="grid gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary sm:grid-cols-4">
+                    <div className="grid gap-3 text-xs font-semibold text-text-muted sm:grid-cols-4">
                         <span>{stats.moduleCount} modules</span>
                         <span>{getRelativeTimeLabel(roadmap.updatedAt || roadmap.createdAt)}</span>
                         <span>
@@ -124,7 +124,7 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
                         <div className="h-px overflow-hidden bg-[var(--color-surface-muted)]">
                             <div
                                 className={cn(
-                                    "h-full transition-[width] duration-300",
+"h-full transition-[width] duration-300",
                                     stats.progressState === "completed"
                                         ? "bg-[var(--color-text)]"
                                         : stats.progressState === "in-progress"
@@ -140,12 +140,12 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
                 <div className="space-y-5 xl:pl-6">
                     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
                         <div className="border-t border-border pt-3">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">State</p>
-                            <p className="mt-2 text-sm text-text-primary">{getRoadmapStateLabel(stats.progressState)}</p>
+                            <p className="text-xs font-semibold text-text-muted">State</p>
+                            <p className="mt-2 text-sm text-text">{getRoadmapStateLabel(stats.progressState)}</p>
                         </div>
                         <div className="border-t border-border pt-3">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">Updated</p>
-                            <p className="mt-2 text-sm text-text-primary">{getRelativeTimeLabel(roadmap.updatedAt || roadmap.createdAt)}</p>
+                            <p className="text-xs font-semibold text-text-muted">Updated</p>
+                            <p className="mt-2 text-sm text-text">{getRelativeTimeLabel(roadmap.updatedAt || roadmap.createdAt)}</p>
                         </div>
                     </div>
 

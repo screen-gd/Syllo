@@ -15,7 +15,7 @@ interface ScoutProgressProps {
 
 export default function ScoutProgress({ step, detail }: ScoutProgressProps) {
     return (
-        <div className="border-y border-[var(--color-border)] py-5">
+        <div className="border-b border-border pb-5">
             <ol className="flex flex-wrap items-center gap-x-8 gap-y-3">
                 {STEPS.map((item) => {
                     const done = item.number < step;
@@ -26,17 +26,17 @@ export default function ScoutProgress({ step, detail }: ScoutProgressProps) {
                             <span
                                 aria-hidden="true"
                                 className={cn(
-                                    "flex h-6 w-6 items-center justify-center border text-[11px] font-semibold tabular-nums transition-colors",
-                                    done && "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-page)]",
-                                    active && "border-[var(--color-accent)] text-[var(--color-accent)]",
-                                    !done && !active && "border-[var(--color-border)] text-[var(--color-text-soft)]",
+"flex h-6 w-6 items-center justify-center rounded-full border text-xs font-medium tabular-nums transition-colors",
+                                    done && "border-text bg-text text-page",
+                                    active && "border-text text-text",
+                                    !done && !active && "border-border-strong text-text-soft",
                                 )}
                             >
                                 {done ? <Check size={13} strokeWidth={3} /> : item.number}
                             </span>
                             <span
                                 className={cn(
-                                    "text-[11px] font-semibold uppercase tracking-[0.16em]",
+"text-[13px]",
                                     active ? "text-[var(--color-text)]" : "text-[var(--color-text-soft)]",
                                 )}
                             >

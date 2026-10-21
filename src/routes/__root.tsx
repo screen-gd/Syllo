@@ -17,7 +17,7 @@ export const Route = createRootRoute({
                 name: "description",
                 content: `Transform any roadmap, guide, or curriculum into a fully interactive workspace. Built by ${BRAND_OWNER}.`,
             },
-            { name: "theme-color", content: "#0b0d10" },
+            { name: "theme-color", content: "#000000" },
             { property: "og:title", content: defaultTitle },
             { property: "og:description", content: APP_TAGLINE },
             { property: "og:type", content: "website" },

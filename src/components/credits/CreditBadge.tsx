@@ -10,16 +10,9 @@ type CreditStatusResponse = {
     transactions?: CreditTransaction[];
 };
 
+/** Grey by default; white once the allowance is nearly spent. */
 function getBadgeClasses(status: CreditStatus) {
-    if (status.remaining <= 5) {
-        return "border-[var(--color-border-strong)] bg-transparent text-text";
-    }
-
-    if (status.remaining <= Math.max(10, Math.floor(status.allowance * 0.2))) {
-        return "border-border bg-transparent text-text-muted";
-    }
-
-    return "border-border bg-transparent text-text-muted";
+    return status.remaining <= 5 ? "text-text" : "text-text-muted";
 }
 
 export default function CreditBadge({ compact = false }: { compact?: boolean }) {
@@ -55,7 +48,7 @@ export default function CreditBadge({ compact = false }: { compact?: boolean }) 
 
     return (
         <div
-            className={`inline-flex items-center gap-2 border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] ${getBadgeClasses(status)}`}
+            className={`inline-flex items-center gap-2 text-xs font-medium tabular-nums ${getBadgeClasses(status)}`}
             title={`${status.remaining} of ${status.allowance} credits remaining this cycle`}
         >
             <Coins size={compact ? 14 : 15} />

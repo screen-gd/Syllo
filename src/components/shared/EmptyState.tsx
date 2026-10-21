@@ -17,8 +17,8 @@ export default function EmptyState({ icon, title, description, action }: EmptySt
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-border bg-[color:color-mix(in_srgb,var(--color-accent)_12%,var(--color-surface))] text-text">
                 {icon ? <span className="text-2xl">{icon}</span> : <Sparkles className="h-5 w-5" />}
             </div>
-            <h3 className="mb-1 font-display text-lg font-bold text-text-primary">{title}</h3>
-            <p className="text-text-secondary text-sm max-w-sm mb-4" style={{ textWrap: "balance" }}>
+            <h3 className="mb-1 font-display text-lg font-bold text-text">{title}</h3>
+            <p className="text-text-muted text-sm max-w-sm mb-4" style={{ textWrap: "balance" }}>
                 {description}
             </p>
             {action ? (

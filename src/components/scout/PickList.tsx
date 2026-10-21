@@ -11,7 +11,7 @@ interface PickListProps {
 
 export default function PickList({ resources, selected, onToggle }: PickListProps) {
     return (
-        <ul className="divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]">
+        <ul className="divide-y divide-border">
             {resources.map((resource) => {
                 const checked = selected.has(resource.id);
                 const Icon = resource.kind === "video" ? Video : FileText;
@@ -19,7 +19,7 @@ export default function PickList({ resources, selected, onToggle }: PickListProp
                 const chapters = resource.chapters.slice(0, 4);
 
                 return (
-                    <li key={resource.id} className={cn("py-5 transition-colors", checked && "bg-[var(--color-accent-soft)]")}>
+                    <li key={resource.id} className="py-5">
                         <div className="flex items-start gap-4">
                             <button
                                 type="button"
@@ -28,9 +28,9 @@ export default function PickList({ resources, selected, onToggle }: PickListProp
                                 aria-label={`Keep ${resource.title}`}
                                 onClick={() => onToggle(resource.id)}
                                 className={cn(
-                                    "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)]",
+"mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border transition-colors",
                                     checked
-                                        ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-page)]"
+                                        ? "border-text bg-text text-page"
                                         : "border-[var(--color-border-strong)] text-transparent hover:border-[var(--color-text)]",
                                 )}
                             >
@@ -38,14 +38,14 @@ export default function PickList({ resources, selected, onToggle }: PickListProp
                             </button>
 
                             <div className="min-w-0 flex-1">
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-text-soft)]">
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-soft">
                                     <span className="inline-flex items-center gap-1.5">
                                         <Icon size={11} /> {resource.kind}
                                     </span>
                                     {resource.creator ? <span className="normal-case tracking-normal text-[var(--color-text-muted)]">{resource.creator}</span> : null}
                                     {resource.durationSeconds ? <span className="tabular-nums">{humanDuration(resource.durationSeconds)}</span> : null}
                                     {resource.transcriptStatus === "unavailable" || resource.transcriptStatus === "skipped" ? (
-                                        <span className="normal-case tracking-normal text-amber-400/80">description only</span>
+                                        <span className="normal-case tracking-normal text-warning/80">description only</span>
                                     ) : null}
                                 </div>
 
@@ -53,7 +53,7 @@ export default function PickList({ resources, selected, onToggle }: PickListProp
                                     href={resource.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="mt-1.5 block font-display text-lg leading-snug text-[var(--color-text)] underline-offset-4 hover:underline"
+                                    className="mt-1.5 block text-[15px] font-medium leading-snug text-[var(--color-text)] underline-offset-4 hover:underline"
                                 >
                                     {resource.title}
                                 </a>
@@ -63,7 +63,7 @@ export default function PickList({ resources, selected, onToggle }: PickListProp
                                 ) : null}
 
                                 {quote ? (
-                                    <p className="mt-2 border-l-2 border-[var(--color-accent)] pl-3 text-sm italic leading-6 text-[var(--color-text-muted)]">
+                                    <p className="mt-2 border-l-2 border-border-strong pl-3 text-sm italic leading-6 text-[var(--color-text-muted)]">
                                         “{quote}”
                                     </p>
                                 ) : null}
@@ -91,7 +91,7 @@ export default function PickList({ resources, selected, onToggle }: PickListProp
                                         {resource.skillTags.slice(0, 4).map((tag) => (
                                             <span
                                                 key={tag}
-                                                className="border border-[var(--color-border)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]"
+                                                className="studio-badge text-text-muted"
                                             >
                                                 {tag}
                                             </span>

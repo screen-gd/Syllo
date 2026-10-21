@@ -3,26 +3,23 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+/** Pill buttons. `default` is the inverted white primary; use one per screen. */
 const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 rounded-none text-[12px] font-semibold uppercase tracking-[0.14em] transition-[background-color,border-color,color,box-shadow,transform] disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(22,20,17,0.18)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-page)] active:scale-[0.985]",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-[background-color,border-color,color,opacity] disabled:pointer-events-none disabled:opacity-50",
     {
         variants: {
             variant: {
-                default:
-                    "border border-[var(--color-text)] bg-[var(--color-text)] text-[var(--color-page)] hover:border-[var(--color-accent-strong)] hover:bg-[var(--color-accent-strong)]",
-                secondary:
-                    "border border-[var(--color-border)] bg-transparent text-[var(--color-text)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-accent-soft)]",
-                ghost: "border-b border-transparent px-0 text-[var(--color-text-muted)] hover:border-[var(--color-border)] hover:bg-transparent hover:text-[var(--color-text)]",
-                destructive:
-                    "border border-[var(--color-text)] bg-[var(--color-text)] text-[var(--color-page)] hover:border-[var(--color-accent-strong)] hover:bg-[var(--color-accent-strong)]",
-                outline:
-                    "border border-[var(--color-border)] bg-transparent text-[var(--color-text)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-accent-soft)]",
+                default: "border border-text bg-text text-page hover:border-[#e6e6e6] hover:bg-[#e6e6e6]",
+                secondary: "border border-border-strong bg-transparent text-text hover:border-[#555555] hover:bg-surface-subtle",
+                ghost: "border border-transparent text-text-muted hover:text-text",
+                destructive: "border border-danger/40 bg-transparent text-danger hover:border-danger hover:bg-danger-soft",
+                outline: "border border-border-strong bg-transparent text-text hover:border-[#555555] hover:bg-surface-subtle",
             },
             size: {
-                default: "h-10 px-4 py-2",
-                sm: "h-9 px-3",
-                lg: "h-11 px-6",
-                icon: "h-10 w-10",
+                default: "h-9 px-4",
+                sm: "h-8 px-3 text-[13px]",
+                lg: "h-10 px-5",
+                icon: "h-9 w-9",
             },
         },
         defaultVariants: {

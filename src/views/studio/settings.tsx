@@ -37,7 +37,7 @@ import { scoutApi } from "@/lib/scout/api-client";
 import type { ScoutAgentConnection, ScoutAgentStatus } from "@/lib/scout/types";
 import type { CreditStatus, CreditTransaction, PrivacySettings, StorageStatus } from "@/types";
 
-const ACCENT_COLORS = ["#4F7CFF", "#C69B5A", "#2FA67D", "#D96868", "#7C67FF", "#D9A441", "#0EA5E9", "#EC4899"];
+const ACCENT_COLORS = ["#4CB3F0", "#3FC07A", "#E5A93B", "#F07B4C", "#E5566F", "#C6F24E", "#E6E6E6"];
 
 type Category = "general" | "billing" | "privacy" | "ai" | "agents";
 type ToastState = { tone: "success" | "neutral" | "error"; message: string } | null;
@@ -72,22 +72,22 @@ function downloadJsonFile(filename: string, data: unknown) {
 }
 
 function getPlanBadgeClasses(planId: string) {
-    if (planId === "agency") return "border-emerald-200 bg-emerald-50 text-emerald-700";
-    if (planId === "pro") return "border-blue-200 bg-blue-50 text-blue-700";
-    return "border-border bg-surface text-text-secondary";
+    if (planId === "agency") return "bg-accent-soft text-accent";
+    if (planId === "pro") return "bg-accent-soft text-accent";
+    return "border-border bg-surface text-text-muted";
 }
 
 function getStatusBadgeClasses(status: string | null | undefined) {
     if (status === "active" || status === "trialing") {
-        return "border-emerald-200 bg-emerald-50 text-emerald-700";
+        return "bg-accent-soft text-accent";
     }
     if (status === "past_due") {
-        return "border-amber-200 bg-amber-50 text-amber-700";
+        return "bg-warning-soft text-warning";
     }
     if (status === "canceled") {
-        return "border-red-200 bg-red-50 text-red-700";
+        return "bg-danger-soft text-danger";
     }
-    return "border-border bg-surface text-text-secondary";
+    return "border-border bg-surface text-text-muted";
 }
 
 function getTransactionLabel(kind: CreditTransaction["kind"]) {
@@ -102,10 +102,10 @@ function getTransactionLabel(kind: CreditTransaction["kind"]) {
 function Toast({ toast, onClose }: { toast: NonNullable<ToastState>; onClose: () => void }) {
     const toneClass =
         toast.tone === "success"
-            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+            ? "bg-success-soft text-success"
             : toast.tone === "error"
-                ? "border-red-200 bg-red-50 text-red-700"
-                : "border-border bg-surface text-text-primary";
+                ? "bg-danger-soft text-danger"
+                : "border-border bg-surface text-text";
 
     return (
         <div className={`fixed right-4 top-20 z-[80] max-w-md rounded-2xl border px-4 py-3 text-sm shadow-2xl ${toneClass}`}>
@@ -114,7 +114,7 @@ function Toast({ toast, onClose }: { toast: NonNullable<ToastState>; onClose: ()
                     {toast.tone === "success" ? <Check size={16} /> : <Info size={16} />}
                 </div>
                 <p className="flex-1 leading-6">{toast.message}</p>
-                <button type="button" onClick={onClose} className="text-text-secondary transition-colors hover:text-text-primary">
+                <button type="button" onClick={onClose} className="text-text-muted transition-colors hover:text-text">
                     x
                 </button>
             </div>
@@ -134,8 +134,8 @@ function SectionCard({
     return (
         <section className="settings-section">
             <div>
-                <h2 className="text-2xl font-semibold text-text-primary">{title}</h2>
-                <p className="mt-2 text-sm leading-7 text-text-secondary">{description}</p>
+                <h2 className="text-2xl font-semibold text-text">{title}</h2>
+                <p className="mt-2 text-sm leading-7 text-text-muted">{description}</p>
             </div>
             <Separator />
             <div className="space-y-6">{children}</div>
@@ -155,8 +155,8 @@ function SettingRow({
     return (
         <div className="settings-field">
             <div>
-                <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
-                <p className="mt-1 text-sm leading-6 text-text-secondary">{description}</p>
+                <h3 className="text-sm font-semibold text-text">{title}</h3>
+                <p className="mt-1 text-sm leading-6 text-text-muted">{description}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">{children}</div>
         </div>
@@ -469,15 +469,12 @@ function SettingsContent() {
             {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
 
             <header className="app-header-block">
-                <div>
-                    <p className="eyebrow">Settings</p>
-                    <h1 className="mt-3 text-4xl font-display leading-none text-text-primary md:text-5xl">Studio settings</h1>
-                    <p className="mt-4 max-w-2xl text-sm leading-7 text-text-secondary">{activeCategoryMeta.description}</p>
-                </div>
+                <h1>Settings</h1>
+                <p className="max-w-2xl text-sm text-text-muted">{activeCategoryMeta.description}</p>
             </header>
 
             <div className="settings-shell lg:grid-cols-[180px_minmax(0,1fr)]">
-                <nav className="settings-nav lg:sticky lg:top-24">
+                <nav className="settings-nav lg:sticky lg:top-6">
                     {categoryButtons.map((item) => (
                         <button
                             key={item.id}
@@ -499,16 +496,16 @@ function SettingsContent() {
                         >
                             <div className="settings-field">
                                 <div className="flex flex-wrap items-center gap-3">
-                                    <HardDrive size={18} className="text-text-secondary" />
+                                    <HardDrive size={18} className="text-text-muted" />
                                     <div>
-                                        <h3 className="text-sm font-semibold text-text-primary">Local-only storage</h3>
-                                        <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                        <h3 className="text-sm font-semibold text-text">Local-only storage</h3>
+                                        <p className="mt-1 text-sm leading-6 text-text-muted">
                                             All roadmaps and studio preferences are saved in this browser and never leave your device. Your work stays private and works offline.
                                         </p>
                                     </div>
                                 </div>
                                 <div className="mt-4 flex flex-wrap gap-3">
-                                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${getPlanBadgeClasses(effectivePlanId)}`}>
+                                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold   ${getPlanBadgeClasses(effectivePlanId)}`}>
                                         {getPlanName(effectivePlanId)} plan
                                     </span>
                                 </div>
@@ -518,13 +515,13 @@ function SettingsContent() {
                                 title="Storage mode"
                                 description="Roadmaps are stored locally in this browser only. No account or sync is required."
                             >
-                                <span className="text-sm font-medium text-text-primary">{storageModeLabel}</span>
+                                <span className="text-sm font-medium text-text">{storageModeLabel}</span>
                             </SettingRow>
 
                             <div className="settings-field">
                                 <div>
-                                    <h3 className="text-sm font-semibold text-text-primary">Accent color</h3>
-                                    <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                    <h3 className="text-sm font-semibold text-text">Accent color</h3>
+                                    <p className="mt-1 text-sm leading-6 text-text-muted">
                                         Choose the highlight color used across this browser session.
                                     </p>
                                 </div>
@@ -536,7 +533,7 @@ function SettingsContent() {
                                                 key={color}
                                                 type="button"
                                                 onClick={() => setConfig((current) => ({ ...current, accentColor: color }))}
-                                                className={`h-12 w-12 rounded-full border transition-transform hover:scale-105 ${active ? "border-text-primary shadow-[0_0_0_4px_rgba(79,124,255,0.12)]" : "border-border"
+                                                className={`h-12 w-12 rounded-full border transition-transform  ${active ? "border-text-primary " : "border-border"
                                                     }`}
                                                 style={{ backgroundColor: color }}
                                                 aria-label={`Use accent color ${color}`}
@@ -568,8 +565,8 @@ function SettingsContent() {
                                             onClick={() => setConfig((c) => ({ ...c, measurementStyle: opt }))}
                                             className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all capitalize ${
                                                 config.measurementStyle === opt
-                                                    ? "bg-[var(--color-accent)] border-[var(--color-accent)] text-white"
-                                                    : "border-border text-text-secondary hover:border-text-soft hover:text-text-primary"
+                                                    ? "bg-[var(--color-accent)] border-[var(--color-accent)] text-text"
+                                                    : "border-border text-text-muted hover:border-text-soft hover:text-text"
                                             }`}
                                         >
                                             {opt === "tasks" ? "Tasks completed" : opt === "time" ? "Time spent" : "Both"}
@@ -590,8 +587,8 @@ function SettingsContent() {
                                             onClick={() => setConfig((c) => ({ ...c, visualDensity: opt }))}
                                             className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all capitalize ${
                                                 config.visualDensity === opt
-                                                    ? "bg-[var(--color-accent)] border-[var(--color-accent)] text-white"
-                                                    : "border-border text-text-secondary hover:border-text-soft hover:text-text-primary"
+                                                    ? "bg-[var(--color-accent)] border-[var(--color-accent)] text-text"
+                                                    : "border-border text-text-muted hover:border-text-soft hover:text-text"
                                             }`}
                                         >
                                             {opt === "default" ? "Default" : "Compact"}
@@ -621,11 +618,11 @@ function SettingsContent() {
                         >
                             <div className="settings-field">
                                 <div className="flex flex-wrap items-center gap-3">
-                                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${getPlanBadgeClasses(effectivePlanId)}`}>
+                                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold   ${getPlanBadgeClasses(effectivePlanId)}`}>
                                         {getPlanName(effectivePlanId)}
                                     </span>
                                 </div>
-                                <p className="mt-4 text-sm leading-7 text-text-secondary">
+                                <p className="mt-4 text-sm leading-7 text-text-muted">
                                     You are on the free studio tier: up to 3 workspaces and 10 shared AI generations per month. Bring your own provider key (BYOK) to skip credit deductions entirely.
                                 </p>
                                 <div className="mt-4 flex flex-wrap gap-3">
@@ -641,8 +638,8 @@ function SettingsContent() {
                             </div>
 
                             <div className="settings-field">
-                                <h3 className="text-sm font-semibold text-text-primary">Monthly credits</h3>
-                                <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                <h3 className="text-sm font-semibold text-text">Monthly credits</h3>
+                                <p className="mt-1 text-sm leading-6 text-text-muted">
                                     {creditStatus
                                         ? `${creditStatus.remaining} remaining. ${creditStatus.used} used out of ${creditStatus.allowance}. Resets ${formatDate(creditStatus.resetDate)}.`
                                         : "Loading current credit allowance."}
@@ -650,7 +647,7 @@ function SettingsContent() {
                                 {creditStatus && (
                                     <div className="mt-4 h-3 overflow-hidden rounded-full bg-border/70">
                                         <div
-                                            className="h-full rounded-full bg-[linear-gradient(90deg,#4F7CFF,#C69B5A)]"
+                                            className="h-full rounded-full bg-accent"
                                             style={{ width: `${Math.max(8, Math.min(100, (creditStatus.used / Math.max(creditStatus.allowance, 1)) * 100))}%` }}
                                         />
                                     </div>
@@ -660,8 +657,8 @@ function SettingsContent() {
                             <div className="settings-field">
                                 <div className="flex items-center justify-between gap-4">
                                     <div>
-                                        <h3 className="text-sm font-semibold text-text-primary">Recent transactions</h3>
-                                        <p className="mt-1 text-sm leading-6 text-text-secondary">Latest credit activity for this device.</p>
+                                        <h3 className="text-sm font-semibold text-text">Recent transactions</h3>
+                                        <p className="mt-1 text-sm leading-6 text-text-muted">Latest credit activity for this device.</p>
                                     </div>
                                     <button type="button" onClick={() => void refreshRemoteSettings()} className="button-secondary">
                                         Refresh
@@ -674,20 +671,20 @@ function SettingsContent() {
                                             <div key={transaction.id} className="rounded-[18px] border border-border bg-surface px-4 py-4">
                                                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                                     <div>
-                                                        <p className="text-sm font-semibold text-text-primary">{getTransactionLabel(transaction.kind)}</p>
-                                                        <p className="mt-1 text-xs uppercase tracking-[0.18em] text-text-secondary">{formatRelativeDate(transaction.createdAt)}</p>
+                                                        <p className="text-sm font-semibold text-text">{getTransactionLabel(transaction.kind)}</p>
+                                                        <p className="mt-1 text-xs text-text-muted">{formatRelativeDate(transaction.createdAt)}</p>
                                                     </div>
                                                     <div className="text-left sm:text-right">
-                                                        <p className="text-sm font-semibold text-text-primary">{transaction.amount} credits</p>
+                                                        <p className="text-sm font-semibold text-text">{transaction.amount} credits</p>
                                                         {transaction.metadata?.roadmapTitle && (
-                                                            <p className="mt-1 text-sm text-text-secondary">{transaction.metadata.roadmapTitle}</p>
+                                                            <p className="mt-1 text-sm text-text-muted">{transaction.metadata.roadmapTitle}</p>
                                                         )}
                                                     </div>
                                                 </div>
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="rounded-[18px] border border-dashed border-border px-4 py-6 text-sm leading-7 text-text-secondary">
+                                        <div className="rounded-[18px] border border-dashed border-border px-4 py-6 text-sm leading-7 text-text-muted">
                                             No credit transactions yet. Generated work, quizzes, and reviews will appear here.
                                         </div>
                                     )}
@@ -718,8 +715,8 @@ function SettingsContent() {
 
                             <div className="settings-field">
                                 <div>
-                                    <h3 className="text-sm font-semibold text-red-700">Danger zone</h3>
-                                    <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                    <h3 className="text-sm font-semibold text-danger">Danger zone</h3>
+                                    <p className="mt-1 text-sm leading-6 text-text-muted">
                                         This clears all roadmaps, credit history, and studio preferences from this browser only. Other devices and browsers are not affected.
                                     </p>
                                 </div>
@@ -756,8 +753,8 @@ function SettingsContent() {
 
                             <div className="settings-field">
                                 <div>
-                                    <h3 className="text-sm font-semibold text-text-primary">Provider</h3>
-                                    <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                    <h3 className="text-sm font-semibold text-text">Provider</h3>
+                                    <p className="mt-1 text-sm leading-6 text-text-muted">
                                         Pick the provider and model used when BYOK is enabled.
                                     </p>
                                 </div>
@@ -778,25 +775,25 @@ function SettingsContent() {
                                                             : "border-border bg-surface hover:border-border-strong"
                                                     }`}
                                                 >
-                                                    <div className="flex items-center gap-2 text-sm font-semibold text-text-primary">
+                                                    <div className="flex items-center gap-2 text-sm font-semibold text-text">
                                                         <span>{option.label}</span>
                                                         {option.value === "gemini" ? (
-                                                            <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
+                                                            <span className="inline-flex items-center rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
                                                                 Default
                                                             </span>
                                                         ) : null}
                                                     </div>
-                                                    <div className="mt-1 text-sm leading-6 text-text-secondary">{option.description}</div>
+                                                    <div className="mt-1 text-sm leading-6 text-text-muted">{option.description}</div>
                                                 </button>
                                             ))}
                                 </div>
                             </div>
 
                             <div className="settings-field">
-                                <label className="text-sm font-semibold text-text-primary" htmlFor="provider-model">
+                                <label className="text-sm font-semibold text-text" htmlFor="provider-model">
                                     Model
                                 </label>
-                                <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                <p className="mt-1 text-sm leading-6 text-text-muted">
                                     Choose a preset or enter a model id manually.
                                 </p>
                                 <div className="mt-4 flex flex-wrap gap-2">
@@ -838,10 +835,10 @@ function SettingsContent() {
                             </div>
 
                             <div className="settings-field">
-                                <label className="text-sm font-semibold text-text-primary" htmlFor="provider-api-key">
+                                <label className="text-sm font-semibold text-text" htmlFor="provider-api-key">
                                     {PROVIDER_KEY_LABELS[config.provider]}
                                 </label>
-                                <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                <p className="mt-1 text-sm leading-6 text-text-muted">
                                     Provider keys stay in this browser and are never written to Supabase.
                                 </p>
                                 <div className="mt-4 flex flex-col gap-3 sm:flex-row">
@@ -865,7 +862,7 @@ function SettingsContent() {
                                         <button
                                             type="button"
                                             onClick={() => setShowKey((current) => !current)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-2 text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-2 text-text-muted transition-colors hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-strong focus-visible:ring-offset-2"
                                         >
                                             {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
                                         </button>
@@ -886,10 +883,10 @@ function SettingsContent() {
                                 {testMessage && (
                                     <div
                                         className={`mt-4 rounded-[18px] border px-4 py-3 text-sm leading-7 ${testTone === "success"
-                                                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                                ? "bg-accent-soft text-accent"
                                                 : testTone === "error"
-                                                    ? "border-red-200 bg-red-50 text-red-700"
-                                                    : "border-border bg-surface text-text-primary"
+                                                    ? "bg-danger-soft text-danger"
+                                                    : "border-border bg-surface text-text"
                                             }`}
                                     >
                                         {testMessage}
@@ -913,16 +910,16 @@ function SettingsContent() {
                         >
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between gap-3">
-                                    <h3 className="text-sm font-semibold text-text-primary">Installed agents</h3>
-                                    {agentsLoading ? <Loader2 size={14} className="animate-spin text-text-secondary" /> : null}
+                                    <h3 className="text-sm font-semibold text-text">Installed agents</h3>
+                                    {agentsLoading ? <Loader2 size={14} className="animate-spin text-text-muted" /> : null}
                                 </div>
 
                                 {agentsError ? (
-                                    <p className="rounded-[18px] border border-red-200 bg-red-50 px-4 py-3 text-sm leading-7 text-red-700">
+                                    <p className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger">
                                         {agentsError}
                                     </p>
                                 ) : agents.length === 0 && !agentsLoading ? (
-                                    <p className="text-sm leading-7 text-text-secondary">
+                                    <p className="text-sm leading-7 text-text-muted">
                                         No agents detected yet. Install opencode, Codex or Claude Code and reopen this tab.
                                     </p>
                                 ) : (
@@ -935,11 +932,11 @@ function SettingsContent() {
                                                 <div className="flex items-center gap-3">
                                                     <span
                                                         aria-hidden="true"
-                                                        className={`h-2 w-2 rounded-full ${agent.available ? "bg-emerald-500" : "bg-zinc-400"}`}
+                                                        className={`h-2 w-2 rounded-full ${agent.available ? "bg-accent" : "bg-text"}`}
                                                     />
                                                     <div>
-                                                        <p className="text-sm font-semibold text-text-primary">{agent.label}</p>
-                                                        <p className="mt-0.5 font-mono text-[11px] text-text-secondary">
+                                                        <p className="text-sm font-semibold text-text">{agent.label}</p>
+                                                        <p className="mt-0.5 font-mono text-xs text-text-muted">
                                                             {agent.available
                                                                 ? agent.version ?? "Installed"
                                                                 : `${agent.command ?? agent.id} not found on PATH`}
@@ -947,10 +944,10 @@ function SettingsContent() {
                                                     </div>
                                                 </div>
                                                 <span
-                                                    className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${
+                                                    className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold   ${
                                                         agent.available
-                                                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                                                            : "border-border bg-surface text-text-secondary"
+                                                            ? "bg-accent-soft text-accent"
+                                                            : "border-border bg-surface text-text-muted"
                                                     }`}
                                                 >
                                                     {agent.available ? "Ready" : "Not installed"}
@@ -960,7 +957,7 @@ function SettingsContent() {
                                     </ul>
                                 )}
 
-                                <p className="text-xs leading-5 text-text-secondary">
+                                <p className="text-xs leading-5 text-text-muted">
                                     Scout runs agents with an explicit folder, a timeout, and no auto-approve flags. The goal is the
                                     only thing sent to the agent.
                                 </p>
@@ -970,8 +967,8 @@ function SettingsContent() {
 
                             <div className="space-y-4">
                                 <div>
-                                    <h3 className="text-sm font-semibold text-text-primary">Give your agent Scout&apos;s tools</h3>
-                                    <p className="mt-1 text-sm leading-6 text-text-secondary">
+                                    <h3 className="text-sm font-semibold text-text">Give your agent Scout&apos;s tools</h3>
+                                    <p className="mt-1 text-sm leading-6 text-text-muted">
                                         Add this MCP server to your agent, then ask it to save links or search what you already have.
                                         The server reads the same local database as Scout.
                                     </p>
@@ -981,8 +978,8 @@ function SettingsContent() {
                                     <div key={connection.id} className="rounded-[18px] border border-border bg-surface">
                                         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
                                             <div>
-                                                <p className="text-sm font-semibold text-text-primary">{connection.label}</p>
-                                                <p className="mt-0.5 font-mono text-[11px] text-text-secondary">{connection.file}</p>
+                                                <p className="text-sm font-semibold text-text">{connection.label}</p>
+                                                <p className="mt-0.5 font-mono text-xs text-text-muted">{connection.file}</p>
                                             </div>
                                             <Button
                                                 type="button"
@@ -993,10 +990,10 @@ function SettingsContent() {
                                                 <Copy size={14} /> Copy
                                             </Button>
                                         </div>
-                                        <pre className="overflow-x-auto px-4 py-3 text-[11px] leading-5 text-text-secondary">
+                                        <pre className="overflow-x-auto px-4 py-3 text-xs leading-5 text-text-muted">
                                             <code>{connection.snippet}</code>
                                         </pre>
-                                        <p className="border-t border-border px-4 py-2 text-xs leading-5 text-text-secondary">
+                                        <p className="border-t border-border px-4 py-2 text-xs leading-5 text-text-muted">
                                             {connection.note}
                                         </p>
                                     </div>

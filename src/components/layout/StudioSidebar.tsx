@@ -1,89 +1,119 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { usePathname } from "@/lib/router-nav";
-import { BarChart2, LayoutDashboard, LayoutGrid, PlusCircle, Settings2, Sparkles } from "lucide-react";
+import { BarChart2, HardDrive, LayoutDashboard, LayoutGrid, Menu, PlusCircle, Settings2, Sparkles, X } from "lucide-react";
 import CreditBadge from "@/components/credits/CreditBadge";
+import { Logo } from "@/components/shared/Logo";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_ITEMS = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/create", label: "Create", icon: PlusCircle },
+    { href: "/dashboard", label: "Home", icon: LayoutDashboard },
     { href: "/scout", label: "Scout", icon: Sparkles },
     { href: "/workspaces", label: "Workspaces", icon: LayoutGrid },
+    { href: "/create", label: "Create", icon: PlusCircle },
     { href: "/analytics", label: "Analytics", icon: BarChart2 },
 ] as const;
 
+const SETTINGS_ITEM = { href: "/settings", label: "Settings", icon: Settings2 } as const;
+
+type NavItem = (typeof PRIMARY_ITEMS)[number] | typeof SETTINGS_ITEM;
+
+function isActive(pathname: string, href: string) {
+    return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function Wordmark() {
+    return (
+        <Link to="/dashboard" className="flex items-center gap-2.5 px-3">
+            <Logo />
+            <span className="text-[15px] font-semibold tracking-tight text-text">RoadMap Studio</span>
+        </Link>
+    );
+}
+
+/** One nav row. Active is marked by brightness alone: grey label to white. */
+function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
+    const active = isActive(pathname, item.href);
+    return (
+        <Link
+            to={item.href}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+                "flex h-[34px] items-center gap-2.5 rounded-lg px-3 text-sm transition-colors",
+                active ? "bg-surface text-text" : "text-[#bbbbbb] hover:text-text",
+            )}
+        >
+            <item.icon size={16} strokeWidth={1.75} className={active ? "text-text" : "text-text-soft"} />
+            {item.label}
+        </Link>
+    );
+}
+
+function NavBody({ pathname }: { pathname: string }) {
+    return (
+        <>
+            <nav aria-label="Studio navigation" className="flex flex-col gap-0.5">
+                {PRIMARY_ITEMS.map((item) => (
+                    <NavLink key={item.href} item={item} pathname={pathname} />
+                ))}
+            </nav>
+
+            <div className="mt-auto flex flex-col gap-3 pt-6">
+                <div className="px-3">
+                    <CreditBadge compact />
+                </div>
+                <p className="flex items-center gap-2 px-3 text-xs text-text-soft">
+                    <HardDrive size={14} strokeWidth={1.75} />
+                    Saved in this browser
+                </p>
+                <NavLink item={SETTINGS_ITEM} pathname={pathname} />
+            </div>
+        </>
+    );
+}
+
+/**
+ * Studio navigation. A fixed sidebar on the page ground from `xl` up; below
+ * that a 56px top bar whose menu opens the same nav as a full-screen sheet.
+ */
 export default function StudioSidebar() {
     const pathname = usePathname();
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        setOpen(false);
+    }, [pathname]);
 
     return (
-        <aside className="sticky top-24 hidden self-start xl:block">
-            <div className="flex min-h-[calc(100vh-7rem)] flex-col border-l border-white/10 pl-6">
-                <nav aria-label="Studio navigation" className="space-y-4">
-                    {PRIMARY_ITEMS.map((item) => {
-                        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                        return (
-                            <Link
-                                key={item.href}
-                                to={item.href}
-                                aria-current={active ? "page" : undefined}
-                                className={cn(
-                                    "group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold tracking-wide transition-all duration-300 ease-out overflow-hidden hover:scale-[1.02]",
-                                    active
-                                        ? "text-zinc-100 bg-white/5 shadow-[0_0_15px_rgba(255,255,255,0.03)]"
-                                        : "bg-transparent text-zinc-400 hover:text-zinc-100 hover:bg-white/5"
-                                )}
-                            >
-                                {active && (
-                                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-r shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-                                )}
-                                <div className={cn("transition-all duration-300 ease-out relative z-10", active ? "text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "text-zinc-500 group-hover:text-zinc-300")}>
-                                    <item.icon size={18} />
-                                </div>
-                                <div className="min-w-0 relative z-10">
-                                    <span className="block">{item.label}</span>
-                                </div>
-                            </Link>
-                        );
-                    })}
-                </nav>
-
-                <div className="mt-auto pt-6 space-y-4">
-                    <div className="px-3">
-                       <CreditBadge compact />
-                    </div>
-
-                    <div className="mx-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 flex items-center gap-2">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        <span className="text-[11px] font-medium tracking-wide text-emerald-400/90 uppercase">Local Storage</span>
-                    </div>
-
-                    <Link
-                        to="/settings"
-                        aria-current={pathname === "/settings" ? "page" : undefined}
-                        className={cn(
-                            "group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold tracking-wide transition-all duration-300 ease-out hover:scale-[1.02]",
-                            pathname === "/settings"
-                                ? "text-zinc-100 bg-white/5"
-                                : "bg-transparent text-zinc-400 hover:text-zinc-100 hover:bg-white/5"
-                        )}
-                    >
-                        {pathname === "/settings" && (
-                            <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-zinc-400 to-zinc-600 rounded-r"></span>
-                        )}
-                        <div className={cn("transition-all duration-300 ease-out relative z-10", pathname === "/settings" ? "text-zinc-300" : "text-zinc-500 group-hover:text-zinc-300")}>
-                            <Settings2 size={18} />
-                        </div>
-                        <div className="min-w-0 relative z-10">
-                            <span className="block">Settings</span>
-                        </div>
-                    </Link>
+        <>
+            <aside className="sticky top-0 hidden h-screen flex-col border-r border-border px-3 py-5 xl:flex">
+                <Wordmark />
+                <div className="mt-8 flex flex-1 flex-col">
+                    <NavBody pathname={pathname} />
                 </div>
+            </aside>
+
+            <div className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-page px-1 xl:hidden">
+                <Wordmark />
+                <button
+                    type="button"
+                    onClick={() => setOpen((value) => !value)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-text-muted hover:text-text"
+                    aria-label={open ? "Close menu" : "Open menu"}
+                    aria-expanded={open}
+                    aria-controls="studio-mobile-nav"
+                >
+                    {open ? <X size={18} /> : <Menu size={18} />}
+                </button>
             </div>
-        </aside>
+
+            {open ? (
+                <div id="studio-mobile-nav" className="fixed inset-x-0 bottom-0 top-14 z-40 flex flex-col bg-page px-3 py-4 xl:hidden">
+                    <NavBody pathname={pathname} />
+                </div>
+            ) : null}
+        </>
     );
 }

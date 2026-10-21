@@ -92,7 +92,7 @@ export default function SmartEmbed({ url, title, description }: SmartEmbedProps)
     // Known embeds: always render iframe
     if (isKnownEmbed) {
         return (
-            <div className="w-full aspect-video bg-black rounded-lg overflow-hidden border border-border">
+            <div className="w-full aspect-video bg-page rounded-lg overflow-hidden border border-border">
                 <iframe
                     src={embedUrl}
                     title={title}
@@ -107,26 +107,26 @@ export default function SmartEmbed({ url, title, description }: SmartEmbedProps)
     // Blocked or unknown: show fallback card
     if (iframeBlocked) {
         return (
-            <div className="w-full border border-border-subtle bg-obsidian-elevated/60 p-6 flex items-center gap-5 transition-all hover:border-indigo-500/30 hover:bg-obsidian-elevated/80 group">
+            <div className="w-full border border-border bg-surface-muted/60 p-6 flex items-center gap-5 transition-all hover:border-accent/30 hover:bg-surface-muted/80 group">
                 {/* next/image is not practical here because favicon domains are fully dynamic. */}
                 <img
                     src={getFaviconUrl(url)}
                     alt=""
-                    className="w-10 h-10 rounded-lg bg-white/5 p-1 shrink-0"
+                    className="w-10 h-10 rounded-lg bg-surface p-1 shrink-0"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                 />
                 <div className="flex-1 min-w-0">
-                    <h4 className="font-sans-display text-sm font-bold text-text-primary truncate">{title}</h4>
+                    <h4 className="font-display text-sm font-bold text-text truncate">{title}</h4>
                     {description && (
-                        <p className="text-text-secondary text-sm mt-0.5 line-clamp-2">{description}</p>
+                        <p className="text-text-muted text-sm mt-0.5 line-clamp-2">{description}</p>
                     )}
-                    <p className="text-text-secondary/50 text-sm uppercase tracking-widest mt-1">{getDomain(url)}</p>
+                    <p className="text-text-muted/50 text-sm mt-1">{getDomain(url)}</p>
                 </div>
                 <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="shrink-0 font-sans-display text-xs uppercase tracking-widest text-indigo-400 hover:text-white border border-indigo-500/30 hover:border-indigo-500 px-4 py-2.5 transition-all bg-indigo-500/5 hover:bg-indigo-500 whitespace-nowrap"
+                    className="button-secondary shrink-0"
                 >
                     Open Resource
                 </a>
@@ -138,10 +138,10 @@ export default function SmartEmbed({ url, title, description }: SmartEmbedProps)
     return (
         <div className="w-full relative">
             {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-obsidian-elevated/80 z-10 border border-border">
+                <div className="absolute inset-0 flex items-center justify-center bg-surface-muted/80 z-10 border border-border">
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                        <span className="text-text-secondary text-[12px]">Loading resource...</span>
+                        <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+                        <span className="text-text-muted text-[12px]">Loading resource...</span>
                     </div>
                 </div>
             )}

@@ -3,8 +3,8 @@
   "short_name": "RoadMap Studio",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0E1726",
-  "theme_color": "#0E1726",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "description": "Turn any guide or curriculum into an interactive AI-powered workspace.",
   "icons": [
     {

@@ -15,12 +15,12 @@ export default function VideoPlayer({ url, title, description }: VideoPlayerProp
     if (!embedUrl) {
         return (
             <div className="surface rounded-lg p-4 text-center">
-                <p className="text-text-secondary text-sm">Unable to embed this video</p>
+                <p className="text-text-muted text-sm">Unable to embed this video</p>
                 <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-indigo-accent text-sm hover:underline mt-1 inline-block"
+                    className="text-accent text-sm hover:underline mt-1 inline-block"
                 >
                     Open externally ↗
                 </a>
@@ -30,7 +30,7 @@ export default function VideoPlayer({ url, title, description }: VideoPlayerProp
 
     return (
         <div className="space-y-2">
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-obsidian-surface">
+            <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-surface">
                 <iframe
                     src={embedUrl}
                     title={title || "Video player"}
@@ -43,12 +43,12 @@ export default function VideoPlayer({ url, title, description }: VideoPlayerProp
             {(title || description) ? (
                 <div className="px-1">
                     {title ? (
-                        <h4 className="font-display font-semibold text-base text-text-primary text-text-primary">{title}</h4>
+                        <h4 className="font-display font-semibold text-base text-text text-text">{title}</h4>
                     ) : null}
                     {description ? (
-                        <p className="text-text-secondary text-sm mt-0.5 line-clamp-2">{description}</p>
+                        <p className="text-text-muted text-sm mt-0.5 line-clamp-2">{description}</p>
                     ) : null}
-                    <span className="text-text-secondary text-[12px] capitalize">{platform}</span>
+                    <span className="text-text-muted text-[12px] capitalize">{platform}</span>
                 </div>
             ) : null}
         </div>

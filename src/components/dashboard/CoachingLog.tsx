@@ -90,13 +90,12 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
         return (
             <Card className="h-full">
                 <CardHeader>
-                    <p className="eyebrow">Coaching log</p>
-                    <CardTitle className="mt-3 font-display text-2xl text-text-primary">
+                    <CardTitle className="text-base text-text">
                         Record a session or generate a 90-day review
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="studio-empty p-5 text-left text-sm leading-7 text-text-secondary">
+                    <div className="studio-empty p-5 text-left text-sm leading-7 text-text-muted">
                         No synced workspaces are available yet for coaching notes or review generation.
                     </div>
                 </CardContent>
@@ -107,8 +106,7 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
     return (
         <Card className="h-full">
             <CardHeader>
-                <p className="eyebrow">Coaching log</p>
-                <CardTitle className="mt-3 font-display text-2xl text-text-primary">
+                <CardTitle className="text-base text-text">
                     Record a session or generate a 90-day review
                 </CardTitle>
             </CardHeader>
@@ -116,7 +114,7 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
             <div className="grid gap-4 lg:grid-cols-2">
                 <div className="studio-micro-grid space-y-4 p-5">
                     <label className="block space-y-2">
-                        <span className="text-xs uppercase tracking-[0.18em] text-text-secondary">Workspace</span>
+                        <span className="text-xs text-text-muted">Workspace</span>
                         <select
                             value={roadmapId}
                             onChange={(event) => setRoadmapId(event.target.value)}
@@ -131,7 +129,7 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
                     </label>
 
                     <label className="block space-y-2">
-                        <span className="text-xs uppercase tracking-[0.18em] text-text-secondary">Duration (minutes)</span>
+                        <span className="text-xs text-text-muted">Duration (minutes)</span>
                         <Input
                             type="number"
                             min={5}
@@ -142,17 +140,17 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
                     </label>
 
                     <label className="block space-y-2">
-                        <span className="text-xs uppercase tracking-[0.18em] text-text-secondary">Topics</span>
+                        <span className="text-xs text-text-muted">Topics</span>
                         <Input
                             value={topics}
                             onChange={(event) => setTopics(event.target.value)}
                             placeholder="Discovery, blockers, shipping cadence"
-                            className="placeholder:text-text-secondary/60"
+                            className="placeholder:text-text-muted/60"
                         />
                     </label>
 
                     <label className="block space-y-2">
-                        <span className="text-xs uppercase tracking-[0.18em] text-text-secondary">Next steps</span>
+                        <span className="text-xs text-text-muted">Next steps</span>
                         <textarea
                             value={nextSteps}
                             onChange={(event) => setNextSteps(event.target.value)}
@@ -181,35 +179,35 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
                         </Button>
                     </div>
 
-                    {message ? <p className="text-sm text-text-secondary">{message}</p> : null}
+                    {message ? <p className="text-sm text-text-muted">{message}</p> : null}
                 </div>
 
                 <div className="studio-micro-grid p-5">
                     {review ? (
                         <div className="space-y-4">
                             <div>
-                                <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">Summary</p>
-                                <p className="mt-2 text-sm leading-7 text-text-primary">{review.summary}</p>
+                                <p className="text-xs text-text-muted">Summary</p>
+                                <p className="mt-2 text-sm leading-7 text-text">{review.summary}</p>
                             </div>
                             <div>
-                                <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">Strengths</p>
-                                <ul className="mt-2 space-y-2 text-sm text-text-primary">
+                                <p className="text-xs text-text-muted">Strengths</p>
+                                <ul className="mt-2 space-y-2 text-sm text-text">
                                     {review.strengths.map((item) => (
                                         <li key={item}>- {item}</li>
                                     ))}
                                 </ul>
                             </div>
                             <div>
-                                <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">Risks</p>
-                                <ul className="mt-2 space-y-2 text-sm text-text-primary">
+                                <p className="text-xs text-text-muted">Risks</p>
+                                <ul className="mt-2 space-y-2 text-sm text-text">
                                     {review.risks.map((item) => (
                                         <li key={item}>- {item}</li>
                                     ))}
                                 </ul>
                             </div>
                             <div>
-                                <p className="text-xs uppercase tracking-[0.18em] text-text-secondary">Next actions</p>
-                                <ul className="mt-2 space-y-2 text-sm text-text-primary">
+                                <p className="text-xs text-text-muted">Next actions</p>
+                                <ul className="mt-2 space-y-2 text-sm text-text">
                                     {review.nextActions.map((item) => (
                                         <li key={item}>- {item}</li>
                                     ))}
@@ -217,7 +215,7 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
                             </div>
                         </div>
                     ) : (
-                        <div className="studio-empty flex min-h-60 items-center justify-center px-6 text-center text-sm leading-7 text-text-secondary">
+                        <div className="studio-empty flex min-h-60 items-center justify-center px-6 text-center text-sm leading-7 text-text-muted">
                             Generate a 90-day review to summarize strengths, risks, and recommended next actions for a selected workspace.
                         </div>
                     )}

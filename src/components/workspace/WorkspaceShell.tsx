@@ -35,6 +35,8 @@ import { getUserConfig } from "@/lib/userConfig";
 import { getStorage } from "@/lib/storage";
 import { seedSrsItems } from "@/lib/srs";
 
+const LEGACY_WORKSPACE_ACCENT = "#6366f1";
+
 interface WorkspaceShellProps {
     roadmap: Roadmap;
     onUpdateSection?: (sectionId: string, updater: (s: Section) => Section) => void;
@@ -133,23 +135,13 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
     const branding = roadmap.branding;
-    const accentColor = branding?.accentColor || "#6366f1"; // Default indigo-500
+    // A workspace may carry its own accent. "#6366f1" was the old default that
+    // the branding modal saved for everyone, so it counts as no choice.
+    const customAccent =
+        branding?.accentColor && branding.accentColor.toLowerCase() !== LEGACY_WORKSPACE_ACCENT ? branding.accentColor : null;
     const workspaceTitle = branding?.customTitle || roadmap.title;
     const logoUrl = branding?.logoUrl;
     const hideWatermark = branding?.hideWatermark || false;
-
-    // Helper to generate lighter/darker shades of the accent color
-    const getAccentShades = (hex: string) => {
-        // Simple hex to rgba for opacity-based shades
-        return {
-            base: hex,
-            light: `${hex}33`, // 20% opacity
-            lighter: `${hex}1a`, // 10% opacity
-            dark: hex, // For now just use base or we could do proper darkening
-        };
-    };
-
-    const shades = getAccentShades(accentColor);
 
     const checkTour = useCallback(() => {
         if (!localStorage.getItem("zns_tour_done")) {
@@ -395,9 +387,9 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
     const getSectionIcon = (type: string, percent: number) => {
         if (type === "module") {
-            if (percent === 100) return <CheckCircle2 size={16} className="text-emerald-500" />;
-            if (percent > 0) return <div className="w-4 h-4 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" style={{ animationDuration: '3s' }} />;
-            return <Circle size={16} className="text-white/20" />;
+            if (percent === 100) return <CheckCircle2 size={16} className="text-accent" />;
+            if (percent > 0) return <div className="w-4 h-4 rounded-full border-2 border-accent border-t-transparent animate-spin" style={{ animationDuration: '3s' }} />;
+            return <Circle size={16} className="text-text-soft" />;
         }
         switch (type) {
             case "milestones": return "🏁";
@@ -552,23 +544,22 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
     return (
         <div
-            className="workspace-shell-neutral h-screen flex flex-col overflow-hidden bg-obsidian selection:bg-[var(--workspace-accent)]/20"
-            style={{
-                "--color-indigo-500": accentColor,
-                "--color-indigo-600": accentColor,
-                "--color-indigo-400": accentColor,
-                "--workspace-accent": accentColor,
-            } as any}
+            className="h-screen flex flex-col overflow-hidden bg-page"
+            style={
+                customAccent
+                    ? ({ "--color-accent": customAccent, "--color-accent-strong": customAccent, "--workspace-accent": customAccent } as React.CSSProperties)
+                    : ({ "--workspace-accent": "var(--color-accent)" } as React.CSSProperties)
+            }
         >
             {/* Gamification Toast */}
             {recentBadge && (
-                <div className="fixed bottom-6 right-6 z-50 animate-slide-up-fade flex items-center gap-4 bg-obsidian-elevated border border-indigo-500/30 shadow-[0_0_30px_rgba(99,102,241,0.2)] p-4 rounded-2xl cursor-pointer" onClick={clearRecentBadge}>
-                    <div className="w-12 h-12 rounded-full bg-indigo-500/10 border border-indigo-500/50 flex items-center justify-center text-2xl">
+                <div className="fixed bottom-6 right-6 z-50 animate-slide-up-fade flex items-center gap-4 bg-surface-muted border border-accent/30 p-4 rounded-2xl cursor-pointer" onClick={clearRecentBadge}>
+                    <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/50 flex items-center justify-center text-2xl">
                         {recentBadge.icon}
                     </div>
                     <div>
-                        <div className="font-sans-display text-xs uppercase tracking-widest text-indigo-400 font-bold mb-1">Achievement Unlocked</div>
-                        <div className="font-display text-white text-lg">{recentBadge.title}</div>
+                        <div className="font-display text-xs text-accent font-bold mb-1">Achievement Unlocked</div>
+                        <div className="font-display text-text text-lg">{recentBadge.title}</div>
                     </div>
                 </div>
             )}
@@ -584,7 +575,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         <button
                             type="button"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 transition-colors text-text-secondary hover:text-white shrink-0"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface transition-colors text-text-muted hover:text-text shrink-0"
                             title="Toggle Sidebar (Ctrl+\\)"
                             aria-label="Toggle sidebar"
                         >
@@ -599,7 +590,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         <img src={logoUrl} alt="Logo" className="w-5 h-5 object-contain" />
                                     </>
                                 )}
-                                <div className="font-sans-display text-xs uppercase tracking-widest text-text-primary truncate font-bold">
+                                <div className="font-display text-xs text-text truncate font-bold">
                                     {workspaceTitle}
                                 </div>
                             </div>
@@ -611,24 +602,24 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         {sidebarOpen && (
                             <div className="p-4 space-y-4">
                                 <div className="relative">
-                                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
+                                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
                                     <Input
                                         type="text"
                                         placeholder="Search workspace..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         aria-label="Search workspace"
-                                        className="h-9 border-border bg-[var(--color-surface-subtle)] pl-9 pr-4 text-xs text-text-primary placeholder:text-text-muted"
+                                        className="h-9 border-border bg-[var(--color-surface-subtle)] pl-9 pr-4 text-xs text-text placeholder:text-text-muted"
                                     />
                                 </div>
 
                                 <div className="rounded-md border border-border bg-[var(--color-surface-subtle)] p-3">
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className="font-sans-display text-[12px] uppercase tracking-widest text-text-secondary">Total Progress</span>
-                                        <span className="font-sans-display text-[12px] text-cyan-400 font-bold">{progress.overall}%</span>
+                                        <span className="font-display text-[12px] text-text-muted">Total Progress</span>
+                                        <span className="font-display text-[12px] text-accent font-bold">{progress.overall}%</span>
                                     </div>
-                                    <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                                        <div className="h-full bg-indigo-500 rounded-full transition-all duration-1000" style={{ width: `${progress.overall}%` }} />
+                                    <div className="h-1 bg-surface rounded-full overflow-hidden">
+                                        <div className="h-full bg-accent rounded-full transition-all duration-1000" style={{ width: `${progress.overall}%` }} />
                                     </div>
                                 </div>
                             </div>
@@ -640,7 +631,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 <button
                                     type="button"
                                     onClick={() => onNavigate("dashboard")}
-                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 text-sm hover:bg-white/5 ${activeSectionId === "dashboard" ? "bg-indigo-500/12 border-l-[3px] border-indigo-500 text-white font-medium font-medium" : "text-text-secondary"
+                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 text-sm hover:bg-surface ${activeSectionId === "dashboard" ? "bg-accent/12 border-l-[3px] border-accent text-text font-medium font-medium" : "text-text-muted"
                                         } ${!sidebarOpen && 'justify-center'}`}
                                     title="Overview"
                                 >
@@ -653,7 +644,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             {moduleSections.length > 0 && (
                                 <div>
                                     {sidebarOpen && (
-                                        <div className="font-sans-display text-xs uppercase tracking-[0.2em] text-text-secondary/50 mb-2 px-3">
+                                        <div className="font-display text-xs text-text-muted/50 mb-2 px-3">
                                             Modules
                                         </div>
                                     )}
@@ -670,8 +661,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                     type="button"
                                                     title={section.title}
                                                     className={`w-full flex items-center px-3 py-2.5 rounded-lg text-left text-sm transition-all duration-200 group ${isActive
-                                                        ? "bg-indigo-500/12 border-l-[3px] border-indigo-500 text-white font-medium"
-                                                        : "border-l-[3px] border-transparent text-text-secondary hover:text-text-primary hover:bg-obsidian-hover duration-150"
+                                                        ? "bg-accent/12 border-l-[3px] border-accent text-text font-medium"
+                                                        : "border-l-[3px] border-transparent text-text-muted hover:text-text hover:bg-surface-subtle duration-150"
                                                         } ${!sidebarOpen && 'justify-center !px-0'}`}
                                                     onClick={() => onNavigate(section.id)}
                                                 >
@@ -682,17 +673,17 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <span className="block text-sm truncate">
-                                                                    <span className="text-text-secondary/50 mr-2 text-[12px] font-mono">{String(idx + 1).padStart(2, "0")}</span>
+                                                                    <span className="text-text-muted/50 mr-2 text-[12px] font-mono">{String(idx + 1).padStart(2, "0")}</span>
                                                                     {section.title}
                                                                 </span>
                                                             </div>
                                                         </>
                                                     ) : (
-                                                        <div className="w-8 h-8 rounded-full flex items-center justify-center relative overflow-hidden bg-obsidian">
+                                                        <div className="w-8 h-8 rounded-full flex items-center justify-center relative overflow-hidden bg-page">
                                                             {/* Mini circular indicator when collapsed */}
                                                             <svg viewBox="0 0 36 36" className="absolute inset-0 w-full h-full -rotate-90">
                                                                 <circle cx="18" cy="18" r="16" fill="transparent" stroke="var(--color-obsidian-elevated)" strokeWidth="4" />
-                                                                <circle cx="18" cy="18" r="16" fill="transparent" stroke={modulePercent === 100 ? "var(--color-emerald-500)" : "var(--color-indigo-500)"} strokeWidth="4" strokeDasharray="100" strokeDashoffset={100 - modulePercent} />
+                                                                <circle cx="18" cy="18" r="16" fill="transparent" stroke={modulePercent === 100 ? "var(--color-success)" : "var(--color-accent)"} strokeWidth="4" strokeDasharray="100" strokeDashoffset={100 - modulePercent} />
                                                             </svg>
                                                             <span className="text-[12px] font-bold z-10">{idx + 1}</span>
                                                         </div>
@@ -707,7 +698,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             {/* Tools / Utility */}
                             {utilitySections.length > 0 && sidebarOpen && (
                                 <div>
-                                    <div className="font-sans-display text-xs uppercase tracking-[0.2em] text-text-secondary/50 mb-2 px-3">
+                                    <div className="font-display text-xs text-text-muted/50 mb-2 px-3">
                                         Resources & Tools
                                     </div>
                                     <nav className="space-y-1">
@@ -720,7 +711,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 <button
                                                     key={section.id}
                                                     type="button"
-                                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 text-sm hover:bg-white/5 ${isActive ? "text-indigo-300 font-medium bg-indigo-500/5" : "text-text-secondary hover:text-text-primary"
+                                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 text-sm hover:bg-surface ${isActive ? "text-accent font-medium bg-accent/5" : "text-text-muted hover:text-text"
                                                         }`}
                                                     onClick={() => onNavigate(section.id)}
                                                 >
@@ -743,33 +734,33 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         {sidebarOpen ? (
                             <>
                                 {!isEmbed && (
-                                    <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-white hover:bg-white/5 transition-colors">
+                                    <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-muted hover:text-text hover:bg-surface transition-colors">
                                         <Home size={16} />
                                         <span>Back to Home</span>
                                     </Link>
                                 )}
                                 {!isEmbed && !isReadOnly && (
                                     <>
-                                        <Link to="/settings" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-white hover:bg-white/5 transition-colors">
+                                        <Link to="/settings" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-muted hover:text-text hover:bg-surface transition-colors">
                                             <Settings size={16} />
                                             <span>Settings</span>
                                         </Link>
                                         {userConfig?.useCustomKey && (
-                                            <div className="flex items-center gap-1.5 px-3 py-1 text-cyan-400 text-[10px] uppercase tracking-wider font-medium" title="Using your custom AI provider">
+                                            <div className="flex items-center gap-1.5 px-3 py-1 text-accent text-xs font-medium" title="Using your custom AI provider">
                                                 <Key size={12} /> Custom API
                                             </div>
                                         )}
                                         {userConfig?.showProgressNotice !== false && (
                                             <div className="flex items-center justify-between px-3 py-1 mt-1 mb-1">
-                                                <div className="flex items-center gap-1.5 text-text-secondary opacity-70">
+                                                <div className="flex items-center gap-1.5 text-text-muted opacity-70">
                                                     <HardDrive size={12} />
-                                                    <span className="text-[10px] uppercase tracking-wider font-medium">Saved in this browser</span>
+                                                    <span className="text-xs font-medium">Saved in this browser</span>
                                                 </div>
                                                 <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
                                                     <AlertDialogTrigger asChild>
                                                         <button
                                                             type="button"
-                                                            className="text-[10px] uppercase tracking-wider font-bold text-red-400 hover:text-red-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)]"
+                                                            className="text-xs font-bold text-danger hover:text-danger transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-strong focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)]"
                                                         >
                                                             Reset
                                                         </button>
@@ -797,17 +788,17 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         ) : (
                             <>
                                 {!isEmbed && (
-                                    <Link to="/" className="flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors" title="Back to Home">
+                                    <Link to="/" className="flex items-center justify-center p-2 rounded-lg text-text-muted hover:text-text hover:bg-surface transition-colors" title="Back to Home">
                                         <Home size={18} />
                                     </Link>
                                 )}
                                 {!isEmbed && !isReadOnly && (
                                     <>
-                                        <Link to="/settings" className="flex items-center justify-center p-2 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-colors" title="Settings">
+                                        <Link to="/settings" className="flex items-center justify-center p-2 rounded-lg text-text-muted hover:text-text hover:bg-surface transition-colors" title="Settings">
                                             <Settings size={18} />
                                         </Link>
                                         {userConfig?.useCustomKey && (
-                                            <div className="flex items-center gap-1.5 text-cyan-400 text-[8px] uppercase tracking-wider font-medium" title="Using your custom AI provider">
+                                            <div className="flex items-center gap-1.5 text-accent text-xs font-medium" title="Using your custom AI provider">
                                                 <Key size={10} />
                                             </div>
                                         )}
@@ -821,16 +812,16 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                 {/* Mobile overlay */}
                 {sidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-obsidian/80 backdrop-blur-sm z-20 sm:hidden transition-opacity duration-300"
+                        className="fixed inset-0 bg-page/80 z-20 sm:hidden transition-opacity duration-300"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
 
                 {/* Main Content Area */}
-                <main id="main-content" className="flex-1 overflow-y-auto relative bg-obsidian flex flex-col">
+                <main id="main-content" className="flex-1 overflow-y-auto relative bg-page flex flex-col">
                     {/* Workspace Header */}
                     {!isEmbed && !isReadOnly && (
-                        <div className="sticky top-0 z-30 flex-shrink-0 border-b border-border bg-[var(--color-page)]/95 backdrop-blur-md flex items-center justify-between px-6 py-3">
+                        <div className="sticky top-0 z-30 flex-shrink-0 border-b border-border bg-[var(--color-page)]/95 flex items-center justify-between px-6 py-3">
                             <div className="flex-1">
                                 {/* Potential breadcrumbs or workspace specific title override here */}
                             </div>
@@ -838,19 +829,19 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 <ThemeToggle />
                                 <button
                                     onClick={() => setShowShortcuts(!showShortcuts)}
-                                    className="flex items-center justify-center w-8 h-8 rounded-lg bg-obsidian-surface text-text-secondary hover:text-white hover:bg-white/5 transition-colors border border-border"
+                                    className="flex items-center justify-center w-8 h-8 rounded-lg bg-surface text-text-muted hover:text-text hover:bg-surface transition-colors border border-border"
                                     title="Keyboard Shortcuts"
                                     aria-label="Open keyboard shortcuts"
                                 >
                                     <HelpCircle size={16} />
                                 </button>
                                 {showShortcuts && (
-                                    <div className="absolute top-16 right-6 w-80 bg-obsidian-elevated border border-border rounded-xl shadow-2xl z-50 animate-fade-in p-5">
+                                    <div className="absolute top-16 right-6 w-80 bg-surface-muted border border-border rounded-xl shadow-2xl z-50 animate-fade-in p-5">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h3 className="font-sans-display text-xs uppercase tracking-widest text-text-primary font-bold">Keyboard Shortcuts</h3>
+                                            <h3 className="font-display text-xs text-text font-bold">Keyboard Shortcuts</h3>
                                             <button
                                                 onClick={() => setShowShortcuts(false)}
-                                                className="text-text-secondary hover:text-white"
+                                                className="text-text-muted hover:text-text"
                                                 aria-label="Close keyboard shortcuts"
                                             >
                                                 <X size={14} />
@@ -865,8 +856,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 { k: ']', d: 'Next module' }
                                             ].map(s => (
                                                 <div key={s.k} className="flex items-center justify-between">
-                                                    <span className="text-sm text-text-secondary">{s.d}</span>
-                                                    <kbd className="px-2 py-1 bg-obsidian rounded border border-border-subtle text-[10px] font-mono text-white min-w-[24px] text-center">{s.k}</kbd>
+                                                    <span className="text-sm text-text-muted">{s.d}</span>
+                                                    <kbd className="px-2 py-1 bg-page rounded border border-border text-xs font-mono text-text min-w-[24px] text-center">{s.k}</kbd>
                                                 </div>
                                             ))}
                                         </div>
@@ -876,7 +867,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                     type="button"
                                     onClick={() => setIsSrsModalOpen(true)}
                                     disabled={dueSrsItems.length === 0}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-border bg-obsidian-surface px-3 py-2 text-xs font-bold uppercase tracking-widest text-text-secondary transition-colors hover:text-white hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-bold text-text-muted transition-colors hover:text-text hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
                                     title={dueSrsItems.length === 0 ? "No spaced repetition cards are due right now" : `Review ${dueSrsItems.length} spaced repetition cards`}
                                 >
                                     <History size={14} />
@@ -886,19 +877,19 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 <div className="relative">
                                     <button
                                         onClick={() => setShowExportMenu(!showExportMenu)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 rounded-lg text-xs font-bold uppercase tracking-widest transition-colors border border-indigo-500/30"
+                                        className="flex items-center gap-2 px-4 py-2 bg-accent/10 hover:bg-accent/20 text-accent rounded-lg text-xs font-bold transition-colors border border-accent/30"
                                     >
                                         Export <ChevronDown size={12} />
                                     </button>
                                     {showExportMenu && (
-                                        <div className="absolute right-0 top-full mt-2 w-48 bg-obsidian-elevated border border-border rounded-lg shadow-xl z-50 animate-in fade-in zoom-in duration-200 py-1">
-                                            <button onClick={() => { exportAsMarkdown(roadmap); setShowExportMenu(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-text-primary hover:bg-white/5 text-left">
+                                        <div className="absolute right-0 top-full mt-2 w-48 bg-surface-muted border border-border rounded-lg shadow-xl z-50 animate-in fade-in zoom-in duration-200 py-1">
+                                            <button onClick={() => { exportAsMarkdown(roadmap); setShowExportMenu(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-text hover:bg-surface text-left">
                                                 <FileText size={14} /> Download as Markdown
                                             </button>
-                                            <button onClick={() => { exportAsJSON(roadmap); setShowExportMenu(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-text-primary hover:bg-white/5 text-left">
+                                            <button onClick={() => { exportAsJSON(roadmap); setShowExportMenu(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-text hover:bg-surface text-left">
                                                 <Braces size={14} /> Download as JSON
                                             </button>
-                                            <button onClick={() => { exportAsPDF(roadmap); setShowExportMenu(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-text-primary hover:bg-white/5 text-left">
+                                            <button onClick={() => { exportAsPDF(roadmap); setShowExportMenu(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-text hover:bg-surface text-left">
                                                 <Printer size={14} /> Print / Save as PDF
                                             </button>
                                         </div>
@@ -908,7 +899,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 {/* Version History */}
                                 <button
                                     onClick={() => setShowVersionHistory(true)}
-                                    className="flex items-center justify-center w-8 h-8 rounded-lg bg-obsidian-surface text-text-secondary hover:text-white hover:bg-white/5 transition-colors border border-border"
+                                    className="flex items-center justify-center w-8 h-8 rounded-lg bg-surface text-text-muted hover:text-text hover:bg-surface transition-colors border border-border"
                                     title="Version History"
                                     aria-label="Open version history"
                                 >
@@ -917,7 +908,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                                 <button
                                     onClick={() => setShareModalOpen(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 rounded-lg text-xs font-bold uppercase tracking-widest transition-colors border border-indigo-500/30"
+                                    className="flex items-center gap-2 px-4 py-2 bg-accent/10 hover:bg-accent/20 text-accent rounded-lg text-xs font-bold transition-colors border border-accent/30"
                                 >
                                     <Share size={14} />
                                     Share & Embed
@@ -926,24 +917,24 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         </div>
                     )}
 
-                    <div className="flex-1 overflow-y-auto relative bg-obsidian">
+                    <div className="flex-1 overflow-y-auto relative bg-page">
                         {/* Banners */}
                         {isLowQuality && (
-                            <div className="bg-indigo-500/10 border-b border-indigo-500/20 text-indigo-400 py-3 px-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm z-10 relative">
+                            <div className="bg-accent/10 border-b border-accent/20 text-accent py-3 px-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm z-10 relative">
                                 <span className="flex items-center gap-2">
                                     <Info size={16} aria-hidden="true" />
                                     Your content generated a minimal workspace. For richer results, try adding more detail to your content or use a longer guide.
                                 </span>
                                 <button
                                     onClick={() => navigate({ to: "/create" })}
-                                    className="px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 font-bold rounded flex items-center gap-2 transition-colors whitespace-nowrap"
+                                    className="px-3 py-1.5 bg-accent/20 hover:bg-accent/30 text-accent font-bold rounded flex items-center gap-2 transition-colors whitespace-nowrap"
                                 >
                                     Improve my content <ArrowRight size={14} />
                                 </button>
                             </div>
                         )}
                         {isAtRisk && (
-                            <div className="bg-indigo-500/10 border-b border-indigo-500/20 text-indigo-400 py-2 px-4 flex items-center justify-center gap-2 text-sm z-10 relative">
+                            <div className="bg-accent/10 border-b border-accent/20 text-accent py-2 px-4 flex items-center justify-center gap-2 text-sm z-10 relative">
                                 <Flame size={16} />
                                 Your {currentStreak} day learning streak is at risk! Complete a task today to keep it going.
                             </div>
@@ -952,7 +943,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             const days = (new Date(e.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
                             return days < 0 && !e.completed;
                         }) && (
-                                <div className="bg-red-500/10 border-b border-red-500/20 text-red-400 py-2 px-4 flex items-center justify-center gap-2 text-sm">
+                                <div className="bg-danger/10 border-b border-danger/20 text-danger py-2 px-4 flex items-center justify-center gap-2 text-sm">
                                     <Clock size={16} />
                                     You have overdue deadlines. Check your calendar.
                                 </div>
@@ -965,37 +956,37 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto relative">
                                     {/* Streak indicator right side */}
                                     {currentStreak > 0 && (
-                                        <div className="absolute top-0 right-0 hidden md:flex items-center gap-2 bg-obsidian-light border border-indigo-500/30 text-indigo-400 px-4 py-2 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.1)]">
-                                            <Flame size={18} className={isAtRisk ? "" : "animate-pulse"} />
+                                        <div className="absolute top-0 right-0 hidden md:flex items-center gap-2 bg-surface-muted border border-accent/30 text-accent px-4 py-2 rounded-full">
+                                            <Flame size={18} className={isAtRisk ? "" : ""} />
                                             <span className="font-bold">{currentStreak} Day Streak</span>
                                         </div>
                                     )}
-                                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10">
-                                        <span className="font-sans-display text-[12px] uppercase tracking-widest text-indigo-400 font-bold">
+                                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-accent/30 bg-accent/10">
+                                        <span className="font-display text-[12px] text-accent font-bold">
                                             {roadmap.mode} Course
                                         </span>
                                     </div>
-                                    <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-[1.1]">
+                                    <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight text-text leading-[1.1]">
                                         {roadmap.title}
                                     </h1>
                                     {roadmap.summary && (
-                                        <p className="font-body text-text-secondary text-lg leading-relaxed">
+                                        <p className="font-body text-text-muted text-lg leading-relaxed">
                                             {roadmap.summary}
                                         </p>
                                     )}
                                     {roadmap.objectives && roadmap.objectives.length > 0 && (
-                                        <div className="mt-8 text-left w-full bg-obsidian-surface/40 border border-border rounded-2xl p-8 shadow-inner">
-                                            <h3 className="font-sans-display text-xs uppercase tracking-[0.2em] text-text-secondary mb-6 flex items-center gap-2">
-                                                <span className="w-4 h-[1px] bg-indigo-500" />
+                                        <div className="mt-8 text-left w-full bg-surface/40 border border-border rounded-2xl p-8 shadow-inner">
+                                            <h3 className="font-display text-xs text-text-muted mb-6 flex items-center gap-2">
+                                                <span className="w-4 h-[1px] bg-accent" />
                                                 Learning Objectives
                                             </h3>
                                             <div className="grid sm:grid-cols-2 gap-4">
                                                 {roadmap.objectives.map((obj, i) => (
                                                     <div key={i} className="flex items-start gap-4">
-                                                        <div className="w-6 h-6 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 flex flex-col items-center justify-center shrink-0 mt-0.5">
+                                                        <div className="w-6 h-6 rounded-full bg-accent/10 border border-accent/30 text-accent flex flex-col items-center justify-center shrink-0 mt-0.5">
                                                             <SearchCode size={12} />
                                                         </div>
-                                                        <p className="font-body text-text-primary text-sm leading-relaxed">{obj}</p>
+                                                        <p className="font-body text-text text-sm leading-relaxed">{obj}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -1006,20 +997,20 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 {/* Intelligent Insights Row */}
                                 <div className="grid lg:grid-cols-3 gap-6">
                                     {/* Progress Ring & Continue */}
-                                    <div id="tour-progress" className="lg:col-span-2 flex flex-col items-center justify-center bg-obsidian-surface/30 border border-border rounded-2xl p-10 backdrop-blur-md relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none" />
+                                    <div id="tour-progress" className="lg:col-span-2 flex flex-col items-center justify-center bg-surface/30 border border-border rounded-2xl p-10 relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-accent/5 to-transparent pointer-events-none" />
 
                                         <div className="flex flex-col sm:flex-row items-center gap-10">
-                                            <ProgressRing percent={progress.overall} size={140} strokeWidth={8} className="drop-shadow-[0_0_30px_rgba(99,102,241,0.2)]" />
+                                            <ProgressRing percent={progress.overall} size={140} strokeWidth={8} className="" />
 
                                             <div className="text-center sm:text-left flex flex-col items-center sm:items-start">
-                                                <h4 className="font-display text-base font-semibold text-text-primary font-medium mb-2">{getMotivationalMessage(progress.overall)}</h4>
-                                                <p className="text-sm text-text-secondary mb-8 font-sans-display uppercase tracking-widest">{progress.completedTasks} of {progress.totalTasks} Tasks Completed</p>
+                                                <h4 className="font-display text-base font-semibold text-text font-medium mb-2">{getMotivationalMessage(progress.overall)}</h4>
+                                                <p className="text-sm text-text-muted mb-8 font-display">{progress.completedTasks} of {progress.totalTasks} Tasks Completed</p>
 
                                                 <div className="flex flex-col gap-3 sm:flex-row">
                                                     <button
                                                         onClick={() => onNavigate(firstIncompleteModule.id)}
-                                                        className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-sans-display text-xs uppercase tracking-widest font-bold rounded-lg transition-all flex items-center gap-3 group drop-shadow-[0_0_15px_rgba(99,102,241,0.4)]"
+                                                        className="px-8 py-4 bg-text hover:bg-[#e6e6e6] text-page font-display text-xs font-medium rounded-full transition-all flex items-center gap-3 group"
                                                     >
                                                         Continue Learning
                                                         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -1028,7 +1019,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                         type="button"
                                                         onClick={() => setIsSrsModalOpen(true)}
                                                         disabled={dueSrsItems.length === 0 || isReadOnly}
-                                                        className="px-6 py-4 border border-border-subtle bg-obsidian-elevated text-text-primary font-sans-display text-xs uppercase tracking-widest font-bold rounded-lg transition-colors hover:border-indigo-500/40 hover:text-indigo-300 disabled:cursor-not-allowed disabled:opacity-50"
+                                                        className="px-6 py-4 border border-border bg-surface-muted text-text font-display text-xs font-bold rounded-lg transition-colors hover:border-accent/40 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
                                                     >
                                                         {dueSrsItems.length > 0 ? `Review ${dueSrsItems.length} Cards` : "No Cards Due"}
                                                     </button>
@@ -1039,65 +1030,65 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                                     {/* Smart Insights Card */}
                                     <div className="flex flex-col gap-4">
-                                        <div className="bg-obsidian-surface/40 border border-border rounded-2xl p-6 flex-1">
-                                            <h3 className="font-sans-display text-xs uppercase tracking-[0.2em] text-text-secondary mb-4 flex items-center gap-2">
-                                                <Target size={14} className="text-indigo-400" />
+                                        <div className="bg-surface/40 border border-border rounded-2xl p-6 flex-1">
+                                            <h3 className="font-display text-xs text-text-muted mb-4 flex items-center gap-2">
+                                                <Target size={14} className="text-accent" />
                                                 Your Progress
                                             </h3>
                                             <div className="space-y-4">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-sm text-text-secondary">Tasks Today</span>
-                                                    <span className="text-sm font-bold text-white flex items-center gap-2">
+                                                    <span className="text-sm text-text-muted">Tasks Today</span>
+                                                    <span className="text-sm font-bold text-text flex items-center gap-2">
                                                         {tasksCompletedToday}
-                                                        {tasksCompletedToday > tasksCompletedYesterday && <span className="text-emerald-400 text-[12px]">↑</span>}
+                                                        {tasksCompletedToday > tasksCompletedYesterday && <span className="text-accent text-[12px]">↑</span>}
                                                     </span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-sm text-text-secondary">Tasks Yesterday</span>
-                                                    <span className="text-sm text-white">{tasksCompletedYesterday}</span>
+                                                    <span className="text-sm text-text-muted">Tasks Yesterday</span>
+                                                    <span className="text-sm text-text">{tasksCompletedYesterday}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-sm text-text-secondary">Est. Remaining Time</span>
-                                                    <span className="text-sm text-white">
+                                                    <span className="text-sm text-text-muted">Est. Remaining Time</span>
+                                                    <span className="text-sm text-text">
                                                         {progress.completedTasks > 0 && progress.totalTasks > progress.completedTasks
                                                             ? formatTime((sessionTimeMs / progress.completedTasks) * (progress.totalTasks - progress.completedTasks))
                                                             : "-"}
                                                     </span>
                                                 </div>
-                                                <div className="h-[1px] bg-white/5 w-full my-2"></div>
+                                                <div className="h-[1px] bg-surface w-full my-2"></div>
                                                 {mostTimeSpentModule.module && (
                                                     <div className="flex flex-col gap-1">
-                                                        <span className="text-[12px] text-text-secondary font-sans-display uppercase tracking-widest">Most time spent on</span>
-                                                        <span className="text-sm text-indigo-300 line-clamp-1">{mostTimeSpentModule.module.title}</span>
-                                                        <span className="text-[12px] text-text-secondary">{formatTime(mostTimeSpentModule.time)}</span>
+                                                        <span className="text-[12px] text-text-muted font-display">Most time spent on</span>
+                                                        <span className="text-sm text-accent line-clamp-1">{mostTimeSpentModule.module.title}</span>
+                                                        <span className="text-[12px] text-text-muted">{formatTime(mostTimeSpentModule.time)}</span>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
 
                                         {calendarEvents.length > 0 && (
-                                            <div className="bg-obsidian-surface/40 border border-border rounded-2xl p-6 flex-1">
-                                                <h3 className="font-sans-display text-xs uppercase tracking-[0.2em] text-text-secondary mb-4 flex items-center gap-2">
-                                                    <Calendar size={14} className="text-indigo-400" />
+                                            <div className="bg-surface/40 border border-border rounded-2xl p-6 flex-1">
+                                                <h3 className="font-display text-xs text-text-muted mb-4 flex items-center gap-2">
+                                                    <Calendar size={14} className="text-accent" />
                                                     Upcoming Deadlines
                                                 </h3>
                                                 <div className="space-y-3">
                                                     {calendarEvents.slice(0, 3).map(event => {
                                                         const days = (new Date(event.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
-                                                        let color = "text-emerald-400 bg-emerald-400/10 border-emerald-400/20";
-                                                        if (days < 0) color = "text-text-secondary bg-white/5 border-border-subtle";
-                                                        else if (days < 3) color = "text-red-400 bg-red-400/10 border-red-400/20";
-                                                        else if (days < 7) color = "text-cyan-400 bg-cyan-400/10 border-cyan-400/20";
+                                                        let color = "text-accent bg-accent/10 border-accent/20";
+                                                        if (days < 0) color = "text-text-muted bg-surface border-border";
+                                                        else if (days < 3) color = "text-danger bg-danger/10 border-danger/20";
+                                                        else if (days < 7) color = "text-accent bg-accent/10 border-accent/20";
 
                                                         return (
                                                             <div key={event.id} className="flex flex-col gap-1">
                                                                 <div className="flex items-center justify-between">
-                                                                    <span className="text-base font-semibold text-text-primary line-clamp-1">{event.title}</span>
-                                                                    <span className={`text-xs uppercase font-bold px-2 py-0.5 rounded border ${color}`}>
+                                                                    <span className="text-base font-semibold text-text line-clamp-1">{event.title}</span>
+                                                                    <span className={`text-xs  font-bold px-2 py-0.5 rounded border ${color}`}>
                                                                         {days < 0 ? 'Past' : `${Math.ceil(days)}d`}
                                                                     </span>
                                                                 </div>
-                                                                <span className="text-[12px] text-text-secondary">{new Date(event.date).toLocaleDateString()}</span>
+                                                                <span className="text-[12px] text-text-muted">{new Date(event.date).toLocaleDateString()}</span>
                                                             </div>
                                                         )
                                                     })}
@@ -1115,13 +1106,13 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         { label: "Resources", value: totalResources, icon: <BookOpen size={18} /> },
                                         { label: "Videos", value: totalVideos, icon: <Video size={18} /> },
                                     ].map((stat, i) => (
-                                        <div key={i} className="bg-obsidian-surface/40 border border-border rounded-xl p-5 flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-indigo-400">
+                                        <div key={i} className="bg-surface/40 border border-border rounded-xl p-5 flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-lg bg-surface flex items-center justify-center text-accent">
                                                 {stat.icon}
                                             </div>
                                             <div>
-                                                <div className="font-display text-2xl text-white">{stat.value}</div>
-                                                <div className="font-sans-display text-xs uppercase tracking-widest text-text-secondary">{stat.label}</div>
+                                                <div className="font-display text-2xl text-text">{stat.value}</div>
+                                                <div className="font-display text-xs text-text-muted">{stat.label}</div>
                                             </div>
                                         </div>
                                     ))}
@@ -1129,8 +1120,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                                 {/* Achievements Section */}
                                 <div>
-                                    <h3 className="font-sans-display text-xs uppercase tracking-[0.15em] text-text-secondary mb-6 flex items-center gap-2">
-                                        <Trophy size={14} className="text-indigo-500" />
+                                    <h3 className="font-display text-xs text-text-muted mb-6 flex items-center gap-2">
+                                        <Trophy size={14} className="text-accent" />
                                         Achievements
                                     </h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
@@ -1138,17 +1129,17 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                             <div
                                                 key={badge.id}
                                                 className={`relative flex flex-col items-center text-center p-4 rounded-xl border transition-all ${badge.unlockedAt
-                                                    ? "bg-indigo-500/10 border-indigo-500/30 hover:bg-indigo-500/20"
-                                                    : "bg-white/5 border-border opacity-50 grayscale hover:grayscale-0"
+                                                    ? "bg-accent/10 border-accent/30 hover:bg-accent/20"
+                                                    : "bg-surface border-border opacity-50 grayscale hover:grayscale-0"
                                                     }`}
                                                 title={badge.description}
                                             >
                                                 <div className="text-3xl mb-2">{badge.icon}</div>
-                                                <div className="text-xs font-bold text-white leading-tight mb-1">{badge.title}</div>
+                                                <div className="text-xs font-bold text-text leading-tight mb-1">{badge.title}</div>
                                                 {!badge.unlockedAt && (
-                                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-obsidian/90 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity rounded-xl p-2 z-10">
-                                                        <Lock size={12} className="mb-1 text-text-secondary" />
-                                                        <span className="text-[9px] text-text-secondary">{badge.description}</span>
+                                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-page/90 opacity-0 hover:opacity-100 transition-opacity rounded-xl p-2 z-10">
+                                                        <Lock size={12} className="mb-1 text-text-muted" />
+                                                        <span className="text-xs text-text-muted">{badge.description}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -1159,8 +1150,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 {/* Module Grid */}
                                 {moduleSections.length > 0 && (
                                     <div>
-                                        <h3 className="font-sans-display text-xs uppercase tracking-[0.15em] text-text-secondary mb-6 flex items-center gap-2">
-                                            <span className="w-4 h-[1px] bg-indigo-500" />
+                                        <h3 className="font-display text-xs text-text-muted mb-6 flex items-center gap-2">
+                                            <span className="w-4 h-[1px] bg-accent" />
                                             Course Modules
                                         </h3>
                                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -1174,40 +1165,40 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                         key={mod.id}
                                                         id={idx === 0 ? "tour-first-module" : undefined}
                                                         onClick={() => onNavigate(mod.id)}
-                                                        className="group relative flex flex-col items-start bg-obsidian-surface/30 border border-border hover:border-indigo-500/30 rounded-xl p-6 text-left transition-all hover:bg-obsidian-surface/80 overflow-hidden"
+                                                        className="group relative flex flex-col items-start bg-surface/30 border border-border hover:border-accent/30 rounded-xl p-6 text-left transition-all hover:bg-surface/80 overflow-hidden"
                                                     >
-                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-indigo-500/10 transition-colors" />
+                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-accent/10 transition-colors" />
 
                                                         <div className="flex items-center justify-between w-full mb-4">
-                                                            <span className="font-mono text-[12px] text-text-secondary/50 group-hover:text-indigo-400 transition-colors">
+                                                            <span className="font-mono text-[12px] text-text-muted/50 group-hover:text-accent transition-colors">
                                                                 MOD {String(idx + 1).padStart(2, "0")}
                                                             </span>
-                                                            <span className={`font-sans-display text-[8px] uppercase tracking-widest px-2 py-1 rounded border ${status === "Complete" ? "border-emerald-500/30 text-emerald-400" :
-                                                                status === "In Progress" ? "border-indigo-500/30 text-indigo-400" :
-                                                                    "border-border-subtle text-text-secondary"
+                                                            <span className={`font-display text-xs   px-2 py-1 rounded border ${status === "Complete" ? "border-accent/30 text-accent" :
+                                                                status === "In Progress" ? "border-accent/30 text-accent" :
+"border-border text-text-muted"
                                                                 }`}>
                                                                 {status}
                                                             </span>
                                                         </div>
 
-                                                        <h4 className="font-display text-lg text-white mb-2 line-clamp-2">
+                                                        <h4 className="font-display text-lg text-text mb-2 line-clamp-2">
                                                             {mod.title}
                                                         </h4>
 
                                                         {mod.type === "module" && (mod as ModuleSectionType).data.description && (
-                                                            <p className="text-text-secondary text-sm line-clamp-2 mb-6 font-body">
+                                                            <p className="text-text-muted text-sm line-clamp-2 mb-6 font-body">
                                                                 {(mod as ModuleSectionType).data.description}
                                                             </p>
                                                         )}
 
                                                         <div className="mt-auto w-full">
-                                                            <div className="flex items-center justify-between font-sans-display text-xs uppercase tracking-widest text-text-secondary mb-2">
+                                                            <div className="flex items-center justify-between font-display text-xs text-text-muted mb-2">
                                                                 <span>{tasksCount} tasks</span>
                                                                 <span>{modPercent}%</span>
                                                             </div>
-                                                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                                            <div className="h-1 bg-surface rounded-full overflow-hidden">
                                                                 <div
-                                                                    className={`h-full rounded-full transition-all duration-700 ${modPercent === 100 ? "bg-emerald-500" : "bg-indigo-500"}`}
+                                                                    className={`h-full rounded-full transition-all duration-700 ${modPercent === 100 ? "bg-accent" : "bg-accent"}`}
                                                                     style={{ width: `${modPercent}%` }}
                                                                 />
                                                             </div>
@@ -1296,29 +1287,29 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             {/* QUICK ACTIONS FAB */}
             {!isReadOnly && (
                 <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-                    <div className={`flex flex-col items-end gap-2 transition-all duration-300 origin-bottom right-0 ${quickActionsOpen ? "scale-100 opacity-100 pointer-events-auto" : "scale-90 opacity-0 pointer-events-none"}`}>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-obsidian-elevated border border-border-subtle rounded-full text-sm font-bold shadow-lg hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors">
+                    <div className={`flex flex-col items-end gap-2 transition-all duration-300 origin-bottom right-0 ${quickActionsOpen ? " opacity-100 pointer-events-auto" : " opacity-0 pointer-events-none"}`}>
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
                             <Plus size={16} /> Add Note
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-obsidian-elevated border border-border-subtle rounded-full text-sm font-bold shadow-lg hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
                             <Plus size={16} /> Add Resource
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-obsidian-elevated border border-border-subtle rounded-full text-sm font-bold shadow-lg hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
                             <Plus size={16} /> Add Video
                         </button>
                         <button
                             onClick={() => setShareModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-obsidian-elevated border border-border-subtle rounded-full text-sm font-bold shadow-lg hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors"
                         >
                             <Share size={16} /> Share Workspace
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-obsidian-elevated border border-border-subtle rounded-full text-sm font-bold shadow-lg hover:border-amber-500/50 hover:bg-amber-500/10 hover:text-amber-300 transition-colors">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-warning/50 hover:bg-warning/10 hover:text-warning transition-colors">
                             <RefreshCw size={16} /> Regenerate Workspace
                         </button>
                     </div>
                     <button
                         onClick={() => setQuickActionsOpen(!quickActionsOpen)}
-                        className="w-14 h-14 bg-indigo-600 rounded-full flex items-center justify-center text-white shadow-xl hover:bg-indigo-500 hover:scale-105 transition-all duration-300"
+                        className="w-14 h-14 bg-text rounded-full flex items-center justify-center text-page shadow-xl hover:bg-[#e6e6e6] transition-all duration-300"
                     >
                         <Plus className={`transition-transform duration-300 ${quickActionsOpen ? "rotate-45" : ""}`} size={24} />
                     </button>
@@ -1335,11 +1326,11 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             {/* TOUR OVERLAY */}
             {tourStep >= 0 && (
                 <div className="fixed inset-0 z-[50] pointer-events-none">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 pointer-events-auto" />
+                    <div className="absolute inset-0 bg-black/60 transition-opacity duration-300 pointer-events-auto" />
 
                     {tourTarget && (
                         <div
-                            className="absolute bg-obsidian-elevated border border-border-subtle rounded-2xl p-6 shadow-2xl z-[70] shadow-[0_10px_40px_rgba(99,102,241,0.2)] animate-scale-in flex flex-col pointer-events-auto w-72"
+                            className="absolute bg-surface-muted border border-border rounded-2xl p-6 shadow-2xl z-[70] animate-scale-in flex flex-col pointer-events-auto w-72"
                             style={{
                                 top: tourStep === 0 ? Math.max(20, tourTarget.top) // Sidebar
                                     : tourStep === 1 ? tourTarget.bottom + 20 // Progress ring
@@ -1351,21 +1342,21 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 transition: 'top 0.4s ease, left 0.4s ease'
                             }}
                         >
-                            <h4 className="font-display text-base font-semibold text-text-primary text-white mb-2 text-indigo-100 drop-shadow-sm">
+                            <h4 className="font-display text-base font-semibold text-text mb-2 text-accent-strong drop-shadow-sm">
                                 {tourStep === 0 ? "These are your course modules" :
                                     tourStep === 1 ? "Your completion is tracked here" :
                                         tourStep === 2 ? "Click any module to start learning" :
-                                            "Mark modules done as you go"}
+"Mark modules done as you go"}
                             </h4>
-                            <p className="font-body text-text-secondary text-sm mb-6">
+                            <p className="font-body text-text-muted text-sm mb-6">
                                 {tourStep === 0 ? "Navigate between different sections, tools, and materials here." :
                                     tourStep === 1 ? "Watch this ring fill up as you complete tasks throughout the course." :
                                         tourStep === 2 ? "Dive into your first generated learning module." :
-                                            "Check this off when you finish all tasks to boost your progress."}
+"Check this off when you finish all tasks to boost your progress."}
                             </p>
-                            <div className="flex items-center justify-between mt-auto pt-4 border-t border-border-subtle">
-                                <button onClick={endTour} className="text-xs text-text-secondary hover:text-white transition-colors">End Tour</button>
-                                <button onClick={handleNextTourStep} className="px-5 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs">
+                            <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
+                                <button onClick={endTour} className="text-xs text-text-muted hover:text-text transition-colors">End Tour</button>
+                                <button onClick={handleNextTourStep} className="px-5 py-2 rounded-full bg-text hover:bg-[#e6e6e6] text-page font-medium text-xs">
                                     Next →
                                 </button>
                             </div>
@@ -1376,34 +1367,34 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
             {/* Version History Drawer */}
             {showVersionHistory && (
-                <div className="fixed inset-0 z-50 flex justify-end bg-obsidian/50 backdrop-blur-sm" onClick={() => setShowVersionHistory(false)}>
-                    <div className="w-full max-w-md bg-obsidian border-l border-border h-full shadow-2xl animate-in slide-in-from-right duration-300 overflow-y-auto" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-obsidian z-10">
-                            <h3 className="font-sans-display text-xs uppercase tracking-widest text-text-primary font-bold">Version History</h3>
+                <div className="fixed inset-0 z-50 flex justify-end bg-page/50" onClick={() => setShowVersionHistory(false)}>
+                    <div className="w-full max-w-md bg-page border-l border-border h-full shadow-2xl animate-in slide-in-from-right duration-300 overflow-y-auto" onClick={e => e.stopPropagation()}>
+                        <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-page z-10">
+                            <h3 className="font-display text-xs text-text font-bold">Version History</h3>
                             <button
                                 onClick={() => setShowVersionHistory(false)}
                                 aria-label="Close version history"
-                                className="text-text-secondary hover:text-white"
+                                className="text-text-muted hover:text-text"
                             >
                                 <X size={16} />
                             </button>
                         </div>
                         <div className="p-6 space-y-4">
                             {versions.length === 0 ? (
-                                <p className="text-text-secondary text-sm text-center py-8">No saved versions yet.</p>
+                                <p className="text-text-muted text-sm text-center py-8">No saved versions yet.</p>
                             ) : (
                                 versions.map((v, i) => (
-                                    <div key={i} className="bg-obsidian-surface border border-border rounded-xl p-4 flex flex-col gap-3">
+                                    <div key={i} className="bg-surface border border-border rounded-xl p-4 flex flex-col gap-3">
                                         <div className="flex items-center justify-between">
-                                            <span className="font-bold text-text-primary">{v.label}</span>
+                                            <span className="font-bold text-text">{v.label}</span>
                                             <button
                                                 onClick={() => setVersionToRestore(v)}
-                                                className="text-xs bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 px-2 py-1 rounded border border-indigo-500/30"
+                                                className="text-xs bg-accent/10 text-accent hover:bg-accent/20 px-2 py-1 rounded border border-accent/30"
                                             >
                                                 Restore
                                             </button>
                                         </div>
-                                        <div className="text-xs text-text-secondary">
+                                        <div className="text-xs text-text-muted">
                                             {v.sections?.length || 0} modules • {new Date(v.createdAt).toLocaleDateString()}
                                         </div>
                                     </div>
@@ -1455,9 +1446,9 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             {/* Watermark */}
             {!hideWatermark && (
                 <div className="fixed bottom-3 right-3 z-50 pointer-events-none opacity-40 hover:opacity-100 transition-opacity">
-                    <div className="flex items-center gap-1.5 px-2 py-1 bg-obsidian-surface backdrop-blur-sm border border-border rounded-md">
-                        <span className="text-[9px] uppercase tracking-tighter text-text-secondary font-bold">Powered by</span>
-                        <span className="text-[9px] uppercase tracking-widest text-white font-black">ZNS <span className="text-indigo-400">NEXUS</span></span>
+                    <div className="flex items-center gap-1.5 px-2 py-1 bg-surface border border-border rounded-md">
+                        <span className="text-xs tracking-tighter text-text-muted font-bold">Powered by</span>
+                        <span className="text-xs text-text font-semibold">ZNS <span className="text-accent">NEXUS</span></span>
                     </div>
                 </div>
             )}

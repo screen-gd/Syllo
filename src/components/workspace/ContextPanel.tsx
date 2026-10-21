@@ -44,15 +44,15 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
                 <div className="flex items-start justify-between">
                     <div>
                         <div className="flex items-center gap-2 mb-3">
-                            <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 text-[10px] uppercase tracking-widest font-bold">Task</span>
+                            <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs font-bold">Task</span>
                             {task.priority && (
                                 <span className={cn(
-                                    "px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-bold",
-                                    task.priority === 'core' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-[var(--color-surface-muted)] text-text-secondary'
+"px-2 py-0.5 rounded text-xs   font-bold",
+                                    task.priority === 'core' ? 'bg-accent/10 text-accent' : 'bg-[var(--color-surface-muted)] text-text-muted'
                                 )}>{task.priority}</span>
                             )}
                         </div>
-                        <h2 className={cn("text-2xl font-display text-text-primary leading-tight", task.completed && "line-through text-text-muted")}>
+                        <h2 className={cn("text-2xl font-display text-text leading-tight", task.completed && "line-through text-text-muted")}>
                             {task.title}
                         </h2>
                     </div>
@@ -61,10 +61,10 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
                 <button 
                     onClick={() => onUpdateTask(moduleId, task.id)}
                     className={cn(
-                        "w-full flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
+"w-full flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
                         task.completed 
-                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20" 
-                            : "bg-indigo-600 border-indigo-500 text-white hover:bg-indigo-500"
+                            ? "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20" 
+                            : "bg-text border-accent text-page hover:bg-[#e6e6e6]"
                     )}
                 >
                     {task.completed ? <><CheckCircle2 size={16} /> Completed</> : "Mark as Complete"}
@@ -72,14 +72,14 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
 
                 {task.description && (
                     <div className="p-5 rounded-xl border border-border bg-[var(--color-surface)]">
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-3">Description</h4>
-                        <p className="text-sm text-text-primary whitespace-pre-wrap leading-relaxed">{task.description}</p>
+                        <h4 className="text-xs font-semibold text-text-muted mb-3">Description</h4>
+                        <p className="text-sm text-text whitespace-pre-wrap leading-relaxed">{task.description}</p>
                     </div>
                 )}
 
                 {(task.subtasks || []).length > 0 && (
                     <div>
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">Checklist ({task.subtasks!.filter(s=>s.completed).length}/{task.subtasks!.length})</h4>
+                        <h4 className="text-xs font-semibold text-text-muted mb-4">Checklist ({task.subtasks!.filter(s=>s.completed).length}/{task.subtasks!.length})</h4>
                         <div className="space-y-2">
                             {task.subtasks!.map(sub => (
                                 <button
@@ -88,12 +88,12 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
                                     className="w-full flex items-start gap-3 p-3 rounded-lg border border-border bg-[var(--color-surface)] hover:border-text-soft transition-colors text-left group"
                                 >
                                     <div className={cn(
-                                        "mt-0.5 shrink-0 w-4 h-4 rounded-sm border flex items-center justify-center transition-colors",
-                                        sub.completed ? "bg-emerald-500 border-emerald-500 text-obsidian" : "border-text-muted group-hover:border-emerald-500/50"
+"mt-0.5 shrink-0 w-4 h-4 rounded-sm border flex items-center justify-center transition-colors",
+                                        sub.completed ? "bg-accent border-accent text-page" : "border-text-muted group-hover:border-accent/50"
                                     )}>
                                         {sub.completed && <CheckCircle2 size={12} />}
                                     </div>
-                                    <span className={cn("text-sm", sub.completed ? "text-text-muted line-through" : "text-text-primary")}>
+                                    <span className={cn("text-sm", sub.completed ? "text-text-muted line-through" : "text-text")}>
                                         {sub.title}
                                     </span>
                                 </button>
@@ -114,19 +114,19 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
             <div className="space-y-8 animate-in fade-in duration-300">
                 <div>
                      <div className="flex items-center gap-2 mb-3">
-                        <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 text-[10px] uppercase tracking-widest font-bold">Module</span>
+                        <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs font-bold">Module</span>
                     </div>
-                    <h2 className="text-3xl font-display text-text-primary leading-tight">{mod.title}</h2>
+                    <h2 className="text-3xl font-display text-text leading-tight">{mod.title}</h2>
                 </div>
 
                 <div className="flex gap-2">
                     <button 
                         onClick={() => onUpdateModule(mod.id)}
                         className={cn(
-                            "flex-1 flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
+"flex-1 flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
                             data.completed 
-                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20" 
-                                : "bg-obsidian-surface border-border text-text-primary hover:border-text-soft"
+                                ? "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20" 
+                                : "bg-surface border-border text-text hover:border-text-soft"
                         )}
                     >
                         {data.completed ? <><CheckCircle2 size={16} /> Completed</> : "Mark Module Complete"}
@@ -135,20 +135,20 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
 
                 {data.description && (
                     <div>
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-3">Overview</h4>
-                        <p className="text-base text-text-secondary leading-relaxed">{data.description}</p>
+                        <h4 className="text-xs font-semibold text-text-muted mb-3">Overview</h4>
+                        <p className="text-base text-text-muted leading-relaxed">{data.description}</p>
                     </div>
                 )}
 
                 {data.videos && data.videos.length > 0 && (
                     <div>
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">Video Resources ({data.videos.length})</h4>
+                        <h4 className="text-xs font-semibold text-text-muted mb-4">Video Resources ({data.videos.length})</h4>
                         <div className="space-y-4">
                             {data.videos.map(video => (
                                 <div key={video.id} className="rounded-xl overflow-hidden border border-border">
                                     <SmartEmbed url={video.url} title={video.title} />
                                     <div className="p-3 bg-[var(--color-surface)] border-t border-border">
-                                        <p className="text-sm font-medium text-text-primary truncate">{video.title}</p>
+                                        <p className="text-sm font-medium text-text truncate">{video.title}</p>
                                     </div>
                                 </div>
                             ))}
@@ -158,7 +158,7 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
 
                 {data.resources && data.resources.length > 0 && (
                     <div>
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-4">Learning Materials ({data.resources.length})</h4>
+                        <h4 className="text-xs font-semibold text-text-muted mb-4">Learning Materials ({data.resources.length})</h4>
                         <div className="grid gap-3">
                             {data.resources.map(res => (
                                 <a 
@@ -168,12 +168,12 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
                                     rel="noreferrer"
                                     className="flex items-start gap-4 p-4 rounded-xl border border-border bg-[var(--color-surface)] hover:border-text-soft hover:shadow-md transition-all group"
                                 >
-                                    <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-muted)] flex items-center justify-center text-text-muted shrink-0 group-hover:text-indigo-400 transition-colors">
+                                    <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-muted)] flex items-center justify-center text-text-muted shrink-0 group-hover:text-accent transition-colors">
                                         {resourceTypeIcon(res.type)}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h5 className="font-medium text-sm text-text-primary truncate">{res.title}</h5>
-                                        {res.description && <p className="text-xs text-text-secondary line-clamp-1 mt-1">{res.description}</p>}
+                                        <h5 className="font-medium text-sm text-text truncate">{res.title}</h5>
+                                        {res.description && <p className="text-xs text-text-muted line-clamp-1 mt-1">{res.description}</p>}
                                     </div>
                                 </a>
                             ))}
@@ -192,8 +192,8 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
                     <button 
                         onClick={() => setActiveTab("content")}
                         className={cn(
-                            "pb-4 text-sm font-semibold transition-colors border-b-2",
-                            activeTab === "content" ? "border-indigo-500 text-text-primary" : "border-transparent text-text-muted hover:text-text-primary"
+"pb-4 text-sm font-semibold transition-colors border-b-2",
+                            activeTab === "content" ? "border-accent text-text" : "border-transparent text-text-muted hover:text-text"
                         )}
                     >
                         Content
@@ -201,8 +201,8 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
                     <button 
                         onClick={() => setActiveTab("notes")}
                         className={cn(
-                            "pb-4 text-sm font-semibold transition-colors border-b-2",
-                            activeTab === "notes" ? "border-indigo-500 text-text-primary" : "border-transparent text-text-muted hover:text-text-primary"
+"pb-4 text-sm font-semibold transition-colors border-b-2",
+                            activeTab === "notes" ? "border-accent text-text" : "border-transparent text-text-muted hover:text-text"
                         )}
                     >
                         My Notes
@@ -210,7 +210,7 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
                 </div>
                 <button 
                     onClick={onClose} 
-                    className="mb-4 p-2 rounded-lg text-text-muted hover:bg-[var(--color-surface-muted)] hover:text-text-primary transition-colors"
+                    className="mb-4 p-2 rounded-lg text-text-muted hover:bg-[var(--color-surface-muted)] hover:text-text transition-colors"
                 >
                     <X size={20} />
                 </button>
@@ -223,7 +223,7 @@ export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, o
                 ) : (
                     <div className="h-full flex flex-col">
                         <textarea 
-                            className="flex-1 w-full p-4 bg-transparent border border-border rounded-xl resize-none focus:outline-none focus:border-indigo-500 text-sm leading-relaxed"
+                            className="flex-1 w-full p-4 bg-transparent border border-border rounded-xl resize-none focus:outline-none focus:border-accent text-sm leading-relaxed"
                             placeholder={"Type your notes for this " + selectedNode.type + " here..."}
                         />
                     </div>

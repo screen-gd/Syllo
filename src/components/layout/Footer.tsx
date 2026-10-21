@@ -16,7 +16,7 @@ export default function Footer() {
                     </span>
                     <div>
                         <p className="font-display text-2xl tracking-[-0.04em] text-text">RoadMap Studio</p>
-                        <p className="text-xs uppercase tracking-[0.18em] text-text-soft">Structured workspace platform</p>
+                        <p className="text-xs text-text-soft">Structured workspace platform</p>
                     </div>
                 </div>
 
@@ -25,14 +25,14 @@ export default function Footer() {
                         <Link
                             key={link.href}
                             to={link.href}
-                            className="border-b border-transparent pb-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-text-muted transition-colors hover:border-border hover:text-text"
+                            className="border-b border-transparent pb-1 text-[12px] font-semibold text-text-muted transition-colors hover:border-border hover:text-text"
                         >
                             {link.label}
                         </Link>
                     ))}
                 </nav>
 
-                <p className="text-xs uppercase tracking-[0.16em] text-text-soft">&copy; {new Date().getFullYear()}</p>
+                <p className="text-xs text-text-soft">&copy; {new Date().getFullYear()}</p>
             </div>
         </footer>
     );

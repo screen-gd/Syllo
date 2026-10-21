@@ -104,12 +104,12 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/60 transition-opacity" onClick={onClose} />
 
-            <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-border-subtle bg-obsidian-elevated shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-surface-muted shadow-2xl animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between border-b border-border px-6 py-4">
-                    <h2 className="font-display text-xl text-white">Share & Embed</h2>
-                    <button onClick={onClose} className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-white/5 hover:text-white">
+                    <h2 className="font-display text-xl text-text">Share & Embed</h2>
+                    <button onClick={onClose} className="rounded-lg p-2 text-text-muted transition-colors hover:bg-surface hover:text-text">
                         <X size={20} />
                     </button>
                 </div>
@@ -123,10 +123,10 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                            className={`flex-1 border-b-2 px-4 py-3 text-sm font-bold uppercase tracking-widest transition-colors ${
+                            className={`flex-1 border-b-2 px-4 py-3 text-sm font-bold   transition-colors ${
                                 activeTab === tab.id
-                                    ? "border-indigo-500 bg-indigo-500/5 text-indigo-400"
-                                    : "border-transparent text-text-secondary hover:bg-white/5 hover:text-text-primary"
+                                    ? "border-accent bg-accent/5 text-accent"
+                                    : "border-transparent text-text-muted hover:bg-surface hover:text-text"
                             }`}
                         >
                             {tab.label}
@@ -138,19 +138,19 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
                     {activeTab === "share" ? (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="mb-2 font-sans-display text-xs uppercase tracking-[0.2em] text-text-secondary">Read-only link</h3>
+                                <h3 className="mb-2 font-display text-xs text-text-muted">Read-only link</h3>
                                 {isShareable ? (
                                     <>
-                                        <p className="mb-4 text-sm text-text-secondary">
+                                        <p className="mb-4 text-sm text-text-muted">
                                             Share this unique URL. Visitors will see the full workspace, track their own progress locally, but cannot edit your original content.
                                         </p>
                                         <div className="flex items-center gap-2">
-                                            <div className="flex-1 overflow-x-auto truncate rounded-lg border border-border-subtle bg-obsidian-surface px-4 py-3 font-mono text-sm text-white">
+                                            <div className="flex-1 overflow-x-auto truncate rounded-lg border border-border bg-surface px-4 py-3 font-mono text-sm text-text">
                                                 {shareUrl}
                                             </div>
                                             <button
                                                 onClick={() => handleCopy(shareUrl, "link")}
-                                                className="flex shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 py-3 font-bold text-white transition-colors hover:bg-indigo-500"
+                                                className="flex shrink-0 items-center gap-2 rounded-full bg-text px-4 py-3 font-medium text-page transition-colors hover:bg-[#e6e6e6]"
                                             >
                                                 <Copy size={16} />
                                                 {copiedLink ? "Copied!" : "Copy Link"}
@@ -158,9 +158,9 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="rounded-xl border border-border-subtle bg-obsidian-surface px-4 py-4 text-sm text-text-secondary">
+                                    <div className="rounded-xl border border-border bg-surface px-4 py-4 text-sm text-text-muted">
                                         <div className="flex items-start gap-3">
-                                            {isSyncedAccount ? <Globe2 size={18} className="mt-0.5 text-indigo-300" /> : <Lock size={18} className="mt-0.5 text-amber-300" />}
+                                            {isSyncedAccount ? <Globe2 size={18} className="mt-0.5 text-accent" /> : <Lock size={18} className="mt-0.5 text-warning" />}
                                             <div className="space-y-3">
                                                 <p>
                                                     {isSyncedAccount
@@ -172,7 +172,7 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
                                                         type="button"
                                                         onClick={() => void handleVisibilityChange(true)}
                                                         disabled={isPublishing}
-                                                        className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 font-bold text-white transition-colors hover:bg-indigo-500 disabled:opacity-60"
+                                                        className="inline-flex items-center gap-2 rounded-full bg-text px-4 py-2 font-medium text-page transition-colors hover:bg-[#e6e6e6] disabled:opacity-60"
                                                     >
                                                         {isPublishing ? <Loader2 size={16} className="animate-spin" /> : <Globe2 size={16} />}
                                                         Make public
@@ -185,7 +185,7 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
                             </div>
 
                             {publishMessage ? (
-                                <div className="rounded-xl border border-border-subtle bg-obsidian-surface px-4 py-4 text-sm text-text-secondary">
+                                <div className="rounded-xl border border-border bg-surface px-4 py-4 text-sm text-text-muted">
                                     {publishMessage}
                                 </div>
                             ) : null}
@@ -197,17 +197,17 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
                                             type="button"
                                             onClick={() => void handleVisibilityChange(false)}
                                             disabled={isPublishing}
-                                            className="inline-flex items-center gap-2 rounded-lg border border-border-subtle px-4 py-2 font-bold text-text-primary transition-colors hover:bg-white/5 disabled:opacity-60"
+                                            className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 font-bold text-text transition-colors hover:bg-surface disabled:opacity-60"
                                         >
                                             {isPublishing ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
                                             Make private
                                         </button>
                                     ) : null}
 
-                                    <div className="flex gap-3 rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-amber-400/90">
+                                    <div className="flex gap-3 rounded-xl border border-warning/20 bg-warning/10 p-4 text-sm text-warning/90">
                                         <ExternalLink size={20} className="mt-0.5 shrink-0" />
                                         <div>
-                                            <strong className="mb-1 block font-bold text-amber-400">Testing the link</strong>
+                                            <strong className="mb-1 block font-bold text-warning">Testing the link</strong>
                                             Try opening the link in an Incognito window to see exactly what your users will experience.
                                         </div>
                                     </div>
@@ -221,17 +221,17 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
                             {isShareable ? (
                                 <>
                                     <div>
-                                        <h3 className="mb-2 font-sans-display text-xs uppercase tracking-[0.2em] text-text-secondary">iframe HTML</h3>
-                                        <p className="mb-4 text-sm text-text-secondary">
+                                        <h3 className="mb-2 font-display text-xs text-text-muted">iframe HTML</h3>
+                                        <p className="mb-4 text-sm text-text-muted">
                                             Embed this workspace on your own website, Notion, or LMS (like Kajabi or Teachable).
                                         </p>
                                         <div className="flex items-start gap-2">
-                                            <div className="flex-1 overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-border-subtle bg-obsidian-surface p-4 font-mono text-xs text-indigo-200">
+                                            <div className="flex-1 overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-border bg-surface p-4 font-mono text-xs text-accent-strong">
                                                 {embedCode}
                                             </div>
                                             <button
                                                 onClick={() => handleCopy(embedCode, "embed")}
-                                                className="flex shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 py-3 font-bold text-white transition-colors hover:bg-indigo-500"
+                                                className="flex shrink-0 items-center gap-2 rounded-full bg-text px-4 py-3 font-medium text-page transition-colors hover:bg-[#e6e6e6]"
                                             >
                                                 <Code size={16} />
                                                 {copiedEmbed ? "Copied!" : "Copy Code"}
@@ -240,14 +240,14 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
                                     </div>
 
                                     <div>
-                                        <h3 className="mb-3 font-sans-display text-xs uppercase tracking-[0.2em] text-text-secondary">Live Preview</h3>
-                                        <div className="relative h-64 overflow-hidden rounded-xl border border-border-subtle bg-obsidian">
+                                        <h3 className="mb-3 font-display text-xs text-text-muted">Live Preview</h3>
+                                        <div className="relative h-64 overflow-hidden rounded-xl border border-border bg-page">
                                             <iframe src={embedUrl} className="h-full w-full border-0 pointer-events-none" />
                                         </div>
                                     </div>
                                 </>
                             ) : (
-                                <div className="rounded-xl border border-border-subtle bg-obsidian-surface px-4 py-4 text-sm text-text-secondary">
+                                <div className="rounded-xl border border-border bg-surface px-4 py-4 text-sm text-text-muted">
                                     Publish the workspace first to generate a working embed snippet.
                                 </div>
                             )}
@@ -256,31 +256,31 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
 
                     {activeTab === "export" ? (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <p className="mb-6 text-sm text-text-secondary">
+                            <p className="mb-6 text-sm text-text-muted">
                                 Download your workspace content to use elsewhere or backup.
                             </p>
 
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <button
                                     onClick={handleExportMD}
-                                    className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-border-subtle bg-obsidian-surface/30 p-8 text-center transition-all hover:border-indigo-500/50 hover:bg-indigo-500/5"
+                                    className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-border bg-surface/30 p-8 text-center transition-all hover:border-accent/50 hover:bg-accent/5"
                                 >
-                                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 transition-transform group-hover:scale-110">
+                                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent transition-transform">
                                         <Download size={24} />
                                     </div>
-                                    <span className="mb-1 font-display text-lg text-white">Markdown (.md)</span>
-                                    <span className="text-[12px] text-text-secondary">Clean text format for Notion, Obsidian, or GitHub</span>
+                                    <span className="mb-1 font-display text-lg text-text">Markdown (.md)</span>
+                                    <span className="text-[12px] text-text-muted">Clean text format for Notion, Obsidian, or GitHub</span>
                                 </button>
 
                                 <button
                                     onClick={handleExportJSON}
-                                    className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-border-subtle bg-obsidian-surface/30 p-8 text-center transition-all hover:border-emerald-500/50 hover:bg-emerald-500/5"
+                                    className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border border-border bg-surface/30 p-8 text-center transition-all hover:border-accent/50 hover:bg-accent/5"
                                 >
-                                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 transition-transform group-hover:scale-110">
+                                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent transition-transform">
                                         <Code size={24} />
                                     </div>
-                                    <span className="mb-1 font-display text-lg text-white">Raw Data (.json)</span>
-                                    <span className="text-[12px] text-text-secondary">Structured data for developers or backup</span>
+                                    <span className="mb-1 font-display text-lg text-text">Raw Data (.json)</span>
+                                    <span className="text-[12px] text-text-muted">Structured data for developers or backup</span>
                                 </button>
                             </div>
                         </div>

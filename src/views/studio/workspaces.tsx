@@ -67,13 +67,10 @@ export default function WorkspacesPage() {
     return (
         <div className="studio-page">
             <header className="app-header-block">
-                <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-                    <div className="max-w-2xl">
-                        <p className="eyebrow">Library</p>
-                        <h1 className="mt-3 text-4xl font-display leading-none text-text-primary md:text-5xl">Workspaces</h1>
-                        <p className="mt-4 text-sm leading-7 text-text-secondary">
-                            Open, sort, and continue work from one place.
-                        </p>
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div className="flex max-w-2xl flex-col gap-1.5">
+                        <h1>Workspaces</h1>
+                        <p className="text-sm text-text-muted">Open, sort and continue your workspaces.</p>
                     </div>
 
                     <Link to="/create" className="button-primary shrink-0">
@@ -90,8 +87,8 @@ export default function WorkspacesPage() {
                             <HardDrive size={18} />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-text-primary">Local-only storage</p>
-                            <p className="mt-1 text-sm leading-6 text-text-secondary">
+                            <p className="text-sm font-semibold text-text">Local-only storage</p>
+                            <p className="mt-1 text-sm leading-6 text-text-muted">
                                 Everything stays in this browser. No account or cloud sync required.
                             </p>
                         </div>
@@ -146,7 +143,7 @@ export default function WorkspacesPage() {
 
                 {mounted && filteredRoadmaps.length > 0 && (
                     <div className="flex items-center border-b border-border pb-3">
-                        <div className="inline-flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-primary">
+                        <div className="inline-flex items-center gap-3 text-xs font-semibold text-text">
                             <span>{filteredRoadmaps.length}</span>
                             <span>{filteredRoadmaps.length === 1 ? "workspace" : "workspaces"}</span>
                             {filter !== "all" && (
@@ -178,10 +175,10 @@ export default function WorkspacesPage() {
                         </div>
                     ) : (
                         <div className="studio-empty mt-8 py-12">
-                            <h2 className="text-2xl font-display text-text-primary">
+                            <h2 className="text-2xl font-display text-text">
                                 {roadmaps.length === 0 ? "No workspaces yet." : "Nothing matches the current view."}
                             </h2>
-                            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-text-secondary">
+                            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-text-muted">
                                 {roadmaps.length === 0
                                     ? "Create the first workspace and it will appear here as a clean, sortable library."
                                     : "Adjust the filters or sorting to bring another set of workspaces back into view."}

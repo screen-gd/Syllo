@@ -51,11 +51,11 @@ export default function GalleryCard({ item }: { item: PublicRoadmapCard }) {
             <CardHeader className="pb-4">
                 <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-sm border border-border px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-text-secondary">
+                        <span className="rounded-sm border border-border px-2 py-1 text-xs text-text-muted">
                             {item.contentType || "Template"}
                         </span>
                         {item.difficulty ? (
-                            <span className={cn("text-[11px] font-medium uppercase tracking-[0.14em]", difficultyTone[item.difficulty] ?? "text-text-muted")}>
+                            <span className={cn("text-xs font-medium", difficultyTone[item.difficulty] ?? "text-text-muted")}>
                                 {item.difficulty}
                             </span>
                         ) : null}
@@ -65,7 +65,7 @@ export default function GalleryCard({ item }: { item: PublicRoadmapCard }) {
             </CardHeader>
 
             <CardContent className="flex flex-1 flex-col pt-0">
-                <p className="line-clamp-2 text-sm leading-6 text-text-secondary">
+                <p className="line-clamp-2 text-sm leading-6 text-text-muted">
                     {item.summary || "A structured workspace starter you can adapt and continue in your own library."}
                 </p>
 
@@ -85,7 +85,7 @@ export default function GalleryCard({ item }: { item: PublicRoadmapCard }) {
                 </Button>
             </CardFooter>
 
-            {message ? <p className="px-6 pb-6 text-sm text-text-secondary">{message}</p> : null}
+            {message ? <p className="px-6 pb-6 text-sm text-text-muted">{message}</p> : null}
         </Card>
     );
 }

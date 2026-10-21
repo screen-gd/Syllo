@@ -16,17 +16,17 @@ const REVIEW_LABELS: Record<SrsRating, { title: string; hint: string; className:
     hard: {
         title: "Hard",
         hint: "Bring this card back sooner.",
-        className: "border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20",
+        className: "border-danger/30 bg-danger/10 text-danger hover:bg-danger/20",
     },
     okay: {
         title: "Okay",
         hint: "Keep the normal pace.",
-        className: "border-amber-500/30 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20",
+        className: "border-warning/30 bg-warning/10 text-warning hover:bg-warning/20",
     },
     easy: {
         title: "Easy",
         hint: "Push this card further out.",
-        className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20",
+        className: "border-accent/30 bg-accent/10 text-accent hover:bg-accent/20",
     },
 };
 
@@ -79,20 +79,20 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
     };
 
     return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-obsidian/80 px-4 backdrop-blur-sm">
-            <div className="relative w-full max-w-3xl overflow-hidden rounded-3xl border border-border bg-obsidian-elevated shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-page/80 px-4">
+            <div className="relative w-full max-w-3xl overflow-hidden rounded-3xl border border-border bg-surface-muted">
                 <div className="flex items-center justify-between border-b border-border px-6 py-5">
                     <div>
-                        <div className="mb-1 flex items-center gap-2 text-indigo-300">
+                        <div className="mb-1 flex items-center gap-2 text-accent">
                             <Brain size={16} />
-                            <span className="font-sans-display text-[11px] uppercase tracking-[0.25em]">Spaced Review</span>
+                            <span className="font-display text-xs">Spaced Review</span>
                         </div>
-                        <h2 className="font-display text-2xl text-white">Refresh what you have learned</h2>
+                        <h2 className="font-display text-2xl text-text">Refresh what you have learned</h2>
                     </div>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-lg border border-border bg-obsidian-surface p-2 text-text-secondary transition-colors hover:text-white"
+                        className="rounded-lg border border-border bg-surface p-2 text-text-muted transition-colors hover:text-text"
                         aria-label="Close review modal"
                     >
                         <X size={16} />
@@ -100,13 +100,13 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                 </div>
 
                 <div className="border-b border-border px-6 py-4">
-                    <div className="mb-2 flex items-center justify-between text-xs uppercase tracking-[0.2em] text-text-secondary">
+                    <div className="mb-2 flex items-center justify-between text-xs text-text-muted">
                         <span>{progressLabel}</span>
                         <span>{remainingCount} due</span>
                     </div>
-                    <div className="h-1 overflow-hidden rounded-full bg-white/5">
+                    <div className="h-1 overflow-hidden rounded-full bg-surface">
                         <div
-                            className="h-full rounded-full bg-indigo-500 transition-all duration-300"
+                            className="h-full rounded-full bg-accent transition-all duration-300"
                             style={{ width: `${items.length === 0 ? 0 : (reviewedCount / items.length) * 100}%` }}
                         />
                     </div>
@@ -114,33 +114,33 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
 
                 <div className="p-6">
                     {items.length === 0 ? (
-                        <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-obsidian-surface/40 p-8 text-center">
-                            <RotateCcw size={28} className="mb-4 text-text-secondary" />
-                            <h3 className="font-display text-2xl text-white">Nothing due right now</h3>
-                            <p className="mt-3 max-w-md text-sm leading-relaxed text-text-secondary">
+                        <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 p-8 text-center">
+                            <RotateCcw size={28} className="mb-4 text-text-muted" />
+                            <h3 className="font-display text-2xl text-text">Nothing due right now</h3>
+                            <p className="mt-3 max-w-md text-sm leading-relaxed text-text-muted">
                                 Your review queue is clear. Keep making progress in modules and cards will come back on schedule.
                             </p>
                         </div>
                     ) : (
                         <div className="space-y-6">
-                            <div className="rounded-2xl border border-border bg-obsidian-surface/40 p-6">
-                                <div className="mb-3 font-sans-display text-[11px] uppercase tracking-[0.25em] text-text-secondary">
+                            <div className="rounded-2xl border border-border bg-surface/40 p-6">
+                                <div className="mb-3 font-display text-xs text-text-muted">
                                     Prompt
                                 </div>
-                                <p className="font-display text-3xl leading-tight text-white">{currentItem?.prompt}</p>
+                                <p className="font-display text-3xl leading-tight text-text">{currentItem?.prompt}</p>
                             </div>
 
-                            <div className="rounded-2xl border border-border bg-obsidian-light/60 p-6">
-                                <div className="mb-3 font-sans-display text-[11px] uppercase tracking-[0.25em] text-text-secondary">
+                            <div className="rounded-2xl border border-border bg-surface-muted/60 p-6">
+                                <div className="mb-3 font-display text-xs text-text-muted">
                                     Answer
                                 </div>
                                 {showAnswer ? (
-                                    <p className="text-base leading-relaxed text-text-primary">{currentItem?.answer}</p>
+                                    <p className="text-base leading-relaxed text-text">{currentItem?.answer}</p>
                                 ) : (
                                     <button
                                         type="button"
                                         onClick={() => setShowAnswer(true)}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-4 py-2 text-sm font-medium text-indigo-300 transition-colors hover:bg-indigo-500/20"
+                                        className="inline-flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/20"
                                     >
                                         Reveal answer
                                     </button>
@@ -158,7 +158,7 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                                             onClick={() => void handleRate(rating)}
                                             className={`rounded-2xl border px-4 py-4 text-left transition-all disabled:cursor-not-allowed disabled:opacity-50 ${config.className}`}
                                         >
-                                            <div className="font-sans-display text-[11px] uppercase tracking-[0.2em]">{config.title}</div>
+                                            <div className="font-display text-xs">{config.title}</div>
                                             <div className="mt-2 text-sm leading-relaxed">{config.hint}</div>
                                         </button>
                                     );

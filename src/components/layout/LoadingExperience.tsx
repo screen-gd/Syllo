@@ -23,20 +23,11 @@ export default function LoadingExperience() {
     }, []);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-obsidian">
-            <motion.div
-                className="absolute inset-0"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.25 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-                style={{
-                    background: "radial-gradient(circle at 50% 40%, rgba(99,102,241,0.2) 0%, transparent 60%)",
-                }}
-            />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-page">
 
             <div className="relative z-10 mx-auto max-w-md px-6 text-center">
                 <motion.div
-                    className="glass mb-8 inline-block rounded-2xl p-5"
+                    className="mb-8 inline-block rounded-2xl bg-surface p-5"
                     initial={{ scale: 0.7, opacity: 0, y: 12 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     transition={{ type: "spring", stiffness: 240, damping: 20 }}
@@ -51,7 +42,7 @@ export default function LoadingExperience() {
                 </motion.div>
 
                 <motion.h2
-                    className="mb-2 font-display text-2xl font-bold text-text-primary"
+                    className="mb-2 text-xl font-semibold text-text"
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.12, duration: 0.45, ease: "easeOut" }}
@@ -60,7 +51,7 @@ export default function LoadingExperience() {
                 </motion.h2>
 
                 <motion.p
-                    className="mb-10 text-sm text-text-secondary"
+                    className="mb-10 text-sm text-text-muted"
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.45, ease: "easeOut" }}
@@ -80,7 +71,7 @@ export default function LoadingExperience() {
                                 animate={{ opacity: isActive || isComplete ? 1 : 0.24, x: 0 }}
                                 transition={{ delay: 0.15 + index * 0.08, duration: 0.4, ease: "easeOut" }}
                                 className={`flex items-center gap-3 rounded-lg p-3 transition-colors duration-300 ${
-                                    isActive ? "glass border-glow" : ""
+                                    isActive ? "bg-surface" : ""
                                 }`}
                             >
                                 <motion.span
@@ -91,7 +82,7 @@ export default function LoadingExperience() {
                                     {step.icon}
                                 </motion.span>
 
-                                <span className={`text-sm ${isActive ? "font-medium text-text-primary" : "text-text-secondary"}`}>
+                                <span className={`text-sm ${isActive ? "font-medium text-text" : "text-text-muted"}`}>
                                     {step.text}
                                 </span>
 
@@ -111,7 +102,7 @@ export default function LoadingExperience() {
                                         ) : isActive ? (
                                             <motion.div
                                                 key="active"
-                                                className="h-4 w-4 rounded-full border-2 border-indigo-accent border-t-transparent"
+                                                className="h-4 w-4 rounded-full border-2 border-accent border-t-transparent"
                                                 initial={{ opacity: 0, scale: 0.85 }}
                                                 animate={{ opacity: 1, scale: 1, rotate: 360 }}
                                                 exit={{ opacity: 0, scale: 0.85 }}

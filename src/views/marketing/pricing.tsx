@@ -80,16 +80,16 @@ function PlanCard({
             <CardHeader className="mb-8 p-0">
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <p className="text-sm uppercase tracking-[0.3em] text-text-secondary">{plan.name}</p>
-                        <CardTitle className="mt-3 text-4xl font-display text-text-primary">
+                        <p className="text-sm text-text-muted">{plan.name}</p>
+                        <CardTitle className="mt-3 text-4xl font-display text-text">
                             {priceDisplay.primary}
-                            <span className="ml-2 text-base font-sans text-text-secondary">{priceDisplay.secondary}</span>
+                            <span className="ml-2 text-base font-sans text-text-muted">{priceDisplay.secondary}</span>
                         </CardTitle>
-                        <p className="mt-2 text-sm text-text-secondary">{priceDisplay.tertiary}</p>
+                        <p className="mt-2 text-sm text-text-muted">{priceDisplay.tertiary}</p>
                     </div>
 
                     {isPopular && (
-                        <span className="border border-border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-secondary">
+                        <span className="border border-border px-3 py-1 text-xs font-semibold text-text-muted">
                             Most Popular
                         </span>
                     )}
@@ -99,13 +99,13 @@ function PlanCard({
             <CardContent className="flex flex-1 flex-col p-0">
                 <div className="mb-8 space-y-3">
                     {plan.features.map((feature) => (
-                        <div key={feature} className="flex items-start gap-3 text-sm text-text-primary">
-                            <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-text-primary" />
+                        <div key={feature} className="flex items-start gap-3 text-sm text-text">
+                            <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-text" />
                             <span>{feature}</span>
                         </div>
                     ))}
                     {plan.notIncluded.map((feature) => (
-                        <div key={feature} className="flex items-start gap-3 text-sm text-text-secondary">
+                        <div key={feature} className="flex items-start gap-3 text-sm text-text-muted">
                             <X size={18} className="mt-0.5 shrink-0 text-text-soft" />
                             <span>{feature}</span>
                         </div>
@@ -142,19 +142,19 @@ export default function PricingPage() {
     const [interval, setInterval] = useState<BillingInterval>("monthly")
 
     return (
-        <div className="relative overflow-hidden pt-24 text-text-primary">
+        <div className="relative overflow-hidden pt-12 text-text">
                 <FaqSchema faqs={FAQS} />
 
                 <section className="relative mx-auto max-w-7xl px-6 pb-10 pt-14 lg:px-12">
                     <div className="mx-auto max-w-3xl text-center">
-                        <div className="mb-5 inline-flex items-center gap-2 border border-border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-text-secondary">
-                            <Sparkles size={14} className="text-text-primary" />
+                        <div className="mb-5 inline-flex items-center gap-2 border border-border px-4 py-2 text-xs font-semibold text-text-muted">
+                            <Sparkles size={14} className="text-text" />
                             Pricing for creators, teams, and agencies
                         </div>
-                        <h1 className="text-5xl font-display leading-none text-text-primary sm:text-6xl">
+                        <h1 className="text-5xl font-display leading-none text-text sm:text-6xl">
                             Simple, Transparent Pricing
                         </h1>
-                        <p className="mx-auto mt-5 max-w-2xl text-base text-text-secondary">
+                        <p className="mx-auto mt-5 max-w-2xl text-base text-text-muted">
                             Start free today. Pro and Agency plans are on the roadmap — no account, no cloud, no hidden fees.
                         </p>
                     </div>
@@ -168,12 +168,12 @@ export default function PricingPage() {
                                     variant={interval === value ? "default" : "ghost"}
                                     size="sm"
                                     onClick={() => setInterval(value)}
-                                    className={interval === value ? "" : "text-text-secondary"}
+                                    className={interval === value ? "" : "text-text-muted"}
                                 >
                                     {value === "annual" ? "Annual" : "Monthly"}
                                 </Button>
                             ))}
-                            <span className="min-w-[138px] border border-border px-4 py-2 text-center text-xs font-semibold uppercase tracking-[0.18em] whitespace-nowrap text-text-secondary">
+                            <span className="min-w-[138px] border border-border px-4 py-2 text-center text-xs font-semibold whitespace-nowrap text-text-muted">
                                 Save 2 months
                             </span>
                         </div>
@@ -191,11 +191,11 @@ export default function PricingPage() {
                 <section className="relative mx-auto max-w-6xl px-6 pb-20 lg:px-12">
                     <div className="mb-8 flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center border border-border">
-                            <HelpCircle size={18} className="text-text-primary" />
+                            <HelpCircle size={18} className="text-text" />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-display text-text-primary">Frequently Asked Questions</h2>
-                            <p className="text-sm text-text-secondary">Everything operational, billing, and downgrade related in one place.</p>
+                            <h2 className="text-3xl font-display text-text">Frequently Asked Questions</h2>
+                            <p className="text-sm text-text-muted">Everything operational, billing, and downgrade related in one place.</p>
                         </div>
                     </div>
 
@@ -205,14 +205,14 @@ export default function PricingPage() {
                                 key={item.question}
                                 className="border-y border-border p-6"
                             >
-                                <h3 className="mb-3 text-lg font-semibold text-text-primary">{item.question}</h3>
-                                <p className="text-sm leading-7 text-text-secondary">{item.answer}</p>
+                                <h3 className="mb-3 text-lg font-semibold text-text">{item.question}</h3>
+                                <p className="text-sm leading-7 text-text-muted">{item.answer}</p>
                             </article>
                         ))}
                     </div>
 
-                    <div className="mt-8 flex items-center gap-3 border-y border-border p-5 text-sm text-text-secondary">
-                        <ShieldCheck size={18} className="shrink-0 text-text-primary" />
+                    <div className="mt-8 flex items-center gap-3 border-y border-border p-5 text-sm text-text-muted">
+                        <ShieldCheck size={18} className="shrink-0 text-text" />
                         Local-first by design. Roadmaps and preferences stay in your browser — no cloud, no account, no hidden fees.
                     </div>
                 </section>

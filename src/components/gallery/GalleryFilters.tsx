@@ -58,10 +58,10 @@ export default function GalleryFilters() {
                                 aria-selected={mode === option.value}
                                 onClick={() => updateParams({ mode: option.value })}
                                 className={cn(
-                                    "border-b pb-1 transition-colors",
+"border-b pb-1 transition-colors",
                                     mode === option.value
-                                        ? "border-[var(--color-accent)] text-text-primary"
-                                        : "border-transparent text-text-muted hover:text-text-primary",
+                                        ? "border-[var(--color-accent)] text-text"
+                                        : "border-transparent text-text-muted hover:text-text",
                                 )}
                             >
                                 {option.label}
@@ -78,8 +78,8 @@ export default function GalleryFilters() {
                                 aria-selected={contentType === option.value}
                                 onClick={() => updateParams({ contentType: option.value })}
                                 className={cn(
-                                    "transition-colors",
-                                    contentType === option.value ? "text-text-primary" : "text-text-muted hover:text-text-primary",
+"transition-colors",
+                                    contentType === option.value ? "text-text" : "text-text-muted hover:text-text",
                                 )}
                             >
                                 {option.label}
@@ -99,7 +99,7 @@ export default function GalleryFilters() {
                         onBlur={() => updateParams({ q: query })}
                         placeholder="Search gallery"
                         aria-label="Search gallery"
-                        className="w-full bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted"
+                        className="w-full bg-transparent text-sm text-text outline-none placeholder:text-text-muted"
                     />
                     {isPending ? <span className="text-xs text-text-muted">Updating</span> : null}
                 </label>
