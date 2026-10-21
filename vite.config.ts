@@ -13,6 +13,11 @@ export default defineConfig({
             "@": fileURLToPath(new URL("./src", import.meta.url)),
         },
     },
+    ssr: {
+        // better-sqlite3 ships a native addon; it must stay external instead
+        // of being pulled through the SSR bundle.
+        external: ["better-sqlite3"],
+    },
     plugins: [
         tailwindcss(),
         tanstackStart({

@@ -40,6 +40,8 @@ export interface Roadmap {
     forkCount?: number;
     forkedFrom?: string | null;
     ownerId?: string;
+    /** Set when the roadmap was published by Scout; marks the workspace as generated. */
+    packVersion?: string;
 }
 
 /* Section discriminated union */
