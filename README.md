@@ -8,11 +8,11 @@ Scout finds free resources, reads the available source text, and asks you to kee
 
 ## Run locally
 
-Use Node 22.12 or newer and npm:
+Use Node 22.12 or newer and pnpm. Run commands from the repo root unless noted:
 
 ```powershell
-npm ci
-npm run dev
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
 Open `http://localhost:3000`. Convex is optional. With `VITE_CONVEX_URL` blank, progress uses browser storage and EPUB files use IndexedDB. No account is needed.
@@ -30,29 +30,33 @@ Convex sync is prepared for one owner, with password login restricted by `SYLLO_
 ## Development
 
 ```powershell
-npm run typecheck
-npm run typecheck:convex
-npm test
-npm run lint
-npm run build
-npm start
+pnpm typecheck
+pnpm test
+pnpm lint
+pnpm build
+pnpm start
 ```
 
-The production server serves `dist/client` and the TanStack SSR handler on loopback port 3000. `npm start` does not read an env file automatically; pass environment variables or use `node --env-file=.env.local server.mjs`. Deployment URLs are build-time settings.
+`pnpm typecheck` checks both the app and `apps/web/convex/`.
 
-`mcp/server.mjs` supplies a local stdio MCP server for coding agents to add and search resource candidates. Connection snippets are available in Settings.
+The production server serves `dist/client` and the TanStack SSR handler on loopback port 3000. `pnpm start` does not read an env file automatically; pass environment variables or run `node --env-file=.env.local server.mjs` in `apps/web`. Deployment URLs are build-time settings.
+
+`apps/web/mcp/server.mjs` supplies a local stdio MCP server for coding agents to add and search resource candidates. Connection snippets are available in Settings.
 
 ## Project layout
 
+The repo is a pnpm workspace. Each app lives under `apps/`, and code shared between apps goes under `packages/`.
+
 ```text
-src/routes/              Routes and server API handlers
-src/views/studio/        Learning, reading, review, Scout, and settings pages
-src/components/learning/ EPUB covers, video player, cards, and Pomodoro
-src/components/sync/     Optional Convex provider and local workspace bridge
-src/lib/personal/        Validated records, browser files, and sync references
-src/lib/scout/           Discovery, extraction, planning, SQLite, and jobs
-convex/                  Private account, document sync, and file functions
-mcp/                     Local coding-agent resource tools
+apps/web/                         The Syllo app (TanStack Start), its env files and local .data/
+apps/web/src/routes/              Routes and server API handlers
+apps/web/src/views/studio/        Learning, reading, review, Scout, and settings pages
+apps/web/src/components/learning/ EPUB covers, video player, cards, and Pomodoro
+apps/web/src/components/sync/     Optional Convex provider and local workspace bridge
+apps/web/src/lib/personal/        Validated records, browser files, and sync references
+apps/web/src/lib/scout/           Discovery, extraction, planning, SQLite, and jobs
+apps/web/convex/                  Private account, document sync, and file functions
+apps/web/mcp/                     Local coding-agent resource tools
 ```
 
 This app is personal-first. Forks can use their own deployment, books, preferences, and keys. Public publishing and multi-user collaboration are outside v1. Earlier gallery/share routes remain in the codebase; personal sync does not publish learning records through them.

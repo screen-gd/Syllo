@@ -1,0 +1,18 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Packages whose install scripts may run. core-js and es5-ext only print
+# messages; esbuild checks its platform binary.
+allowBuilds:
+  core-js: false
+  es5-ext: false
+  esbuild: true
+
+# epubjs pins an old @xmldom/xmldom with known parser bugs.
+overrides:
+  epubjs>@xmldom/xmldom: 0.9.12
+
+minimumReleaseAgeExclude:
+  - '@ai-sdk/gateway@4.0.120'
+  - ai@7.0.147

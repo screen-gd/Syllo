@@ -10,3 +10,7 @@ coverage
 *.tsbuildinfo
 .agents\skills
 CLAUDE.md
+
+# Local design scratch and agent tooling
+.design
+.taste-skill
