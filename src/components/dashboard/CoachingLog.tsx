@@ -1,4 +1,6 @@
 "use client";
+import { fetchPrivateApi } from "@/lib/private-api-fetch";
+
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -29,7 +31,7 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
         setSaving(true);
         setMessage(null);
         try {
-            const response = await fetch("/api/dashboard/coaching", {
+            const response = await fetchPrivateApi("/api/dashboard/coaching", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -60,7 +62,7 @@ export default function CoachingLog({ roadmaps }: { roadmaps: Roadmap[] }) {
         try {
             const config = getUserConfig();
             const activeApiKey = getActiveApiKey(config);
-            const response = await fetch("/api/dashboard/review", {
+            const response = await fetchPrivateApi("/api/dashboard/review", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

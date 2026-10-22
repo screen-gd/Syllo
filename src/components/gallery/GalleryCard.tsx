@@ -1,4 +1,6 @@
 "use client";
+import { fetchPrivateApi } from "@/lib/private-api-fetch";
+
 
 import { useState, useTransition } from "react";
 import { useNavigate } from "@tanstack/react-router";
@@ -26,7 +28,7 @@ export default function GalleryCard({ item }: { item: PublicRoadmapCard }) {
         setMessage(null);
         startTransition(async () => {
             try {
-                const response = await fetch("/api/gallery/fork", {
+                const response = await fetchPrivateApi("/api/gallery/fork", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ workspaceId: item.id }),

@@ -1,6 +1,7 @@
 import type { Roadmap, Section, SrsItem } from "@/types";
 
 export const WORKSPACE_STATE_KEY = "zns:v2:workspace-state";
+export const WORKSPACE_CHANGE_EVENT = "syllo:workspace-change";
 
 export interface WorkspaceVersion {
     versionNumber: number;
@@ -35,8 +36,13 @@ export interface WorkspaceStateAdapter {
 
 export class BrowserWorkspaceStateAdapter implements WorkspaceStateAdapter {
     read() { return typeof localStorage === "undefined" ? null : localStorage.getItem(WORKSPACE_STATE_KEY); }
-    write(value: string) { if (typeof localStorage !== "undefined") localStorage.setItem(WORKSPACE_STATE_KEY, value); }
-    clear() { if (typeof localStorage !== "undefined") localStorage.removeItem(WORKSPACE_STATE_KEY); }
+    write(value: string) {
+        if (typeof localStorage !== "undefined") {
+            localStorage.setItem(WORKSPACE_STATE_KEY, value);
+            window.dispatchEvent(new Event(WORKSPACE_CHANGE_EVENT));
+        }
+    }
+    clear() { if (typeof localStorage !== "undefined") { localStorage.removeItem(WORKSPACE_STATE_KEY); window.dispatchEvent(new Event(WORKSPACE_CHANGE_EVENT)); } }
 }
 
 export class MemoryWorkspaceStateAdapter implements WorkspaceStateAdapter {

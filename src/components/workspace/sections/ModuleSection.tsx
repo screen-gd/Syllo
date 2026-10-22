@@ -1,4 +1,6 @@
 "use client";
+import { fetchPrivateApi } from "@/lib/private-api-fetch";
+
 
 import { useState, useEffect, useMemo } from "react";
 import type { ModuleSection as ModuleSectionType, Section, Task, Roadmap, Resource } from "@/types";
@@ -98,7 +100,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                 payload.userProvider = userConfig.provider;
             }
 
-            const res = await fetch("/api/parse-roadmap", {
+            const res = await fetchPrivateApi("/api/parse-roadmap", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -289,7 +291,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
         try {
             const userConfig = getUserConfig();
             const activeApiKey = getActiveApiKey(userConfig);
-            const response = await fetch("/api/quiz/generate", {
+            const response = await fetchPrivateApi("/api/quiz/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

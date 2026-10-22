@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import StudioSidebar from "@/components/layout/StudioSidebar";
+import LearningLayout from "@/components/layout/LearningLayout";
 import { applyAccentTheme, applyVisualDensity } from "@/lib/accent-theme";
 import { getUserConfig } from "@/lib/userConfig";
 
@@ -17,11 +17,6 @@ function StudioLayout() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-page text-text xl:grid xl:grid-cols-[224px_minmax(0,1fr)]">
-            <StudioSidebar />
-            <main id="main-content" className="min-w-0 px-4 sm:px-6 lg:px-8">
-                <Outlet />
-            </main>
-        </div>
+        <LearningLayout><Outlet /></LearningLayout>
     );
 }

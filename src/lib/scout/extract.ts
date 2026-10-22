@@ -133,16 +133,12 @@ function pickChunks(text: string, limit = 3) {
  * dropped rather than shown with an invented timestamp.
  */
 function resolveTimestamp(
-    value: number | null | undefined,
+    _value: number | null | undefined,
     quote: string | null | undefined,
     segments: ExtractionInput["segments"],
     durationSeconds: number | null | undefined,
 ): number | null {
     const max = durationSeconds && durationSeconds > 0 ? durationSeconds + 30 : Number.POSITIVE_INFINITY;
-
-    if (typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= max) {
-        return Math.floor(value);
-    }
 
     if (!quote || !segments?.length) return null;
     const needle = normalizeForMatch(stripMarkers(quote));
@@ -153,7 +149,8 @@ function resolveTimestamp(
             .slice(index, index + 3)
             .map((segment) => segment.text)
             .join(" ");
-        if (normalizeForMatch(window).includes(needle)) return Math.floor(segments[index].start);
+        const offset = normalizeForMatch(window).indexOf(needle);
+        if (offset >= 0 && offset < normalizeForMatch(segments[index].text).length && segments[index].start <= max) return Math.floor(segments[index].start);
     }
 
     return null;
@@ -298,6 +295,7 @@ export async function extractResource(input: ExtractionInput): Promise<Extractio
             outputs.push(result.object);
         }
     } catch (error) {
+        if (error instanceof ScoutError && (error.code === "quota" || error.code === "config" || error.code === "budget")) throw error;
         const message = error instanceof ScoutError ? error.message : error instanceof Error ? error.message : "Extraction failed";
         return {
             summary: fallbackSummary,
@@ -310,11 +308,12 @@ export async function extractResource(input: ExtractionInput): Promise<Extractio
     }
 
     const skills = uniqueSkills(outputs.flatMap((output) => output.skills));
-    const chapters = buildChapters(input, outputs.flatMap((output) => output.chapters));
+    const keyPoints = mergeKeyPoints(outputs, input);
+    const chapters = buildChapters(input, keyPoints.flatMap(point => point.atSeconds == null ? [] : [{ startSeconds: point.atSeconds, title: point.text }]));
 
     return {
         summary: mergeSummary(outputs, fallbackSummary),
-        keyPoints: mergeKeyPoints(outputs, input),
+        keyPoints,
         skills: skills.length > 0 ? skills : uniqueSkills([input.resource.title]),
         chapters,
         degraded: false,
@@ -322,28 +321,14 @@ export async function extractResource(input: ExtractionInput): Promise<Extractio
 }
 
 /**
- * Books are never fetched. The outline is a suggestion the UI labels as such;
- * a single "Read the book" task is the honest fallback.
+ * A title alone cannot establish a book's actual chapters.
  */
-export async function suggestBookOutline(input: {
+export async function suggestBookOutline(_input: {
     packId?: string | null;
     title: string;
     creator?: string | null;
     config?: Partial<ScoutLlmConfig> | null;
 }): Promise<{ chapters: string[]; confident: boolean }> {
-    try {
-        const result = await scoutGenerateObject({
-            packId: input.packId,
-            schema: bookOutlineSchema,
-            system: SCOUT_PROMPTS.book.body,
-            prompt: `Title: ${input.title}\nAuthor: ${input.creator ?? "unknown"}`,
-            config: input.config,
-        });
-
-        const chapters = result.object.chapters.map((chapter) => clip(chapter, 120)).filter(Boolean).slice(0, 12);
-        if (chapters.length === 0) return { chapters: ["Read the book"], confident: false };
-        return { chapters, confident: result.object.confident };
-    } catch {
-        return { chapters: ["Read the book"], confident: false };
-    }
+    // Only an imported EPUB or a learner-supplied contents list can establish chapters.
+    return { chapters: ["Read the book"], confident: false };
 }

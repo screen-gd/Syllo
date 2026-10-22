@@ -1,4 +1,6 @@
 "use client";
+import { fetchPrivateApi } from "@/lib/private-api-fetch";
+
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { Roadmap, Section, ModuleSection as ModuleSectionType, CalendarSection, SrsItem } from "@/types";
@@ -497,7 +499,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
         });
 
         try {
-            await fetch("/api/srs/save", {
+            await fetchPrivateApi("/api/srs/save", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ items: reviewedItems }),

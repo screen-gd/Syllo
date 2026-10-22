@@ -53,12 +53,23 @@ export function dedupeResources(items: DiscoveredResource[]): DiscoveredResource
     const seen = new Set<string>();
     const result: DiscoveredResource[] = [];
     for (const item of items) {
-        const key = item.url.split("#")[0].replace(/\/$/, "").toLowerCase();
+        const key = canonicalResourceUrl(item.url);
         if (seen.has(key)) continue;
         seen.add(key);
         result.push(item);
     }
     return result;
+}
+
+export function canonicalResourceUrl(value: string) {
+    try {
+        const url = new URL(value);
+        const video = /(?:^|\.)youtube\.com$/.test(url.hostname) ? url.searchParams.get("v") || url.pathname.match(/\/(?:embed|shorts)\/([\w-]+)/)?.[1] : url.hostname === "youtu.be" ? url.pathname.slice(1) : null;
+        if (video) return `https://www.youtube.com/watch?v=${video}`;
+        url.hash = "";
+        for (const key of [...url.searchParams.keys()]) if (/^(utm_|fbclid|gclid)/i.test(key)) url.searchParams.delete(key);
+        return url.toString().replace(/\/$/, "");
+    } catch { return value; }
 }
 
 /** Cheap lexical score used only to order candidates before the LLM ranks them. */

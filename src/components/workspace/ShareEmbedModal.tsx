@@ -1,4 +1,6 @@
 "use client";
+import { fetchPrivateApi } from "@/lib/private-api-fetch";
+
 
 import { useMemo, useState } from "react";
 import { Code, Copy, Download, ExternalLink, Globe2, Loader2, Lock, X } from "lucide-react";
@@ -73,7 +75,7 @@ export default function ShareEmbedModal({ roadmap, isOpen, onClose, onUpdateRoad
         setPublishMessage(null);
 
         try {
-            const response = await fetch("/api/gallery/set-public", {
+            const response = await fetchPrivateApi("/api/gallery/set-public", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

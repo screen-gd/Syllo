@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
-  <title>ZNS RoadMap Studio</title>
-  <rect width="128" height="128" rx="28" fill="#000000"/>
-  <path d="M30 38h68v12L50 92H30l48-42H30z" fill="#FFFFFF"/>
-  <path d="M58 38h40v12L70 76h28v14H46V78l30-26H58z" fill="#4CB3F0"/>
+  <title>Syllo</title>
+  <rect width="128" height="128" rx="24" fill="#101113"/>
+  <path d="M99 33H50a18 18 0 0 0 0 36h28a14 14 0 0 1 0 28H29M29 33v64M99 33v64" stroke="#fff" stroke-width="7" fill="none"/>
 </svg>

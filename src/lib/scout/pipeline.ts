@@ -3,7 +3,7 @@ import { extractResource } from "./extract";
 import { readArticle } from "./fetch/reader";
 import { fetchTranscript, markTranscriptFetched, transcriptDelayMs } from "./fetch/transcripts";
 import { JobDeferred, enqueueJob } from "./jobs";
-import { recallScoutLlm, rememberScoutLlm, type ScoutLlmConfig } from "./llm";
+import { recallScoutLlm, rememberScoutLlm, ScoutError, type ScoutLlmConfig } from "./llm";
 import {
     approvePackPicks,
     attachResourceToPack,
@@ -53,7 +53,8 @@ async function handleDiscover(_job: JobRow, payload: Record<string, unknown>) {
 
     updatePack(packId, { progress: 6, stage: "Looking for free resources" });
 
-    const discovered = await discoverForGoal({ goal: pack.goal, limit: DISCOVERY_LIMIT });
+    const discovered = await discoverForGoal({ goal: pack.goal, limit: DISCOVERY_LIMIT, llm: recallScoutLlm(packId) }).catch(error => { failPack(packId, error); return []; });
+    if (getPackRow(packId)?.status === "failed") return { found: 0 };
     if (discovered.length === 0) {
         failPack(
             packId,
@@ -157,6 +158,7 @@ async function handleProcessResource(job: JobRow, payload: Record<string, unknow
 
     const row = getResourceRow(resourceId);
     if (!row) return { skipped: true };
+    if (getPackRow(packId)?.status === "failed") return { skipped: true };
     if (row.summary && row.transcript_status !== "pending") {
         settlePackIfProcessed(packId);
         return { cached: true };
@@ -164,6 +166,11 @@ async function handleProcessResource(job: JobRow, payload: Record<string, unknow
 
     try {
         const source = await textFor(row);
+        if (source.transcriptStatus !== "ok" || source.text.trim().length < 80) {
+            saveResourceExtraction(row.id, { summary: "Scout could not read this source. It remains available as a manual link.", keyPoints: [], skillTags: [], chapters: [], transcript: null, transcriptStatus: "skipped", transcriptChars: 0, error: source.error || "Source text is unavailable" });
+            settlePackIfProcessed(packId);
+            return { resourceId, unread: true };
+        }
 
         const extraction = await extractResource({
             packId,
@@ -200,6 +207,10 @@ async function handleProcessResource(job: JobRow, payload: Record<string, unknow
     } catch (error) {
         // A deferral is not a failure: the runner will requeue it untouched.
         if (error instanceof JobDeferred) throw error;
+        if (error instanceof ScoutError && (error.code === "quota" || error.code === "config" || error.code === "budget")) {
+            failPack(packId, error);
+            return { paused: true, reason: error.code };
+        }
 
         if (job.attempts >= job.max_attempts) {
             setResourceError(resourceId, messageFor(error).slice(0, 500));
@@ -236,7 +247,7 @@ function settlePackIfProcessed(packId: string) {
 
     approvePackPicks(
         packId,
-        packResourceRows(packId).map((row) => row.id),
+        packResourceRows(packId).filter(row => row.transcript_status === "ok").map((row) => row.id),
     );
     updatePack(packId, {
         status: "review",
@@ -267,6 +278,10 @@ async function handleBuildWorkspace(_job: JobRow, payload: Record<string, unknow
         return { built: false };
     }
 
+    if (resources.some(resource => resource.transcriptStatus !== "ok")) {
+        failPack(packId, new Error("Scout could not read some selected sources. Uncheck those picks to build from verified material; their links remain in your resource library."));
+        return { built: false };
+    }
     updatePack(packId, { status: "building", progress: 55, stage: "Writing your roadmap" });
 
     const workspace = await buildWorkspace({
@@ -274,7 +289,8 @@ async function handleBuildWorkspace(_job: JobRow, payload: Record<string, unknow
         goal: pack.goal,
         resources,
         config: recallScoutLlm(packId),
-    });
+    }).catch(error => { failPack(packId, error); return null; });
+    if (!workspace) return { built: false };
 
     updatePack(packId, {
         status: "ready",

@@ -1,10 +1,10 @@
-import { createOpenAI } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateObject } from "ai";
-import type { z } from "zod";
+import { z } from "zod";
+import { assertFreeAi } from "@/lib/ai-policy";
 import {
     DEFAULT_PROVIDER_MODELS,
     isAiProvider,
-    PROVIDER_BASE_URLS,
     PROVIDER_ENV_KEYS,
     type AIProvider,
 } from "@/lib/ai-config";
@@ -18,7 +18,7 @@ export interface ScoutLlmConfig {
 }
 
 export class ScoutError extends Error {
-    code: "budget" | "config" | "provider";
+    code: "budget" | "config" | "provider" | "quota";
 
     constructor(code: ScoutError["code"], message: string) {
         super(message);
@@ -44,11 +44,9 @@ function secretStore() {
 
 export function defaultScoutConfig(): ScoutLlmConfig {
     const envProvider = process.env.SCOUT_PROVIDER?.trim();
-    const provider: AIProvider = isAiProvider(envProvider) ? envProvider : "deepseek";
+    const provider: AIProvider = isAiProvider(envProvider) ? envProvider : "gemini";
     return {
         provider,
-        // DeepSeek exposes V4.1 Flash through the stable `deepseek-chat`
-        // alias. Override with SCOUT_MODEL when a pinned id is preferred.
         model: process.env.SCOUT_MODEL?.trim() || DEFAULT_PROVIDER_MODELS[provider],
     };
 }
@@ -88,9 +86,7 @@ export interface ScoutGenerateResult<T> {
 }
 
 /**
- * Structured generation with a hard budget gate. Scout uses the same provider
- * map as the studio, so a DeepSeek/Gemini/OpenAI key already configured works
- * here without a second settings screen.
+ * Free Gemini generation stops at quota exhaustion, with no provider fallback.
  */
 export async function scoutGenerateObject<T>(input: ScoutGenerateInput<T>): Promise<ScoutGenerateResult<T>> {
     const settings = getScoutSettings();
@@ -107,23 +103,22 @@ export async function scoutGenerateObject<T>(input: ScoutGenerateInput<T>): Prom
     if (!config.apiKey) {
         throw new ScoutError(
             "config",
-            `Scout needs a ${config.provider} API key. Add one in Settings, set ${PROVIDER_ENV_KEYS[config.provider]} on the server, or pick another provider.`,
+            `Scout needs a free Gemini API key. Add one in Settings or set GEMINI_API_KEY on the local worker.`,
         );
     }
 
-    const baseURL = PROVIDER_BASE_URLS[config.provider];
-    const provider = createOpenAI({
-        apiKey: config.apiKey,
-        ...(baseURL ? { baseURL } : {}),
-    });
+    assertFreeAi(config.provider, config.model);
+    assertScoutQuota();
+    const provider = createGoogleGenerativeAI({ apiKey: config.apiKey });
 
     try {
         const result = await generateObject({
-            model: provider.chat(config.model),
+            model: provider(config.model),
             schema: input.schema,
             system: input.system,
             prompt: input.prompt,
             temperature: 0.2,
+            maxRetries: 0,
         });
 
         const inputTokens = result.usage?.inputTokens ?? 0;
@@ -137,10 +132,21 @@ export async function scoutGenerateObject<T>(input: ScoutGenerateInput<T>): Prom
             outputTokens,
         });
 
-        return { object: result.object as T, inputTokens, outputTokens };
+        return { object: input.schema.parse(result.object), inputTokens, outputTokens };
     } catch (error) {
         if (error instanceof ScoutError) throw error;
+        const status = z.object({ statusCode: z.number() }).safeParse(error);
+        if (status.success && status.data.statusCode === 429) {
+            pauseScoutQuota();
+            throw new ScoutError("quota", "The free Gemini quota is exhausted. Scout has paused. Your existing books, notes, and learning remain available; try again later or add resources manually.");
+        }
         const message = error instanceof Error ? error.message : "Unknown provider error";
         throw new ScoutError("provider", `Scout could not reach ${config.provider}: ${message.slice(0, 300)}`);
     }
 }
+
+let pausedUntil = 0;
+export function assertScoutQuota() {
+    if (Date.now() < pausedUntil) throw new ScoutError("quota", "Scout is paused after reaching the free Gemini quota. Try again later, or add resources manually.");
+}
+export function pauseScoutQuota() { pausedUntil = Date.now() + 15 * 60_000; }

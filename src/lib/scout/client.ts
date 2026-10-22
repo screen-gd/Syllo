@@ -80,7 +80,7 @@ export function publishScoutPack(detail: ScoutPackDetail): string | null {
 
     const storage = getStorage();
     storage.saveRoadmap(roadmap);
-    if (detail.quizzes.length > 0) storage.saveReviews(roadmap.id, detail.quizzes);
+    if (detail.quizzes.length > 0) storage.saveReviews(roadmap.id, detail.quizzes.map(card => ({ ...card, status: "suggested" })));
     storage.saveVersion(roadmap);
 
     const record: ScoutLastPack = {
@@ -139,7 +139,7 @@ export function reviewDueCount(now = new Date()): number {
     const storage = getStorage();
     const moment = now.getTime();
     return storage.getRoadmaps().reduce((count, roadmap) => {
-        return count + storage.getReviews(roadmap.id).filter((item) => new Date(item.dueAt).getTime() <= moment).length;
+        return count + storage.getReviews(roadmap.id).filter((item) => item.status !== "suggested" && item.status !== "skipped" && new Date(item.dueAt).getTime() <= moment).length;
     }, 0);
 }
 
@@ -193,6 +193,6 @@ export function dueReviews(now = new Date()): SrsItem[] {
     return storage
         .getRoadmaps()
         .flatMap((roadmap) => storage.getReviews(roadmap.id))
-        .filter((item) => new Date(item.dueAt).getTime() <= moment)
+        .filter((item) => item.status !== "suggested" && item.status !== "skipped" && new Date(item.dueAt).getTime() <= moment)
         .sort((a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime());
 }

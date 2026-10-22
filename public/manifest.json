@@ -1,11 +1,13 @@
 {
-  "name": "ZNS RoadMap Studio",
-  "short_name": "RoadMap Studio",
-  "start_url": "/",
+  "name": "Syllo",
+  "short_name": "Syllo",
+  "id": "/dashboard",
+  "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
-  "description": "Turn any guide or curriculum into an interactive AI-powered workspace.",
+  "background_color": "#101113",
+  "theme_color": "#101113",
+  "description": "Your books, learning topics, and next steps.",
   "icons": [
     {
       "src": "/favicon.svg",

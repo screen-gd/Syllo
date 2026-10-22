@@ -1,11 +1,12 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import "@/styles/globals.css";
+import "@/styles/learning.css";
 import { Providers } from "@/components/shared/Providers";
 import { getAppUrl } from "@/lib/app-url";
-import { APP_NAME, APP_TAGLINE, BRAND_OWNER } from "@/lib/constants";
+import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
 const appUrl = getAppUrl();
-const defaultTitle = `${APP_NAME} - Paste Any Guide, Get a Full Interactive Workspace`;
+const defaultTitle = `${APP_NAME} | Your learning and reading`;
 
 export const Route = createRootRoute({
     head: () => ({
@@ -15,9 +16,9 @@ export const Route = createRootRoute({
             { title: defaultTitle },
             {
                 name: "description",
-                content: `Transform any roadmap, guide, or curriculum into a fully interactive workspace. Built by ${BRAND_OWNER}.`,
+                content: "Continue learning, read your books, and review the ideas you want to remember.",
             },
-            { name: "theme-color", content: "#000000" },
+            { name: "theme-color", content: "#101113" },
             { property: "og:title", content: defaultTitle },
             { property: "og:description", content: APP_TAGLINE },
             { property: "og:type", content: "website" },

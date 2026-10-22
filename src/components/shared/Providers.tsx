@@ -1,11 +1,15 @@
 "use client";
 
 import { Toaster } from "sonner";
+import CloudSync from "@/components/sync/CloudSync";
+import PomodoroProvider from "@/components/learning/Pomodoro";
+import OfflineSupport from "@/components/learning/OfflineSupport";
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
         <>
-            {children}
+            <OfflineSupport />
+            <CloudSync><PomodoroProvider>{children}</PomodoroProvider></CloudSync>
             <Toaster
                 position="bottom-right"
                 toastOptions={{

@@ -1,6 +1,7 @@
 import { getScoutDb, nowIso } from "../db";
 import { parseIsoDuration } from "../format";
 import { dedupeResources, goalScore, type DiscoveredResource } from "./index";
+import { z } from "zod";
 
 const API_ROOT = "https://www.googleapis.com/youtube/v3";
 
@@ -42,6 +43,15 @@ interface VideosResponse {
 
 export function getYouTubeApiKey() {
     return process.env.YOUTUBE_API_KEY?.trim() || "";
+}
+
+/** Saved creators are preferences; goal search can find any channel. */
+export async function discoverYouTubeSearch(goal: string, limit: number): Promise<DiscoveredResource[]> {
+    if (!getYouTubeApiKey()) return [];
+    const response = await youtubeFetch<unknown>("search", { part: "snippet", q: goal, type: "video", maxResults: String(Math.min(15, limit)), videoDuration: "medium", relevanceLanguage: "en", order: "relevance" });
+    const parsed = z.object({ items: z.array(z.object({ id: z.object({ videoId: z.string() }) })).default([]) }).parse(response);
+    const videos = await fetchVideos(parsed.items.map(item => item.id.videoId));
+    return videos.map(toVideo).filter(video => !video.durationSeconds || video.durationSeconds >= MIN_VIDEO_SECONDS);
 }
 
 async function youtubeFetch<T>(path: string, params: Record<string, string>): Promise<T> {

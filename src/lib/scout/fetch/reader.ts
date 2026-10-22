@@ -51,13 +51,10 @@ function extractTitle(markdown: string, html: string) {
 
 /** Jina Reader turns any article into clean markdown. Direct fetch is the fallback. */
 export async function readArticle(url: string): Promise<ReaderResult> {
-    const jinaKey = process.env.JINA_API_KEY?.trim();
-
     try {
         const response = await fetch(`https://r.jina.ai/${url}`, {
             headers: {
                 accept: "text/plain",
-                ...(jinaKey ? { authorization: `Bearer ${jinaKey}` } : {}),
             },
             signal: AbortSignal.timeout(60_000),
         });

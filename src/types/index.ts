@@ -267,6 +267,9 @@ export interface SrsItem {
     repetitions: number;
     dueAt: string;
     lastReviewedAt?: string | null;
+    status?: "suggested" | "kept" | "skipped";
+    fsrs?: import("zod").infer<typeof import("@/lib/personal/schema").fsrsCardSchema>;
+    source?: { url?: string; bookId?: string; cfi?: string; seconds?: number; quote?: string; taskId?: string };
 }
 
 export interface CreditStatus {

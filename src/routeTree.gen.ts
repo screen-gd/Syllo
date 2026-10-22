@@ -22,7 +22,10 @@ import { Route as MarketingTermsRouteImport } from './routes/_marketing/terms'
 import { Route as StudioAnalyticsRouteImport } from './routes/_studio/analytics'
 import { Route as StudioCreateRouteImport } from './routes/_studio/create'
 import { Route as StudioDashboardRouteImport } from './routes/_studio/dashboard'
+import { Route as StudioLearnRouteImport } from './routes/_studio/learn'
+import { Route as StudioLibraryRouteImport } from './routes/_studio/library'
 import { Route as StudioNotesRouteImport } from './routes/_studio/notes'
+import { Route as StudioReviewsRouteImport } from './routes/_studio/reviews'
 import { Route as StudioScoutRouteImport } from './routes/_studio/scout'
 import { Route as StudioSettingsRouteImport } from './routes/_studio/settings'
 import { Route as StudioWorkspacesRouteImport } from './routes/_studio/workspaces'
@@ -30,6 +33,7 @@ import { Route as ApiParseRoadmapRouteImport } from './routes/api/parse-roadmap'
 import { Route as EmbedIdRouteImport } from './routes/embed.$id'
 import { Route as ShareIdRouteImport } from './routes/share.$id'
 import { Route as WorkspaceIdRouteImport } from './routes/workspace.$id'
+import { Route as StudioReadIdRouteImport } from './routes/_studio/read.$id'
 import { Route as ApiCreditsStatusRouteImport } from './routes/api/credits/status'
 import { Route as ApiDashboardCoachingRouteImport } from './routes/api/dashboard/coaching'
 import { Route as ApiDashboardReviewRouteImport } from './routes/api/dashboard/review'
@@ -114,9 +118,24 @@ const StudioDashboardRoute = StudioDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioLearnRoute = StudioLearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioLibraryRoute = StudioLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => StudioRoute,
+} as any)
 const StudioNotesRoute = StudioNotesRouteImport.update({
   id: '/notes',
   path: '/notes',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioReviewsRoute = StudioReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => StudioRoute,
 } as any)
 const StudioScoutRoute = StudioScoutRouteImport.update({
@@ -153,6 +172,11 @@ const WorkspaceIdRoute = WorkspaceIdRouteImport.update({
   id: '/workspace/$id',
   path: '/workspace/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const StudioReadIdRoute = StudioReadIdRouteImport.update({
+  id: '/read/$id',
+  path: '/read/$id',
+  getParentRoute: () => StudioRoute,
 } as any)
 const ApiCreditsStatusRoute = ApiCreditsStatusRouteImport.update({
   id: '/api/credits/status',
@@ -267,7 +291,10 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof StudioAnalyticsRoute
   '/create': typeof StudioCreateRoute
   '/dashboard': typeof StudioDashboardRoute
+  '/learn': typeof StudioLearnRoute
+  '/library': typeof StudioLibraryRoute
   '/notes': typeof StudioNotesRoute
+  '/reviews': typeof StudioReviewsRoute
   '/scout': typeof StudioScoutRoute
   '/settings': typeof StudioSettingsRoute
   '/workspaces': typeof StudioWorkspacesRoute
@@ -275,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/embed/$id': typeof EmbedIdRoute
   '/share/$id': typeof ShareIdRoute
   '/workspace/$id': typeof WorkspaceIdRoute
+  '/read/$id': typeof StudioReadIdRoute
   '/api/credits/status': typeof ApiCreditsStatusRoute
   '/api/dashboard/coaching': typeof ApiDashboardCoachingRoute
   '/api/dashboard/review': typeof ApiDashboardReviewRoute
@@ -308,7 +336,10 @@ export interface FileRoutesByTo {
   '/analytics': typeof StudioAnalyticsRoute
   '/create': typeof StudioCreateRoute
   '/dashboard': typeof StudioDashboardRoute
+  '/learn': typeof StudioLearnRoute
+  '/library': typeof StudioLibraryRoute
   '/notes': typeof StudioNotesRoute
+  '/reviews': typeof StudioReviewsRoute
   '/scout': typeof StudioScoutRoute
   '/settings': typeof StudioSettingsRoute
   '/workspaces': typeof StudioWorkspacesRoute
@@ -316,6 +347,7 @@ export interface FileRoutesByTo {
   '/embed/$id': typeof EmbedIdRoute
   '/share/$id': typeof ShareIdRoute
   '/workspace/$id': typeof WorkspaceIdRoute
+  '/read/$id': typeof StudioReadIdRoute
   '/api/credits/status': typeof ApiCreditsStatusRoute
   '/api/dashboard/coaching': typeof ApiDashboardCoachingRoute
   '/api/dashboard/review': typeof ApiDashboardReviewRoute
@@ -351,7 +383,10 @@ export interface FileRoutesById {
   '/_studio/analytics': typeof StudioAnalyticsRoute
   '/_studio/create': typeof StudioCreateRoute
   '/_studio/dashboard': typeof StudioDashboardRoute
+  '/_studio/learn': typeof StudioLearnRoute
+  '/_studio/library': typeof StudioLibraryRoute
   '/_studio/notes': typeof StudioNotesRoute
+  '/_studio/reviews': typeof StudioReviewsRoute
   '/_studio/scout': typeof StudioScoutRoute
   '/_studio/settings': typeof StudioSettingsRoute
   '/_studio/workspaces': typeof StudioWorkspacesRoute
@@ -360,6 +395,7 @@ export interface FileRoutesById {
   '/share/$id': typeof ShareIdRoute
   '/workspace/$id': typeof WorkspaceIdRoute
   '/_marketing/': typeof MarketingIndexRoute
+  '/_studio/read/$id': typeof StudioReadIdRoute
   '/api/credits/status': typeof ApiCreditsStatusRoute
   '/api/dashboard/coaching': typeof ApiDashboardCoachingRoute
   '/api/dashboard/review': typeof ApiDashboardReviewRoute
@@ -395,7 +431,10 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/create'
     | '/dashboard'
+    | '/learn'
+    | '/library'
     | '/notes'
+    | '/reviews'
     | '/scout'
     | '/settings'
     | '/workspaces'
@@ -403,6 +442,7 @@ export interface FileRouteTypes {
     | '/embed/$id'
     | '/share/$id'
     | '/workspace/$id'
+    | '/read/$id'
     | '/api/credits/status'
     | '/api/dashboard/coaching'
     | '/api/dashboard/review'
@@ -436,7 +476,10 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/create'
     | '/dashboard'
+    | '/learn'
+    | '/library'
     | '/notes'
+    | '/reviews'
     | '/scout'
     | '/settings'
     | '/workspaces'
@@ -444,6 +487,7 @@ export interface FileRouteTypes {
     | '/embed/$id'
     | '/share/$id'
     | '/workspace/$id'
+    | '/read/$id'
     | '/api/credits/status'
     | '/api/dashboard/coaching'
     | '/api/dashboard/review'
@@ -478,7 +522,10 @@ export interface FileRouteTypes {
     | '/_studio/analytics'
     | '/_studio/create'
     | '/_studio/dashboard'
+    | '/_studio/learn'
+    | '/_studio/library'
     | '/_studio/notes'
+    | '/_studio/reviews'
     | '/_studio/scout'
     | '/_studio/settings'
     | '/_studio/workspaces'
@@ -487,6 +534,7 @@ export interface FileRouteTypes {
     | '/share/$id'
     | '/workspace/$id'
     | '/_marketing/'
+    | '/_studio/read/$id'
     | '/api/credits/status'
     | '/api/dashboard/coaching'
     | '/api/dashboard/review'
@@ -632,11 +680,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioDashboardRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/_studio/learn': {
+      id: '/_studio/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof StudioLearnRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/_studio/library': {
+      id: '/_studio/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof StudioLibraryRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/_studio/notes': {
       id: '/_studio/notes'
       path: '/notes'
       fullPath: '/notes'
       preLoaderRoute: typeof StudioNotesRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/_studio/reviews': {
+      id: '/_studio/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof StudioReviewsRouteImport
       parentRoute: typeof StudioRoute
     }
     '/_studio/scout': {
@@ -687,6 +756,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/workspace/$id'
       preLoaderRoute: typeof WorkspaceIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_studio/read/$id': {
+      id: '/_studio/read/$id'
+      path: '/read/$id'
+      fullPath: '/read/$id'
+      preLoaderRoute: typeof StudioReadIdRouteImport
+      parentRoute: typeof StudioRoute
     }
     '/api/credits/status': {
       id: '/api/credits/status'
@@ -857,20 +933,28 @@ interface StudioRouteChildren {
   StudioAnalyticsRoute: typeof StudioAnalyticsRoute
   StudioCreateRoute: typeof StudioCreateRoute
   StudioDashboardRoute: typeof StudioDashboardRoute
+  StudioLearnRoute: typeof StudioLearnRoute
+  StudioLibraryRoute: typeof StudioLibraryRoute
   StudioNotesRoute: typeof StudioNotesRoute
+  StudioReviewsRoute: typeof StudioReviewsRoute
   StudioScoutRoute: typeof StudioScoutRoute
   StudioSettingsRoute: typeof StudioSettingsRoute
   StudioWorkspacesRoute: typeof StudioWorkspacesRoute
+  StudioReadIdRoute: typeof StudioReadIdRoute
 }
 
 const StudioRouteChildren: StudioRouteChildren = {
   StudioAnalyticsRoute: StudioAnalyticsRoute,
   StudioCreateRoute: StudioCreateRoute,
   StudioDashboardRoute: StudioDashboardRoute,
+  StudioLearnRoute: StudioLearnRoute,
+  StudioLibraryRoute: StudioLibraryRoute,
   StudioNotesRoute: StudioNotesRoute,
+  StudioReviewsRoute: StudioReviewsRoute,
   StudioScoutRoute: StudioScoutRoute,
   StudioSettingsRoute: StudioSettingsRoute,
   StudioWorkspacesRoute: StudioWorkspacesRoute,
+  StudioReadIdRoute: StudioReadIdRoute,
 }
 
 const StudioRouteWithChildren =

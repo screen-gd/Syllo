@@ -1,14 +1,15 @@
 import { listEnabledSources } from "../sources";
-import { dedupeResources, isLikelyFree, type DiscoveredResource } from "./index";
-import { discoverSitesRecent, discoverWebForGoal } from "./exa";
+import { canonicalResourceUrl, dedupeResources, isLikelyFree, type DiscoveredResource } from "./index";
 import { discoverYouTubeForGoal, discoverYouTubeRecent } from "./youtube";
+import { discoverYouTubeSearch } from "./youtube";
+import { discoverFreeWeb } from "./free-web";
+import { ScoutError, type ScoutLlmConfig } from "../llm";
 
 /**
- * Discovery is intentionally conservative: it reads only the channels and
- * sites the learner enabled, plus an open-web query when an Exa key exists.
- * Books are never discovered, because a book is a reading task, not a file.
+ * Broad search supplies candidates; enabled creators are preferences.
+ * Imported books stay in Library and do not need web discovery.
  */
-export async function discoverForGoal(input: { goal: string; limit?: number }): Promise<DiscoveredResource[]> {
+export async function discoverForGoal(input: { goal: string; limit?: number; llm?: ScoutLlmConfig | null }): Promise<DiscoveredResource[]> {
     const goal = input.goal.trim();
     const limit = Math.min(20, Math.max(4, input.limit ?? 12));
 
@@ -16,16 +17,17 @@ export async function discoverForGoal(input: { goal: string; limit?: number }): 
     const channels = sources
         .filter((source) => source.kind === "youtube_channel" || source.kind === "creator")
         .map((source) => source.value);
-    const sites = sources.filter((source) => source.kind === "site").map((source) => source.value);
 
-    const [videos, web] = await Promise.all([
+    const [preferredVideos, broadVideos, web] = await Promise.all([
         channels.length > 0
             ? discoverYouTubeForGoal({ goal, channels, limit: Math.ceil(limit * 0.7) }).catch((error) => {
                   console.warn("[scout] YouTube discovery failed:", error instanceof Error ? error.message : error);
                   return [] as DiscoveredResource[];
               })
             : Promise.resolve([] as DiscoveredResource[]),
-        discoverWebForGoal({ goal, limit: Math.ceil(limit * 0.6), sites }).catch((error) => {
+        discoverYouTubeSearch(goal, Math.ceil(limit * 0.7)).catch(() => []),
+        discoverFreeWeb(goal, Math.ceil(limit * 0.7), input.llm).catch((error) => {
+            if (error instanceof ScoutError) throw error;
             console.warn("[scout] web discovery failed:", error instanceof Error ? error.message : error);
             return [] as DiscoveredResource[];
         }),
@@ -34,14 +36,14 @@ export async function discoverForGoal(input: { goal: string; limit?: number }): 
     const clean = (items: DiscoveredResource[]) =>
         items.filter((item) => isLikelyFree(item.url) && !/#shorts/i.test(`${item.title} ${item.url}`));
 
-    const videoPool = clean(videos);
-    const webPool = clean(web);
+    const videoPool = clean(dedupeResources([...broadVideos, ...web.filter(item => item.kind === "video"), ...preferredVideos]));
+    const webPool = clean(web.filter(item => item.kind !== "video"));
     const maxVideos = Math.max(3, Math.ceil(limit * 0.7));
 
     const picked: DiscoveredResource[] = [];
     const seen = new Set<string>();
     const push = (item: DiscoveredResource) => {
-        const key = item.url.split("#")[0].replace(/\/$/, "").toLowerCase();
+        const key = canonicalResourceUrl(item.url);
         if (seen.has(key) || picked.length >= limit) return;
         seen.add(key);
         picked.push(item);
@@ -63,8 +65,7 @@ export async function discoverForGoal(input: { goal: string; limit?: number }): 
 }
 
 /**
- * Nightly check. RSS and site search only: no LLM, so it still works when the
- * browser is closed and no per-pack key is available.
+ * Optional creator check uses free RSS while the local worker is running.
  */
 export async function discoverNewFromSources(input: {
     goal: string;
@@ -76,16 +77,11 @@ export async function discoverNewFromSources(input: {
     const channels = sources
         .filter((source) => source.kind === "youtube_channel" || source.kind === "creator")
         .map((source) => source.value);
-    const sites = sources.filter((source) => source.kind === "site").map((source) => source.value);
+    const videos = channels.length > 0
+        ? await discoverYouTubeRecent({ channels, since: input.since, limit }).catch(() => [])
+        : [];
 
-    const [videos, web] = await Promise.all([
-        channels.length > 0
-            ? discoverYouTubeRecent({ channels, since: input.since, limit }).catch(() => [])
-            : Promise.resolve([] as DiscoveredResource[]),
-        discoverSitesRecent({ goal: input.goal, sites, limit: Math.ceil(limit / 2) }).catch(() => []),
-    ]);
-
-    return dedupeResources([...videos, ...web])
+    return dedupeResources(videos)
         .filter((item) => isLikelyFree(item.url))
         .filter((item) => !item.publishedAt || new Date(item.publishedAt) >= input.since)
         .slice(0, limit);

@@ -11,7 +11,7 @@ import type {
     Video,
 } from "@/types";
 import { clip, deepLink, formatTimestamp, quoteAppearsIn } from "./format";
-import { scoutGenerateObject } from "./llm";
+import { scoutGenerateObject, ScoutError } from "./llm";
 import { SCOUT_PROMPTS, SCOUT_PROMPT_VERSION } from "./prompts";
 import type { ScoutResource } from "./types";
 
@@ -308,15 +308,13 @@ function normalizeModules(plan: ScoutPlan, resources: ScoutResource[]): PlanModu
             const resource = byId.get(task.resourceId);
             if (!resource) continue;
 
-            const startSeconds =
+            const proposedStart =
                 typeof task.startSeconds === "number" && Number.isFinite(task.startSeconds) && task.startSeconds >= 0
                     ? Math.floor(task.startSeconds)
                     : null;
-            const duration = resource.durationSeconds ?? null;
-            const endSeconds =
-                typeof task.endSeconds === "number" && Number.isFinite(task.endSeconds) && task.endSeconds > (startSeconds ?? 0)
-                    ? Math.min(Math.floor(task.endSeconds), duration ? duration + 30 : Number.MAX_SAFE_INTEGER)
-                    : null;
+            const chapter = resource.kind === "video" ? chapterFor(resource, proposedStart) : null;
+            const startSeconds = chapter?.startSeconds ?? null;
+            const endSeconds = chapter?.endSeconds ?? null;
 
             const key = `${resource.id}:${startSeconds ?? ""}`;
             if (seen.has(key)) continue;
@@ -344,7 +342,8 @@ function normalizeModules(plan: ScoutPlan, resources: ScoutResource[]): PlanModu
 
     // Every approved resource must appear somewhere, even when the model
     // forgot it. The appended module stays honest about why it exists.
-    const missing = resources.filter((resource) => !seen.has(`${resource.id}:`));
+    const included = new Set(modules.flatMap(module => module.resourceIds));
+    const missing = resources.filter(resource => !included.has(resource.id));
     if (missing.length > 0) {
         modules.push({
             title: "Also included",
@@ -543,6 +542,7 @@ function deterministicQuizzes(roadmapId: string, packId: string, modules: Module
                     sectionId: module.id,
                     prompt: `In your own words: ${clip(point.text, 180)}`,
                     answer: point.quote,
+                    source: { url: resource.url, seconds: point.atSeconds ?? undefined, quote: point.quote, taskId: module.data.tasks.find(task => task.attachments.some(link => link.id.includes(resource.id)))?.id },
                     easeFactor: 2.5,
                     intervalDays: 0,
                     repetitions: 0,
@@ -584,13 +584,12 @@ function validateQuizCards(
         if (!quoteAppearsIn(quote, source)) continue;
 
         const point = resource.keyPoints.find((item) => item.quote && quoteAppearsIn(quote, item.quote));
-        const atSeconds =
-            typeof card.atSeconds === "number" && Number.isFinite(card.atSeconds) && card.atSeconds >= 0
-                ? Math.floor(card.atSeconds)
-                : (point?.atSeconds ?? null);
+        if (!point) continue;
+        const atSeconds = point.atSeconds ?? null;
 
         cards.push({
             id: `srs_${resource.id}_${cards.length}`,
+            source: { url: resource.url, seconds: atSeconds ?? undefined, quote, taskId: module.data.tasks.find(task => task.attachments.some(link => link.id.includes(resource.id)))?.id },
             roadmapId,
             sectionId: module.id,
             prompt: clip(card.prompt, 240),
@@ -650,6 +649,7 @@ export async function buildWorkspace(input: BuildWorkspaceInput): Promise<BuiltW
         });
         plan = result.object;
     } catch (error) {
+        if (error instanceof ScoutError) throw error;
         console.warn("[scout] plan generation degraded:", error instanceof Error ? error.message : error);
         plan = fallbackPlan(input.goal, resources);
         degraded = true;

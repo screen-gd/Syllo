@@ -10,11 +10,24 @@ interface SegmentedProps<T extends string> {
 
 /**
  * A row of mutually exclusive options on one track, as wide as its options.
- * The selected option is a raised neutral pill, never the accent.
+ * Options wrap when space is tight and share the app's neutral control styles.
  */
-export function Segmented<T extends string>({ label, value, options, onChange, className }: SegmentedProps<T>) {
+export function Segmented<T extends string>({
+    label,
+    value,
+    options,
+    onChange,
+    className,
+}: SegmentedProps<T>) {
     return (
-        <div role="radiogroup" aria-label={label} className={cn("inline-flex h-9 items-center gap-0.5 rounded-full bg-surface p-1", className)}>
+        <div
+            role="radiogroup"
+            aria-label={label}
+            className={cn(
+                "sy-segmented inline-flex max-w-full flex-wrap items-center gap-1 rounded-md bg-surface p-1",
+                className,
+            )}
+        >
             {options.map((option) => {
                 const selected = option.key === value;
                 return (
@@ -25,8 +38,10 @@ export function Segmented<T extends string>({ label, value, options, onChange, c
                         aria-checked={selected}
                         onClick={() => onChange(option.key)}
                         className={cn(
-                            "h-7 rounded-full px-3 text-[13px] transition-colors",
-                            selected ? "bg-raised text-text" : "text-text-soft hover:text-text",
+                            "min-h-8 rounded px-3 py-1 text-[13px] transition-colors",
+                            selected
+                                ? "bg-raised text-text"
+                                : "text-text-soft hover:text-text",
                         )}
                     >
                         {option.label}

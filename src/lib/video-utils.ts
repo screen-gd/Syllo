@@ -48,3 +48,15 @@ export function getEmbedUrl(url: string): string | null {
 export function getVideoId(url: string): string {
     return getYouTubeId(url) ?? getVimeoId(url) ?? url;
 }
+
+export function getVideoStartSeconds(value: string): number {
+    try {
+        const url = new URL(value);
+        const time = url.searchParams.get("t") || url.searchParams.get("start") || url.hash.replace(/^#t=/, "");
+        if (/^\d+(?:\.\d+)?s?$/.test(time)) return Math.max(0, Math.floor(Number.parseFloat(time)));
+        const hours = Number(time.match(/(\d+)h/)?.[1] ?? 0);
+        const minutes = Number(time.match(/(\d+)m/)?.[1] ?? 0);
+        const seconds = Number(time.match(/(\d+)s/)?.[1] ?? 0);
+        return hours * 3600 + minutes * 60 + seconds;
+    } catch { return 0; }
+}

@@ -49,7 +49,7 @@ export function closeScoutDb() {
 function seedDefaults(db: ScoutDatabase) {
     db.prepare(
         `INSERT OR IGNORE INTO scout_settings (id, auto_check, paused, monthly_budget_cents, updated_at)
-         VALUES (1, 1, 0, 500, ?)`,
+         VALUES (1, 0, 0, 0, ?)`,
     ).run(new Date().toISOString());
 
     // First run only. A learner who deletes every source keeps it that way.
@@ -60,9 +60,8 @@ function seedDefaults(db: ScoutDatabase) {
 
     const now = new Date().toISOString();
     const seeds: Array<[string, string, string]> = [
-        ["youtube_channel", "Juxtopposed", "@juxtopposed"],
-        ["youtube_channel", "DesignCourse", "@DesignCourse"],
-        ["youtube_channel", "Kevin Powell", "@KevinPowell"],
+        ["youtube_channel", "Matt Pocock", "@mattpocockuk"],
+        ["youtube_channel", "Theo", "@t3dotgg"],
         ["site", "MDN Web Docs", "developer.mozilla.org"],
         ["site", "web.dev", "web.dev"],
     ];

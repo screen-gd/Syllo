@@ -18,7 +18,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Roadmap } from "@/types";
 import { cn } from "@/lib/utils";
-import { getRelativeTimeLabel, getRoadmapDisplayTitle, getRoadmapStateLabel, getRoadmapStats } from "@/lib/workspace-stats";
+import {
+    getRelativeTimeLabel,
+    getRoadmapDisplayTitle,
+    getRoadmapStateLabel,
+    getRoadmapStats,
+} from "@/lib/workspace-stats";
 
 interface WorkspaceLibraryCardProps {
     roadmap: Roadmap;
@@ -26,7 +31,11 @@ interface WorkspaceLibraryCardProps {
     onRename?: (id: string, nextTitle: string) => void;
 }
 
-export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: WorkspaceLibraryCardProps) {
+export default function WorkspaceLibraryCard({
+    roadmap,
+    onDelete,
+    onRename,
+}: WorkspaceLibraryCardProps) {
     const stats = getRoadmapStats(roadmap);
     const displayTitle = getRoadmapDisplayTitle(roadmap);
     const [isRenaming, setIsRenaming] = useState(false);
@@ -50,7 +59,9 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
         onDelete(roadmap.id);
     };
 
-    const updated = getRelativeTimeLabel(roadmap.updatedAt || roadmap.createdAt);
+    const updated = getRelativeTimeLabel(
+        roadmap.updatedAt || roadmap.createdAt,
+    );
 
     if (isRenaming) {
         return (
@@ -69,7 +80,12 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
                         }}
                     />
                     <div className="flex gap-2">
-                        <Button type="button" size="sm" className="h-10" onClick={handleRename}>
+                        <Button
+                            type="button"
+                            size="sm"
+                            className="h-10"
+                            onClick={handleRename}
+                        >
                             Save
                         </Button>
                         <Button
@@ -90,26 +106,30 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
         );
     }
 
-    /** One row: identity on the left, progress in a fixed column, actions last. */
+    /** The progress moves below the title when the shared canvas narrows. */
     return (
-        <article className="relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 border-t border-border px-5 py-4 transition-colors first:border-t-0 hover:bg-surface-subtle md:grid-cols-[minmax(0,1fr)_220px_auto]">
+        <article className="sy-workspace-row">
             <div className="min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <Link
-                        to="/workspace/$id"
-                        params={{ id: roadmap.id }}
-                        className="truncate text-[15px] font-medium text-text after:absolute after:inset-0 hover:underline hover:underline-offset-4"
+                        to="/learn"
+                        search={{ roadmap: roadmap.id }}
+                        className="min-w-0 break-words text-[15px] font-medium text-text after:absolute after:inset-0 hover:underline hover:underline-offset-4"
                     >
                         {displayTitle}
                     </Link>
-                    {roadmap.packVersion ? <span className="studio-badge">Built by Scout</span> : null}
+                    {roadmap.packVersion ? (
+                        <span className="studio-badge">Built by Scout</span>
+                    ) : null}
                 </div>
-                <p className="mt-1 truncate text-[13px] text-text-soft">
-                    {stats.moduleCount} module{stats.moduleCount === 1 ? "" : "s"} · {getRoadmapStateLabel(stats.progressState)} · {updated}
+                <p className="mt-1 text-[13px] text-text-soft">
+                    {stats.moduleCount} module
+                    {stats.moduleCount === 1 ? "" : "s"} ·{" "}
+                    {getRoadmapStateLabel(stats.progressState)} · {updated}
                 </p>
             </div>
 
-            <div className="hidden flex-col gap-1.5 md:flex">
+            <div className="sy-workspace-progress">
                 <div className="flex items-baseline justify-between text-[13px] tabular-nums">
                     <span className="text-text">{stats.percent}%</span>
                     <span className="text-text-soft">
@@ -118,7 +138,12 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-raised">
                     <div
-                        className={cn("h-full rounded-full", stats.progressState === "completed" ? "bg-success" : "bg-accent")}
+                        className={cn(
+                            "h-full rounded-full",
+                            stats.progressState === "completed"
+                                ? "bg-success"
+                                : "bg-accent",
+                        )}
                         style={{ width: `${stats.percent}%` }}
                     />
                 </div>
@@ -142,20 +167,30 @@ export default function WorkspaceLibraryCard({ roadmap, onDelete, onRename }: Wo
                 {onDelete ? (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button type="button" variant="ghost" size="icon" aria-label={`Delete ${displayTitle}`}>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                aria-label={`Delete ${displayTitle}`}
+                            >
                                 <Trash2 size={15} />
                             </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                                <AlertDialogTitle>Delete {displayTitle}?</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                    Delete {displayTitle}?
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    This removes the workspace and its progress from this browser. It cannot be undone.
+                                    This removes the workspace and its progress
+                                    from this browser. It cannot be undone.
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDelete}>Delete workspace</AlertDialogAction>
+                                <AlertDialogAction onClick={handleDelete}>
+                                    Delete workspace
+                                </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>

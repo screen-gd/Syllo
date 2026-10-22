@@ -22,6 +22,8 @@ export interface SpendInput {
 }
 
 export function estimateCostCents(input: SpendInput): number {
+    // Gemini is used only with the free-only policy; provider quotas still apply.
+    if (input.provider === "gemini") return 0;
     const price = PRICES[input.provider] ?? PRICES.deepseek;
     const usd =
         ((input.inputTokens ?? 0) * price.input + (input.outputTokens ?? 0) * price.output) / 1_000_000;

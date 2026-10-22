@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import SettingsPage from "@/views/studio/settings";
+import SettingsPage from "@/views/studio/personal-settings";
 import { APP_NAME } from "@/lib/constants";
 
 export const Route = createFileRoute("/_studio/settings")({

@@ -1,3 +1,4 @@
+import { fetchPrivateApi } from "@/lib/private-api-fetch";
 import { Suspense, type ReactNode, useEffect, useState, useTransition } from "react";
 import { Link } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
@@ -274,7 +275,7 @@ function SettingsContent() {
             setStorageStatus(nextStorageStatus);
 
             try {
-                const creditsRes = await fetch("/api/credits/status");
+                const creditsRes = await fetchPrivateApi("/api/credits/status");
                 if (!active) return;
 
                 if (creditsRes.ok) {
@@ -315,7 +316,7 @@ function SettingsContent() {
 
     async function refreshRemoteSettings() {
         try {
-            const creditsRes = await fetch("/api/credits/status");
+            const creditsRes = await fetchPrivateApi("/api/credits/status");
 
             if (creditsRes.ok) {
                 const creditsJson = (await creditsRes.json()) as {
@@ -356,7 +357,7 @@ function SettingsContent() {
         setTestMessage(null);
 
         try {
-            const res = await fetch("/api/parse-roadmap", {
+            const res = await fetchPrivateApi("/api/parse-roadmap", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

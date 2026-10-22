@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { AiRequestOptions, AIProvider, DEFAULT_PROVIDER_MODELS, getAiProviderLabel, PROVIDER_BASE_URLS, PROVIDER_ENV_KEYS } from "@/lib/ai-config";
+import { assertFreeAi } from "@/lib/ai-policy";
 
 export const AI_MAX_INPUT_CHARS = 12_000;
 
@@ -17,6 +18,7 @@ export function resolveAiRequestOptions(options?: AiRequestOptions) {
     const provider = options?.provider ?? "gemini";
     const model = options?.model?.trim() || DEFAULT_PROVIDER_MODELS[provider];
     const apiKey = options?.apiKey?.trim() || getProviderEnvApiKey(provider);
+    assertFreeAi(provider, model);
 
     if (!apiKey) {
         throw new Error(`${getAiProviderLabel(provider)} API key is not configured`);

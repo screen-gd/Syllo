@@ -1,8 +1,8 @@
 /* App-wide constants */
 
-export const APP_NAME = "ZNS RoadMap Studio";
-export const APP_TAGLINE = "Paste any guide and get a full interactive workspace.";
-export const BRAND_OWNER = "ZNS Nexus / ZNS Enterprises";
+export const APP_NAME = "Syllo";
+export const APP_TAGLINE = "Your books, learning topics, and next steps.";
+export const BRAND_OWNER = "Screen";
 
 export const SECTION_ICONS: Record<string, string> = {
     module: "[ ]",

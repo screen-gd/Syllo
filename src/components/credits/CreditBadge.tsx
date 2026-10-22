@@ -1,4 +1,6 @@
 "use client";
+import { fetchPrivateApi } from "@/lib/private-api-fetch";
+
 
 import { useEffect, useState } from "react";
 import { Coins } from "lucide-react";
@@ -21,7 +23,7 @@ export default function CreditBadge({ compact = false }: { compact?: boolean }) 
     useEffect(() => {
         let active = true;
 
-        void fetch("/api/credits/status", { cache: "no-store" })
+        void fetchPrivateApi("/api/credits/status", { cache: "no-store" })
             .then(async (response) => {
                 if (response.status === 401) return { success: false } satisfies CreditStatusResponse;
                 if (!response.ok) return null;

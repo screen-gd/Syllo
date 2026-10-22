@@ -182,7 +182,7 @@ interface SupadataResponse {
     message?: string;
 }
 
-async function fromSupadata(videoId: string): Promise<TranscriptResult | null> {
+async function _fromSupadata(videoId: string): Promise<TranscriptResult | null> {
     const key = process.env.SUPADATA_API_KEY?.trim();
     if (!key) return null;
 
@@ -245,15 +245,12 @@ async function fromSupadata(videoId: string): Promise<TranscriptResult | null> {
     return null;
 }
 
-/** Local captions first, hosted fallback second, skip and flag third. */
+/** Free local captions only. Unread videos remain manual links. */
 export async function fetchTranscript(videoId: string): Promise<TranscriptResult> {
     if (!videoId.trim()) return { ...EMPTY, error: "Missing video id" };
 
     const local = await fromPython(videoId);
     if (local?.status === "ok") return local;
-
-    const hosted = await fromSupadata(videoId);
-    if (hosted?.status === "ok") return hosted;
 
     return {
         ...EMPTY,

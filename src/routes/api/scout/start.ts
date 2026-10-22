@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DEFAULT_PROVIDER_MODELS, isAiProvider } from "@/lib/ai-config";
 import { readJsonBody, scoutBadRequest, scoutFailure, scoutJson, scoutReady } from "@/lib/scout/http";
-import { defaultScoutConfig, type ScoutLlmConfig } from "@/lib/scout/llm";
+import { defaultScoutConfig, resolveScoutLlm, type ScoutLlmConfig } from "@/lib/scout/llm";
+import { assertFreeAi } from "@/lib/ai-policy";
 import { startPack } from "@/lib/scout/pipeline";
 
 export const Route = createFileRoute("/api/scout/start")({
@@ -22,8 +23,8 @@ export const Route = createFileRoute("/api/scout/start")({
                     if (goal.length < 4) {
                         return scoutBadRequest("Tell Scout what you want to learn, in a few words.");
                     }
-                    if (goal.length > 400) {
-                        return scoutBadRequest("Keep the goal under 400 characters.");
+                    if (goal.length > 1200) {
+                        return scoutBadRequest("Keep the goal and its context under 1200 characters.");
                     }
 
                     // The browser sends its BYO key once. It stays in process
@@ -41,6 +42,9 @@ export const Route = createFileRoute("/api/scout/start")({
                         };
                     }
 
+                    const config = resolveScoutLlm(llm);
+                    assertFreeAi(config.provider, config.model);
+                    if (!config.apiKey) return scoutBadRequest("Add a free Gemini API key in Settings to use Scout. You can still create a roadmap from your own links without a key.");
                     const pack = startPack(goal, llm);
                     return scoutJson({ success: true, pack });
                 } catch (error) {

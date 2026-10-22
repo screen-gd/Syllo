@@ -81,7 +81,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS sources_kind_value ON sources (kind, value);
 
 CREATE TABLE IF NOT EXISTS scout_settings (
     id INTEGER PRIMARY KEY CHECK (id = 1),
-    auto_check INTEGER NOT NULL DEFAULT 1,
+    auto_check INTEGER NOT NULL DEFAULT 0,
     paused INTEGER NOT NULL DEFAULT 0,
     monthly_budget_cents INTEGER NOT NULL DEFAULT 500,
     last_auto_check_on TEXT,

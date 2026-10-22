@@ -23,10 +23,14 @@ interface Envelope {
     error?: string;
 }
 
+let accessToken: string | null = null;
+export function setScoutAccessToken(token: string | null) { accessToken = token; }
+export function getScoutAccessToken() { return accessToken; }
+
 async function request<T extends Envelope>(url: string, init?: RequestInit): Promise<T> {
     const response = await fetch(url, {
         ...init,
-        headers: init?.body ? { "content-type": "application/json", ...init.headers } : init?.headers,
+        headers: { ...(init?.body ? { "content-type": "application/json" } : {}), ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}), ...init?.headers },
     });
 
     let payload: T | null = null;
