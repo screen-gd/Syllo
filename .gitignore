@@ -1,11 +1,16 @@
 node_modules
-.next
+dist
+.tanstack
 .env
 .env.local
-.env.example
+.env.*.local
 coverage
-dist
+.data
 *.log
 *.tsbuildinfo
 .agents\skills
 CLAUDE.md
+
+# Local design scratch and agent tooling
+.design
+.taste-skill
