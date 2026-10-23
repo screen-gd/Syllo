@@ -1,0 +1,629 @@
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "tailwindcss";
+
+/*
+ * Fonts are self-hosted by Fontsource. The variable names match the ones the
+ * Next build injected, so `font-sans` / `font-mono` resolve the same way.
+ */
+:root {
+    --font-geist-sans: "Geist Variable";
+    --font-geist-mono: "Geist Mono Variable";
+}
+
+/*
+ * Theme: true black, flat.
+ *
+ * Elevation is a lightness step (page #000, surface #111, raised #2a2a2a), not
+ * a border or a shadow. White is the primary text and the primary button fill.
+ * The accent is a sky blue reserved for data and selection marks (progress,
+ * due counts, the current item); it never fills buttons or nav.
+ *
+ * Every component reads these tokens through Tailwind utilities such as
+ * `bg-surface`, `text-text-muted` or `border-border`. Workspaces may override
+ * `--color-accent` with their own branding colour.
+ */
+@theme {
+    --color-page: #000000;
+    --color-surface: #111111;
+    --color-surface-subtle: #171717;
+    --color-surface-muted: #1f1f1f;
+    --color-raised: #2a2a2a;
+    --color-border: #222222;
+    --color-border-strong: #3a3a3a;
+    --color-text: #ffffff;
+    --color-text-muted: #b4b4b4;
+    --color-text-soft: #949494;
+    --color-accent: #4cb3f0;
+    --color-accent-strong: #7cc6f4;
+    --color-accent-soft: #0e2230;
+    --color-success: #3fc07a;
+    --color-success-soft: #172a1d;
+    --color-warning: #e5a93b;
+    --color-warning-soft: #2b2414;
+    --color-danger: #e5566f;
+    --color-danger-soft: #2c1a20;
+
+    --font-sans: var(--font-geist-sans), "Helvetica Neue", system-ui, sans-serif;
+    --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+    --font-display: var(--font-geist-sans), "Helvetica Neue", system-ui, sans-serif;
+
+    /* Cards use 2xl, nested panels xl, controls are pills. */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    --radius-xl: 14px;
+    --radius-2xl: 20px;
+
+    --tracking-tight: -0.01em;
+    --tracking-display: -0.02em;
+}
+
+:root {
+    color-scheme: dark;
+}
+
+/* Element defaults sit in the base layer so utilities can override them. */
+@layer base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        background: var(--color-page);
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--color-page);
+        color: var(--color-text);
+        font-family: var(--font-sans);
+        font-size: 14px;
+        line-height: 1.5;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+        font: inherit;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        color: var(--color-text);
+        font-weight: 600;
+        letter-spacing: var(--tracking-tight);
+        text-wrap: balance;
+    }
+
+    h1,
+    .font-display {
+        font-family: var(--font-display);
+        letter-spacing: var(--tracking-display);
+    }
+
+    p {
+        margin: 0;
+    }
+
+    ::selection {
+        background: var(--color-raised);
+        color: var(--color-text);
+    }
+
+    /* Keyboard focus only: a neutral outline, never a coloured glow. */
+    :focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.55);
+        outline-offset: 2px;
+    }
+
+    .tabular-nums,
+    .num {
+        font-variant-numeric: tabular-nums;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--color-raised);
+        border: 2px solid var(--color-page);
+        border-radius: 999px;
+    }
+
+}
+
+/* Shared classes; utilities still win over these. */
+@layer components {
+    /* -- Layout ------------------------------------------------------------------ */
+
+    .page-shell {
+        width: 100%;
+        max-width: 104rem;
+        margin-inline: auto;
+        padding-inline: 1rem;
+    }
+
+    .page-shell-wide,
+    .studio-layout-shell {
+        width: 100%;
+        max-width: none;
+        margin-inline: auto;
+        padding-inline: 1rem;
+    }
+
+    .section-space {
+        padding-block: clamp(72px, 10vw, 132px);
+    }
+
+    .section-space-compact {
+        padding-block: clamp(40px, 7vw, 72px);
+    }
+
+    /* A studio screen: title row, then blocks separated by one gap. */
+    .studio-page {
+        display: grid;
+        align-content: start;
+        gap: 24px;
+        width: 100%;
+        padding-block: 28px 64px;
+    }
+
+    .app-header-block {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .app-header-block h1 {
+        font-size: 22px;
+        line-height: 1.25;
+    }
+
+    .app-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    /* KPIs: one surface split by hairlines, label over value. */
+    .app-stat-grid {
+        display: grid;
+        gap: 1px;
+        overflow: hidden;
+        border-radius: var(--radius-2xl);
+        background: var(--color-border);
+    }
+
+    .app-stat-card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px 22px;
+        background: var(--color-surface);
+    }
+
+    .settings-shell {
+        display: grid;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .settings-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .settings-nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: var(--radius-md);
+        color: #bbbbbb;
+        font-size: 14px;
+        transition: color 140ms ease;
+    }
+
+    .settings-nav-link:hover,
+    .settings-nav-link[data-active="true"] {
+        color: var(--color-text);
+    }
+
+    .settings-nav-link[data-active="true"] {
+        background: var(--color-surface);
+    }
+
+    .settings-content {
+        width: 100%;
+        max-width: 44rem;
+    }
+
+    .settings-section {
+        padding: 22px;
+        border-radius: var(--radius-2xl);
+        background: var(--color-surface);
+    }
+
+    .settings-field {
+        padding-block: 16px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .settings-field:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .settings-action-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding-top: 16px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .two-panel-shell {
+        display: grid;
+        gap: 14px;
+        align-items: start;
+    }
+
+    .two-panel-sidebar {
+        width: 100%;
+        max-width: 340px;
+    }
+
+    .filter-bar {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+        border-radius: var(--radius-2xl);
+        background: var(--color-surface);
+    }
+
+    @media (min-width: 768px) {
+        .app-stat-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filter-bar {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .two-panel-shell {
+            grid-template-columns: 340px minmax(0, 1fr);
+        }
+    }
+
+    @media (min-width: 1280px) {
+        .app-stat-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .settings-shell {
+            grid-template-columns: 180px minmax(0, 1fr);
+            gap: 32px;
+        }
+
+        .settings-nav {
+            position: sticky;
+            top: 88px;
+        }
+    }
+
+    /* Small grey label above a value. Sentence case, no tracking. */
+    .eyebrow,
+    .field-label {
+        display: block;
+        color: var(--color-text-soft);
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .field-label {
+        margin-bottom: 8px;
+        color: var(--color-text-muted);
+        font-size: 13px;
+    }
+
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .text-pretty {
+        text-wrap: pretty;
+    }
+
+    /* -- Surfaces ---------------------------------------------------------------- */
+
+    .surface-panel,
+    .studio-panel,
+    .studio-table,
+    .studio-orbit-shell,
+    .studio-orbit-rail,
+    .studio-hero {
+        border-radius: var(--radius-2xl);
+        background: var(--color-surface);
+    }
+
+    .surface-panel-subtle,
+    .studio-panel-muted,
+    .studio-panel-soft,
+    .studio-kpi,
+    .studio-data-tile,
+    .studio-micro-grid {
+        border-radius: var(--radius-xl);
+        background: var(--color-surface-muted);
+    }
+
+    .studio-data-tile-accent {
+        box-shadow: inset 0 0 0 1px var(--color-accent);
+    }
+
+    .studio-data-tile-success {
+        box-shadow: inset 0 0 0 1px var(--color-success);
+    }
+
+    .studio-danger {
+        box-shadow: inset 0 0 0 1px var(--color-danger);
+    }
+
+    .studio-empty {
+        border: 1px dashed var(--color-border-strong);
+        border-radius: var(--radius-xl);
+        background: transparent;
+    }
+
+    .studio-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .studio-table thead th {
+        color: var(--color-text-soft);
+        font-size: 12px;
+        font-weight: 400;
+        text-align: left;
+    }
+
+    .studio-table tbody tr + tr {
+        border-top: 1px solid var(--color-border);
+    }
+
+    .hairline-divider {
+        border-color: var(--color-border);
+    }
+
+    .mono-surface {
+        font-family: var(--font-mono);
+    }
+
+    .interactive-row {
+        transition: background-color 140ms ease;
+    }
+
+    .interactive-row:hover {
+        background: var(--color-surface-subtle);
+    }
+
+    /* Neutral pill for a state or a count. */
+    .studio-badge {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        gap: 6px;
+        height: 22px;
+        padding: 0 9px;
+        border-radius: 999px;
+        background: var(--color-raised);
+        color: var(--color-text);
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* -- Controls ---------------------------------------------------------------- */
+
+    .studio-input,
+    .field-input,
+    .field-textarea,
+    .field-select {
+        width: 100%;
+        border: 1px solid #2e2e2e;
+        border-radius: var(--radius-lg);
+        background: var(--color-surface);
+        color: var(--color-text);
+        transition: border-color 140ms ease;
+    }
+
+    .studio-input,
+    .field-input,
+    .field-select {
+        min-height: 40px;
+        padding: 0 12px;
+    }
+
+    .field-textarea {
+        min-height: 320px;
+        padding: 12px;
+        resize: vertical;
+    }
+
+    .studio-input:hover,
+    .field-input:hover,
+    .field-textarea:hover,
+    .field-select:hover,
+    .studio-input:focus,
+    .field-input:focus,
+    .field-textarea:focus,
+    .field-select:focus {
+        border-color: #4a4a4a;
+        outline: none;
+    }
+
+    .studio-input::placeholder,
+    .field-input::placeholder,
+    .field-textarea::placeholder {
+        color: var(--color-text-soft);
+    }
+
+    /* Buttons are pills. Primary is inverted white; there is one per screen. */
+    .button-primary,
+    .button-secondary,
+    .button-ghost,
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 36px;
+        padding: 0 16px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+        transition:
+            background-color 140ms ease,
+            border-color 140ms ease,
+            color 140ms ease,
+            opacity 140ms ease;
+    }
+
+    .button-primary:disabled,
+    .button-secondary:disabled,
+    .button-ghost:disabled,
+    .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .button-primary,
+    .btn-primary {
+        border: 1px solid var(--color-text);
+        background: var(--color-text);
+        color: var(--color-page);
+    }
+
+    .button-primary:hover,
+    .btn-primary:hover {
+        background: #e6e6e6;
+        border-color: #e6e6e6;
+    }
+
+    .button-secondary,
+    .btn-secondary {
+        border: 1px solid var(--color-border-strong);
+        background: transparent;
+        color: var(--color-text);
+    }
+
+    .button-secondary:hover,
+    .btn-secondary:hover {
+        border-color: #555555;
+        background: var(--color-surface-subtle);
+    }
+
+    .button-ghost {
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--color-text-muted);
+    }
+
+    .button-ghost:hover {
+        color: var(--color-text);
+    }
+
+    /* Loading placeholder: a flat bar at the final size, no shimmer. */
+    .skeleton {
+        border-radius: var(--radius-md);
+        background: var(--color-surface-muted);
+    }
+
+    /* Kept for markup that still references it; screens do not perform entrances. */
+    .stagger-enter {
+        opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+
+    @media (min-width: 640px) {
+        .page-shell,
+        .page-shell-wide,
+        .studio-layout-shell {
+            padding-inline: 1.5rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .page-shell,
+        .page-shell-wide,
+        .studio-layout-shell {
+            padding-inline: 2rem;
+        }
+    }
+
+    /* -- Visual density: compact ------------------------------------------------- */
+    html.density-compact .studio-page {
+        gap: 14px;
+        padding-block: 16px 40px;
+    }
+    html.density-compact .settings-field {
+        padding-block: 10px;
+    }
+    html.density-compact .settings-action-row {
+        padding-top: 10px;
+    }
+    html.density-compact .section-space {
+        padding-block: clamp(40px, 6vw, 80px);
+    }
+
+}
