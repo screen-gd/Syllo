@@ -1,5 +1,9 @@
 /* ZNS RoadMap Studio type definitions */
 
+/* Video ladder levels, lowest to highest */
+export const LEARNING_LEVELS = ["basics", "intermediate", "advanced"] as const;
+export type LearningLevel = (typeof LEARNING_LEVELS)[number];
+
 /* Section types */
 export type SectionType =
     | "module"
@@ -72,6 +76,10 @@ export type Section =
 
 export interface ModuleSection extends SectionBase {
     type: "module";
+    /** Ladder level for this module; absent on reading-track modules. */
+    level?: LearningLevel;
+    /** Marks the module as the separate reading track. */
+    track?: "reading";
     data: {
         description: string;
         estimatedTime?: string;
@@ -164,6 +172,8 @@ export interface Task {
     description?: string;
     estimatedTime?: string;
     priority?: "core" | "optional" | "advanced" | string;
+    core?: boolean;
+    coreReason?: string;
     done?: boolean;
 }
 

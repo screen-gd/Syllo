@@ -1,21 +1,23 @@
 import { z } from "zod";
-import type {
-    ModuleSection,
-    Note,
-    NoteSection,
-    Resource,
-    ResourceSection,
-    Roadmap,
-    SrsItem,
-    Task,
-    Video,
+import {
+    LEARNING_LEVELS,
+    type LearningLevel,
+    type ModuleSection,
+    type Note,
+    type NoteSection,
+    type Resource,
+    type ResourceSection,
+    type Roadmap,
+    type SrsItem,
+    type Task,
+    type Video,
 } from "@/types";
 import { clip, deepLink, formatTimestamp, quoteAppearsIn } from "./format";
 import { scoutGenerateObject, ScoutError } from "./llm";
 import { SCOUT_PROMPTS, SCOUT_PROMPT_VERSION } from "./prompts";
 import type { ScoutResource } from "./types";
 
-const planSchema = z.object({
+export const planSchema = z.object({
     title: z.string(),
     summary: z.string(),
     objectives: z.array(z.string()).default([]),
@@ -26,6 +28,7 @@ const planSchema = z.object({
                 title: z.string(),
                 description: z.string().default(""),
                 skill: z.string().default(""),
+                level: z.enum(LEARNING_LEVELS).catch("basics").default("basics"),
                 tasks: z
                     .array(
                         z.object({
@@ -34,6 +37,8 @@ const planSchema = z.object({
                             startSeconds: z.number().nullable().optional(),
                             endSeconds: z.number().nullable().optional(),
                             estimatedMinutes: z.number().nullable().optional(),
+                            core: z.boolean().default(false),
+                            coreReason: z.string().default(""),
                         }),
                     )
                     .default([]),
@@ -64,10 +69,12 @@ const quizSchema = z.object({
 
 type ScoutQuizPlan = z.infer<typeof quizSchema>;
 
-interface PlanModule {
+export interface PlanModule {
     title: string;
     description: string;
     skill: string;
+    level: LearningLevel;
+    track?: "reading";
     resourceIds: string[];
     tasks: Array<{
         title: string;
@@ -75,6 +82,8 @@ interface PlanModule {
         startSeconds: number | null;
         endSeconds: number | null;
         estimatedMinutes: number | null;
+        core: boolean;
+        coreReason: string;
     }>;
 }
 
@@ -208,6 +217,8 @@ function buildTask(input: {
     endSeconds: number | null;
     title?: string;
     estimatedMinutes?: number | null;
+    core: boolean;
+    coreReason: string;
 }) {
     const { resource, startSeconds, endSeconds } = input;
     const link = attachment(resource, startSeconds);
@@ -221,8 +232,10 @@ function buildTask(input: {
         subtasks: [],
         attachments: link ? [link] : [],
         estimatedTime: `${Math.max(2, Math.min(300, Math.round(minutes)))} min`,
-        priority: "core",
+        priority: input.core ? "core" : "optional",
+        core: input.core,
     };
+    if (input.coreReason) task.coreReason = input.coreReason;
 
     return task;
 }
@@ -241,6 +254,7 @@ function fallbackPlan(goal: string, resources: ScoutResource[]): ScoutPlan {
         title: skill,
         description: `Work through ${items.length} free resource${items.length === 1 ? "" : "s"} on ${skill.toLowerCase()}.`,
         skill,
+        level: "basics",
         tasks: items.flatMap((resource): PlanTask[] => {
             if (resource.kind === "book") {
                 const chapters = resource.chapters.length > 0 ? resource.chapters : [{ title: resource.title, startSeconds: 0, url: resource.url }];
@@ -250,6 +264,8 @@ function fallbackPlan(goal: string, resources: ScoutResource[]): ScoutPlan {
                     startSeconds: null,
                     endSeconds: null,
                     estimatedMinutes: 45,
+                    core: false,
+                    coreReason: "",
                 }));
             }
             if (resource.kind === "video") {
@@ -260,6 +276,8 @@ function fallbackPlan(goal: string, resources: ScoutResource[]): ScoutPlan {
                         startSeconds: chapter.startSeconds,
                         endSeconds: chapter.endSeconds ?? null,
                         estimatedMinutes: taskMinutes(resource, chapter.startSeconds, chapter.endSeconds ?? null),
+                        core: false,
+                        coreReason: "",
                     }));
                 }
                 return [
@@ -269,6 +287,8 @@ function fallbackPlan(goal: string, resources: ScoutResource[]): ScoutPlan {
                         startSeconds: null,
                         endSeconds: null,
                         estimatedMinutes: taskMinutes(resource, null, null),
+                        core: false,
+                        coreReason: "",
                     },
                 ];
             }
@@ -279,6 +299,8 @@ function fallbackPlan(goal: string, resources: ScoutResource[]): ScoutPlan {
                     startSeconds: null,
                     endSeconds: null,
                     estimatedMinutes: taskMinutes(resource, null, null),
+                    core: false,
+                    coreReason: "",
                 },
             ];
         }),
@@ -295,12 +317,72 @@ function fallbackPlan(goal: string, resources: ScoutResource[]): ScoutPlan {
     };
 }
 
-function normalizeModules(plan: ScoutPlan, resources: ScoutResource[]): PlanModule[] {
+export const CORE_STARTING_REASON = "Chosen as a starting point for this level.";
+
+const MAX_CORE_RESOURCES = 5;
+const PROMOTED_CORE_RESOURCES = 3;
+const MAX_MODULES_PER_LEVEL = 3;
+
+function isCoreEligible(kind: ScoutResource["kind"], levelHasVideo: boolean) {
+    if (levelHasVideo) return kind === "video";
+    return kind === "article" || kind === "doc";
+}
+
+/** Applies the level's core rules to its tasks in place, in task order. */
+function settleCore(tasks: PlanModule["tasks"], byId: Map<string, ScoutResource>) {
+    const levelHasVideo = tasks.some((task) => byId.get(task.resourceId)?.kind === "video");
+
+    for (const task of tasks) {
+        const kind = byId.get(task.resourceId)?.kind;
+        if (!kind || !isCoreEligible(kind, levelHasVideo)) task.core = false;
+    }
+
+    const coreResources = new Set<string>();
+    for (const task of tasks) {
+        if (!task.core || coreResources.has(task.resourceId)) continue;
+        if (coreResources.size >= MAX_CORE_RESOURCES) {
+            task.core = false;
+            continue;
+        }
+        coreResources.add(task.resourceId);
+    }
+
+    if (!tasks.some((task) => task.core)) {
+        const promoted = new Set<string>();
+        for (const task of tasks) {
+            const kind = byId.get(task.resourceId)?.kind;
+            if (!kind || !isCoreEligible(kind, levelHasVideo)) continue;
+            if (promoted.has(task.resourceId) || promoted.size >= PROMOTED_CORE_RESOURCES) continue;
+            promoted.add(task.resourceId);
+            task.core = true;
+            task.coreReason = CORE_STARTING_REASON;
+        }
+    }
+
+    for (const task of tasks) {
+        if (!task.core) {
+            task.coreReason = "";
+            continue;
+        }
+        task.coreReason = clip(task.coreReason, 140);
+        if (!task.coreReason) task.coreReason = CORE_STARTING_REASON;
+    }
+}
+
+/**
+ * Whatever the model returned, the roadmap comes out of here as a ladder:
+ * level-ordered modules, books in their own track, and a small core set per
+ * level. Every rule below is deterministic so tests can pin it down.
+ */
+export function normalizeModules(input: { plan: ScoutPlan; resources: ScoutResource[] }): PlanModule[] {
+    const { plan, resources } = input;
     const byId = resourceMap(resources);
     const seen = new Set<string>();
     const modules: PlanModule[] = [];
+    const readingTasks: PlanModule["tasks"] = [];
+    const readingIds: string[] = [];
 
-    for (const module of plan.modules.slice(0, 6)) {
+    for (const module of plan.modules.slice(0, 12)) {
         const tasks: PlanModule["tasks"] = [];
         const resourceIds: string[] = [];
 
@@ -316,17 +398,30 @@ function normalizeModules(plan: ScoutPlan, resources: ScoutResource[]): PlanModu
             const startSeconds = chapter?.startSeconds ?? null;
             const endSeconds = chapter?.endSeconds ?? null;
 
-            const key = `${resource.id}:${startSeconds ?? ""}`;
+            // Books have no timestamps, so their chapter tasks are keyed by title.
+            const key = resource.kind === "book"
+                ? `${resource.id}:read:${clip(task.title, 140).toLowerCase()}`
+                : `${resource.id}:${startSeconds ?? ""}`;
             if (seen.has(key)) continue;
             seen.add(key);
 
-            tasks.push({
+            const normalized: PlanModule["tasks"][number] = {
                 title: clip(task.title, 140),
                 resourceId: resource.id,
                 startSeconds,
                 endSeconds,
                 estimatedMinutes: task.estimatedMinutes ?? null,
-            });
+                core: resource.kind === "book" ? false : task.core,
+                coreReason: resource.kind === "book" ? "" : task.coreReason,
+            };
+
+            if (resource.kind === "book") {
+                readingTasks.push(normalized);
+                readingIds.push(resource.id);
+                continue;
+            }
+
+            tasks.push(normalized);
             resourceIds.push(resource.id);
         }
 
@@ -335,32 +430,91 @@ function normalizeModules(plan: ScoutPlan, resources: ScoutResource[]): PlanModu
             title: clip(module.title || module.skill || "Module", 120),
             description: clip(module.description ?? "", 600),
             skill: module.skill ?? "",
+            level: module.level,
             resourceIds: unique(resourceIds),
             tasks,
         });
     }
 
+    const levelRank = new Map<LearningLevel, number>(LEARNING_LEVELS.map((level, index) => [level, index]));
+    modules.sort((left, right) => (levelRank.get(left.level) ?? 0) - (levelRank.get(right.level) ?? 0));
+
     // Every approved resource must appear somewhere, even when the model
-    // forgot it. The appended module stays honest about why it exists.
-    const included = new Set(modules.flatMap(module => module.resourceIds));
+    // forgot it. Books join the reading track; the rest get an honest module
+    // at the last level in the ladder.
+    const included = new Set([...modules.flatMap(module => module.resourceIds), ...readingIds]);
     const missing = resources.filter(resource => !included.has(resource.id));
-    if (missing.length > 0) {
+    for (const resource of missing) {
+        if (resource.kind !== "book") continue;
+        const chapters = resource.chapters.length > 0 ? resource.chapters : [{ title: resource.title, startSeconds: 0, url: resource.url }];
+        for (const chapter of chapters.slice(0, 10)) {
+            readingTasks.push({
+                title: `Read ${clip(chapter.title, 120)}`,
+                resourceId: resource.id,
+                startSeconds: null,
+                endSeconds: null,
+                estimatedMinutes: taskMinutes(resource, null, null),
+                core: false,
+                coreReason: "",
+            });
+        }
+        readingIds.push(resource.id);
+    }
+    const missingOther = missing.filter(resource => resource.kind !== "book");
+    if (missingOther.length > 0) {
         modules.push({
             title: "Also included",
             description: "Resources from your approved picks that did not fit an earlier module.",
             skill: "Additional practice",
-            resourceIds: missing.map((resource) => resource.id),
-            tasks: missing.map((resource) => ({
+            level: modules.at(-1)?.level ?? "basics",
+            resourceIds: missingOther.map((resource) => resource.id),
+            tasks: missingOther.map((resource) => ({
                 title: `${resource.kind === "video" ? "Watch" : "Read"} ${resource.title}`,
                 resourceId: resource.id,
                 startSeconds: null,
                 endSeconds: null,
                 estimatedMinutes: taskMinutes(resource, null, null),
+                core: false,
+                coreReason: "",
             })),
         });
     }
 
-    return modules;
+    // At most three modules per level; overflow modules merge into the last
+    // kept module of their level so no task is dropped.
+    const capped: PlanModule[] = [];
+    const keptByLevel = new Map<LearningLevel, PlanModule[]>();
+    for (const module of modules) {
+        const kept = keptByLevel.get(module.level) ?? [];
+        if (kept.length < MAX_MODULES_PER_LEVEL) {
+            kept.push(module);
+            keptByLevel.set(module.level, kept);
+            capped.push(module);
+            continue;
+        }
+        const target = kept[kept.length - 1];
+        target.tasks.push(...module.tasks);
+        target.resourceIds = unique([...target.resourceIds, ...module.resourceIds]);
+    }
+
+    for (const level of LEARNING_LEVELS) {
+        const levelTasks = capped.filter(module => module.level === level).flatMap(module => module.tasks);
+        if (levelTasks.length > 0) settleCore(levelTasks, byId);
+    }
+
+    if (readingTasks.length > 0) {
+        capped.push({
+            title: "Reading track",
+            description: "Books stay a separate track: read them alongside the ladder, in any order.",
+            skill: "Reading",
+            level: "basics",
+            track: "reading",
+            resourceIds: unique(readingIds),
+            tasks: readingTasks,
+        });
+    }
+
+    return capped;
 }
 
 function estimatedDuration(tasks: Task[]) {
@@ -375,7 +529,7 @@ function estimatedDuration(tasks: Task[]) {
     return rest > 0 ? `${hours}h ${rest}m` : `${hours}h`;
 }
 
-function buildRoadmap(
+export function buildRoadmap(
     packId: string,
     goal: string,
     plan: ScoutPlan,
@@ -404,6 +558,8 @@ function buildRoadmap(
                     endSeconds: task.endSeconds,
                     title: task.title,
                     estimatedMinutes: task.estimatedMinutes,
+                    core: task.core,
+                    coreReason: task.coreReason,
                 }),
             );
         });
@@ -418,10 +574,12 @@ function buildRoadmap(
             title: module.title,
             order: moduleIndex,
             type: "module",
+            ...(module.track === "reading" ? { track: "reading" as const } : { level: module.level }),
             metadata: {
                 estimatedDuration: estimatedDuration(tasks),
                 taskCount: tasks.length,
                 keyOutcome: module.skill || undefined,
+                difficulty: module.level,
             },
             data: {
                 description: module.description,
@@ -621,6 +779,7 @@ export async function buildWorkspace(input: BuildWorkspaceInput): Promise<BuiltW
             title: resource.title,
             creator: resource.creator ?? null,
             kind: resource.kind,
+            level: resource.level ?? null,
             durationSeconds: resource.durationSeconds ?? null,
             summary: clip(resource.summary ?? "", 500),
             skills: resource.skillTags,
@@ -660,7 +819,7 @@ export async function buildWorkspace(input: BuildWorkspaceInput): Promise<BuiltW
         degraded = true;
     }
 
-    const modules = normalizeModules(plan, resources);
+    const modules = normalizeModules({ plan, resources });
     const roadmap = buildRoadmap(input.packId, input.goal, plan, modules, resources);
     const moduleSections = roadmap.sections.filter((section): section is ModuleSection => section.type === "module");
 

@@ -16,6 +16,14 @@ import {
 } from "lucide-react";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
 import {
+    getLadder,
+    levelUpReady,
+    LEVEL_LABEL,
+    nextCoreItem,
+    type LadderItem,
+    type LadderLevel,
+} from "@/lib/ladder";
+import {
     getLearningTasks,
     learningVideo,
     nextLearningTask,
@@ -24,6 +32,7 @@ import {
     setLearningTaskDone,
     taskVideo,
 } from "@/lib/learning";
+import type { LearningLevel, Roadmap } from "@/types";
 import { getVideoStartSeconds } from "@/lib/video-utils";
 import { formatTimestamp, parseTimestamp } from "@/lib/scout/format";
 import {
@@ -59,9 +68,19 @@ export default function LearnPage({
         () => (roadmap ? getLearningTasks(roadmap) : []),
         [roadmap],
     );
+    const ladder = useMemo(
+        () => (roadmap ? getLadder(roadmap) : null),
+        [roadmap],
+    );
     const candidate =
         tasks.find((entry) => entry.task.id === taskId) ??
-        (roadmap ? (nextLearningTask(roadmap) ?? tasks[0]) : null);
+        (roadmap && ladder
+            ? (nextCoreItem(roadmap) ??
+              ladder.levels[0]?.items[0] ??
+              ladder.reading[0] ??
+              nextLearningTask(roadmap) ??
+              tasks[0])
+            : null);
     // Keep the open lesson steady when completion updates the roadmap.
     const openTaskId = useRef<string | null>(null);
     if (openTaskId.current === null)
@@ -69,6 +88,27 @@ export default function LearnPage({
     const item =
         tasks.find((entry) => entry.task.id === openTaskId.current) ??
         candidate;
+    const openInfo = useMemo(() => {
+        if (!ladder || !item) return null;
+        for (const level of ladder.levels) {
+            const found = level.items.find(
+                (entry) => entry.task.id === item.task.id,
+            );
+            if (found) {
+                return {
+                    item: found,
+                    level,
+                    coreIndex: level.core.findIndex(
+                        (entry) => entry.task.id === found.task.id,
+                    ),
+                };
+            }
+        }
+        const readingItem = ladder.reading.find(
+            (entry) => entry.task.id === item.task.id,
+        );
+        return readingItem ? { item: readingItem, level: null, coreIndex: -1 } : null;
+    }, [ladder, item]);
     const videoResource = item ? taskVideo(item) : null;
     const video = useMemo(
         () => (roadmap && videoResource ? learningVideo(roadmap, videoResource.url) : null),
@@ -93,6 +133,17 @@ export default function LearnPage({
     const [manualPosition, setManualPosition] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [practice, setPractice] = useState("");
+    const [levelOverrides, setLevelOverrides] = useState<Map<LearningLevel, boolean>>(
+        () => new Map(),
+    );
+    const [readingOpen, setReadingOpen] = useState(false);
+    const [completion, setCompletion] = useState<{
+        taskId: string;
+        roadmap: Roadmap;
+        core: boolean;
+    } | null>(null);
+    const [recallText, setRecallText] = useState("");
+    const [recallResolved, setRecallResolved] = useState(false);
     const tabRefs = useRef<Record<TabKey, HTMLButtonElement | null>>({
         read: null,
         check: null,
@@ -116,6 +167,9 @@ export default function LearnPage({
         setDraft("");
         setError(null);
         setTab("read");
+        setCompletion(null);
+        setRecallText("");
+        setRecallResolved(false);
         const savedPractice = practiceId
             ? getPersonalSnapshot()[practiceId]
             : undefined;
@@ -238,6 +292,53 @@ export default function LearnPage({
         }
     }
 
+    function saveRecall() {
+        if (!recallText.trim() || !roadmap || !item) return;
+        try {
+            putPersonalEntry({
+                kind: "annotation",
+                id: `annotation:recall:${roadmap.id}:${item.task.id}`,
+                updatedAt: Date.now(),
+                deleted: false,
+                data: {
+                    text: recallText.trim(),
+                    quote: "",
+                    color: "#b7c9e8",
+                    createdAt: new Date().toISOString(),
+                    anchor: {
+                        kind: "lesson",
+                        roadmapId: roadmap.id,
+                        taskId: item.task.id,
+                        url: activeUrl,
+                        seconds: positionRef.current,
+                    },
+                },
+            });
+            setRecallResolved(true);
+            setError(null);
+        } catch {
+            setError(
+                "Your note could not be saved. Free some browser storage and try again.",
+            );
+        }
+    }
+
+    function onMarkDone(checked: boolean) {
+        if (!roadmap || !item) return;
+        const updated = setLearningTaskDone(roadmap, item.task.id, checked);
+        if (!checked) {
+            setCompletion(null);
+            return;
+        }
+        setRecallText("");
+        setRecallResolved(false);
+        setCompletion({
+            taskId: item.task.id,
+            roadmap: updated,
+            core: openInfo?.item.role === "core",
+        });
+    }
+
     function onTabKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
         let next = index;
         if (event.key === "ArrowRight") next = (index + 1) % TAB_ORDER.length;
@@ -314,7 +415,124 @@ export default function LearnPage({
     );
     const title = item.task.title || item.task.text || "Untitled lesson";
     const done = item.task.completed || !!item.task.done;
-    const next = tasks[index + 1] ?? null;
+    const next = nextCoreItem(roadmap, { excludeTaskId: item.task.id });
+    const countLabel = openInfo
+        ? openInfo.level === null
+            ? "READING TRACK"
+            : openInfo.item.role === "core"
+              ? `${LEVEL_LABEL[openInfo.level.level].toUpperCase()} · CORE ${openInfo.coreIndex + 1} / ${openInfo.level.coreTotal}`
+              : `${LEVEL_LABEL[openInfo.level.level].toUpperCase()} · GO DEEPER`
+        : `LESSON ${index + 1} / ${tasks.length}`;
+    const metaLabel = openInfo
+        ? openInfo.level === null
+            ? "Reading track"
+            : openInfo.item.role === "core"
+              ? `${LEVEL_LABEL[openInfo.level.level]} · core ${openInfo.coreIndex + 1} of ${openInfo.level.coreTotal}`
+              : `${LEVEL_LABEL[openInfo.level.level]} · go deeper`
+        : `Lesson ${index + 1} of ${tasks.length}`;
+    const ladderLevelUp = ladder ? levelUpReady(ladder) : null;
+    const ladderLevelUpTarget = nextCoreItem(roadmap);
+    const openLevels = new Set<LearningLevel>();
+    if (ladder?.current) openLevels.add(ladder.current);
+    if (openInfo?.level) openLevels.add(openInfo.level.level);
+    const isLevelOpen = (level: LearningLevel) =>
+        levelOverrides.get(level) ?? openLevels.has(level);
+    const toggleLevel = (level: LearningLevel) =>
+        setLevelOverrides(
+            (current) => new Map(current).set(level, !isLevelOpen(level)),
+        );
+    const completionOpen = completion !== null && completion.taskId === item.task.id;
+    const completionLadder =
+        completionOpen && completion ? getLadder(completion.roadmap) : null;
+    const completionLevelUp = completionLadder
+        ? levelUpReady(completionLadder)
+        : null;
+    const completionNext = completion
+        ? nextCoreItem(completion.roadmap, { excludeTaskId: completion.taskId })
+        : null;
+    const completionLevelUpTarget = completion
+        ? nextCoreItem(completion.roadmap)
+        : null;
+
+    const lessonRow = (entry: LadderItem, position: number) => {
+        const current = entry.task.id === item.task.id;
+        return (
+            <li key={entry.task.id}>
+                <button
+                    type="button"
+                    aria-current={current ? "step" : undefined}
+                    onClick={() => {
+                        if (current) return;
+                        void navigate({
+                            to: "/learn",
+                            search: {
+                                roadmap: roadmap.id,
+                                task: entry.task.id,
+                            },
+                        });
+                    }}
+                >
+                    <span className="sy-desk-mono">
+                        {String(position + 1).padStart(2, "0")}
+                    </span>
+                    <span>
+                        {entry.task.title || entry.task.text || "Untitled lesson"}
+                        {entry.role === "core" && entry.task.coreReason ? (
+                            <small className="sy-desk-reason">
+                                {entry.task.coreReason}
+                            </small>
+                        ) : null}
+                    </span>
+                    <span
+                        className="sy-desk-pip"
+                        data-done={entry.done || undefined}
+                        aria-hidden="true"
+                    />
+                </button>
+            </li>
+        );
+    };
+
+    const levelSection = (level: LadderLevel) => {
+        const open = isLevelOpen(level.level);
+        const panelId = `${uid}-level-${level.level}`;
+        return (
+            <div key={level.level} className="sy-desk-level">
+                <button
+                    type="button"
+                    className="sy-desk-level-head"
+                    aria-expanded={open}
+                    aria-controls={panelId}
+                    onClick={() => toggleLevel(level.level)}
+                >
+                    <span>{LEVEL_LABEL[level.level]}</span>
+                    <span className="sy-desk-mono">
+                        {level.coreDone}/{level.coreTotal} core
+                    </span>
+                    {level.complete ? (
+                        <span className="sy-desk-level-tag">Done</span>
+                    ) : level.level === ladder?.current ? (
+                        <span className="sy-desk-level-tag">Up next</span>
+                    ) : null}
+                </button>
+                {open ? (
+                    <ol id={panelId}>
+                        {level.core.map((entry, position) =>
+                            lessonRow(entry, position),
+                        )}
+                        {level.deeper.length > 0 && (
+                            <li className="sy-desk-deeper-head">
+                                Go deeper (optional)
+                            </li>
+                        )}
+                        {level.deeper.map((entry, position) =>
+                            lessonRow(entry, position),
+                        )}
+                    </ol>
+                ) : null}
+            </div>
+        );
+    };
     const practiceEntry = practiceId ? records[practiceId] : undefined;
     const practiceSaved =
         practiceEntry?.kind === "annotation" &&
@@ -401,9 +619,7 @@ export default function LearnPage({
                     <b>{title}</b>
                 </nav>
                 <div className="sy-desk-top-right">
-                    <span className="sy-desk-count">
-                        LESSON {index + 1} / {tasks.length}
-                    </span>
+                    <span className="sy-desk-count">{countLabel}</span>
                     <Link
                         className="sy-button quiet"
                         to="/workspace/$id"
@@ -627,62 +843,54 @@ export default function LearnPage({
 
                     <div className="sy-desk-card sy-desk-lessons">
                         <div className="sy-desk-card-head">
-                            <b>Lessons</b>
+                            <b>Ladder</b>
                             <span className="sy-desk-mono">
-                                {tasks.filter(
-                                    (entry) =>
-                                        entry.task.completed ||
-                                        entry.task.done,
-                                ).length}
-                                /{tasks.length}
+                                {ladder
+                                    ? `${ladder.levels.reduce((total, level) => total + level.coreDone, 0)}/${ladder.levels.reduce((total, level) => total + level.coreTotal, 0)} core`
+                                    : "0/0 core"}
                             </span>
                         </div>
-                        <ol>
-                            {tasks.map((entry, entryIndex) => {
-                                const current =
-                                    entry.task.id === item.task.id;
-                                const finished =
-                                    entry.task.completed || entry.task.done;
-                                return (
-                                    <li key={entry.task.id}>
-                                        <button
-                                            type="button"
-                                            aria-current={
-                                                current ? "step" : undefined
-                                            }
-                                            onClick={() => {
-                                                if (current) return;
-                                                void navigate({
-                                                    to: "/learn",
-                                                    search: {
-                                                        roadmap: roadmap.id,
-                                                        task: entry.task.id,
-                                                    },
-                                                });
-                                            }}
-                                        >
-                                            <span className="sy-desk-mono">
-                                                {String(
-                                                    entryIndex + 1,
-                                                ).padStart(2, "0")}
-                                            </span>
-                                            <span>
-                                                {entry.task.title ||
-                                                    entry.task.text ||
-                                                    "Untitled lesson"}
-                                            </span>
-                                            <span
-                                                className="sy-desk-pip"
-                                                data-done={
-                                                    finished || undefined
-                                                }
-                                                aria-hidden="true"
-                                            />
-                                        </button>
-                                    </li>
-                                );
-                            })}
-                        </ol>
+                        {ladderLevelUp && ladderLevelUpTarget ? (
+                            <Link
+                                className="sy-desk-levelup"
+                                to="/learn"
+                                search={{
+                                    roadmap: roadmap.id,
+                                    task: ladderLevelUpTarget.task.id,
+                                }}
+                            >
+                                Level up: start{" "}
+                                {LEVEL_LABEL[ladderLevelUp.to]}
+                                <ArrowRight />
+                            </Link>
+                        ) : null}
+                        {ladder?.levels.map(levelSection)}
+                        {ladder && ladder.reading.length > 0 ? (
+                            <div className="sy-desk-level">
+                                <button
+                                    type="button"
+                                    className="sy-desk-level-head"
+                                    aria-expanded={readingOpen}
+                                    aria-controls={`${uid}-level-reading`}
+                                    onClick={() =>
+                                        setReadingOpen((open) => !open)
+                                    }
+                                >
+                                    <span>Reading track</span>
+                                    <span className="sy-desk-mono">
+                                        {ladder.reading.filter((entry) => entry.done).length}
+                                        /{ladder.reading.length}
+                                    </span>
+                                </button>
+                                {readingOpen ? (
+                                    <ol id={`${uid}-level-reading`}>
+                                        {ladder.reading.map((entry, position) =>
+                                            lessonRow(entry, position),
+                                        )}
+                                    </ol>
+                                ) : null}
+                            </div>
+                        ) : null}
                     </div>
 
                     <div className="sy-desk-card sy-desk-pomodoro-card">
@@ -701,11 +909,7 @@ export default function LearnPage({
                                     type="checkbox"
                                     checked={done}
                                     onChange={(event) =>
-                                        setLearningTaskDone(
-                                            roadmap,
-                                            item.task.id,
-                                            event.target.checked,
-                                        )
+                                        onMarkDone(event.target.checked)
                                     }
                                 />
                                 <span>
@@ -723,11 +927,100 @@ export default function LearnPage({
                                     {doneSubtasks}/{subtasks.length} steps
                                 </span>
                             )}
-                            <span>
-                                Lesson {index + 1} of {tasks.length}
-                            </span>
+                            <span>{metaLabel}</span>
                         </div>
                     </header>
+
+                    {completionOpen && completion ? (
+                        <div className="sy-desk-card sy-desk-recall">
+                            {completion.core && !recallResolved ? (
+                                <>
+                                    <p className="sy-desk-eyebrow">
+                                        Explain it back
+                                    </p>
+                                    <p className="sy-desk-recall-hint">
+                                        Optional. 30 seconds, 1–3 lines, in
+                                        your own words.
+                                    </p>
+                                    <textarea
+                                        className="sy-textarea"
+                                        rows={3}
+                                        maxLength={400}
+                                        value={recallText}
+                                        onChange={(event) =>
+                                            setRecallText(event.target.value)
+                                        }
+                                        aria-label="Explain it back"
+                                    />
+                                    <div className="sy-desk-actions">
+                                        <button
+                                            type="button"
+                                            className="sy-button primary"
+                                            disabled={!recallText.trim()}
+                                            onClick={saveRecall}
+                                        >
+                                            Save note
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="sy-button quiet"
+                                            onClick={() =>
+                                                setRecallResolved(true)
+                                            }
+                                        >
+                                            Skip
+                                        </button>
+                                    </div>
+                                </>
+                            ) : completionLevelUp && completionLevelUpTarget ? (
+                                <>
+                                    <p className="sy-desk-eyebrow">
+                                        {`Level up: ${LEVEL_LABEL[completionLevelUp.to]}`}
+                                    </p>
+                                    <p className="sy-desk-recall-hint">
+                                        The {LEVEL_LABEL[completionLevelUp.from].toLowerCase()} core is done.
+                                    </p>
+                                    <Link
+                                        className="sy-button primary"
+                                        to="/learn"
+                                        search={{
+                                            roadmap: roadmap.id,
+                                            task: completionLevelUpTarget.task
+                                                .id,
+                                        }}
+                                    >
+                                        Start {LEVEL_LABEL[completionLevelUp.to]}
+                                        <ArrowRight />
+                                    </Link>
+                                </>
+                            ) : completionNext ? (
+                                <>
+                                    <p className="sy-desk-eyebrow">
+                                        Next core video
+                                    </p>
+                                    <p className="sy-desk-recall-hint">
+                                        {completionNext.task.title ||
+                                            completionNext.task.text}
+                                    </p>
+                                    <Link
+                                        className="sy-button primary"
+                                        to="/learn"
+                                        search={{
+                                            roadmap: roadmap.id,
+                                            task: completionNext.task.id,
+                                        }}
+                                    >
+                                        Continue
+                                        <ArrowRight />
+                                    </Link>
+                                </>
+                            ) : (
+                                <p className="sy-desk-recall-hint">
+                                    Every core video is watched.
+                                </p>
+                            )}
+                        </div>
+                    ) : null}
 
                     <div
                         className="sy-desk-tabs"
@@ -1025,7 +1318,7 @@ export default function LearnPage({
                                         <>
                                             <div>
                                                 <span className="sy-desk-eyebrow">
-                                                    Next lesson
+                                                    Next core video
                                                 </span>
                                                 <p>
                                                     {next.task.title ||

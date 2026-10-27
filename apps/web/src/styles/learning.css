@@ -1995,6 +1995,76 @@
     border-color: #3f4cc4;
 }
 
+/* Ladder levels inside the lessons card */
+.sy-desk-lessons .sy-desk-level-head {
+    display: flex;
+    grid-template-columns: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-weight: 550;
+    color: #1e2025;
+    border-top: 1px solid #f4f2ec;
+}
+.sy-desk-level:first-child .sy-desk-level-head {
+    border-top: 0;
+}
+.sy-desk-level-head .sy-desk-mono {
+    font-size: 10px;
+    color: #a8aa9f;
+}
+.sy-desk-level-tag {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a8c84;
+}
+.sy-desk-levelup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    font-weight: 550;
+    color: #3f4cc4;
+    border-top: 1px solid #f4f2ec;
+}
+.sy-desk-levelup svg {
+    width: 14px;
+    height: 14px;
+}
+.sy-desk-levelup:hover {
+    background: #fbfaf7;
+}
+.sy-desk-deeper-head {
+    padding: 10px 14px 4px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #a8aa9f;
+}
+.sy-desk-reason {
+    display: block;
+    margin-top: 1px;
+    font-size: 11px;
+    color: #a8aa9f;
+}
+.sy-desk-recall {
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.sy-desk-recall-hint {
+    margin: 0;
+    font-size: 12.5px;
+    color: #7a7c73;
+}
+
 /* Pomodoro, detuned to fit a card */
 .sy-desk-pomodoro-card {
     padding: 14px 14px 16px;

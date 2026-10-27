@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Roadmap, Section } from "@/types";
+import { LEARNING_LEVELS, type Roadmap, type Section } from "@/types";
 
 const resource = z.object({
     id: z.string(),
@@ -43,6 +43,8 @@ const task = z.object({
     description: z.string().optional(),
     estimatedTime: z.string().optional(),
     priority: z.string().optional(),
+    core: z.boolean().optional(),
+    coreReason: z.string().optional(),
     done: z.boolean().optional(),
 });
 const baseSection = z.object({
@@ -68,6 +70,8 @@ const note = z.object({
 export const sectionSchema: z.ZodType<Section> = z.discriminatedUnion("type", [
     baseSection.extend({
         type: z.literal("module"),
+        level: z.enum(LEARNING_LEVELS).optional(),
+        track: z.literal("reading").optional(),
         data: z.object({
             description: z.string(),
             estimatedTime: z.string().optional(),

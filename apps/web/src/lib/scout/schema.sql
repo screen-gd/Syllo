@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS resources (
     thumbnail_url TEXT,
     description TEXT,
     summary TEXT,
+    level TEXT,
     key_points TEXT NOT NULL DEFAULT '[]',
     skill_tags TEXT NOT NULL DEFAULT '[]',
     chapters TEXT NOT NULL DEFAULT '[]',

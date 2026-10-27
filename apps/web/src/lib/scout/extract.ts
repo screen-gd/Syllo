@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LEARNING_LEVELS, type LearningLevel } from "@/types";
 import { clip, deepLink, parseDescriptionChapters, quoteAppearsIn, normalizeForMatch, chunkText } from "./format";
 import { scoutGenerateObject, ScoutError, type ScoutLlmConfig } from "./llm";
 import { SCOUT_PROMPTS } from "./prompts";
@@ -25,6 +26,7 @@ export const extractionSchema = z.object({
             }),
         )
         .default([]),
+    level: z.enum(LEARNING_LEVELS).nullable().optional(),
 });
 
 export type ExtractionOutput = z.infer<typeof extractionSchema>;
@@ -58,6 +60,7 @@ export interface ExtractionResult {
     keyPoints: KeyPoint[];
     skills: string[];
     chapters: Chapter[];
+    level: LearningLevel | null;
     degraded: boolean;
     error?: string;
 }
@@ -230,6 +233,32 @@ function mergeKeyPoints(
     return points.slice(0, 10);
 }
 
+/**
+ * Chunks may disagree on a level; the majority wins. A tie goes to the
+ * higher of the tied levels so the ladder never starts too low.
+ */
+export function mergeExtractionLevels(
+    outputs: ReadonlyArray<Pick<ExtractionOutput, "level">>,
+): LearningLevel | null {
+    const counts = new Map<LearningLevel, number>();
+    for (const output of outputs) {
+        if (!output.level) continue;
+        counts.set(output.level, (counts.get(output.level) ?? 0) + 1);
+    }
+
+    let best: LearningLevel | null = null;
+    let bestCount = 0;
+    for (const level of LEARNING_LEVELS) {
+        const count = counts.get(level) ?? 0;
+        if (count === 0) continue;
+        if (count >= bestCount) {
+            best = level;
+            bestCount = count;
+        }
+    }
+    return best;
+}
+
 function mergeSummary(outputs: ExtractionOutput[], fallback: string): string {
     const seen = new Set<string>();
     const sentences: string[] = [];
@@ -275,6 +304,7 @@ export async function extractResource(input: ExtractionInput): Promise<Extractio
             keyPoints: [],
             skills: uniqueSkills([input.resource.title.split(/[^a-zA-Z0-9+#]+/).slice(0, 3).join(" ")]),
             chapters: buildChapters(input, []),
+            level: null,
             degraded: true,
             error: "No text available for extraction",
         };
@@ -302,6 +332,7 @@ export async function extractResource(input: ExtractionInput): Promise<Extractio
             keyPoints: [],
             skills: uniqueSkills([input.resource.title]),
             chapters: buildChapters(input, []),
+            level: null,
             degraded: true,
             error: message,
         };
@@ -316,6 +347,7 @@ export async function extractResource(input: ExtractionInput): Promise<Extractio
         keyPoints,
         skills: skills.length > 0 ? skills : uniqueSkills([input.resource.title]),
         chapters,
+        level: mergeExtractionLevels(outputs),
         degraded: false,
     };
 }

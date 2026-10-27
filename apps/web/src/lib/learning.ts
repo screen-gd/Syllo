@@ -81,8 +81,11 @@ export function taskVideo(item: LearningTask) {
     );
 }
 
-/** Return a copy of the roadmap with every task passed through `update`. */
-function updateLearningTasks(roadmap: Roadmap, update: (task: Task) => Task) {
+/** Save a copy of the roadmap with every task passed through `update`. */
+function updateLearningTasks(
+    roadmap: Roadmap,
+    update: (task: Task) => Task,
+): Roadmap {
     const sections = roadmap.sections.map((section): Section => {
         if (section.type === "module")
             return {
@@ -110,19 +113,21 @@ function updateLearningTasks(roadmap: Roadmap, update: (task: Task) => Task) {
             };
         return section;
     });
-    getStorage().saveRoadmap({
+    const updated: Roadmap = {
         ...roadmap,
         sections,
         updatedAt: new Date().toISOString(),
-    });
+    };
+    getStorage().saveRoadmap(updated);
+    return updated;
 }
 
 export function setLearningTaskDone(
     roadmap: Roadmap,
     taskId: string,
     completed: boolean,
-) {
-    updateLearningTasks(roadmap, (task) =>
+): Roadmap {
+    return updateLearningTasks(roadmap, (task) =>
         task.id === taskId ? { ...task, completed, done: completed } : task,
     );
 }
@@ -132,8 +137,8 @@ export function setLearningSubtaskDone(
     taskId: string,
     subtaskId: string,
     completed: boolean,
-) {
-    updateLearningTasks(roadmap, (task) =>
+): Roadmap {
+    return updateLearningTasks(roadmap, (task) =>
         task.id === taskId
             ? {
                   ...task,

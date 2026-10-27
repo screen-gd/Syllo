@@ -7,7 +7,8 @@ import ScoutProgress from "@/components/scout/ScoutProgress";
 import PickList from "@/components/scout/PickList";
 import SourcesPanel from "@/components/scout/SourcesPanel";
 import ManualRoadmap from "@/components/scout/ManualRoadmap";
-import type { Roadmap } from "@/types";
+import { LEARNING_LEVELS, type LearningLevel, type ModuleSection, type Roadmap } from "@/types";
+import { LEVEL_LABEL } from "@/lib/ladder";
 import { scoutApi } from "@/lib/scout/api-client";
 import { getLastScoutPack, publishScoutPack } from "@/lib/scout/client";
 import { humanDuration } from "@/lib/scout/format";
@@ -210,6 +211,30 @@ export default function ScoutPage() {
           : 2;
 
     const picks = useMemo(() => pack?.resources ?? [], [pack]);
+    const draftGroups = useMemo(() => {
+        if (!draftRoadmap) return [];
+        const sections = draftRoadmap.sections.filter(
+            (section): section is ModuleSection => section.type === "module",
+        );
+        const groups: Array<{
+            key: LearningLevel | "reading";
+            heading: string;
+            sections: ModuleSection[];
+        }> = [];
+        for (const level of LEARNING_LEVELS) {
+            const at = sections.filter(
+                (section) =>
+                    section.track !== "reading" &&
+                    (section.level ?? "basics") === level,
+            );
+            if (at.length > 0)
+                groups.push({ key: level, heading: LEVEL_LABEL[level], sections: at });
+        }
+        const reading = sections.filter((section) => section.track === "reading");
+        if (reading.length > 0)
+            groups.push({ key: "reading", heading: "Reading track", sections: reading });
+        return groups;
+    }, [draftRoadmap]);
     const selectedMinutes = useMemo(() => {
         const seconds = picks
             .filter((resource) => selected.has(resource.id))
@@ -290,6 +315,31 @@ export default function ScoutPage() {
         setPack(null);
         setSelected(new Set());
         setError(null);
+    }
+
+    function renameDraftTask(sectionId: string, taskId: string, title: string) {
+        setDraftRoadmap((current) =>
+            current
+                ? {
+                      ...current,
+                      sections: current.sections.map((section) =>
+                          section.type === "module" && section.id === sectionId
+                              ? {
+                                    ...section,
+                                    data: {
+                                        ...section.data,
+                                        tasks: section.data.tasks.map((task) =>
+                                            task.id === taskId
+                                                ? { ...task, title }
+                                                : task,
+                                        ),
+                                    },
+                                }
+                              : section,
+                      ),
+                  }
+                : current,
+        );
     }
 
     async function addSource(input: {
@@ -735,87 +785,53 @@ export default function ScoutPage() {
                                         <p className="sy-form-hint">
                                             {draftRoadmap.summary}
                                         </p>
-                                        {draftRoadmap.sections
-                                            .filter(
-                                                (section) =>
-                                                    section.type === "module",
-                                            )
-                                            .map(
-                                                (section) =>
-                                                    section.type ===
-                                                        "module" && (
-                                                        <section
-                                                            key={section.id}
-                                                        >
-                                                            <h3>
-                                                                {section.title}
-                                                            </h3>
-                                                            <div
-                                                                className="sy-form"
-                                                                style={{
-                                                                    marginTop: 10,
-                                                                }}
-                                                            >
-                                                                {section.data.tasks.map(
-                                                                    (task) => (
-                                                                        <label
-                                                                            key={
-                                                                                task.id
-                                                                            }
-                                                                        >
-                                                                            Task
-                                                                            <Input
-                                                                                value={
-                                                                                    task.title
-                                                                                }
-                                                                                onChange={(
-                                                                                    event,
-                                                                                ) =>
-                                                                                    setDraftRoadmap(
-                                                                                        {
-                                                                                            ...draftRoadmap,
-                                                                                            sections:
-                                                                                                draftRoadmap.sections.map(
-                                                                                                    (
-                                                                                                        current,
-                                                                                                    ) =>
-                                                                                                        current.type ===
-                                                                                                            "module" &&
-                                                                                                        current.id ===
-                                                                                                            section.id
-                                                                                                            ? {
-                                                                                                                  ...current,
-                                                                                                                  data: {
-                                                                                                                      ...current.data,
-                                                                                                                      tasks: current.data.tasks.map(
-                                                                                                                          (
-                                                                                                                              item,
-                                                                                                                          ) =>
-                                                                                                                              item.id ===
-                                                                                                                              task.id
-                                                                                                                                  ? {
-                                                                                                                                        ...item,
-                                                                                                                                        title: event
-                                                                                                                                            .target
-                                                                                                                                            .value,
-                                                                                                                                    }
-                                                                                                                                  : item,
-                                                                                                                      ),
-                                                                                                                  },
-                                                                                                              }
-                                                                                                            : current,
-                                                                                                ),
-                                                                                        },
-                                                                                    )
-                                                                                }
-                                                                            />
-                                                                        </label>
-                                                                    ),
-                                                                )}
-                                                            </div>
-                                                        </section>
-                                                    ),
-                                            )}
+                                        {draftGroups.map((group) => (
+                                            <section key={group.key}>
+                                                <h3>{group.heading}</h3>
+                                                {group.sections.map((section) => (
+                                                    <div
+                                                        className="sy-form"
+                                                        style={{ marginTop: 10 }}
+                                                        key={section.id}
+                                                    >
+                                                        <p className="sy-form-hint">
+                                                            {section.title}
+                                                        </p>
+                                                        {section.data.tasks.map(
+                                                            (task) => (
+                                                                <label key={task.id}>
+                                                                    <span className="flex items-center gap-2">
+                                                                        Task
+                                                                        <span className="studio-badge text-text-muted">
+                                                                            {group.key === "reading"
+                                                                                ? "Reading"
+                                                                                : task.core
+                                                                                  ? "Core"
+                                                                                  : "Go deeper"}
+                                                                        </span>
+                                                                    </span>
+                                                                    <Input
+                                                                        value={task.title}
+                                                                        onChange={(event) =>
+                                                                            renameDraftTask(
+                                                                                section.id,
+                                                                                task.id,
+                                                                                event.target.value,
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                    {task.core && task.coreReason ? (
+                                                                        <p className="sy-form-hint">
+                                                                            {task.coreReason}
+                                                                        </p>
+                                                                    ) : null}
+                                                                </label>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </section>
+                                        ))}
                                         <div>
                                             <Button
                                                 disabled={

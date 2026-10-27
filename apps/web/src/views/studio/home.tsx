@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, Play, Telescope } from "lucide-react";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
-import { getLearningTasks, nextLearningTask, taskVideo } from "@/lib/learning";
+import { taskVideo } from "@/lib/learning";
+import { getLadder, levelUpReady, LEVEL_LABEL, nextCoreItem } from "@/lib/ladder";
 import { getYouTubeId, getVideoStartSeconds } from "@/lib/video-utils";
 import { personalEntries, usePersonalData } from "@/lib/personal/store";
 import { getStorage } from "@/lib/storage";
@@ -14,30 +15,38 @@ export default function HomePage() {
     const positions = personalEntries(records, "study")
         .map((item) => item.data)
         .sort((a, b) => b.lastOpenedAt.localeCompare(a.lastOpenedAt));
-    const recent = positions.find((position) =>
-        roadmaps.some(
-            (roadmap) =>
-                roadmap.id === position.roadmapId && nextLearningTask(roadmap),
-        ),
-    );
+    const recentRoadmap = positions
+        .map((position) =>
+            roadmaps.find((roadmap) => roadmap.id === position.roadmapId),
+        )
+        .find((roadmap) => roadmap && nextCoreItem(roadmap));
     const resumeRoadmap =
-        roadmaps.find((roadmap) => roadmap.id === recent?.roadmapId) ??
-        roadmaps.find((roadmap) => nextLearningTask(roadmap));
-    const recentTask = resumeRoadmap
-        ? getLearningTasks(resumeRoadmap).find(
-              (item) =>
-                  item.task.id === recent?.taskId &&
-                  !item.task.completed &&
-                  !item.task.done,
-          )
-        : null;
-    const resumeTask =
-        recentTask ?? (resumeRoadmap ? nextLearningTask(resumeRoadmap) : null);
+        recentRoadmap ?? roadmaps.find((roadmap) => nextCoreItem(roadmap));
+    const ladder = resumeRoadmap ? getLadder(resumeRoadmap) : null;
+    const resumeTask = resumeRoadmap ? nextCoreItem(resumeRoadmap) : null;
+    const resumeLevel = ladder?.levels.find((level) =>
+        level.items.some((entry) => entry.task.id === resumeTask?.task.id),
+    );
+    const levelUp = ladder ? levelUpReady(ladder) : null;
+    const lastRoadmap =
+        positions
+            .map((position) =>
+                roadmaps.find((roadmap) => roadmap.id === position.roadmapId),
+            )
+            .find((roadmap) => roadmap !== undefined) ??
+        [...roadmaps].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] ??
+        null;
     const video = resumeTask ? taskVideo(resumeTask) : null;
     const youtubeId = video ? getYouTubeId(video.url) : null;
+    const studyEntry =
+        resumeRoadmap && resumeTask
+            ? records[`study:${resumeRoadmap.id}:${resumeTask.task.id}`]
+            : undefined;
     const seconds =
-        recent && resumeTask && recent.taskId === resumeTask.task.id
-            ? recent.seconds
+        video &&
+        studyEntry?.kind === "study" &&
+        studyEntry.data.resourceUrl === video.url
+            ? studyEntry.data.seconds
             : video
               ? getVideoStartSeconds(video.url)
               : 0;
@@ -91,7 +100,7 @@ export default function HomePage() {
                     <section>
                         <div className="sy-section-head">
                             <h2>Continue learning</h2>
-                            {recent && <span>Last studied</span>}
+                            {recentRoadmap && <span>Last studied</span>}
                         </div>
                         {resumeTask && resumeRoadmap ? (
                             <>
@@ -120,15 +129,22 @@ export default function HomePage() {
                                         )}
                                     </Link>
                                     <div className="sy-resume-copy">
-                                        <p>{resumeRoadmap.title}</p>
+                                        <p>
+                                            {levelUp
+                                                ? `Level up: ${LEVEL_LABEL[levelUp.to]} · `
+                                                : ""}
+                                            {resumeRoadmap.title}
+                                        </p>
                                         <h2>
                                             {resumeTask.task.title ||
                                                 resumeTask.task.text}
                                         </h2>
                                         <p>
-                                            {resumeTask.sectionTitle}
+                                            {resumeLevel
+                                                ? `${LEVEL_LABEL[resumeLevel.level]} · core ${resumeLevel.coreDone + 1} of ${resumeLevel.coreTotal}`
+                                                : resumeTask.sectionTitle}
                                             {video && seconds > 0
-                                                ? ` · saved at ${formatTimestamp(seconds)}`
+                                                ? ` · resume at ${formatTimestamp(seconds)}`
                                                 : ""}
                                         </p>
                                         <Link
@@ -155,9 +171,19 @@ export default function HomePage() {
                             <div className="sy-empty bordered">
                                 <p>
                                     {roadmaps.length
-                                        ? "You’ve finished your current tasks. Choose another topic when you’re ready."
+                                        ? "You’ve watched every core video. Go deeper or pick a new goal."
                                         : "Start with something you want to learn. Scout can help find and organize the resources."}
                                 </p>
+                                {lastRoadmap && (
+                                    <Link
+                                        className="sy-button secondary"
+                                        to="/learn"
+                                        search={{ roadmap: lastRoadmap.id }}
+                                    >
+                                        Go deeper
+                                        <ArrowRight />
+                                    </Link>
+                                )}
                                 <Link className="sy-button primary" to="/scout">
                                     Choose a learning goal
                                     <ArrowRight />
@@ -175,12 +201,22 @@ export default function HomePage() {
                         </div>
                         {roadmaps.length ? (
                             roadmaps.slice(0, 5).map((roadmap) => {
-                                const tasks = getLearningTasks(roadmap);
-                                const done = tasks.filter(
-                                    (item) =>
-                                        item.task.completed || item.task.done,
-                                ).length;
-                                const next = nextLearningTask(roadmap);
+                                const topicLadder = getLadder(roadmap);
+                                const currentLevel = topicLadder.levels.find(
+                                    (level) => level.level === topicLadder.current,
+                                );
+                                const done = currentLevel
+                                    ? currentLevel.coreDone
+                                    : topicLadder.levels.reduce(
+                                          (total, level) => total + level.coreDone,
+                                          0,
+                                      );
+                                const total = currentLevel
+                                    ? currentLevel.coreTotal
+                                    : topicLadder.levels.reduce(
+                                          (total, level) => total + level.coreTotal,
+                                          0,
+                                      );
                                 return (
                                     <article
                                         className="sy-topic"
@@ -198,11 +234,11 @@ export default function HomePage() {
                                                 </Link>
                                             </h3>
                                             <p>
-                                                {next?.task.title ||
-                                                    next?.task.text ||
-                                                    (tasks.length
-                                                        ? "All tasks complete"
-                                                        : "Ready to explore")}
+                                                {currentLevel
+                                                    ? `${LEVEL_LABEL[currentLevel.level]} · ${currentLevel.coreDone}/${currentLevel.coreTotal} core`
+                                                    : topicLadder.levels.length
+                                                      ? "Ladder complete"
+                                                      : "Ready to explore"}
                                             </p>
                                             <div
                                                 className="sy-progress"
@@ -212,19 +248,19 @@ export default function HomePage() {
                                                 aria-valuemin={0}
                                                 aria-valuemax={Math.max(
                                                     1,
-                                                    tasks.length,
+                                                    total,
                                                 )}
                                             >
                                                 <span
                                                     style={{
-                                                        width: `${tasks.length ? (done / tasks.length) * 100 : 0}%`,
+                                                        width: `${total ? (done / total) * 100 : 0}%`,
                                                     }}
                                                 />
                                             </div>
                                         </div>
                                         <div>
                                             <span className="sy-topic-count">
-                                                {done} / {tasks.length}
+                                                {done} / {total}
                                             </span>
                                             <Link
                                                 className="sy-button icon"
