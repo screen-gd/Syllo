@@ -6,6 +6,8 @@
  * transcript field.
  */
 
+import type { LearningLevel } from "@/types";
+
 export type ScoutSourceKind = "youtube_channel" | "site" | "creator" | "book";
 
 export interface ScoutSource {
@@ -50,6 +52,7 @@ export interface ScoutResource {
     thumbnailUrl?: string | null;
     description?: string | null;
     summary?: string | null;
+    level?: LearningLevel | null;
     keyPoints: KeyPoint[];
     skillTags: string[];
     chapters: Chapter[];

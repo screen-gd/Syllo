@@ -32,10 +32,19 @@ export function getScoutDb(): ScoutDatabase {
     db.pragma("journal_mode = WAL");
     db.pragma("foreign_keys = ON");
     db.exec(schema);
+    migrateResources(db);
     seedDefaults(db);
 
     store[globalKey] = { db, path };
     return db;
+}
+
+/** Existing databases gain columns the schema added since they were created. */
+function migrateResources(db: ScoutDatabase) {
+    const columns = db.prepare(`PRAGMA table_info(resources)`).all() as Array<{ name: string }>;
+    if (!columns.some((column) => column.name === "level")) {
+        db.exec(`ALTER TABLE resources ADD COLUMN level TEXT`);
+    }
 }
 
 export function closeScoutDb() {

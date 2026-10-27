@@ -10,6 +10,7 @@ import {
 } from "@/lib/personal/store";
 import {
     reviewSchema,
+    roadmapSchema,
     personalEntrySchema,
     type PersonalEntry,
 } from "@/lib/personal/schema";
@@ -73,6 +74,72 @@ describe("local progress and sync", () => {
             }).success,
         ).toBe(false);
         expect(localStorage.getItem(PERSONAL_STORAGE_KEY)).toBeNull();
+    });
+    it("round-trips a laddered roadmap with level, track, core and coreReason", () => {
+        const roadmap = {
+            id: "rm",
+            title: "Ladder",
+            mode: "general",
+            rawContent: "",
+            createdAt: "2026-01-01T00:00:00Z",
+            updatedAt: "2026-01-01T00:00:00Z",
+            sections: [
+                {
+                    id: "m1",
+                    title: "Module",
+                    order: 0,
+                    type: "module",
+                    level: "intermediate",
+                    data: {
+                        description: "",
+                        tasks: [
+                            {
+                                id: "t1",
+                                title: "Watch",
+                                completed: false,
+                                notes: "",
+                                subtasks: [],
+                                attachments: [],
+                                core: true,
+                                coreReason: "Covers the key idea.",
+                                priority: "core",
+                            },
+                        ],
+                        resources: [],
+                        videos: [],
+                        completed: false,
+                    },
+                },
+                {
+                    id: "m2",
+                    title: "Reading track",
+                    order: 1,
+                    type: "module",
+                    track: "reading",
+                    data: {
+                        description: "",
+                        tasks: [
+                            {
+                                id: "t2",
+                                title: "Read chapter",
+                                completed: false,
+                                notes: "",
+                                subtasks: [],
+                                attachments: [],
+                                core: false,
+                            },
+                        ],
+                        resources: [],
+                        videos: [],
+                        completed: false,
+                    },
+                },
+            ],
+        };
+        const restored = roadmapSchema.parse(
+            JSON.parse(JSON.stringify(roadmap)),
+        );
+        expect(restored).toEqual(roadmap);
     });
 });
 

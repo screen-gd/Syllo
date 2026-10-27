@@ -1543,3 +1543,1180 @@
         transform: none;
     }
 }
+
+/* ============================================================
+   Learn · Desk
+   A paper workbench for one lesson. Scoped to .sy-desk so the
+   rest of the app keeps the dark shell.
+   ============================================================ */
+.sy-main:has(> .sy-desk) {
+    padding: 0;
+}
+.sy-desk {
+    --color-page: #f7f6f2;
+    --color-surface: #ffffff;
+    --color-surface-subtle: #f1efe8;
+    --color-raised: #eae7dd;
+    --color-border: #e0ded5;
+    --color-border-strong: #c9c6ba;
+    --color-text: #1e2025;
+    --color-text-muted: #5d5f57;
+    --color-text-soft: #7a7c73;
+    --color-accent: #3f4cc4;
+    --color-accent-strong: #2f3aa8;
+    --color-accent-soft: #eef0fd;
+    position: relative;
+    min-width: 0;
+    min-height: 100dvh;
+    background: #f7f6f2;
+    color: var(--color-text);
+    color-scheme: light;
+}
+.sy-desk button,
+.sy-desk summary {
+    cursor: pointer;
+}
+.sy-desk button:focus-visible,
+.sy-desk a:focus-visible,
+.sy-desk input:focus-visible,
+.sy-desk textarea:focus-visible,
+.sy-desk summary:focus-visible {
+    outline: 2px solid #3f4cc4;
+    outline-offset: 2px;
+}
+.sy-desk-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Top bar */
+.sy-desk-top {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 54px;
+    padding: 0 24px;
+    background: rgba(247, 246, 242, 0.92);
+    border-bottom: 1px solid #e0ded5;
+    backdrop-filter: blur(10px);
+}
+.sy-desk-crumb {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    font-size: 12px;
+    color: #7a7c73;
+}
+.sy-desk-crumb a {
+    color: inherit;
+    flex: none;
+}
+.sy-desk-crumb a:hover {
+    color: #1e2025;
+}
+.sy-desk-crumb-sep {
+    color: #b5b1a5;
+    flex: none;
+}
+.sy-desk-crumb-topic {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 22ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sy-desk-crumb b {
+    flex: 0 1 auto;
+    min-width: 0;
+    color: #2a2c32;
+    font-weight: 550;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sy-desk-top-right {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex: none;
+}
+.sy-desk-count {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: #8a8c84;
+    white-space: nowrap;
+}
+.sy-desk-top .sy-button {
+    min-height: 32px;
+    font-size: 12px;
+    gap: 6px;
+    white-space: nowrap;
+}
+.sy-desk-top .sy-button svg {
+    width: 13px;
+    height: 13px;
+}
+.sy-desk-alert {
+    padding: 16px 32px 0;
+}
+
+/* Two-column workbench */
+.sy-desk-grid {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    align-items: start;
+    gap: 30px;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 26px 32px 90px;
+}
+.sy-desk-work {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    position: sticky;
+    top: 76px;
+    max-height: calc(100dvh - 94px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #d5d2c7 transparent;
+    padding-bottom: 2px;
+}
+.sy-desk-work > * {
+    min-width: 0;
+}
+.sy-desk-card {
+    background: #fff;
+    border: 1px solid #e0ded5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.sy-desk-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #eae7dd;
+    font-size: 10.5px;
+    line-height: 1.4;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #7a7c73;
+}
+.sy-desk-card-head b {
+    font-weight: 600;
+    color: #5d5f57;
+}
+
+/* Video */
+.sy-desk-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+.sy-desk-live i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3f4cc4;
+    flex: none;
+}
+.sy-desk-video-body {
+    background: #0d0d0f;
+}
+.sy-desk-video-body .sy-embed {
+    border-radius: 0;
+}
+.sy-desk-video-body .sy-error {
+    margin: 10px;
+}
+.sy-desk-video-empty {
+    padding: 26px 18px;
+    background: #fbfaf7;
+    border-bottom: 1px solid #eae7dd;
+}
+.sy-desk-video-empty p {
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: #7a7c73;
+}
+.sy-desk-video-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+}
+.sy-desk-video-foot > div {
+    min-width: 0;
+}
+.sy-desk-video-foot b {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 550;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+.sy-desk-video-foot span {
+    display: block;
+    margin-top: 2px;
+    font-size: 11px;
+    color: #8a8c84;
+    font-variant-numeric: tabular-nums;
+}
+.sy-desk-external {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: none;
+    font-size: 11px;
+    color: #7a7c73;
+}
+.sy-desk-external:hover {
+    color: #1e2025;
+}
+.sy-desk-manual {
+    border-top: 1px solid #eae7dd;
+    padding: 0 14px 12px;
+}
+.sy-desk-manual summary {
+    padding: 9px 0;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #8a8c84;
+}
+.sy-desk-manual summary:hover {
+    color: #1e2025;
+}
+.sy-desk-manual-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+.sy-desk-manual-row label {
+    display: grid;
+    gap: 5px;
+    font-size: 10.5px;
+    color: #8a8c84;
+}
+.sy-desk-manual-row .sy-input {
+    width: 88px;
+    min-height: 34px;
+    padding: 4px 8px;
+    font-size: 12px;
+    background: #fbfaf7;
+}
+.sy-desk-manual-row .sy-button {
+    min-height: 34px;
+    font-size: 12px;
+}
+
+/* Chapters */
+.sy-desk-chapters ol {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+}
+.sy-desk-chapters li + li {
+    border-top: 1px solid #f4f2ec;
+}
+.sy-desk-chapters button {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 9px;
+    width: 100%;
+    padding: 8px 14px;
+    text-align: left;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #4c4e47;
+}
+.sy-desk-chapters button:hover {
+    background: #fbfaf7;
+    color: #1e2025;
+}
+.sy-desk-chapters button[aria-current="true"] {
+    background: #f6f5ef;
+    color: #1e2025;
+    font-weight: 550;
+    box-shadow: inset 2px 0 0 #3f4cc4;
+}
+.sy-desk-chapters button .sy-desk-mono {
+    font-size: 10.5px;
+    color: #8a8c84;
+    padding-top: 2px;
+}
+
+/* Notes */
+.sy-desk-note-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 7px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f4f2ec;
+}
+.sy-desk-note-form textarea {
+    flex: 1;
+    min-width: 0;
+    min-height: 36px;
+    max-height: 140px;
+    padding: 8px 10px;
+    resize: vertical;
+    background: #fbfaf7;
+    color: #1e2025;
+    border: 1px solid #dcd9cf;
+    border-radius: 6px;
+    font: 12.5px/1.5 var(--font-sans);
+    field-sizing: content;
+}
+.sy-desk-note-form textarea::placeholder {
+    color: #a3a59b;
+}
+.sy-desk-note-form textarea:focus-visible {
+    outline-offset: 0;
+    border-color: #3f4cc4;
+}
+.sy-desk-note-form button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border-radius: 6px;
+    background: #1e2025;
+    color: #fff;
+}
+.sy-desk-note-form button:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+.sy-desk-notes-empty {
+    padding: 13px 14px;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: #8a8c84;
+}
+.sy-desk-note-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.sy-desk-note-list li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 9px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f4f2ec;
+}
+.sy-desk-note-list li:last-child {
+    border-bottom: 0;
+}
+.sy-desk-note-time {
+    padding-top: 2px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 10.5px;
+    color: #3f4cc4;
+    white-space: nowrap;
+}
+.sy-desk-note-time:hover {
+    text-decoration: underline;
+}
+.sy-desk-note-list p {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #3a3c35;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+.sy-desk-note-del {
+    padding: 2px;
+    color: #c2bfb3;
+}
+.sy-desk-note-del:hover {
+    color: #a3324a;
+}
+
+/* Lessons */
+.sy-desk-lessons ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.sy-desk-lessons li + li {
+    border-top: 1px solid #f4f2ec;
+}
+.sy-desk-lessons button {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) 8px;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #5d5f57;
+}
+.sy-desk-lessons button:hover {
+    background: #fbfaf7;
+    color: #1e2025;
+}
+.sy-desk-lessons button[aria-current="step"] {
+    background: #f6f5ef;
+    color: #1e2025;
+    font-weight: 550;
+}
+.sy-desk-lessons button .sy-desk-mono {
+    font-size: 10px;
+    color: #a8aa9f;
+}
+.sy-desk-pip {
+    justify-self: end;
+    width: 6px;
+    height: 6px;
+    border: 1px solid #cfccc0;
+    border-radius: 50%;
+}
+.sy-desk-pip[data-done] {
+    background: #3f4cc4;
+    border-color: #3f4cc4;
+}
+
+/* Ladder levels inside the lessons card */
+.sy-desk-lessons .sy-desk-level-head {
+    display: flex;
+    grid-template-columns: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-weight: 550;
+    color: #1e2025;
+    border-top: 1px solid #f4f2ec;
+}
+.sy-desk-level:first-child .sy-desk-level-head {
+    border-top: 0;
+}
+.sy-desk-level-head .sy-desk-mono {
+    font-size: 10px;
+    color: #a8aa9f;
+}
+.sy-desk-level-tag {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a8c84;
+}
+.sy-desk-levelup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    font-weight: 550;
+    color: #3f4cc4;
+    border-top: 1px solid #f4f2ec;
+}
+.sy-desk-levelup svg {
+    width: 14px;
+    height: 14px;
+}
+.sy-desk-levelup:hover {
+    background: #fbfaf7;
+}
+.sy-desk-deeper-head {
+    padding: 10px 14px 4px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #a8aa9f;
+}
+.sy-desk-reason {
+    display: block;
+    margin-top: 1px;
+    font-size: 11px;
+    color: #a8aa9f;
+}
+.sy-desk-recall {
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.sy-desk-recall-hint {
+    margin: 0;
+    font-size: 12.5px;
+    color: #7a7c73;
+}
+
+/* Pomodoro, detuned to fit a card */
+.sy-desk-pomodoro-card {
+    padding: 14px 14px 16px;
+}
+.sy-desk-pomodoro-card .sy-pomodoro {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+.sy-desk-pomodoro-card .sy-timer-clock {
+    font-size: 30px;
+    letter-spacing: -0.8px;
+    margin: 8px 0 12px;
+}
+.sy-desk-pomodoro-card .sy-timer-actions {
+    gap: 8px;
+}
+.sy-desk .sy-timer-settings input {
+    background: #fbfaf7;
+    color: #1e2025;
+    border-color: #dcd9cf;
+}
+
+/* Lesson claim */
+.sy-desk-panel {
+    min-width: 0;
+}
+.sy-desk-claim {
+    padding: 4px 2px 0;
+}
+.sy-desk-claim-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+.sy-desk-eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8a8c84;
+}
+.sy-desk-done {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex: none;
+    font-size: 11.5px;
+    color: #7a7c73;
+}
+.sy-desk-done input {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: #3f4cc4;
+}
+.sy-desk-done:has(input:checked) {
+    color: #1e2025;
+}
+.sy-desk-claim h1 {
+    margin-top: 10px;
+    font-size: 34px;
+    font-weight: 560;
+    letter-spacing: -1.1px;
+    line-height: 1.14;
+    text-wrap: balance;
+}
+.sy-desk-claim-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #7a7c73;
+}
+.sy-desk-claim-meta span + span::before {
+    content: "·";
+    margin-right: 10px;
+    color: #c9c6ba;
+}
+
+/* Tabs */
+.sy-desk-tabs {
+    position: sticky;
+    top: 54px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    padding: 0 2px;
+    background: #f7f6f2;
+    border-bottom: 1px solid #e0ded5;
+}
+.sy-desk-tabs button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: -1px;
+    padding: 10px 1px 11px;
+    border-bottom: 2px solid transparent;
+    background: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: #7a7c73;
+    white-space: nowrap;
+}
+.sy-desk-tabs button:hover {
+    color: #1e2025;
+}
+.sy-desk-tabs button[aria-selected="true"] {
+    color: #1e2025;
+    border-bottom-color: #1e2025;
+}
+.sy-desk-tab-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1;
+    color: #5d5f57;
+    background: #eae7dd;
+    border-radius: 20px;
+    padding: 2px 6px;
+}
+
+/* Reading surface */
+.sy-desk-surface {
+    background: #fff;
+    border: 1px solid #e0ded5;
+    border-top: 0;
+    border-radius: 0 0 8px 8px;
+}
+.sy-desk-tab {
+    padding: 30px 38px 44px;
+}
+.sy-desk-tab[hidden] {
+    display: none;
+}
+.sy-desk-copy {
+    max-width: 700px;
+}
+.sy-desk-lede {
+    font-size: 17px;
+    line-height: 1.68;
+    color: #2f312c;
+    letter-spacing: -0.1px;
+}
+.sy-desk-block {
+    margin-top: 36px;
+}
+.sy-desk-block > h2 {
+    margin-bottom: 14px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: #7a7c73;
+}
+.sy-desk-block .sy-desk-hint {
+    margin-top: -4px;
+    margin-bottom: 14px;
+}
+.sy-desk-prose p {
+    font-size: 15px;
+    line-height: 1.78;
+    color: #33352f;
+}
+.sy-desk-prose p + p {
+    margin-top: 14px;
+}
+.sy-desk-prose b {
+    font-weight: 600;
+    color: #1e2025;
+}
+.sy-desk-objectives {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+    border-top: 1px solid #eae7dd;
+}
+.sy-desk-objectives li {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px 0;
+    border-bottom: 1px solid #eae7dd;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #3a3c35;
+}
+.sy-desk-objectives .sy-desk-mono {
+    padding-top: 3px;
+    font-size: 10.5px;
+    color: #a8aa9f;
+}
+
+/* Sources */
+.sy-desk-source-list {
+    display: grid;
+    gap: 8px;
+}
+.sy-desk-source {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid #e0ded5;
+    border-radius: 7px;
+    background: #fbfaf7;
+    color: inherit;
+    transition:
+        border-color 0.12s ease,
+        background 0.12s ease;
+}
+.sy-desk-source:hover {
+    border-color: #c9c6ba;
+    background: #fff;
+}
+.sy-desk-source-type {
+    font-size: 9.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #7a7c73;
+    background: #fff;
+    border: 1px solid #e0ded5;
+    border-radius: 4px;
+    padding: 3px 6px;
+}
+.sy-desk-source-body {
+    min-width: 0;
+}
+.sy-desk-source-body b {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 550;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+.sy-desk-source-body small {
+    display: block;
+    margin-top: 2px;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: #7a7c73;
+}
+.sy-desk-source > svg {
+    color: #a8aa9f;
+    flex: none;
+}
+
+/* Check tab */
+.sy-desk-tab-head h2 {
+    font-size: 21px;
+    font-weight: 550;
+    letter-spacing: -0.4px;
+    line-height: 1.25;
+}
+.sy-desk-tab-head p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #7a7c73;
+}
+.sy-desk-subtasks {
+    list-style: none;
+    margin: 22px 0 0;
+    padding: 0;
+    border-top: 1px solid #eae7dd;
+}
+.sy-desk-subtasks li {
+    border-bottom: 1px solid #eae7dd;
+}
+.sy-desk-subtasks label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 0;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: #2f312c;
+    cursor: pointer;
+}
+.sy-desk-subtasks input {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin: 3px 0 0;
+    accent-color: #3f4cc4;
+}
+.sy-desk-subtasks label:has(input:checked) span {
+    color: #8a8c84;
+    text-decoration: line-through;
+    text-decoration-color: #c9c6ba;
+}
+
+/* Apply tab */
+.sy-desk-field {
+    display: grid;
+    gap: 8px;
+    margin-top: 22px;
+}
+.sy-desk-field > span {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #7a7c73;
+}
+.sy-desk .sy-textarea {
+    min-height: 150px;
+    padding: 13px 14px;
+    background: #fff;
+    color: #1e2025;
+    border-color: #dcd9cf;
+    font-size: 14.5px;
+    line-height: 1.7;
+}
+.sy-desk .sy-textarea::placeholder {
+    color: #a3a59b;
+}
+.sy-desk .sy-textarea:focus-visible {
+    outline-offset: 0;
+    border-color: #3f4cc4;
+}
+.sy-desk-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+.sy-desk-review > .sy-button.quiet {
+    margin-top: 2px;
+    padding: 8px 14px;
+    background: #fff;
+    color: #1e2025;
+    border: 1px solid #c9c6ba;
+    border-radius: 6px;
+}
+.sy-desk-review > .sy-button.quiet:hover {
+    background: #fbfaf7;
+    border-color: #9a978a;
+}
+.sy-desk-review > .sy-form {
+    padding: 18px;
+    background: #fbfaf7;
+    border: 1px solid #e0ded5;
+    border-radius: 8px;
+}
+.sy-desk-saved {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #5d5f57;
+}
+.sy-desk-hint {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #7a7c73;
+}
+.sy-desk-next {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    padding-top: 22px;
+    border-top: 1px solid #eae7dd;
+}
+.sy-desk-next > div {
+    min-width: 0;
+}
+.sy-desk-next p {
+    margin-top: 5px;
+    font-size: 15px;
+    font-weight: 550;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+.sy-desk-next .sy-button {
+    flex: none;
+}
+
+/* Shared controls, re-tuned for paper */
+.sy-desk .sy-button.primary {
+    background: #1e2025;
+    color: #fff;
+}
+.sy-desk .sy-button.primary:hover:not(:disabled) {
+    background: #000;
+}
+.sy-desk .sy-button.primary:disabled {
+    opacity: 1;
+    background: #eceae3;
+    color: #9a9c93;
+}
+.sy-desk .sy-button.secondary {
+    background: #fff;
+    color: #1e2025;
+    border: 1px solid #c9c6ba;
+}
+.sy-desk .sy-button.secondary:hover:not(:disabled) {
+    border-color: #9a978a;
+    background: #fbfaf7;
+}
+.sy-desk .sy-button.quiet {
+    color: #5d5f57;
+}
+.sy-desk .sy-button.quiet:hover {
+    color: #1e2025;
+    background: #eae7dd;
+}
+.sy-desk .sy-button.icon {
+    background: #f1efe8;
+    color: #1e2025;
+}
+.sy-desk .sy-input {
+    background: #fff;
+    color: #1e2025;
+    border-color: #dcd9cf;
+}
+.sy-desk .sy-form label {
+    color: #3a3c35;
+}
+.sy-desk .sy-form-hint {
+    color: #7a7c73;
+}
+.sy-desk .sy-card-actions {
+    margin-top: 18px;
+}
+.sy-desk .sy-error {
+    color: #a3324a;
+    background: #fdf5f6;
+    border-color: #e3c4ca;
+}
+.sy-desk .sy-empty {
+    color: #7a7c73;
+}
+.sy-desk-empty {
+    padding: 12px 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #7a7c73;
+}
+
+/* Loading and empty states */
+.sy-desk-simple {
+    display: grid;
+    place-items: center;
+    padding: 80px 24px;
+    text-align: center;
+}
+.sy-desk-simple-inner {
+    max-width: 460px;
+}
+.sy-desk-simple h1 {
+    margin-top: 10px;
+    font-size: 27px;
+    letter-spacing: -0.7px;
+    line-height: 1.25;
+}
+.sy-desk-simple .sy-desk-lede {
+    margin-top: 12px;
+    font-size: 14.5px;
+    color: #5d5f57;
+}
+.sy-desk-simple .sy-desk-actions {
+    justify-content: center;
+    margin-top: 22px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1240px) {
+    .sy-desk-grid {
+        grid-template-columns: 304px minmax(0, 1fr);
+        gap: 24px;
+        padding-inline: 24px;
+    }
+    .sy-desk-tab {
+        padding: 26px 30px 40px;
+    }
+}
+@media (max-width: 1100px) {
+    .sy-desk-grid {
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: 22px;
+    }
+    .sy-desk-claim h1 {
+        font-size: 30px;
+    }
+}
+@media (max-width: 1024px) {
+    /* The mobile nav is sticky here, so the page bar must scroll away. */
+    .sy-desk-top,
+    .sy-desk-tabs {
+        position: static;
+    }
+    .sy-desk-alert {
+        padding: 16px 24px 0;
+    }
+    .sy-desk-claim h1 {
+        font-size: 32px;
+    }
+}
+@media (max-width: 980px) {
+    .sy-desk-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        padding: 18px 24px 80px;
+    }
+    .sy-desk-work {
+        display: contents;
+    }
+    .sy-desk-video {
+        order: 1;
+    }
+    .sy-desk-chapters {
+        order: 2;
+    }
+    .sy-desk-panel {
+        order: 3;
+    }
+    .sy-desk-notes {
+        order: 4;
+    }
+    .sy-desk-lessons {
+        order: 5;
+    }
+    .sy-desk-pomodoro-card {
+        order: 6;
+    }
+    .sy-desk-tabs {
+        margin-top: 18px;
+    }
+    .sy-desk-note-form textarea {
+        min-height: 40px;
+    }
+    .sy-desk-pip {
+        width: 7px;
+        height: 7px;
+    }
+}
+@media (max-width: 760px) {
+    .sy-desk-top {
+        height: auto;
+        min-height: 48px;
+        padding: 8px 20px;
+    }
+    .sy-desk-claim h1 {
+        font-size: 27px;
+        letter-spacing: -0.8px;
+    }
+    .sy-desk-grid {
+        padding: 14px 20px 72px;
+    }
+    .sy-desk-tab {
+        padding: 22px 22px 32px;
+    }
+    .sy-desk-lede {
+        font-size: 15.5px;
+    }
+    .sy-desk-prose p {
+        font-size: 14.5px;
+    }
+    .sy-desk-tab-head h2 {
+        font-size: 19px;
+    }
+    .sy-desk-claim-meta {
+        font-size: 11.5px;
+    }
+    .sy-desk-alert {
+        padding: 14px 20px 0;
+    }
+}
+@media (max-width: 600px) {
+    .sy-desk-top {
+        padding: 8px 16px;
+        gap: 10px;
+    }
+    .sy-desk-crumb-topic,
+    .sy-desk-crumb-sep,
+    .sy-desk-count {
+        display: none;
+    }
+    .sy-desk-edit-label {
+        display: none;
+    }
+    .sy-desk-top .sy-button {
+        min-height: 30px;
+        padding: 4px 6px;
+    }
+    .sy-desk-claim {
+        padding: 2px 0 0;
+    }
+    .sy-desk-claim h1 {
+        font-size: 24px;
+        letter-spacing: -0.6px;
+    }
+    .sy-desk-claim-top {
+        gap: 10px;
+    }
+    .sy-desk-tabs {
+        gap: 18px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .sy-desk-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    .sy-desk-grid {
+        padding: 12px 16px 64px;
+    }
+    .sy-desk-tab {
+        padding: 20px 16px 28px;
+    }
+    .sy-desk-surface {
+        border-radius: 0 0 6px 6px;
+    }
+    .sy-desk-source {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 10px;
+        padding: 11px 12px;
+    }
+    .sy-desk-source-type {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+    .sy-desk-objectives li {
+        grid-template-columns: 24px minmax(0, 1fr);
+    }
+    .sy-desk-next {
+        gap: 12px;
+        margin-top: 30px;
+    }
+    .sy-desk-next .sy-button {
+        width: 100%;
+    }
+    .sy-desk-actions .sy-button {
+        width: 100%;
+    }
+    .sy-desk-simple {
+        padding: 56px 20px;
+    }
+    .sy-desk-simple h1 {
+        font-size: 23px;
+    }
+    .sy-desk-alert {
+        padding: 12px 16px 0;
+    }
+}

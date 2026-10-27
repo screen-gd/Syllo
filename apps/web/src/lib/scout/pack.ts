@@ -1,4 +1,4 @@
-import type { Roadmap, SrsItem } from "@/types";
+import { LEARNING_LEVELS, type LearningLevel, type Roadmap, type SrsItem } from "@/types";
 import { getScoutDb, newId, nowIso } from "./db";
 import type { Chapter, KeyPoint, PackStatus, ResourceKind, ScoutPack, ScoutResource, TranscriptStatus } from "./types";
 
@@ -31,6 +31,7 @@ export interface ResourceRow {
     thumbnail_url: string | null;
     description: string | null;
     summary: string | null;
+    level: string | null;
     key_points: string;
     skill_tags: string;
     chapters: string;
@@ -41,6 +42,10 @@ export interface ResourceRow {
     error: string | null;
     created_at: string;
     updated_at: string;
+}
+
+function parseLevel(value: string | null): LearningLevel | null {
+    return LEARNING_LEVELS.find((level) => level === value) ?? null;
 }
 
 function parseJson<T>(value: string | null | undefined, fallback: T): T {
@@ -66,6 +71,7 @@ export function toScoutResource(row: ResourceRow, approved?: boolean): ScoutReso
         thumbnailUrl: row.thumbnail_url,
         description: row.description,
         summary: row.summary,
+        level: parseLevel(row.level),
         keyPoints: parseJson<KeyPoint[]>(row.key_points, []),
         skillTags: parseJson<string[]>(row.skill_tags, []),
         chapters: parseJson<Chapter[]>(row.chapters, []),
@@ -318,6 +324,7 @@ export function approvePackPicks(packId: string, picks: string[]): string[] {
 
 export interface ExtractionWrite {
     summary: string;
+    level?: LearningLevel | null;
     keyPoints: KeyPoint[];
     skillTags: string[];
     chapters: Chapter[];
@@ -332,7 +339,7 @@ export function saveResourceExtraction(id: string, data: ExtractionWrite) {
     getScoutDb()
         .prepare(
             `UPDATE resources SET
-                summary = ?, key_points = ?, skill_tags = ?, chapters = ?,
+                summary = ?, level = ?, key_points = ?, skill_tags = ?, chapters = ?,
                 transcript = COALESCE(?, transcript),
                 transcript_status = ?, transcript_chars = ?,
                 duration_seconds = COALESCE(?, duration_seconds),
@@ -341,6 +348,7 @@ export function saveResourceExtraction(id: string, data: ExtractionWrite) {
         )
         .run(
             data.summary,
+            data.level ?? null,
             JSON.stringify(data.keyPoints),
             JSON.stringify(data.skillTags),
             JSON.stringify(data.chapters),

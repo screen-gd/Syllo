@@ -38,28 +38,43 @@ export async function discoverForGoal(input: { goal: string; limit?: number; llm
 
     const videoPool = clean(dedupeResources([...broadVideos, ...web.filter(item => item.kind === "video"), ...preferredVideos]));
     const webPool = clean(web.filter(item => item.kind !== "video"));
-    const maxVideos = Math.max(3, Math.ceil(limit * 0.7));
 
-    const picked: DiscoveredResource[] = [];
+    return pickVideoFirst({ videos: videoPool, web: webPool, limit });
+}
+
+/**
+ * The pack is a video ladder, so videos come first. Articles and docs fill a
+ * small tail once the pack has enough videos; when videos are scarce they may
+ * take the rest of the slots.
+ */
+export function pickVideoFirst(input: {
+    videos: DiscoveredResource[];
+    web: DiscoveredResource[];
+    limit: number;
+}): DiscoveredResource[] {
+    const limit = Math.max(0, Math.floor(input.limit));
     const seen = new Set<string>();
-    const push = (item: DiscoveredResource) => {
+    const picked: DiscoveredResource[] = [];
+
+    const push = (item: DiscoveredResource): boolean => {
         const key = canonicalResourceUrl(item.url);
-        if (seen.has(key) || picked.length >= limit) return;
+        if (seen.has(key) || picked.length >= limit) return false;
         seen.add(key);
         picked.push(item);
+        return true;
     };
 
-    // Alternating keeps the pack from becoming ten videos or ten articles.
-    const maxLength = Math.max(videoPool.length, webPool.length);
-    for (let index = 0; index < maxLength; index += 1) {
-        if (videoPool[index] && picked.filter((item) => item.kind === "video").length < maxVideos) {
-            push(videoPool[index]);
-        }
-        if (webPool[index]) push(webPool[index]);
+    for (const video of dedupeResources(input.videos)) {
         if (picked.length >= limit) break;
+        push(video);
     }
 
-    for (const item of [...videoPool, ...webPool]) push(item);
+    const videoCount = picked.length;
+    const webCap = videoCount >= 3 ? Math.max(1, Math.floor(limit * 0.25)) : limit;
+    for (const item of dedupeResources(input.web)) {
+        if (picked.length >= limit || picked.length - videoCount >= webCap) break;
+        push(item);
+    }
 
     return picked;
 }

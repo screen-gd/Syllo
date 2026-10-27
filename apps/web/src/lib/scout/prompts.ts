@@ -1,5 +1,5 @@
-import extractRaw from "../../../prompts/scout/extract.v1.md?raw";
-import planRaw from "../../../prompts/scout/plan.v1.md?raw";
+import extractRaw from "../../../prompts/scout/extract.v2.md?raw";
+import planRaw from "../../../prompts/scout/plan.v2.md?raw";
 import quizRaw from "../../../prompts/scout/quiz.v1.md?raw";
 import bookRaw from "../../../prompts/scout/book.v1.md?raw";
 
@@ -24,7 +24,7 @@ function parsePrompt(raw: string): ScoutPrompt {
 }
 
 /**
- * Prompts live in prompts/scout/*.v1.md so a change is reviewable in a diff.
+ * Prompts live in prompts/scout/*.vN.md so a change is reviewable in a diff.
  * Bump the filename when the contract changes.
  */
 export const SCOUT_PROMPTS = {

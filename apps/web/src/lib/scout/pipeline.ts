@@ -167,7 +167,7 @@ async function handleProcessResource(job: JobRow, payload: Record<string, unknow
     try {
         const source = await textFor(row);
         if (source.transcriptStatus !== "ok" || source.text.trim().length < 80) {
-            saveResourceExtraction(row.id, { summary: "Scout could not read this source. It remains available as a manual link.", keyPoints: [], skillTags: [], chapters: [], transcript: null, transcriptStatus: "skipped", transcriptChars: 0, error: source.error || "Source text is unavailable" });
+            saveResourceExtraction(row.id, { summary: "Scout could not read this source. It remains available as a manual link.", level: null, keyPoints: [], skillTags: [], chapters: [], transcript: null, transcriptStatus: "skipped", transcriptChars: 0, error: source.error || "Source text is unavailable" });
             settlePackIfProcessed(packId);
             return { resourceId, unread: true };
         }
@@ -195,6 +195,7 @@ async function handleProcessResource(job: JobRow, payload: Record<string, unknow
 
         saveResourceExtraction(row.id, {
             summary: extraction.summary || "No summary could be produced for this resource yet.",
+            level: extraction.level,
             keyPoints: extraction.keyPoints,
             skillTags: extraction.skills,
             chapters,
