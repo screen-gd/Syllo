@@ -9,5 +9,8 @@
         "lint": "pnpm -r lint",
         "typecheck": "pnpm -r typecheck",
         "test": "pnpm -r test"
+    },
+    "engines": {
+        "node": ">=24.22.1 <25"
     }
 }
