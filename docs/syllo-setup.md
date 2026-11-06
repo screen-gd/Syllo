@@ -2,11 +2,11 @@
 
 ## Local mode
 
-Use Node 22.12 or newer, pnpm, and a browser with IndexedDB. No Convex account is needed. Run these from the repo root:
+Use Node 22.12 or newer, Bun 1.4.4, and a browser with IndexedDB. No Convex account is needed. Run these from the repo root:
 
 ```powershell
-pnpm install --frozen-lockfile
-pnpm dev
+bun install --frozen-lockfile
+bun run dev
 ```
 
 Open `http://localhost:3000`. Leave `VITE_CONVEX_URL` blank. Home, Library, EPUB reading, notes, video bookmarks, Pomodoro, manual roadmaps, and reviews save on this browser. Videos still need an internet connection.
@@ -14,29 +14,29 @@ Open `http://localhost:3000`. Leave `VITE_CONVEX_URL` blank. Home, Library, EPUB
 For a production build:
 
 ```powershell
-pnpm build
-pnpm start
+bun run build
+bun run start
 ```
 
-The production host listens on `127.0.0.1:3000` by default. Vite reads `apps/web/.env.local` during development and builds. For server keys used by `pnpm start`, supply process environment variables or run `node --env-file=.env.local server.mjs` in `apps/web`. Client deployment URLs are build-time settings, so rebuild after changing them.
+The production host listens on `127.0.0.1:3000` by default. Vite reads `apps/web/.env.local` during development and builds. For server keys used by `bun run start`, supply process environment variables or run `node --env-file=.env.local server.mjs` in `apps/web`. Client deployment URLs are build-time settings, so rebuild after changing them.
 
 ## Optional Convex sync
 
 No deployment is configured in this checkout. The backend schema, owner-only password login, sync functions, and authenticated book downloads are prepared in `apps/web/convex/`. Local mode remains available without them. Run the commands in this section from `apps/web`.
 
-1. Run `pnpm convex:dev`. Sign in to Convex and choose a project and its development deployment. This writes deployment settings to your ignored `apps/web/.env.local`. Keep this watcher running; an initial auth error can be resolved by configuring the following variables.
-2. Run `pnpm convex:auth-prepare` in a second terminal. It generates `.env.convex-auth.local` without printing keys or contacting Convex. It refuses to overwrite existing keys.
+1. Run `bun run convex:dev`. Sign in to Convex and choose a project and its development deployment. This writes deployment settings to your ignored `apps/web/.env.local`. Keep this watcher running; an initial auth error can be resolved by configuring the following variables.
+2. Run `bun run convex:auth-prepare` in a second terminal. It generates `.env.convex-auth.local` without printing keys or contacting Convex. It refuses to overwrite existing keys.
 3. Apply those variables to your selected development deployment:
 
    ```powershell
-   pnpm exec convex env set --from-file .env.convex-auth.local
-   pnpm exec convex env set SYLLO_OWNER_EMAIL
-   pnpm exec convex env set SITE_URL http://localhost:3000
+   bunx convex env set --from-file .env.convex-auth.local
+   bunx convex env set SYLLO_OWNER_EMAIL
+   bunx convex env set SITE_URL http://localhost:3000
    ```
 
    Enter your email at the private terminal prompt. Only that address may create or use the account. Keep `.env.convex-auth.local` private and outside version control. Do not regenerate signing keys for an existing deployment unless you intend to rotate them.
 4. Confirm `.env.local` has the public `VITE_CONVEX_URL` from the CLI. For the standard Convex domain, Syllo derives the HTTP origin by replacing `.convex.cloud` with `.convex.site`. Set `VITE_CONVEX_SITE_URL` explicitly if needed. Never put signing keys or deployment access tokens in a `VITE_` variable.
-5. Restart `pnpm dev`. In Settings, choose **First time? Create account**, use the configured owner email, and save your password in a password manager. This personal setup does not include email verification or password-reset delivery.
+5. Restart `bun run dev`. In Settings, choose **First time? Create account**, use the configured owner email, and save your password in a password manager. This personal setup does not include email verification or password-reset delivery.
 6. In Settings, choose **Upload books from this device** for previously imported books. New imports upload when signed in. Reading positions, highlights, notes, kept review schedules, roadmaps, and timer preferences sync automatically. Downloads require sign-in and cache locally for later use.
 
 The auth files follow [Convex Auth's manual setup](https://labs.convex.dev/auth/setup/manual); Syllo's schema and React provider are already installed. Avoid replacing `apps/web/convex/auth.ts` with a generic setup template, which would remove the owner-email restriction.
@@ -87,10 +87,10 @@ Embedded YouTube playback uses YouTube's player. Syllo does not promise locked-p
 `apps/web/mcp/server.mjs` exposes `add_resource` and `search_library` over stdio against the same SQLite file. Settings shows connection snippets for installed coding agents. An MCP-added resource remains a candidate until approved.
 
 ```powershell
-pnpm typecheck
-pnpm test
-pnpm lint
-pnpm build
+bun run typecheck
+bun run test
+bun run lint
+bun run build
 ```
 
 Live Convex sync, provider calls, mobile installation, and playback need their respective accounts, devices, or network services. No cloud project is created by these checks.
