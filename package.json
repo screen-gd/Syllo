@@ -1,16 +1,27 @@
 {
     "name": "syllo-monorepo",
     "private": true,
-    "packageManager": "pnpm@12.11.2",
+    "packageManager": "bun@1.4.4",
     "scripts": {
-        "dev": "pnpm --filter @syllo/web dev",
-        "build": "pnpm --filter @syllo/web build",
-        "start": "pnpm --filter @syllo/web start",
-        "lint": "pnpm -r lint",
-        "typecheck": "pnpm -r typecheck",
-        "test": "pnpm -r test"
+        "dev": "bun run --filter @syllo/web dev",
+        "build": "bun run --filter @syllo/web build",
+        "start": "bun run --filter @syllo/web start",
+        "lint": "bun run --filter \"*\" --if-present lint",
+        "typecheck": "bun run --filter \"*\" --if-present typecheck",
+        "test": "bun run --filter \"*\" --if-present test"
     },
     "engines": {
         "node": ">=24.22.1 <25"
-    }
+    },
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "overrides": {
+        "epubjs>@xmldom/xmldom": "0.9.12"
+    },
+    "trustedDependencies": [
+        "esbuild",
+        "better-sqlite3"
+    ]
 }
