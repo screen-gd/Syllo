@@ -1,17 +1,53 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, Play, Telescope } from "lucide-react";
-import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
+import {
+    ArrowRight,
+    BookOpen,
+    Library,
+    ListPlus,
+    Play,
+    Telescope,
+} from "lucide-react";
+import { useReviews } from "@/hooks/useReviews";
 import { taskVideo } from "@/lib/learning";
 import { getLadder, levelUpReady, LEVEL_LABEL, nextCoreItem } from "@/lib/ladder";
 import { getYouTubeId, getVideoStartSeconds } from "@/lib/video-utils";
-import { personalEntries, usePersonalData } from "@/lib/personal/store";
+import { personalEntries } from "@/lib/personal/store";
+import {
+    normalizeLearningRecord,
+    recentActivity,
+} from "@/lib/learning-session";
+import { collectNotes } from "@/lib/notes";
+import { formatInterval, isDue, isScheduled } from "@/lib/reviews";
 import { getStorage } from "@/lib/storage";
 import { formatTimestamp } from "@/lib/scout/format";
+import { topicStyle } from "@/lib/topic-color";
 import BookCover from "@/components/learning/BookCover";
 
+/** First things to do on an empty Home, in the order a new learner needs them. */
+const STARTERS = [
+    {
+        to: "/scout",
+        icon: Telescope,
+        title: "Pick a goal",
+        body: "Scout finds the videos and reading for it.",
+    },
+    {
+        to: "/create",
+        icon: ListPlus,
+        title: "Bring a roadmap",
+        body: "Paste notes or links you already have.",
+    },
+    {
+        to: "/library",
+        icon: Library,
+        title: "Import a book",
+        body: "Read an EPUB and keep highlights.",
+    },
+] as const;
+
+/** Home: what to resume, the week so far, cards waiting and current books. */
 export default function HomePage() {
-    const { roadmaps, loaded } = useLearningRoadmaps();
-    const records = usePersonalData();
+    const { reviews, roadmaps, records, loaded } = useReviews();
     const positions = personalEntries(records, "study")
         .map((item) => item.data)
         .sort((a, b) => b.lastOpenedAt.localeCompare(a.lastOpenedAt));
@@ -59,32 +95,35 @@ export default function HomePage() {
             ),
         )
         .slice(0, 3);
-    const persistedReviews = roadmaps.flatMap((roadmap) =>
-        getStorage().getReviews(roadmap.id),
-    );
-    const personalReviews = personalEntries(records, "review").map(
-        (item) => item.data,
-    );
-    const reviews = [
-        ...new Map(
-            [...persistedReviews, ...personalReviews].map((item) => [
-                item.id,
-                item,
-            ]),
-        ).values(),
-    ];
-    const dueCount = reviews.filter(
-        (item) =>
-            item.status !== "suggested" &&
-            item.status !== "skipped" &&
-            new Date(item.dueAt).getTime() <= Date.now(),
-    ).length;
     if (!loaded)
         return (
-            <div className="sy-page sy-loading">
-                Loading your learning space…
+            <div className="sy-page">
+                <header className="sy-page-head">
+                    <h1>Home</h1>
+                </header>
+                <div className="sy-home-grid" role="status" aria-label="Loading">
+                    <div className="sy-home-main">
+                        <div className="sy-box sy-box-skeleton" />
+                        <div className="sy-box sy-box-skeleton" />
+                    </div>
+                    <div className="sy-home-aside">
+                        <div className="sy-box sy-box-skeleton short" />
+                        <div className="sy-box sy-box-skeleton short" />
+                    </div>
+                </div>
             </div>
         );
+
+    const record = normalizeLearningRecord(getStorage().getLearningRecord());
+    const week = recentActivity(record);
+    const weekTotal = week.reduce((total, day) => total + day.count, 0);
+    const scheduled = reviews.filter(isScheduled);
+    const dueCount = scheduled.filter((item) => isDue(item)).length;
+    const nextDue = scheduled
+        .filter((item) => !isDue(item))
+        .sort((a, b) => a.dueAt.localeCompare(b.dueAt))
+        .at(0);
+    const noteCount = collectNotes(records, roadmaps).length;
 
     return (
         <div className="sy-page">
@@ -97,14 +136,17 @@ export default function HomePage() {
             </header>
             <div className="sy-home-grid">
                 <div className="sy-home-main">
-                    <section>
+                    <section className="sy-box">
                         <div className="sy-section-head">
                             <h2>Continue learning</h2>
                             {recentRoadmap && <span>Last studied</span>}
                         </div>
                         {resumeTask && resumeRoadmap ? (
                             <>
-                                <article className="sy-resume">
+                                <article
+                                    className="sy-resume"
+                                    style={topicStyle(resumeRoadmap.id)}
+                                >
                                     <Link
                                         className="sy-resume-media"
                                         to="/learn"
@@ -129,11 +171,18 @@ export default function HomePage() {
                                         )}
                                     </Link>
                                     <div className="sy-resume-copy">
-                                        <p>
-                                            {levelUp
-                                                ? `Level up: ${LEVEL_LABEL[levelUp.to]} · `
-                                                : ""}
+                                        <p className="sy-resume-topic">
+                                            <span className="sy-topic-dot" />
                                             {resumeRoadmap.title}
+                                            {levelUp && (
+                                                <span
+                                                    className="sy-badge"
+                                                    data-tone="accent"
+                                                >
+                                                    Level up:{" "}
+                                                    {LEVEL_LABEL[levelUp.to]}
+                                                </span>
+                                            )}
                                         </p>
                                         <h2>
                                             {resumeTask.task.title ||
@@ -143,9 +192,16 @@ export default function HomePage() {
                                             {resumeLevel
                                                 ? `${LEVEL_LABEL[resumeLevel.level]} · core ${resumeLevel.coreDone + 1} of ${resumeLevel.coreTotal}`
                                                 : resumeTask.sectionTitle}
-                                            {video && seconds > 0
-                                                ? ` · resume at ${formatTimestamp(seconds)}`
-                                                : ""}
+                                            {video && seconds > 0 && (
+                                                <>
+                                                    {" · resume at "}
+                                                    <span className="sy-num">
+                                                        {formatTimestamp(
+                                                            seconds,
+                                                        )}
+                                                    </span>
+                                                </>
+                                            )}
                                         </p>
                                         <Link
                                             className="sy-button primary"
@@ -161,19 +217,17 @@ export default function HomePage() {
                                         </Link>
                                     </div>
                                 </article>
-                                <p className="sy-next-label">
-                                    {resumeTask.task.description ||
-                                        resumeTask.task.estimatedTime ||
-                                        "Continue at your own pace."}
-                                </p>
+                                {(resumeTask.task.description ||
+                                    resumeTask.task.estimatedTime) && (
+                                    <p className="sy-next-label">
+                                        {resumeTask.task.description ||
+                                            resumeTask.task.estimatedTime}
+                                    </p>
+                                )}
                             </>
-                        ) : (
-                            <div className="sy-empty bordered">
-                                <p>
-                                    {roadmaps.length
-                                        ? "You’ve watched every core video. Go deeper or pick a new goal."
-                                        : "Start with something you want to learn. Scout can help find and organize the resources."}
-                                </p>
+                        ) : roadmaps.length > 0 ? (
+                            <div className="sy-tray sy-empty-row">
+                                <p>Every core video is watched.</p>
                                 {lastRoadmap && (
                                     <Link
                                         className="sy-button secondary"
@@ -184,14 +238,29 @@ export default function HomePage() {
                                         <ArrowRight />
                                     </Link>
                                 )}
-                                <Link className="sy-button primary" to="/scout">
-                                    Choose a learning goal
-                                    <ArrowRight />
-                                </Link>
                             </div>
+                        ) : (
+                            <ol className="sy-starters">
+                                {STARTERS.map(
+                                    ({ to, icon: Icon, title, body }, index) => (
+                                        <li key={to}>
+                                            <Link to={to} className="sy-starter">
+                                                <span className="sy-starter-knob">
+                                                    <Icon size={18} />
+                                                </span>
+                                                <span className="sy-starter-step sy-num">
+                                                    {index + 1}
+                                                </span>
+                                                <b>{title}</b>
+                                                <small>{body}</small>
+                                            </Link>
+                                        </li>
+                                    ),
+                                )}
+                            </ol>
                         )}
                     </section>
-                    <section className="sy-section">
+                    <section className="sy-box flush sy-home-topics">
                         <div className="sy-section-head">
                             <h2>Your learning topics</h2>
                             <Link to="/workspaces">
@@ -219,8 +288,9 @@ export default function HomePage() {
                                       );
                                 return (
                                     <article
-                                        className="sy-topic"
+                                        className="sy-topic sy-spined"
                                         key={roadmap.id}
+                                        style={topicStyle(roadmap.id)}
                                     >
                                         <div>
                                             <h3>
@@ -241,7 +311,7 @@ export default function HomePage() {
                                                       : "Ready to explore"}
                                             </p>
                                             <div
-                                                className="sy-progress"
+                                                className="sy-progress topic"
                                                 role="progressbar"
                                                 aria-label={`${roadmap.title} progress`}
                                                 aria-valuenow={done}
@@ -259,8 +329,8 @@ export default function HomePage() {
                                             </div>
                                         </div>
                                         <div>
-                                            <span className="sy-topic-count">
-                                                {done} / {total}
+                                            <span className="sy-readout">
+                                                {done}/{total}
                                             </span>
                                             <Link
                                                 className="sy-button icon"
@@ -275,14 +345,94 @@ export default function HomePage() {
                                 );
                             })
                         ) : (
-                            <p className="sy-empty">
-                                Your learning topics will appear here.
+                            <p className="sy-tray">
+                                Topics you start appear here, each with its own
+                                colour.
                             </p>
                         )}
                     </section>
                 </div>
                 <aside className="sy-home-aside">
-                    <section>
+                    <section className="sy-box">
+                        <div className="sy-section-head">
+                            <h2>This week</h2>
+                            <Link to="/progress">
+                                Progress
+                                <ArrowRight size={13} />
+                            </Link>
+                        </div>
+                        <div className="sy-gauges">
+                            <div>
+                                <b className="sy-num">{record.currentStreak}</b>
+                                <span>Day streak</span>
+                            </div>
+                            <div>
+                                <b className="sy-num">{weekTotal}</b>
+                                <span>Lessons</span>
+                            </div>
+                            <Link to="/notes">
+                                <b className="sy-num">{noteCount}</b>
+                                <span>Notes</span>
+                            </Link>
+                        </div>
+                        <ol
+                            className="sy-week-leds"
+                            aria-label="Lessons finished on each of the last 7 days"
+                        >
+                            {week.map((day) => (
+                                <li
+                                    key={day.date}
+                                    title={`${day.weekday}: ${day.count}`}
+                                >
+                                    <span
+                                        className="sy-led"
+                                        data-on={day.count > 0 || undefined}
+                                    />
+                                    <span>{day.weekday.charAt(0)}</span>
+                                </li>
+                            ))}
+                        </ol>
+                    </section>
+                    <section className="sy-box">
+                        <div className="sy-section-head">
+                            <h2>Reviews</h2>
+                            <Link to="/glossary">
+                                Glossary
+                                <ArrowRight size={13} />
+                            </Link>
+                        </div>
+                        <div className="sy-deck-row">
+                            <Link
+                                className="sy-deck"
+                                to="/reviews"
+                                data-due={dueCount > 0 || undefined}
+                                aria-label={`${dueCount} review cards ready`}
+                            >
+                                <b className="sy-num">{dueCount}</b>
+                            </Link>
+                            <div>
+                                <h3>
+                                    {dueCount === 1
+                                        ? "card ready"
+                                        : "cards ready"}
+                                </h3>
+                                <p>
+                                    {dueCount > 0
+                                        ? `${scheduled.length} in your deck`
+                                        : nextDue
+                                          ? `Next in ${formatInterval(nextDue.dueAt)}`
+                                          : "Keep a concept to start a deck"}
+                                </p>
+                            </div>
+                            <Link
+                                className={`sy-button ${dueCount > 0 ? "primary" : "secondary"}`}
+                                to="/reviews"
+                            >
+                                Review
+                            </Link>
+                        </div>
+                    </section>
+                    <section className="sy-box">
                         <div className="sy-section-head">
                             <h2>Currently reading</h2>
                             <Link to="/library">
@@ -326,32 +476,18 @@ export default function HomePage() {
                                     </article>
                                 ))
                             ) : (
-                                <div className="sy-empty">
-                                    <p>Import an EPUB to start reading.</p>
+                                <div className="sy-tray sy-empty-row">
+                                    <p>No book open.</p>
                                     <Link
-                                        className="sy-button quiet"
+                                        className="sy-button secondary"
                                         to="/library"
                                     >
                                         Open Library
-                                        <ArrowRight />
                                     </Link>
                                 </div>
                             )}
                         </div>
                     </section>
-                    <div className="sy-review-row">
-                        <div>
-                            <h3>
-                                {dueCount} review card
-                                {dueCount === 1 ? "" : "s"} ready
-                            </h3>
-                            <p>From concepts you chose to keep.</p>
-                        </div>
-                        <Link className="sy-button quiet" to="/reviews">
-                            Review
-                            <ArrowRight />
-                        </Link>
-                    </div>
                 </aside>
             </div>
         </div>

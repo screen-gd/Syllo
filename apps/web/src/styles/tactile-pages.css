@@ -1,0 +1,230 @@
+/*
+ * Page-level finish for Notes, Glossary, Reviews, Progress, Library, Learning
+ * topics, Scout and Settings. Loaded after tactile.css and built only from its
+ * parts: .sy-box, .sy-groove, .sy-num, .sy-topic-dot, .sy-led and the --tac-*
+ * tokens. Home and the sidebar are styled in tactile.css.
+ */
+
+/*
+ * Page parts added here, used by the pages above:
+ * .sy-row       a row inside a .sy-box.flush that runs edge to edge, with a
+ *               groove under it (none under the last row).
+ * .sy-toolstrip a raised strip that holds a page's search and filters.
+ * .sy-box-title a header-strip title with a leading dot or light.
+ * .sy-initial   a large embossed mono letter for a header strip.
+ * .sy-topic-link, .sy-state  inline label with a leading dot or light.
+ * .sy-cut       a groove along the top edge of a block.
+ * .sy-grooved   a list whose items are split by grooves.
+ */
+
+/* Rows that run to the edges of a flush box, split by grooves. */
+.sy-box.flush > .sy-section-head {
+    margin-bottom: 0;
+}
+.sy-box.flush .sy-row {
+    margin-inline: -20px;
+    padding-inline: 20px;
+    border-bottom: 1px solid var(--tac-groove-dark);
+    box-shadow: 0 1px 0 var(--tac-groove-light);
+}
+.sy-box.flush .sy-row:last-child {
+    border-bottom: 0;
+    box-shadow: none;
+}
+.sy-box.flush > .sy-tray {
+    margin: 16px 0 14px;
+}
+@media (hover: hover) and (pointer: fine) {
+    .sy-box.flush a.sy-row:hover,
+    .sy-box.flush .sy-workspace-row.sy-row:hover {
+        background: var(--tac-groove-light);
+    }
+}
+
+/* Header strips: a title with its dot, and a count in a readout. */
+.sy-box-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.sy-section-head > .sy-readout {
+    color: var(--color-text);
+    font-size: 12px;
+}
+.sy-section-head > .sy-readout[data-live] {
+    color: var(--color-accent-strong);
+}
+.sy-box > .sy-section-head h2.sy-initial {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-text);
+    text-shadow:
+        0 1px 0 var(--tac-groove-dark),
+        0 -1px 0 var(--tac-groove-light);
+}
+
+/* Inline labels that lead with a topic dot or a light. */
+.sy-topic-link,
+.sy-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+.sy-state {
+    color: var(--color-text-muted);
+}
+.sy-box .sy-note-meta,
+.sy-review-card .sy-note-meta {
+    align-items: center;
+}
+
+/* The search and filter row sits on its own raised strip. */
+.sy-toolstrip {
+    padding: 8px;
+    border-radius: var(--tac-box-radius);
+    background: var(--tac-surface);
+    box-shadow: var(--tac-raised);
+}
+
+/* Empty states sit in a tray. */
+.sy-tray > .sy-button {
+    margin-top: 12px;
+}
+.sy-tray p + p {
+    margin-top: 8px;
+}
+.sy-tray h2 {
+    color: var(--color-text);
+}
+.sy-tray.sy-empty-row > .sy-button {
+    margin-top: 0;
+}
+
+/* Grooves for blocks and lists outside a box's rows. */
+.sy-cut,
+.sy-grooved > * + * {
+    border-top: 1px solid var(--tac-groove-dark);
+    box-shadow: inset 0 1px 0 var(--tac-groove-light);
+}
+
+/* Notes and Glossary: boxes stack with a block gap. */
+.sy-box.sy-note-group + .sy-box.sy-note-group,
+.sy-box.sy-term-group + .sy-box.sy-term-group {
+    margin-top: var(--sy-space-block);
+}
+
+/* Reviews: the open card's count, and the four ratings as a row of keys. */
+.sy-review-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+.sy-card-actions.sy-rate-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    max-width: 30rem;
+    padding: 5px;
+    border-radius: calc(var(--sy-radius) + 4px);
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+}
+.sy-rate-row .sy-rate {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 4px;
+}
+.sy-rate-row .sy-rate small {
+    font-size: 11px;
+}
+.sy-review-card + .sy-review-box,
+.sy-tray + .sy-review-box {
+    margin-top: var(--sy-space-section);
+}
+
+/* Progress: large readout figures, and a light per day. */
+.sy-stat b.sy-num {
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+}
+.sy-stat-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+.sy-stats + .sy-box {
+    margin-top: var(--sy-space-section);
+}
+.sy-week .sy-led {
+    margin-bottom: 6px;
+}
+
+/* Library: shelves are boxes, so they take the box rhythm. */
+.sy-box.sy-shelf-group {
+    margin-bottom: 0;
+}
+.sy-shelf-group > .sy-section-head h2 {
+    margin-bottom: 0;
+    color: var(--color-text);
+    font-weight: 550;
+}
+
+/* Learning topics: rows are grooved by .sy-row, not bordered. */
+.sy-box.flush .sy-workspace-row + .sy-workspace-row {
+    border-top: 0;
+}
+.sy-workspace-progress .sy-progress {
+    margin-top: 0;
+}
+
+/* Settings: title in the header strip, description beside the controls. */
+.sy-box.sy-settings-section {
+    display: block;
+}
+.sy-box.sy-settings-section + .sy-box.sy-settings-section {
+    margin-top: var(--sy-space-field);
+    padding-top: 20px;
+    border-top: 0;
+}
+.sy-settings-body {
+    display: grid;
+    grid-template-columns: minmax(12rem, 20rem) minmax(0, 1fr);
+    gap: var(--sy-space-block);
+    align-items: start;
+}
+.sy-settings-body > .sy-settings-content:only-child {
+    grid-column: 1 / -1;
+}
+.sy-settings-body .sy-settings-label p {
+    margin-top: 0;
+}
+.sy-agent-connection {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--tac-groove-dark);
+    box-shadow: inset 0 1px 0 var(--tac-groove-light);
+}
+.sy-settings-content .sy-agent-snippet {
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+}
+
+@media (max-width: 760px) {
+    .sy-settings-body {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+    .sy-stat b.sy-num {
+        font-size: 26px;
+    }
+    .sy-toolstrip {
+        padding: 6px;
+    }
+}

@@ -69,7 +69,6 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
     const [showRegenConfirm, setShowRegenConfirm] = useState(false);
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [regenError, setRegenError] = useState("");
-    const [focusedTaskIdx, setFocusedTaskIdx] = useState(-1);
 
     const [notesText, setNotesText] = useState(data.notes || "");
     const [saveStatus, setSaveStatus] = useState<"saved" | "saving..." | "">("");
@@ -130,7 +129,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
             } else {
                 setRegenError("Failed to regenerate module.");
             }
-        } catch (e) {
+        } catch {
             setRegenError("An error occurred during regeneration.");
         } finally {
             setIsRegenerating(false);
@@ -305,9 +304,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
             const payload = await response.json();
             if (!payload.success || !payload.quiz) {
-                const message = payload.error === "insufficient_credits"
-                    ? "Not enough credits to generate a quiz. Upgrade or use your own provider key in Settings."
-                    : "Failed to generate a quiz for this module.";
+                const message = "Failed to generate a quiz for this module.";
 
                 setQuizError(message);
                 onApiError?.({ message });
@@ -549,7 +546,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                         <div className="space-y-3">
                             {tasks.map((task: Task) => (
-                                <div key={task.id} className={`group border bg-surface/40 hover:bg-surface/80 rounded-xl transition-all overflow-hidden ${focusedTaskIdx === tasks.indexOf(task) ? 'border-accent ' : 'border-border hover:border-border'}`}>
+                                <div key={task.id} className={`group border bg-surface/40 hover:bg-surface/80 rounded-xl transition-all overflow-hidden border-border`}>
                                     <button
                                         type="button"
                                         className="w-full flex items-start gap-4 p-5 text-left"

@@ -1,6 +1,8 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import "@/styles/globals.css";
 import "@/styles/learning.css";
+import "@/styles/tactile.css";
+import "@/styles/tactile-pages.css";
 import { Providers } from "@/components/shared/Providers";
 import { getAppUrl } from "@/lib/app-url";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
@@ -18,7 +20,7 @@ export const Route = createRootRoute({
                 name: "description",
                 content: "Continue learning, read your books, and review the ideas you want to remember.",
             },
-            { name: "theme-color", content: "#101113" },
+            { name: "theme-color", content: "#0b0a09" },
             { property: "og:title", content: defaultTitle },
             { property: "og:description", content: APP_TAGLINE },
             { property: "og:type", content: "website" },

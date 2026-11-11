@@ -38,12 +38,20 @@ export default function StudyVideo({
     startSeconds,
     seekTo,
     onPosition,
+    checkpoints = [],
+    onCheckpoint,
+    playSignal = 0,
 }: {
     url: string;
     title: string;
     startSeconds: number;
     seekTo: number | null;
     onPosition: (seconds: number) => void;
+    /** Times to pause at when playback reaches them on its own (not by seeking). */
+    checkpoints?: number[];
+    onCheckpoint?: (seconds: number) => void;
+    /** Changing this number resumes playback. */
+    playSignal?: number;
 }) {
     const mount = useRef<HTMLDivElement>(null);
     const player = useRef<YT.Player | null>(null);
@@ -53,13 +61,32 @@ export default function StudyVideo({
     start.current = startSeconds;
     const seekRef = useRef(seekTo);
     seekRef.current = seekTo;
+    const checkpointsRef = useRef(checkpoints);
+    checkpointsRef.current = checkpoints;
+    const checkpointCallback = useRef(onCheckpoint);
+    checkpointCallback.current = onCheckpoint;
     const [error, setError] = useState<string | null>(null);
     const youtubeId = getYouTubeId(url);
     useEffect(() => {
         if (!youtubeId || !mount.current) return;
         let disposed = false;
         let interval: ReturnType<typeof setInterval> | undefined;
+        let watch: ReturnType<typeof setInterval> | undefined;
+        let lastTime: number | null = null;
         let hasPlayed = false;
+        // Pause when playback runs past a checkpoint. A jump of more than a
+        // few seconds is a seek, so it never triggers a pause.
+        function watchCheckpoints() {
+            const time = player.current?.getCurrentTime?.();
+            if (typeof time !== "number" || !Number.isFinite(time)) return;
+            const previous = lastTime;
+            lastTime = time;
+            if (previous === null || time - previous <= 0 || time - previous > 3) return;
+            const crossed = checkpointsRef.current.find((point) => previous < point - 0.4 && time >= point - 0.4);
+            if (crossed === undefined) return;
+            player.current?.pauseVideo?.();
+            checkpointCallback.current?.(crossed);
+        }
         const target = document.createElement("div");
         mount.current.replaceChildren(target);
         function savePosition() {
@@ -86,10 +113,18 @@ export default function StudyVideo({
                             if (seekRef.current !== null)
                                 event.target.seekTo(seekRef.current, true);
                             interval = setInterval(savePosition, 5000);
+                            watch = setInterval(watchCheckpoints, 400);
                         },
                         onStateChange: (event) => {
                             if (event.data === YT.PlayerState.PLAYING)
                                 hasPlayed = true;
+                            if (event.data !== YT.PlayerState.PLAYING)
+                                lastTime = null;
+                            if (event.data === YT.PlayerState.ENDED) {
+                                const last = Math.max(...checkpointsRef.current);
+                                if (Number.isFinite(last))
+                                    checkpointCallback.current?.(last);
+                            }
                             savePosition();
                         },
                         onError: () =>
@@ -111,6 +146,7 @@ export default function StudyVideo({
         return () => {
             disposed = true;
             if (interval) clearInterval(interval);
+            if (watch) clearInterval(watch);
             savePosition();
             window.removeEventListener("pagehide", savePosition);
             player.current?.destroy();
@@ -120,6 +156,9 @@ export default function StudyVideo({
     useEffect(() => {
         if (seekTo !== null) player.current?.seekTo?.(seekTo, true);
     }, [seekTo]);
+    useEffect(() => {
+        if (playSignal > 0) player.current?.playVideo?.();
+    }, [playSignal]);
     const embed = getEmbedUrl(url);
     const external = safeResourceUrl(url);
     return (

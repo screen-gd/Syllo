@@ -2,6 +2,7 @@ import extractRaw from "../../../prompts/scout/extract.v2.md?raw";
 import planRaw from "../../../prompts/scout/plan.v2.md?raw";
 import quizRaw from "../../../prompts/scout/quiz.v1.md?raw";
 import bookRaw from "../../../prompts/scout/book.v1.md?raw";
+import checkRaw from "../../../prompts/scout/check.v1.md?raw";
 
 export interface ScoutPrompt {
     version: number;
@@ -32,6 +33,7 @@ export const SCOUT_PROMPTS = {
     plan: parsePrompt(planRaw),
     quiz: parsePrompt(quizRaw),
     book: parsePrompt(bookRaw),
+    check: parsePrompt(checkRaw),
 } as const;
 
 export const SCOUT_PROMPT_VERSION = [

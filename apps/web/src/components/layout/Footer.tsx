@@ -1,12 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "@/components/shared/Logo";
-import { FOOTER_NAV_GROUPS } from "@/lib/navigation";
-
-type FooterLink = (typeof FOOTER_NAV_GROUPS)[number]["items"][number];
+import { PUBLIC_NAV_ITEMS } from "@/lib/navigation";
 
 export default function Footer() {
-    const links: FooterLink[] = FOOTER_NAV_GROUPS.flatMap((group) => [...group.items]);
-
     return (
         <footer className="relative z-10 overflow-hidden border-t border-border bg-page">
             <div className="page-shell-wide grid gap-8 py-10 lg:grid-cols-[minmax(220px,0.7fr)_minmax(0,1fr)_auto] lg:items-end">
@@ -15,13 +11,13 @@ export default function Footer() {
                         <Logo />
                     </span>
                     <div>
-                        <p className="font-display text-2xl tracking-[-0.04em] text-text">RoadMap Studio</p>
-                        <p className="text-xs text-text-soft">Structured workspace platform</p>
+                        <p className="font-display text-2xl tracking-[-0.04em] text-text">Syllo</p>
+                        <p className="text-xs text-text-soft">Personal learning and reading</p>
                     </div>
                 </div>
 
                 <nav className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                    {links.map((link) => (
+                    {PUBLIC_NAV_ITEMS.map((link) => (
                         <Link
                             key={link.href}
                             to={link.href}

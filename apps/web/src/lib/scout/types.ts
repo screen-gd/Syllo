@@ -140,3 +140,30 @@ export interface JobRow {
     created_at: string;
     updated_at: string;
 }
+
+/**
+ * One recall question for a stretch of a video. `sourceLines` is a short
+ * transcript excerpt (a few lines, never the whole transcript) shown after
+ * the learner answers.
+ */
+export interface VideoCheck {
+    id: string;
+    label: string;
+    sectionStart: number;
+    sectionEnd: number;
+    /** Where the video pauses to ask. Null when the video has no chapters. */
+    pauseAt: number | null;
+    question: string;
+    answer: string;
+    sourceStart: number;
+    sourceLines: string[];
+}
+
+export type VideoChecksResult =
+    | { status: "ready"; checks: VideoCheck[] }
+    | { status: "no_transcript"; checks: [] };
+
+export interface VideoChapterInput {
+    seconds: number;
+    label: string;
+}

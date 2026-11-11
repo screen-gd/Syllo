@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { Roadmap, Section, ModuleSection, Task } from "@/types";
+import type { Roadmap, ModuleSection, Task } from "@/types";
 import type { SelectedNode } from "./WorkspaceSplitView";
-import { CheckCircle2, Circle, X, BookOpen, Video, FileText, Code2, Link2, Wrench, GraduationCap, Paperclip, ChevronRight, Play } from "lucide-react";
+import { CheckCircle2, X, BookOpen, Video, FileText, Code2, Link2, Wrench, GraduationCap, Paperclip } from "lucide-react";
 import SmartEmbed from "@/components/shared/SmartEmbed";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,7 @@ interface Props {
     onClose: () => void;
 }
 
-export default function ContextPanel({ selectedNode, roadmap, onUpdateSubtask, onUpdateTask, onUpdateModule, onClose }: Props) {
+export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTask, onUpdateModule, onClose }: Props) {
     const [activeTab, setActiveTab] = useState<"content" | "notes">("content");
 
     if (!selectedNode) return null;

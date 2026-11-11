@@ -1,0 +1,975 @@
+/*
+ * Tactile layer: a light skeuomorphic finish over the flat learning theme.
+ * Surfaces are lit from above, controls sit in recessed wells, and buttons
+ * read as keys that press in. Loaded after learning.css so equal selectors win.
+ * Colours stay those of the base theme; only light and depth are added.
+ */
+
+.sy-app {
+    /* Warm near-black desk, kin to the paper of the lesson view. */
+    --color-page: #0b0a09;
+    --color-surface: #171614;
+    --color-surface-subtle: #1e1c1a;
+    --color-raised: #272522;
+    --color-border: #2e2b28;
+    --color-border-strong: #46423d;
+    --color-text: #f7f5f0;
+    --color-text-muted: #b5b1a8;
+    --color-text-soft: #97938a;
+    /* The accent is the learner's own, chosen in Settings. */
+    --color-accent: inherit;
+    --color-accent-strong: inherit;
+    --color-accent-soft: inherit;
+    --tac-box-radius: 10px;
+    --tac-groove-dark: #000000a6;
+    --tac-groove-light: #ffffff0d;
+    --tac-ease: cubic-bezier(0.23, 1, 0.32, 1);
+    --tac-focus: #8f9bb3;
+    /* Dark theme: raised surfaces and recessed wells. */
+    --tac-surface: linear-gradient(180deg, #1d1b19 0%, #161513 100%);
+    --tac-raised: 0 0 0 1px #000000a6, 0 1px 0 0 #ffffff12 inset, 0 2px 3px #00000080, 0 14px 28px -16px #000000;
+    --tac-well-bg: #070605;
+    --tac-well: 0 1px 2px #00000080 inset, 0 0 0 1px #0000004d inset, 0 1px 0 #ffffff0d;
+    --tac-key: linear-gradient(180deg, #312e2b 0%, #242220 100%);
+    --tac-key-shadow: 0 1px 0 #ffffff14 inset, 0 0 0 1px #00000073, 0 1px 2px #00000080;
+    --tac-key-pressed: 0 1px 3px #00000099 inset, 0 0 0 1px #00000073;
+    --tac-ivory: linear-gradient(180deg, #faf7f0 0%, #e0dbcf 100%);
+    --tac-ivory-shadow: 0 1px 0 #ffffffcc inset, 0 -1px 0 #0000001f inset, 0 0 0 1px #00000059, 0 1px 2px #00000080;
+    --tac-ivory-pressed: 0 1px 3px #00000040 inset, 0 0 0 1px #00000059;
+    --tac-ivory-ink: #1a1815;
+    --tac-ivory-emboss: 0 1px 0 #ffffff99;
+    --tac-key-ink: #f1eee8;
+    --tac-well-border: #00000066;
+}
+
+/* The lesson desk is light paper, so the same parts get light values. */
+.sy-desk {
+    --color-accent: #3f4cc4;
+    --color-accent-strong: #2f3aa8;
+    --color-accent-soft: #eef0fd;
+    --tac-groove-dark: #dcd9cf;
+    --tac-groove-light: #ffffff;
+    --tac-surface: linear-gradient(180deg, #ffffff 0%, #fbfaf6 100%);
+    --tac-raised: 0 0 0 1px #dcd9cf, 0 1px 0 #ffffff inset, 0 1px 2px #3c321e14, 0 8px 20px -12px #3c321e40;
+    --tac-well-bg: #fbfaf7;
+    --tac-well: 0 1px 2px #3c321e1a inset, 0 0 0 1px #d6d3c8 inset, 0 1px 0 #ffffff;
+    --tac-focus: #3f4cc4;
+    --tac-well-border: #d6d3c8;
+    --tac-key: linear-gradient(180deg, #ffffff 0%, #f3f1ea 100%);
+    --tac-key-shadow: 0 1px 0 #ffffff inset, 0 0 0 1px #c9c6ba, 0 1px 2px #3c321e1f;
+    --tac-key-pressed: 0 1px 2px #3c321e33 inset, 0 0 0 1px #c9c6ba;
+    --tac-key-ink: #1e2025;
+    --tac-ivory: linear-gradient(180deg, #33353b 0%, #1e2025 100%);
+    --tac-ivory-shadow: 0 1px 0 #ffffff26 inset, 0 0 0 1px #000000cc, 0 1px 2px #3c321e40;
+    --tac-ivory-pressed: 0 1px 3px #000000b3 inset, 0 0 0 1px #000000cc;
+    --tac-ivory-ink: #ffffff;
+    --tac-ivory-emboss: 0 -1px 0 #00000066;
+}
+
+/* Sidebar reads as a separate panel, lit along its inner edge. */
+.sy-sidebar {
+    background: linear-gradient(180deg, #131210 0%, #0e0d0c 100%);
+    border-right-color: #00000080;
+    box-shadow: 1px 0 0 #ffffff08;
+}
+.sy-nav-item {
+    transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease, transform 80ms ease;
+}
+.sy-nav-item:hover {
+    color: var(--color-text);
+}
+.sy-nav-item[aria-current="page"] {
+    background: var(--tac-key);
+    box-shadow: var(--tac-key-shadow);
+}
+.sy-nav-topics i {
+    background: radial-gradient(circle at 35% 30%, #c9cad0, #6d6e75);
+    border-color: #00000080;
+}
+.sy-mobile-nav {
+    background: linear-gradient(180deg, #131416 0%, #101113 100%);
+    box-shadow: 0 1px 0 #ffffff08, 0 6px 16px -10px #000000cc;
+}
+
+/* Raised surfaces. */
+.sy-card,
+.sy-panel,
+.sy-resume,
+.sy-workspace-list,
+.sy-empty.bordered {
+    background: var(--tac-surface);
+    box-shadow: var(--tac-raised);
+}
+
+/* Keys. */
+.sy-button,
+.sy-app .sy-action,
+.sy-app .button-primary,
+.sy-app .button-secondary {
+    transition: transform 80ms var(--tac-ease), box-shadow 120ms var(--tac-ease), filter 120ms ease;
+}
+.sy-button.primary,
+.sy-app .sy-action[data-variant="default"],
+.sy-app .button-primary {
+    background: var(--tac-ivory);
+    color: var(--tac-ivory-ink);
+    border-color: transparent;
+    box-shadow: var(--tac-ivory-shadow);
+    text-shadow: var(--tac-ivory-emboss);
+}
+.sy-button.secondary,
+.sy-button.icon,
+.sy-app .sy-action[data-variant="secondary"],
+.sy-app .sy-action[data-variant="outline"],
+.sy-app .button-secondary {
+    background: var(--tac-key);
+    color: var(--tac-key-ink);
+    border-color: transparent;
+    box-shadow: var(--tac-key-shadow);
+}
+.sy-button.primary:hover:not(:disabled),
+.sy-button.secondary:hover:not(:disabled),
+.sy-button.icon:hover:not(:disabled),
+.sy-app .sy-action[data-variant="default"]:hover:not(:disabled),
+.sy-app .sy-action[data-variant="secondary"]:hover:not(:disabled),
+.sy-app .sy-action[data-variant="outline"]:hover:not(:disabled),
+.sy-app .button-primary:hover,
+.sy-app .button-secondary:hover {
+    filter: brightness(1.06);
+}
+.sy-button.primary:active:not(:disabled),
+.sy-app .sy-action[data-variant="default"]:active:not(:disabled),
+.sy-app .button-primary:active {
+    transform: translateY(1px);
+    box-shadow: var(--tac-ivory-pressed);
+    filter: brightness(0.97);
+}
+.sy-button.secondary:active:not(:disabled),
+.sy-button.icon:active:not(:disabled),
+.sy-app .sy-action[data-variant="secondary"]:active:not(:disabled),
+.sy-app .sy-action[data-variant="outline"]:active:not(:disabled),
+.sy-app .button-secondary:active {
+    transform: translateY(1px);
+    box-shadow: var(--tac-key-pressed);
+}
+
+/* Recessed wells for anything you type into or that fills up. */
+.sy-select,
+.sy-input,
+.sy-search,
+.sy-textarea,
+.sy-app .sy-control,
+.sy-timer-settings input {
+    background-color: var(--tac-well-bg);
+    border-color: var(--tac-well-border);
+    box-shadow: var(--tac-well);
+}
+.sy-progress {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+}
+.sy-progress > span {
+    border-radius: 3px;
+    background: linear-gradient(180deg, var(--color-accent-strong) 0%, var(--color-accent) 100%);
+    box-shadow: 0 1px 0 #ffffff59 inset;
+}
+
+/* Switches sit in a track; the chosen option is a raised key. */
+.sy-view-switch,
+.sy-app .sy-segmented {
+    padding: 3px;
+    border-radius: calc(var(--sy-radius) + 3px);
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+}
+.sy-view-switch button {
+    width: calc(var(--sy-control-height) - 6px);
+    height: calc(var(--sy-control-height) - 6px);
+}
+.sy-view-switch button[aria-pressed="true"] {
+    background: var(--tac-key);
+    box-shadow: var(--tac-key-shadow);
+}
+.sy-tabs button[aria-selected="true"] {
+    border-bottom-color: #d4d5da;
+    box-shadow: 0 1px 0 #000000;
+}
+
+/* Video play button: a domed knob. */
+.sy-play {
+    background: radial-gradient(circle at 50% 30%, #3a3b40 0%, #17181a 75%);
+    box-shadow: 0 1px 0 #ffffff1f inset, 0 0 0 1px #000000a6, 0 4px 12px #00000099;
+}
+.sy-resume-media {
+    box-shadow: -1px 0 0 #00000080 inset;
+}
+
+/* Books: covers cast a shadow, spines are rounded, and the shelf has a lip. */
+.sy-book-cover {
+    box-shadow: 0 0 0 1px #00000066, 0 2px 4px #00000080, 0 10px 18px -8px #000000b3;
+}
+.sy-spine {
+    background-image: linear-gradient(
+        90deg,
+        #00000033 0%,
+        #ffffff1f 18%,
+        #ffffff08 40%,
+        #00000000 60%,
+        #00000040 100%
+    );
+    box-shadow: 0 -1px 0 #ffffff26 inset, 2px 0 3px #00000059;
+}
+.sy-spine-title {
+    text-shadow: 0 1px 0 #ffffff40;
+}
+.sy-shelf {
+    position: relative;
+    border-bottom: 0;
+    padding-bottom: 14px;
+}
+.sy-shelf::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 8px;
+    border-radius: 1px;
+    background: linear-gradient(180deg, #3d3e43 0%, #2a2b2f 45%, #1e1f22 100%);
+    box-shadow: 0 1px 0 #ffffff1a inset, 0 6px 10px -4px #000000cc;
+}
+
+/* Lesson desk: its own button rules are more specific, so restate the finish. */
+.sy-desk-card {
+    border-color: #dcd9cf;
+    box-shadow: var(--tac-raised);
+}
+.sy-desk .sy-button.primary,
+.sy-desk .sy-button.primary:hover:not(:disabled) {
+    background: var(--tac-ivory);
+    color: var(--tac-ivory-ink);
+    text-shadow: var(--tac-ivory-emboss);
+    box-shadow: var(--tac-ivory-shadow);
+}
+.sy-desk .sy-button.primary:disabled {
+    background: #eceae3;
+    color: #9a9c93;
+    text-shadow: none;
+    box-shadow: 0 0 0 1px #dcd9cf inset;
+}
+.sy-desk .sy-button.secondary,
+.sy-desk .sy-button.secondary:hover:not(:disabled),
+.sy-desk .sy-button.icon {
+    background: var(--tac-key);
+    color: var(--tac-key-ink);
+    border-color: transparent;
+    box-shadow: var(--tac-key-shadow);
+}
+.sy-desk .sy-button.primary:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: var(--tac-ivory-pressed);
+}
+.sy-desk .sy-button.secondary:active:not(:disabled),
+.sy-desk .sy-button.icon:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: var(--tac-key-pressed);
+}
+.sy-desk input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.sy-desk textarea {
+    background-color: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sy-button,
+    .sy-app .sy-action,
+    .sy-app .button-primary,
+    .sy-app .button-secondary,
+    .sy-nav-item {
+        transition: none;
+    }
+    .sy-button:active,
+    .sy-app .sy-action:active,
+    .sy-app .button-primary:active,
+    .sy-app .button-secondary:active {
+        transform: none;
+    }
+}
+
+/* Controls: no visible border and a focus ring that hugs the control. */
+.sy-select,
+.sy-input,
+.sy-search,
+.sy-textarea,
+.sy-app .sy-control,
+.sy-timer-settings input {
+    border-color: transparent;
+    transition: box-shadow 140ms var(--tac-ease);
+}
+.sy-app :is(button, input, textarea, select, summary):focus-visible,
+.sy-desk :is(button, input, textarea, select, summary):focus-visible {
+    outline-offset: 0;
+}
+.sy-desk input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.sy-desk textarea {
+    border-color: transparent;
+}
+.sy-search input:focus-visible {
+    outline: none;
+}
+.sy-search:focus-within,
+.sy-app :is(.sy-input, .sy-select, .sy-textarea, .sy-control):focus-visible,
+.sy-desk .sy-textarea:focus-visible,
+.sy-desk-note-form textarea:focus-visible {
+    outline: none;
+    border-color: transparent;
+    box-shadow: var(--tac-well), 0 0 0 2px var(--tac-focus);
+}
+.sy-app :is(button, a, summary) {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* Quiet and text buttons still answer a press. */
+.sy-button.quiet,
+.sy-row-actions > :is(button, a),
+.sy-time-link {
+    transition: color 120ms ease, opacity 120ms ease;
+}
+.sy-button.quiet:active:not(:disabled),
+.sy-row-actions > :is(button, a):active,
+.sy-time-link:active {
+    opacity: 0.6;
+}
+.sy-nav-item:active {
+    transform: translateY(1px);
+}
+
+/* The chosen option on a switch track is a raised key. */
+.sy-app .sy-segmented button {
+    transition: color 120ms ease;
+}
+.sy-app .sy-segmented button[aria-checked="true"] {
+    background: var(--tac-key);
+    box-shadow: var(--tac-key-shadow);
+    color: var(--tac-key-ink);
+}
+.sy-app .sy-segmented button:active {
+    transform: translateY(1px);
+}
+
+/* Progress: counters are raised tiles, days are wells that light up. */
+.sy-stat {
+    background: var(--tac-surface);
+    box-shadow: var(--tac-raised);
+    transition: transform 80ms ease, box-shadow 120ms ease;
+}
+.sy-stat b {
+    letter-spacing: -0.03em;
+    text-shadow: 0 1px 0 #00000080;
+}
+a.sy-stat:active {
+    transform: translateY(1px);
+    box-shadow: var(--tac-key-pressed);
+}
+.sy-week li {
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+}
+.sy-week li[data-active] {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-accent) 24%, #1a1b1e) 0%,
+        color-mix(in srgb, var(--color-accent) 15%, #141517) 100%
+    );
+    box-shadow: 0 1px 0 #ffffff1f inset, 0 0 0 1px #00000073,
+        0 0 14px -4px color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+/* Reviews: the open card rests on the rest of the deck. */
+.sy-review-card {
+    position: relative;
+    margin-bottom: 14px;
+}
+.sy-review-card::before,
+.sy-review-card::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: auto 10px -5px;
+    height: 12px;
+    border-radius: 0 0 var(--sy-radius) var(--sy-radius);
+    background: #131416;
+    box-shadow: 0 0 0 1px #0000004d, 0 1px 2px #00000066;
+}
+.sy-review-card::after {
+    inset: auto 20px -10px;
+    background: #0f1012;
+}
+.sy-page {
+    isolation: isolate;
+}
+.sy-card-answer {
+    border-top-color: #00000066;
+    box-shadow: 0 1px 0 #ffffff0a inset;
+}
+.sy-rate small {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Lists: a groove between rows instead of a flat line. */
+.sy-saved-note,
+.sy-suggestion,
+.sy-term,
+.sy-topic {
+    border-bottom-color: #00000080;
+    box-shadow: 0 1px 0 #ffffff08;
+}
+.sy-term-group > h2 {
+    border-bottom-color: #00000080;
+    box-shadow: 0 1px 0 #ffffff08;
+}
+.sy-saved-note blockquote {
+    border-left-color: var(--color-accent);
+}
+.sy-skeleton-row .skeleton {
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+    border-radius: 3px;
+}
+
+/* Hover is a pointer affordance; taps should not leave it stuck on. */
+@media (hover: none), (pointer: coarse) {
+    .sy-button:hover,
+    .sy-app .sy-action:hover,
+    .sy-app .button-primary:hover,
+    .sy-app .button-secondary:hover {
+        filter: none !important;
+    }
+}
+
+/* Phone chrome floats over the page as a dark material. */
+@media (max-width: 1024px) {
+    .sy-mobile-nav {
+        background: #0b0c0dcc;
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+        backdrop-filter: blur(20px) saturate(160%);
+    }
+    .sy-mobile-nav nav a[aria-current="page"] {
+        background: var(--tac-key);
+        box-shadow: var(--tac-key-shadow);
+    }
+}
+@media (prefers-reduced-transparency: reduce) {
+    .sy-mobile-nav {
+        background: #0b0c0d;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+@media (prefers-contrast: more) {
+    .sy-app {
+        --tac-well-border: #ffffff66;
+        --tac-focus: #ffffff;
+    }
+    .sy-select,
+    .sy-input,
+    .sy-search,
+    .sy-textarea,
+    .sy-app .sy-control {
+        border-color: var(--tac-well-border);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .sy-stat,
+    .sy-app .sy-segmented button,
+    .sy-nav-item {
+        transition: none;
+    }
+    a.sy-stat:active,
+    .sy-nav-item:active,
+    .sy-app .sy-segmented button:active {
+        transform: none;
+    }
+}
+
+/*
+ * Shared parts. Pages are built from these so every screen has the same
+ * structure: boxes on a dark desk, grooves between rows, mono readouts, one
+ * colour per topic and small lights for state.
+ */
+
+/* A raised panel that holds one section. */
+.sy-box {
+    position: relative;
+    min-width: 0;
+    padding: 20px;
+    border-radius: var(--tac-box-radius);
+    background: var(--tac-surface);
+    box-shadow: var(--tac-raised);
+}
+.sy-box + .sy-box,
+.sy-box + .sy-section,
+.sy-section + .sy-box {
+    margin-top: var(--sy-space-field);
+}
+.sy-box > .sy-section-head {
+    margin: -20px -20px 16px;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--tac-groove-dark);
+    box-shadow: 0 1px 0 var(--tac-groove-light);
+    border-radius: var(--tac-box-radius) var(--tac-box-radius) 0 0;
+    background: linear-gradient(180deg, #ffffff08 0%, #ffffff00 100%);
+}
+.sy-box > .sy-section-head h2 {
+    font-size: 13px;
+    letter-spacing: 0;
+}
+.sy-box > :last-child {
+    margin-bottom: 0;
+}
+/* A box whose rows run edge to edge. */
+.sy-box.flush {
+    padding-bottom: 6px;
+}
+/* A recessed tray inside a box, for empty states and inner groups. */
+.sy-tray {
+    padding: 18px;
+    border-radius: var(--sy-radius);
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* A groove: a cut line with light catching its lower lip. */
+.sy-groove {
+    height: 0;
+    margin: var(--sy-space-field) 0;
+    border: 0;
+    border-top: 1px solid var(--tac-groove-dark);
+    box-shadow: 0 1px 0 var(--tac-groove-light);
+}
+
+/* Numbers read like an instrument. */
+.sy-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+/* An engraved readout window for one figure. */
+.sy-readout {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.4em;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--color-text);
+}
+.sy-readout[data-live] {
+    color: var(--color-accent-strong);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 60%, transparent);
+}
+
+/* The colour that stands for a topic; set --topic with topicStyle(id). */
+.sy-topic-dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--topic, var(--color-accent)) 70%, #fff), var(--topic, var(--color-accent)) 60%, color-mix(in srgb, var(--topic, var(--color-accent)) 60%, #000));
+    box-shadow: 0 0 0 1px #00000080, 0 1px 0 #ffffff1f;
+}
+/* A coloured spine down the left edge of a row or card. */
+.sy-spined {
+    position: relative;
+}
+.sy-spined::before {
+    content: "";
+    position: absolute;
+    inset: 10px auto 10px 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--topic, var(--color-accent)) 80%, #fff), var(--topic, var(--color-accent)));
+    box-shadow: 0 0 10px -2px var(--topic, var(--color-accent));
+}
+.sy-progress.topic > span {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--topic, var(--color-accent)) 75%, #fff) 0%, var(--topic, var(--color-accent)) 100%);
+}
+
+/* A small indicator light. Off by default; data-on lights it. */
+.sy-led {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1b1917;
+    box-shadow: 0 1px 1px #000000cc inset, 0 1px 0 #ffffff14;
+}
+.sy-led[data-on] {
+    background: radial-gradient(circle at 40% 35%, #fff, var(--color-accent-strong) 35%, var(--color-accent) 75%);
+    box-shadow: 0 0 0 1px #00000066, 0 0 8px 1px color-mix(in srgb, var(--color-accent) 70%, transparent);
+}
+
+/* A small embossed tag for a count or a state. */
+.sy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--tac-key);
+    box-shadow: var(--tac-key-shadow);
+    font-size: 11px;
+    line-height: 18px;
+    color: var(--color-text-muted);
+}
+.sy-badge[data-tone="accent"] {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 30%, #1c1a18), color-mix(in srgb, var(--color-accent) 18%, #161513));
+    color: var(--color-accent-strong);
+}
+
+/* Sidebar: grouped destinations, a lit bar on the current one. */
+.sy-sidebar nav {
+    gap: 0;
+}
+.sy-nav-group {
+    display: grid;
+    gap: 3px;
+}
+.sy-nav-group + .sy-nav-group {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--tac-groove-dark);
+    box-shadow: 0 1px 0 var(--tac-groove-light) inset;
+}
+.sy-nav-item {
+    position: relative;
+}
+.sy-nav-item svg {
+    color: var(--color-text-soft);
+}
+.sy-nav-item[aria-current="page"] svg {
+    color: var(--color-accent-strong);
+}
+.sy-sidebar .sy-nav-item[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    inset: 9px auto 9px -13px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--color-accent);
+    box-shadow: 0 0 10px 0 color-mix(in srgb, var(--color-accent) 80%, transparent);
+}
+.sy-nav-item .sy-badge {
+    margin-left: auto;
+}
+.sy-nav-topics {
+    padding-top: 16px;
+    border-top: 1px solid var(--tac-groove-dark);
+    box-shadow: 0 1px 0 var(--tac-groove-light) inset;
+    margin-top: 16px;
+}
+.sy-nav-topics > p {
+    font-size: 11px;
+}
+.sy-nav-topics .sy-topic-dot {
+    margin-top: 5px;
+}
+.sy-nav-bottom {
+    padding-top: 12px;
+}
+.sy-brand svg {
+    color: var(--color-accent-strong);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-accent) 45%, transparent));
+}
+.sy-page-head {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--tac-groove-dark);
+    box-shadow: 0 1px 0 var(--tac-groove-light);
+    align-items: center;
+}
+.sy-app h1 {
+    text-shadow: 0 1px 0 #000000;
+}
+
+/* Home. */
+.sy-home-grid {
+    gap: var(--sy-space-field);
+}
+.sy-home-aside {
+    display: grid;
+    gap: var(--sy-space-field);
+}
+.sy-home-grid .sy-box {
+    margin-top: 0;
+}
+@media (min-width: 761px) {
+    .sy-home-main {
+        display: grid;
+        gap: var(--sy-space-field);
+    }
+}
+@media (max-width: 760px) {
+    .sy-home-grid {
+        gap: var(--sy-space-field);
+    }
+    .sy-home-main > .sy-box:first-child {
+        order: 0;
+    }
+    .sy-home-main > .sy-home-topics {
+        order: 2;
+    }
+}
+.sy-box-skeleton {
+    min-height: 190px;
+}
+.sy-box-skeleton.short {
+    min-height: 120px;
+}
+
+/* The lesson to resume sits in a recessed bay, like a screen in a console. */
+.sy-box .sy-resume {
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+}
+.sy-resume-media {
+    background: #000;
+}
+.sy-resume-topic {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.sy-box .sy-next-label {
+    padding-top: 14px;
+}
+
+/* First steps on an empty Home: three numbered keys. */
+.sy-starters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+}
+.sy-starter {
+    position: relative;
+    display: grid;
+    gap: 4px;
+    height: 100%;
+    padding: 16px;
+    border-radius: var(--sy-radius);
+    background: var(--tac-key);
+    box-shadow: var(--tac-key-shadow), 0 6px 14px -10px #000;
+    transition: transform 80ms var(--tac-ease), box-shadow 120ms var(--tac-ease), filter 120ms ease;
+}
+.sy-starter:active {
+    transform: translateY(1px);
+    box-shadow: var(--tac-key-pressed);
+}
+.sy-starter-knob {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    color: var(--color-accent-strong);
+    background: radial-gradient(circle at 50% 28%, #3b3835 0%, #171513 78%);
+    box-shadow: 0 1px 0 #ffffff24 inset, 0 0 0 1px #000000a6, 0 3px 8px #000000b3;
+}
+.sy-starter-step {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 11px;
+    color: var(--color-text-soft);
+}
+.sy-starter b {
+    font-size: 14px;
+    font-weight: 550;
+}
+.sy-starter small {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+/* Topic rows inside a box. */
+.sy-box .sy-topic {
+    margin: 0 -20px;
+    padding: 16px 20px;
+}
+.sy-box .sy-topic:first-of-type {
+    padding-top: 6px;
+}
+.sy-box .sy-topic:last-child {
+    border-bottom: 0;
+    box-shadow: none;
+}
+.sy-box .sy-topic.sy-spined::before {
+    inset: 14px auto 14px 0;
+}
+.sy-box .sy-topic:first-of-type.sy-spined::before {
+    top: 4px;
+}
+
+/* This week: three gauges over a row of day lights. */
+.sy-gauges {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-radius: var(--sy-radius);
+    background: var(--tac-well-bg);
+    box-shadow: var(--tac-well);
+}
+.sy-gauges > * {
+    display: grid;
+    gap: 2px;
+    justify-items: center;
+    padding: 14px 6px 12px;
+}
+.sy-gauges > * + * {
+    border-left: 1px solid #000000a6;
+    box-shadow: 1px 0 0 #ffffff0a inset;
+}
+.sy-gauges b {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--color-text);
+    text-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+.sy-gauges span {
+    font-size: 11px;
+    color: var(--color-text-soft);
+}
+.sy-week-leds {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+}
+.sy-week-leds li {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+    font-size: 10px;
+    color: var(--color-text-soft);
+}
+
+/* Reviews: a small deck you can pick up. */
+.sy-deck-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+}
+.sy-deck-row p {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+.sy-deck {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 68px;
+    margin: 4px 8px 8px 2px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #2d2a27 0%, #1f1d1b 100%);
+    box-shadow: 0 1px 0 #ffffff1a inset, 0 0 0 1px #000000b3, 0 6px 12px -6px #000;
+    transition: transform 120ms var(--tac-ease);
+}
+.sy-deck::before,
+.sy-deck::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: 6px;
+    background: #1b1917;
+    box-shadow: 0 0 0 1px #000000b3;
+    transform: translate(3px, 3px) rotate(3deg);
+}
+.sy-deck::after {
+    background: #151312;
+    transform: translate(6px, 6px) rotate(6deg);
+}
+.sy-deck-row {
+    isolation: isolate;
+}
+.sy-deck b {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-text-soft);
+}
+.sy-deck[data-due] {
+    background: linear-gradient(180deg, #faf7f0 0%, #e0dbcf 100%);
+    box-shadow: 0 1px 0 #ffffffcc inset, 0 0 0 1px #00000099, 0 6px 12px -6px #000;
+}
+.sy-deck[data-due] b {
+    color: #1a1815;
+}
+.sy-deck[data-due]::before {
+    background: #c9c4b8;
+}
+.sy-deck[data-due]::after {
+    background: #a8a398;
+}
+.sy-deck:active {
+    transform: translateY(1px);
+}
+.sy-box .sy-current-book:last-child {
+    margin-bottom: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+    .sy-starter:hover {
+        filter: brightness(1.08);
+    }
+    .sy-deck:hover {
+        transform: translateY(-2px);
+    }
+}
+@media (max-width: 760px) {
+    .sy-starters {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .sy-starter {
+        grid-template-columns: auto minmax(0, 1fr);
+        column-gap: 14px;
+        align-items: center;
+    }
+    .sy-starter-knob {
+        grid-row: span 2;
+        margin-bottom: 0;
+    }
+    .sy-deck-row {
+        margin-top: 0;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .sy-starter,
+    .sy-deck {
+        transition: none;
+    }
+    .sy-starter:active,
+    .sy-deck:active,
+    .sy-deck:hover {
+        transform: none;
+    }
+}
+.sy-box.flush > .sy-tray {
+    margin-bottom: 14px;
+}

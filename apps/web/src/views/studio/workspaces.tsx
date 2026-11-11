@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
+import ListSkeleton from "@/components/shared/ListSkeleton";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
@@ -97,7 +98,7 @@ export default function WorkspacesPage() {
                 </Link>
             </header>
 
-            <div className="sy-toolbar">
+            <div className="sy-toolbar sy-toolstrip">
                 <Segmented
                     label="Filter workspaces"
                     value={filter}
@@ -114,7 +115,13 @@ export default function WorkspacesPage() {
 
             {mounted ? (
                 filteredRoadmaps.length > 0 ? (
-                    <div className="sy-workspace-list">
+                    <section className="sy-box flush sy-workspace-list">
+                        <div className="sy-section-head">
+                            <h2>Topics</h2>
+                            <span className="sy-readout">
+                                {filteredRoadmaps.length}
+                            </span>
+                        </div>
                         {filteredRoadmaps.map((roadmap) => (
                             <WorkspaceLibraryCard
                                 key={roadmap.id}
@@ -129,9 +136,9 @@ export default function WorkspacesPage() {
                                 }}
                             />
                         ))}
-                    </div>
+                    </section>
                 ) : (
-                    <div className="sy-empty bordered sy-empty-row">
+                    <div className="sy-tray sy-empty-row">
                         <p className="text-sm text-text-muted">
                             {roadmaps.length === 0
                                 ? "No learning topics yet. Start with Scout or add your own roadmap."
@@ -156,9 +163,7 @@ export default function WorkspacesPage() {
                     </div>
                 )
             ) : (
-                <p className="sy-loading" role="status">
-                    Loading learning topics…
-                </p>
+                <ListSkeleton />
             )}
         </div>
     );

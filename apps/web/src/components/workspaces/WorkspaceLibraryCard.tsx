@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Roadmap } from "@/types";
-import { cn } from "@/lib/utils";
+import { topicStyle } from "@/lib/topic-color";
 import {
     getRelativeTimeLabel,
     getRoadmapDisplayTitle,
@@ -65,7 +65,7 @@ export default function WorkspaceLibraryCard({
 
     if (isRenaming) {
         return (
-            <article className="border-t border-border px-5 py-4 first:border-t-0">
+            <article className="sy-row sy-spined py-4" style={topicStyle(roadmap.id)}>
                 <label htmlFor={`rename-${roadmap.id}`} className="field-label">
                     Rename workspace
                 </label>
@@ -108,7 +108,10 @@ export default function WorkspaceLibraryCard({
 
     /** The progress moves below the title when the shared canvas narrows. */
     return (
-        <article className="sy-workspace-row">
+        <article
+            className="sy-workspace-row sy-row sy-spined"
+            style={topicStyle(roadmap.id)}
+        >
             <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                     <Link
@@ -119,33 +122,26 @@ export default function WorkspaceLibraryCard({
                         {displayTitle}
                     </Link>
                     {roadmap.packVersion ? (
-                        <span className="studio-badge">Built by Scout</span>
+                        <span className="sy-badge">Built by Scout</span>
                     ) : null}
                 </div>
                 <p className="mt-1 text-[13px] text-text-soft">
-                    {stats.moduleCount} module
+                    <span className="sy-num">{stats.moduleCount}</span> module
                     {stats.moduleCount === 1 ? "" : "s"} ·{" "}
                     {getRoadmapStateLabel(stats.progressState)} · {updated}
                 </p>
             </div>
 
             <div className="sy-workspace-progress">
-                <div className="flex items-baseline justify-between text-[13px] tabular-nums">
-                    <span className="text-text">{stats.percent}%</span>
+                <div className="flex items-baseline justify-between text-[13px]">
+                    <span className="sy-num text-text">{stats.percent}%</span>
                     <span className="text-text-soft">
-                        {stats.completedTasks} of {stats.totalTasks}
+                        <span className="sy-num">{stats.completedTasks}</span>{" "}
+                        of <span className="sy-num">{stats.totalTasks}</span>
                     </span>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-raised">
-                    <div
-                        className={cn(
-                            "h-full rounded-full",
-                            stats.progressState === "completed"
-                                ? "bg-success"
-                                : "bg-accent",
-                        )}
-                        style={{ width: `${stats.percent}%` }}
-                    />
+                <div className="sy-progress topic">
+                    <span style={{ width: `${stats.percent}%` }} />
                 </div>
             </div>
 

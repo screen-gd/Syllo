@@ -1,6 +1,10 @@
 import type { Resource, Roadmap, Section, Task, Video } from "@/types";
 import { detectPlatform } from "./video-utils";
 import { getStorage } from "./storage";
+import {
+    normalizeLearningRecord,
+    recordTaskCompletion,
+} from "./learning-session";
 
 export interface LearningTask {
     task: Task;
@@ -122,11 +126,26 @@ function updateLearningTasks(
     return updated;
 }
 
+/**
+ * Mark a lesson done or not done. Finishing a lesson that was open counts
+ * toward the Learning Record's streak and daily totals.
+ */
 export function setLearningTaskDone(
     roadmap: Roadmap,
     taskId: string,
     completed: boolean,
 ): Roadmap {
+    const current = getLearningTasks(roadmap).find(
+        (item) => item.task.id === taskId,
+    )?.task;
+    if (completed && current && !current.completed && !current.done) {
+        const storage = getStorage();
+        storage.saveLearningRecord(
+            recordTaskCompletion(
+                normalizeLearningRecord(storage.getLearningRecord()),
+            ),
+        );
+    }
     return updateLearningTasks(roadmap, (task) =>
         task.id === taskId ? { ...task, completed, done: completed } : task,
     );

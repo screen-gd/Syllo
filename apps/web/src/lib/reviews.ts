@@ -1,6 +1,12 @@
 import { createEmptyCard, fsrs, Rating, type Card, type Grade } from "ts-fsrs";
-import type { SrsItem } from "@/types";
-import { putPersonalEntry } from "./personal/store";
+import type { Roadmap, SrsItem } from "@/types";
+import type { PersonalSnapshot } from "./personal/schema";
+import {
+    personalEntries,
+    putPersonalEntry,
+    removePersonalEntry,
+} from "./personal/store";
+import { getStorage } from "./storage";
 
 const scheduler = fsrs({ enable_fuzz: false });
 export const reviewRatings = [
@@ -75,4 +81,64 @@ export function createReview({
     };
     saveReview(item);
     return item;
+}
+
+/** True for cards on the schedule: neither waiting for a decision nor skipped. */
+export function isScheduled(item: SrsItem) {
+    return item.status !== "suggested" && item.status !== "skipped";
+}
+
+export function isDue(item: SrsItem, now = Date.now()) {
+    return isScheduled(item) && new Date(item.dueAt).getTime() <= now;
+}
+
+/**
+ * Every review card on this device. Cards saved by older versions live with
+ * their roadmap; a personal copy of the same card wins.
+ */
+export function collectReviews(
+    roadmaps: readonly Roadmap[],
+    records: PersonalSnapshot,
+): SrsItem[] {
+    const legacy = roadmaps.flatMap((roadmap) =>
+        getStorage().getReviews(roadmap.id),
+    );
+    const personal = personalEntries(records, "review").map(
+        (entry) => entry.data,
+    );
+    const deleted = new Set(
+        Object.values(records).flatMap((entry) =>
+            entry.kind === "review" && entry.deleted ? [entry.data.id] : [],
+        ),
+    );
+    return [
+        ...new Map(
+            [...legacy, ...personal]
+                .filter((item) => !deleted.has(item.id))
+                .map((item) => [item.id, item]),
+        ).values(),
+    ];
+}
+
+/** Remove a card for good, including a copy kept with its roadmap. */
+export function deleteReview(item: SrsItem) {
+    const legacy = getStorage().getReviews(item.roadmapId);
+    if (legacy.some((entry) => entry.id === item.id))
+        getStorage().saveReviews(
+            item.roadmapId,
+            legacy.filter((entry) => entry.id !== item.id),
+        );
+    removePersonalEntry(`review:${item.id}`);
+}
+
+/** How long until a date, as "10m", "5h", "3d" or "2mo". */
+export function formatInterval(dueAt: string, now = Date.now()) {
+    const minutes = Math.max(
+        1,
+        Math.round((new Date(dueAt).getTime() - now) / 60_000),
+    );
+    if (minutes < 60) return `${minutes}m`;
+    if (minutes < 60 * 24) return `${Math.round(minutes / 60)}h`;
+    const days = Math.round(minutes / (60 * 24));
+    return days < 60 ? `${days}d` : `${Math.round(days / 30)}mo`;
 }

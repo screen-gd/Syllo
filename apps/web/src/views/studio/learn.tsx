@@ -45,9 +45,33 @@ import {
 import StudyVideo from "@/components/learning/StudyVideo";
 import { Pomodoro } from "@/components/learning/Pomodoro";
 import ReviewComposer from "@/components/learning/ReviewComposer";
+import TermComposer from "@/components/learning/TermComposer";
+import {
+    RecallPrompt,
+    useVideoChecks,
+    VideoChecksStatus,
+} from "@/components/learning/RecallCheck";
+import type { VideoChapterInput } from "@/lib/scout/types";
 
 type TabKey = "read" | "check" | "apply";
 const TAB_ORDER: TabKey[] = ["read", "check", "apply"];
+const RECALL_PAUSES_KEY = "syllo:recall-pauses";
+
+/** Scout writes durations as "12 min"; manual videos may use "mm:ss". */
+function durationSeconds(value: string | undefined): number | null {
+    if (!value) return null;
+    const minutes = value.match(/^(\d+(?:\.\d+)?)\s*min/i);
+    if (minutes) return Number(minutes[1]) * 60;
+    return parseTimestamp(value);
+}
+
+function readRecallPauses() {
+    try {
+        return localStorage.getItem(RECALL_PAUSES_KEY) !== "off";
+    } catch {
+        return true;
+    }
+}
 
 export default function LearnPage({
     roadmapId,
@@ -114,6 +138,24 @@ export default function LearnPage({
         () => (roadmap && videoResource ? learningVideo(roadmap, videoResource.url) : null),
         [roadmap, videoResource],
     );
+    const chapterInput = useMemo<VideoChapterInput[]>(
+        () =>
+            (video?.timestamps ?? []).flatMap((stamp) => {
+                const seconds = parseTimestamp(stamp.time);
+                return seconds === null
+                    ? []
+                    : [{ seconds, label: stamp.label || stamp.time }];
+            }),
+        [video],
+    );
+    const videoChecks = useVideoChecks({
+        url: videoResource?.url ?? null,
+        title: video?.title || videoResource?.title || "",
+        chapters: chapterInput,
+        durationSeconds: durationSeconds(video?.duration),
+    });
+    const checks =
+        videoChecks.state.kind === "ready" ? videoChecks.state.checks : [];
     const activeUrl =
         videoResource?.url ?? item?.resources[0]?.url ?? "";
     const activeId = item?.task.id;
@@ -144,6 +186,14 @@ export default function LearnPage({
     } | null>(null);
     const [recallText, setRecallText] = useState("");
     const [recallResolved, setRecallResolved] = useState(false);
+    // Recall questions answered or skipped in this visit, and the one the
+    // video is paused on.
+    const [answeredChecks, setAnsweredChecks] = useState<Set<string>>(
+        () => new Set(),
+    );
+    const [pausedCheckId, setPausedCheckId] = useState<string | null>(null);
+    const [playSignal, setPlaySignal] = useState(0);
+    const [recallPauses, setRecallPauses] = useState(true);
     const tabRefs = useRef<Record<TabKey, HTMLButtonElement | null>>({
         read: null,
         check: null,
@@ -170,6 +220,9 @@ export default function LearnPage({
         setCompletion(null);
         setRecallText("");
         setRecallResolved(false);
+        setAnsweredChecks(new Set());
+        setPausedCheckId(null);
+        setRecallPauses(readRecallPauses());
         const savedPractice = practiceId
             ? getPersonalSnapshot()[practiceId]
             : undefined;
@@ -229,6 +282,25 @@ export default function LearnPage({
         recordPosition(safe);
         setSeekTo(null);
         requestAnimationFrame(() => setSeekTo(safe));
+    }
+
+    function finishCheck(id: string) {
+        setAnsweredChecks((current) => new Set(current).add(id));
+    }
+
+    function resumeAfterCheck(id: string) {
+        finishCheck(id);
+        setPausedCheckId(null);
+        setPlaySignal((value) => value + 1);
+    }
+
+    function toggleRecallPauses(on: boolean) {
+        setRecallPauses(on);
+        try {
+            localStorage.setItem(RECALL_PAUSES_KEY, on ? "on" : "off");
+        } catch {
+            // The choice still holds for this visit.
+        }
     }
 
     function saveNote() {
@@ -582,6 +654,21 @@ export default function LearnPage({
             position + 0.5 >= chapter.seconds ? chapter.seconds : current,
         null,
     );
+    const pendingChecks = checks.filter(
+        (check) => !answeredChecks.has(check.id),
+    );
+    const checkpoints = recallPauses
+        ? pendingChecks.flatMap((check) =>
+              check.pauseAt === null ? [] : [check.pauseAt],
+          )
+        : [];
+    const pausedCheck =
+        checks.find((check) => check.id === pausedCheckId) ?? null;
+    const nextCheck = pendingChecks[0] ?? null;
+    const answeredList = checks.filter((check) =>
+        answeredChecks.has(check.id),
+    );
+    const hasChapterChecks = checks.some((check) => check.pauseAt !== null);
     const notes = personalEntries(records, "annotation")
         .flatMap((entry) => {
             const anchor = entry.data.anchor;
@@ -669,6 +756,15 @@ export default function LearnPage({
                                     startSeconds={startSeconds}
                                     seekTo={seekTo}
                                     onPosition={recordPosition}
+                                    checkpoints={checkpoints}
+                                    onCheckpoint={(seconds) => {
+                                        const due = pendingChecks.find(
+                                            (check) =>
+                                                check.pauseAt === seconds,
+                                        );
+                                        if (due) setPausedCheckId(due.id);
+                                    }}
+                                    playSignal={playSignal}
                                 />
                             </div>
                         ) : (
@@ -704,6 +800,35 @@ export default function LearnPage({
                                 </a>
                             )}
                         </div>
+                        {pausedCheck && (
+                            <RecallPrompt
+                                check={pausedCheck}
+                                eyebrow={`Quick check · ${pausedCheck.label}`}
+                                autoFocus
+                                doneLabel="Continue watching"
+                                onDone={() => resumeAfterCheck(pausedCheck.id)}
+                                onSkip={() => resumeAfterCheck(pausedCheck.id)}
+                                onReplay={(seconds) => {
+                                    finishCheck(pausedCheck.id);
+                                    setPausedCheckId(null);
+                                    seek(seconds);
+                                    setPlaySignal((value) => value + 1);
+                                }}
+                            />
+                        )}
+                        {hasChapterChecks && (
+                            <label className="sy-recall-toggle">
+                                <input
+                                    type="checkbox"
+                                    checked={recallPauses}
+                                    onChange={(event) =>
+                                        toggleRecallPauses(event.target.checked)
+                                    }
+                                />
+                                Pause for one question at the end of each
+                                chapter
+                            </label>
+                        )}
                         {videoResource && (
                             <details className="sy-desk-manual">
                                 <summary>
@@ -783,6 +908,9 @@ export default function LearnPage({
                             <span className="sy-desk-mono">
                                 at {formatTimestamp(position)}
                             </span>
+                            <Link to="/notes" search={{ roadmap: roadmap.id }}>
+                                All notes
+                            </Link>
                         </div>
                         <form
                             className="sy-desk-note-form"
@@ -808,7 +936,11 @@ export default function LearnPage({
                                 <Plus size={14} />
                             </button>
                         </form>
-                        {notes.length === 0 ? (
+                        {pausedCheck ? (
+                            <p className="sy-desk-notes-empty">
+                                Notes are hidden while you answer.
+                            </p>
+                        ) : notes.length === 0 ? (
                             <p className="sy-desk-notes-empty">
                                 No notes yet. They attach to{" "}
                                 {formatTimestamp(position)}.
@@ -1188,10 +1320,82 @@ export default function LearnPage({
                                 <header className="sy-desk-tab-head">
                                     <h2>Check what stuck</h2>
                                     <p>
-                                        Tick the steps you finished. This is a
-                                        record, not a grade.
+                                        {videoChecks.state.kind === "off"
+                                            ? "Tick the steps you finished. This is a record, not a grade."
+                                            : "Answer from memory first, then look at the video. Nothing here is graded."}
                                     </p>
                                 </header>
+
+                                {videoChecks.state.kind !== "off" && (
+                                    <section className="sy-desk-block sy-recall-block">
+                                        <h2>From memory</h2>
+                                        <VideoChecksStatus
+                                            state={videoChecks.state}
+                                            onRetry={videoChecks.retry}
+                                        />
+                                        {videoChecks.state.kind === "ready" &&
+                                            (checks.length === 0 ? (
+                                                <p className="sy-desk-empty">
+                                                    No questions came out of
+                                                    this video.
+                                                </p>
+                                            ) : nextCheck ? (
+                                                <RecallPrompt
+                                                    check={nextCheck}
+                                                    eyebrow={`Question ${checks.indexOf(nextCheck) + 1} of ${checks.length} · ${nextCheck.label}`}
+                                                    doneLabel={
+                                                        pendingChecks.length > 1
+                                                            ? "Next question"
+                                                            : "Done"
+                                                    }
+                                                    onDone={() =>
+                                                        finishCheck(nextCheck.id)
+                                                    }
+                                                    onSkip={() =>
+                                                        finishCheck(nextCheck.id)
+                                                    }
+                                                    onReplay={seek}
+                                                />
+                                            ) : (
+                                                <p className="sy-desk-empty">
+                                                    All {checks.length}{" "}
+                                                    answered. Missed one?
+                                                    Replay it below.
+                                                </p>
+                                            ))}
+                                        {answeredList.length > 0 && (
+                                            <ul className="sy-recall-done">
+                                                {answeredList.map((check) => (
+                                                    <li key={check.id}>
+                                                        <span>
+                                                            {check.question}
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            className="sy-desk-note-time"
+                                                            onClick={() =>
+                                                                seek(
+                                                                    check.sourceStart,
+                                                                )
+                                                            }
+                                                        >
+                                                            {formatTimestamp(
+                                                                check.sourceStart,
+                                                            )}
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </section>
+                                )}
+
+                                {subtasks.length > 0 &&
+                                    videoChecks.state.kind !== "off" && (
+                                        <h2 className="sy-recall-steps-head">
+                                            Steps you finished
+                                        </h2>
+                                    )}
 
                                 {subtasks.length > 0 ? (
                                     <ul className="sy-desk-subtasks">
@@ -1310,6 +1514,10 @@ export default function LearnPage({
                                             seconds: position,
                                         }}
                                         initialAnswer={practice}
+                                    />
+                                    <TermComposer
+                                        key={`term:${item.task.id}`}
+                                        roadmapId={roadmap.id}
                                     />
                                 </section>
 

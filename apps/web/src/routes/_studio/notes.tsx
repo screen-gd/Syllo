@@ -1,10 +1,7 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
+import NotesPage from "@/views/studio/notes";
 
-/**
- * `/notes` was a stub in the Next app that redirected to the workspace list.
- */
-export const Route = createFileRoute("/_studio/notes")({
-    beforeLoad: () => {
-        throw redirect({ to: "/workspaces" });
-    },
-});
+const searchSchema = z.object({ roadmap: z.string().optional() });
+export const Route = createFileRoute("/_studio/notes")({ validateSearch: searchSchema, head: () => ({ meta: [{ title: "Notes | Syllo" }, { name: "robots", content: "noindex, nofollow" }] }), component: NotesRoute });
+function NotesRoute() { const { roadmap } = Route.useSearch(); return <NotesPage key={roadmap ?? ""} roadmapId={roadmap} />; }

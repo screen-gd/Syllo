@@ -10,6 +10,8 @@ import type {
     ScoutSource,
     ScoutSourceKind,
     SpendSummary,
+    VideoChapterInput,
+    VideoChecksResult,
 } from "./types";
 
 /**
@@ -57,6 +59,22 @@ export interface ScoutStartInput {
 export const scoutApi = {
     start(input: ScoutStartInput) {
         return request<{ success: true; pack: ScoutPack }>("/api/scout/start", {
+            method: "POST",
+            body: JSON.stringify(input),
+        });
+    },
+
+    /** One recall question per chapter, cached on the server after the first call. */
+    videoChecks(input: {
+        url: string;
+        title: string;
+        chapters: VideoChapterInput[];
+        durationSeconds?: number | null;
+        provider?: string;
+        model?: string;
+        apiKey?: string;
+    }) {
+        return request<{ success: true } & VideoChecksResult>("/api/scout/checks", {
             method: "POST",
             body: JSON.stringify(input),
         });

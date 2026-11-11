@@ -1283,6 +1283,213 @@
     gap: 12px;
 }
 
+/* Notes, Glossary, Reviews and Progress share these list pieces. */
+.sy-head-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.sy-inline-form {
+    max-width: 44rem;
+    margin-bottom: var(--sy-space-block);
+}
+.sy-inline-form-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.sy-saved-note .sy-inline-form,
+.sy-suggestion .sy-inline-form,
+.sy-term .sy-inline-form {
+    margin: 8px 0 0;
+}
+.sy-note-group + .sy-note-group,
+.sy-term-group + .sy-term-group {
+    margin-top: var(--sy-space-section);
+}
+.sy-note-group .sy-section-head {
+    margin-bottom: 0;
+}
+.sy-note-meta {
+    display: flex;
+    gap: 6px 12px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--color-text-soft);
+}
+.sy-note-meta b {
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+.sy-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px 16px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--color-text-soft);
+}
+.sy-row-actions > :is(button, a) {
+    color: var(--color-text-muted);
+    cursor: pointer;
+}
+.sy-row-actions > :is(button, a):hover {
+    color: var(--color-text);
+}
+.sy-row-actions > .sy-time-link {
+    color: var(--color-accent);
+}
+.sy-key-hint {
+    margin-left: auto;
+}
+.sy-term-group > h2 {
+    color: var(--color-text-soft);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-border);
+}
+.sy-term {
+    display: grid;
+    grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr);
+    gap: 4px 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-border);
+    overflow-wrap: anywhere;
+}
+.sy-term > .sy-inline-form {
+    grid-column: 1 / -1;
+}
+.sy-term dt {
+    font-weight: 550;
+}
+.sy-term dd p {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--color-text-muted);
+    white-space: pre-wrap;
+}
+.sy-review-card {
+    max-width: 44rem;
+}
+.sy-review-card h2 {
+    margin-top: 12px;
+    white-space: pre-wrap;
+}
+.sy-review-card .sy-row-actions {
+    margin-top: 22px;
+}
+.sy-rate {
+    flex-direction: column;
+    gap: 0;
+    min-width: 4.5rem;
+    line-height: 1.3;
+}
+.sy-rate small {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.7;
+}
+.sy-suggestion h3 {
+    margin-top: 4px;
+}
+.sy-suggestion p {
+    white-space: pre-wrap;
+}
+.sy-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+.sy-stat {
+    display: grid;
+    gap: 2px;
+    padding: 18px 20px;
+    background: var(--color-surface);
+    border-radius: var(--sy-radius);
+}
+.sy-stat b {
+    font-size: 26px;
+    font-weight: 560;
+    letter-spacing: -0.6px;
+    font-variant-numeric: tabular-nums;
+}
+.sy-stat span {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+.sy-week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+}
+.sy-week li {
+    display: grid;
+    gap: 2px;
+    justify-items: center;
+    padding: 12px 4px;
+    background: var(--color-surface);
+    border-radius: var(--sy-radius);
+    color: var(--color-text-soft);
+}
+.sy-week li[data-active] {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+}
+.sy-week b {
+    font-size: 16px;
+    font-weight: 550;
+    font-variant-numeric: tabular-nums;
+}
+.sy-week span {
+    font-size: 11px;
+}
+.sy-skeleton-list {
+    display: grid;
+    gap: 20px;
+}
+.sy-skeleton-row {
+    display: grid;
+    gap: 10px;
+}
+.sy-skeleton-row .skeleton {
+    display: block;
+    height: 12px;
+}
+.sy-home-links {
+    display: flex;
+    gap: 6px 18px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+.sy-home-links a:hover {
+    color: var(--color-text);
+}
+.sy-desk-notes-head b {
+    margin-right: auto;
+}
+.sy-desk-notes-head a {
+    color: var(--color-text-soft);
+}
+.sy-desk-notes-head a:hover {
+    color: var(--color-accent);
+}
+@media (max-width: 760px) {
+    .sy-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sy-term {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .sy-key-hint {
+        display: none;
+    }
+}
+
 @media (max-width: 1199px) {
     .sy-scout-grid,
     .sy-study-grid {
@@ -1358,17 +1565,19 @@
         padding: 4px 8px;
     }
     .sy-mobile-nav nav {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        display: flex;
         gap: 4px;
         margin-top: 6px;
+        overflow-x: auto;
+        scrollbar-width: none;
     }
     .sy-mobile-nav nav a {
         display: flex;
+        flex: 1 0 auto;
         align-items: center;
         justify-content: center;
         min-height: 44px;
-        padding: 6px 4px;
+        padding: 6px 10px;
         font-size: 13px;
         color: var(--color-text-muted);
         border-radius: var(--sy-radius);
@@ -2062,6 +2271,124 @@
 .sy-desk-recall-hint {
     margin: 0;
     font-size: 12.5px;
+    color: #7a7c73;
+}
+
+
+/* Recall questions: answer from memory, then compare with the transcript */
+.sy-recall-check {
+    gap: 12px;
+}
+.sy-desk-video .sy-recall-check {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid #e0ded5;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fbfaf6;
+}
+.sy-recall-question {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 550;
+    color: #1e2025;
+}
+.sy-recall-check .sy-textarea {
+    min-height: 64px;
+    background: #fbfaf7;
+    color: #1e2025;
+    border-color: #d6d3c8;
+}
+.sy-recall-check .sy-desk-actions {
+    margin-top: 0;
+}
+.sy-recall-reveal {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    outline: none;
+}
+.sy-recall-yours span,
+.sy-recall-source > span {
+    display: block;
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a8c84;
+}
+.sy-recall-yours p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #33352f;
+}
+.sy-recall-source blockquote {
+    margin: 0;
+    padding: 10px 12px;
+    border-left: 2px solid #c9c6ba;
+    border-radius: 0 6px 6px 0;
+    background: #f3f1ea;
+    box-shadow: 0 1px 2px #3c321e14 inset;
+}
+.sy-recall-source blockquote p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #2f312c;
+}
+.sy-recall-gist {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #5d5f57;
+}
+.sy-recall-gist b {
+    font-weight: 600;
+    color: #1e2025;
+}
+.sy-recall-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid #e0ded5;
+    font-size: 12px;
+    color: #5d5f57;
+    cursor: pointer;
+}
+.sy-recall-toggle input {
+    accent-color: #1e2025;
+}
+.sy-recall-block > h2 + .sy-desk-empty,
+.sy-recall-block > h2 + .sy-desk-empty + * {
+    margin-top: 0;
+}
+.sy-recall-done {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+}
+.sy-recall-done li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #5d5f57;
+}
+.sy-recall-steps-head {
+    margin: 36px 0 14px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
     color: #7a7c73;
 }
 

@@ -402,7 +402,7 @@ export default function ScoutPage() {
             </header>
 
             <div className="sy-scout-grid">
-                <div className="sy-panel sy-scout-main">
+                <div className="sy-panel sy-box sy-scout-main">
                     <ScoutProgress
                         step={step}
                         detail={
@@ -502,17 +502,17 @@ export default function ScoutPage() {
                                 </div>
 
                                 {recentPacks.length > 0 ? (
-                                    <div className="border-t border-border pt-5">
+                                    <div className="sy-cut pt-5">
                                         <h3 className="text-[13px] text-text-soft">
                                             Past goals
                                         </h3>
-                                        <ul className="mt-1">
+                                        <ul className="sy-grooved mt-1">
                                             {recentPacks
                                                 .slice(0, 6)
                                                 .map((item) => (
                                                     <li
                                                         key={item.id}
-                                                        className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 border-t border-border py-2.5 first:border-t-0"
+                                                        className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 py-2.5"
                                                     >
                                                         {item.roadmapId &&
                                                         item.status ===
@@ -548,7 +548,7 @@ export default function ScoutPage() {
                                                             dateTime={
                                                                 item.createdAt
                                                             }
-                                                            className="text-xs tabular-nums text-text-soft"
+                                                            className="sy-num text-xs text-text-soft"
                                                         >
                                                             {new Date(
                                                                 item.createdAt,
@@ -565,7 +565,7 @@ export default function ScoutPage() {
                                         </ul>
                                     </div>
                                 ) : lastPackHref ? (
-                                    <div className="border-t border-border pt-5">
+                                    <div className="sy-cut pt-5">
                                         <p className="text-[13px] text-text-soft">
                                             Last Scout workspace
                                         </p>
@@ -632,13 +632,13 @@ export default function ScoutPage() {
                                         <p className="text-xs text-text-soft">
                                             Found so far
                                         </p>
-                                        <ul className="mt-2 space-y-1.5">
+                                        <ul className="sy-grooved mt-2">
                                             {pack.resources
                                                 .slice(0, 8)
                                                 .map((resource) => (
                                                     <li
                                                         key={resource.id}
-                                                        className="flex items-baseline justify-between gap-4 border-b border-border py-1.5 text-sm last:border-b-0"
+                                                        className="flex items-baseline justify-between gap-4 py-2 text-sm"
                                                     >
                                                         <span className="truncate text-text-muted">
                                                             {resource.title}
@@ -668,8 +668,14 @@ export default function ScoutPage() {
                                             Keep the picks worth your time
                                         </h2>
                                         <p className="mt-1 text-sm leading-6 text-text-muted">
-                                            {picks.length} found ·{" "}
-                                            {selected.size} kept
+                                            <span className="sy-num">
+                                                {picks.length}
+                                            </span>{" "}
+                                            found ·{" "}
+                                            <span className="sy-num">
+                                                {selected.size}
+                                            </span>{" "}
+                                            kept
                                             {selectedMinutes > 0
                                                 ? ` · ~${humanDuration(selectedMinutes * 60)} of video`
                                                 : ""}
@@ -720,7 +726,7 @@ export default function ScoutPage() {
                                     onToggle={togglePick}
                                 />
 
-                                <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
+                                <div className="sy-cut flex flex-wrap items-center justify-between gap-4 pt-5">
                                     <p className="text-xs text-text-soft">
                                         Roadmap and review cards are built only
                                         from the picks you keep.
@@ -901,8 +907,11 @@ export default function ScoutPage() {
 
                         {pack && pack.costCents > 0 ? (
                             <p className="mt-6 text-xs text-text-soft">
-                                This pack has used an estimated $
-                                {(pack.costCents / 100).toFixed(4)} so far.
+                                This pack has used an estimated{" "}
+                                <span className="sy-num">
+                                    ${(pack.costCents / 100).toFixed(4)}
+                                </span>{" "}
+                                so far.
                             </p>
                         ) : null}
                     </div>

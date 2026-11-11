@@ -4,7 +4,7 @@ export function TermsView() {
             <h1 className="font-display text-4xl text-text">Terms of Use</h1>
             <div className="mt-8 space-y-6 text-sm leading-7 text-text-muted">
                 <p>This product is provided as a workspace and content-structuring tool. You are responsible for the source material, generated outputs, and any third-party services you connect.</p>
-                <p>The studio stores your workspaces locally in your browser. Data is not uploaded to a ZNS-owned server.</p>
+                <p>Syllo stores your data in your browser, or in your own Convex deployment if you connect one. There is no shared Syllo server.</p>
                 <p>Use of the product must comply with applicable law and the terms of any upstream services you configure.</p>
             </div>
         </section>

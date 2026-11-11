@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_marketing/terms")({
             { title: `Terms of Use | ${APP_NAME}` },
             {
                 name: "description",
-                content: "Terms governing the use of ZNS RoadMap Studio and its local-first workspace features.",
+                content: "Terms for using Syllo.",
             },
         ],
         links: [{ rel: "canonical", href: `${getAppUrl()}/terms` }],

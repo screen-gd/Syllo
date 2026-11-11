@@ -8,11 +8,11 @@ Scout finds free resources, reads the available source text, and asks you to kee
 
 ## Run locally
 
-Use Node 22.12 or newer and pnpm. Run commands from the repo root unless noted:
+Use Node 22.12 or newer and Bun 1.4.4. Run commands from the repo root unless noted:
 
 ```powershell
-pnpm install --frozen-lockfile
-pnpm dev
+bun install --frozen-lockfile
+bun run dev
 ```
 
 Open `http://localhost:3000`. Convex is optional. With `VITE_CONVEX_URL` blank, progress uses browser storage and EPUB files use IndexedDB. No account is needed.
@@ -30,22 +30,22 @@ Convex sync is prepared for one owner, with password login restricted by `SYLLO_
 ## Development
 
 ```powershell
-pnpm typecheck
-pnpm test
-pnpm lint
-pnpm build
-pnpm start
+bun run typecheck
+bun run test
+bun run lint
+bun run build
+bun run start
 ```
 
-`pnpm typecheck` checks both the app and `apps/web/convex/`.
+`bun run typecheck` checks both the app and `apps/web/convex/`.
 
-The production server serves `dist/client` and the TanStack SSR handler on loopback port 3000. `pnpm start` does not read an env file automatically; pass environment variables or run `node --env-file=.env.local server.mjs` in `apps/web`. Deployment URLs are build-time settings.
+The production server serves `dist/client` and the TanStack SSR handler on loopback port 3000. `bun run start` does not read an env file automatically; pass environment variables or run `node --env-file=.env.local server.mjs` in `apps/web`. Deployment URLs are build-time settings.
 
 `apps/web/mcp/server.mjs` supplies a local stdio MCP server for coding agents to add and search resource candidates. Connection snippets are available in Settings.
 
 ## Project layout
 
-The repo is a pnpm workspace. Each app lives under `apps/`, and code shared between apps goes under `packages/`.
+The repo is a Bun workspace. Each app lives under `apps/`, and code shared between apps goes under `packages/`.
 
 ```text
 apps/web/                         The Syllo app (TanStack Start), its env files and local .data/
@@ -59,4 +59,4 @@ apps/web/convex/                  Private account, document sync, and file funct
 apps/web/mcp/                     Local coding-agent resource tools
 ```
 
-This app is personal-first. Forks can use their own deployment, books, preferences, and keys. Public publishing and multi-user collaboration are outside v1. Earlier gallery/share routes remain in the codebase; personal sync does not publish learning records through them.
+This app is personal-first. Forks can use their own deployment, books, preferences, and keys. Public publishing, sharing and multi-user collaboration are outside v1, so the app has no gallery, share links, plans or credits.

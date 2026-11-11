@@ -238,7 +238,10 @@ export default function PersonalSettingsPage() {
                     Show connection settings
                 </button>
                 {connections?.map((connection) => (
-                    <details key={connection.id} style={{ marginTop: 16 }}>
+                    <details
+                        key={connection.id}
+                        className="sy-agent-connection"
+                    >
                         <summary>{connection.label}</summary>
                         <p className="sy-form-hint" style={{ marginTop: 8 }}>
                             {connection.note}
