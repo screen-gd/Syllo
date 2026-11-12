@@ -9,9 +9,11 @@ export function isCrossOriginRequest(request: Request) {
     if (site) return site !== "same-origin" && site !== "none";
     const origin = request.headers.get("origin");
     if (!origin) return false;
-    const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? new URL(request.url).host;
+    const url = new URL(request.url);
+    const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? url.host;
+    const scheme = request.headers.get("x-forwarded-proto")?.split(",")[0].trim() ?? url.protocol.replace(/:$/, "");
     try {
-        return new URL(origin).host !== host;
+        return new URL(origin).origin !== new URL(`${scheme}://${host}`).origin;
     } catch {
         return true;
     }

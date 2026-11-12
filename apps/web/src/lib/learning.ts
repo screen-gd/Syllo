@@ -146,11 +146,17 @@ export function setLearningTaskDone(
     );
     if (finishing) {
         const storage = getStorage();
-        storage.saveLearningRecord(
-            recordTaskCompletion(
-                normalizeLearningRecord(storage.getLearningRecord()),
-            ),
-        );
+        try {
+            storage.saveLearningRecord(
+                recordTaskCompletion(
+                    normalizeLearningRecord(storage.getLearningRecord()),
+                ),
+            );
+        } catch (error) {
+            // Reopen the lesson, so marking it done again still earns credit.
+            storage.saveRoadmap(roadmap);
+            throw error;
+        }
     }
     return updated;
 }

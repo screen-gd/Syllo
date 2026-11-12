@@ -56,10 +56,15 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
         if (!draft?.term.trim() || !draft.definition.trim()) return;
         const roadmap = roadmaps.find((item) => item.id === draft.roadmapId);
         if (!roadmap) return;
+        const cardId = draft.id && glossaryReviewId(roadmap.id, draft.id);
+        const card = cardId && reviews.find((item) => item.id === cardId);
         try {
             getStorage().saveRoadmap(upsertGlossaryTerm(roadmap, draft));
-            const cardId = draft.id && glossaryReviewId(roadmap.id, draft.id);
-            const card = cardId && reviews.find((item) => item.id === cardId);
+        } catch {
+            toast.error(STORAGE_ERROR);
+            return;
+        }
+        try {
             if (card)
                 saveReview({
                     ...card,
@@ -68,6 +73,12 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                 });
             setDraft(null);
         } catch {
+            // Keep the term and its card in step: undo the term edit.
+            try {
+                getStorage().saveRoadmap(roadmap);
+            } catch {
+                // The rollback is no larger than the edit, so this is unlikely.
+            }
             toast.error(STORAGE_ERROR);
         }
     }

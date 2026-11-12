@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
     collectGlossary,
     removeGlossaryTerm,
@@ -148,6 +148,23 @@ describe("lesson completion", () => {
         const record = getStorage().getLearningRecord();
         expect(record.currentStreak).toBe(1);
         expect(Object.values(record.tasksByDate)).toEqual([1]);
+    });
+});
+
+describe("lesson completion", () => {
+    it("reopens the lesson when its Learning Record update fails, so a retry still counts", () => {
+        getStorage().saveRoadmap(roadmap);
+        const failure = vi
+            .spyOn(getStorage(), "saveLearningRecord")
+            .mockImplementationOnce(() => {
+                throw new Error("quota");
+            });
+        expect(() => setLearningTaskDone(roadmap, "t1", true)).toThrow("quota");
+        failure.mockRestore();
+        const saved = getStorage().getRoadmap("r1");
+        expect(saved?.sections[0].type === "module" && saved.sections[0].data.tasks[0].completed).toBe(false);
+        setLearningTaskDone(roadmap, "t1", true);
+        expect(Object.values(getStorage().getLearningRecord().tasksByDate)).toEqual([1]);
     });
 });
 

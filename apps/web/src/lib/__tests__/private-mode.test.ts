@@ -22,4 +22,6 @@ it("rejects browser requests from another site or port", () => {
     expect(isCrossOriginRequest(new Request(api, { headers: { "sec-fetch-site": "same-site" } }))).toBe(true);
     expect(isCrossOriginRequest(new Request(api, { headers: { origin: "http://localhost:3000", host: "localhost:3000" } }))).toBe(false);
     expect(isCrossOriginRequest(new Request(api, { headers: { origin: "https://evil.example", host: "localhost:3000" } }))).toBe(true);
+    expect(isCrossOriginRequest(new Request("https://syllo.example/api/x", { headers: { origin: "http://syllo.example", host: "syllo.example" } }))).toBe(true);
+    expect(isCrossOriginRequest(new Request("http://127.0.0.1:3000/api/x", { headers: { origin: "https://syllo.example", host: "syllo.example", "x-forwarded-proto": "https" } }))).toBe(false);
 });

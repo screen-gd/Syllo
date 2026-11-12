@@ -397,7 +397,16 @@ export default function LearnPage({
 
     function onMarkDone(checked: boolean) {
         if (!roadmap || !item) return;
-        const updated = setLearningTaskDone(roadmap, item.task.id, checked);
+        let updated: Roadmap;
+        try {
+            updated = setLearningTaskDone(roadmap, item.task.id, checked);
+        } catch {
+            setError(
+                "This lesson could not be saved. Free some browser storage and try again.",
+            );
+            return;
+        }
+        setError(null);
         if (!checked) {
             setCompletion(null);
             return;
