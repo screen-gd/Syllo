@@ -161,7 +161,7 @@ export default function ReviewsPage() {
                     <ArrowRight size={13} />
                 </Link>
             ) : null;
-        if (!topics.has(item.roadmapId)) return null;
+        if (!topics.has(item.roadmapId) || !item.source?.taskId) return null;
         return (
             <Link
                 className="sy-time-link"

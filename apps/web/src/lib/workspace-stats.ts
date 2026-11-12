@@ -1,4 +1,4 @@
-import type { Roadmap, TaskGroup } from "@/types";
+import type { Milestone, Roadmap, TaskGroup } from "@/types";
 
 export type RoadmapProgressState = "not-started" | "in-progress" | "completed";
 
@@ -10,7 +10,7 @@ export interface RoadmapStats {
     progressState: RoadmapProgressState;
 }
 
-function countTaskGroup(group: TaskGroup) {
+function countTaskGroup(group: Pick<TaskGroup | Milestone, "tasks">) {
     const tasks = Array.isArray(group.tasks) ? group.tasks : [];
     const total = tasks.length;
     const completed = tasks.filter((task) => task.completed || task.done).length;
@@ -38,6 +38,14 @@ export function getRoadmapStats(roadmap: Roadmap): RoadmapStats {
             const tasks = Array.isArray(section.data.tasks) ? section.data.tasks : [];
             totalTasks += tasks.length;
             completedTasks += tasks.filter((task) => task.completed || task.done).length;
+        }
+
+        if (section.type === "milestones") {
+            for (const milestone of section.data) {
+                const counts = countTaskGroup(milestone);
+                totalTasks += counts.total;
+                completedTasks += counts.completed;
+            }
         }
     }
 

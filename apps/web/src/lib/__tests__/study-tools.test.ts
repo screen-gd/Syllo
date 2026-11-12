@@ -15,6 +15,7 @@ import {
     formatInterval,
 } from "@/lib/reviews";
 import { getStorage } from "@/lib/storage";
+import { getRoadmapStats } from "@/lib/workspace-stats";
 import type { Roadmap } from "@/types";
 
 const roadmap: Roadmap = {
@@ -147,5 +148,39 @@ describe("lesson completion", () => {
         const record = getStorage().getLearningRecord();
         expect(record.currentStreak).toBe(1);
         expect(Object.values(record.tasksByDate)).toEqual([1]);
+    });
+});
+
+describe("roadmap stats", () => {
+    it("counts lessons inside milestones", () => {
+        const task = roadmap.sections[0].type === "module" ? roadmap.sections[0].data.tasks[0] : null;
+        if (!task) throw new Error("fixture changed");
+        const withMilestones: Roadmap = {
+            ...roadmap,
+            sections: [
+                {
+                    id: "ms",
+                    type: "milestones",
+                    title: "Milestones",
+                    order: 0,
+                    data: [
+                        {
+                            id: "ms1",
+                            title: "First",
+                            description: "",
+                            tasks: [
+                                { ...task, id: "a", completed: true },
+                                { ...task, id: "b" },
+                            ],
+                            resources: [],
+                            videos: [],
+                            completed: false,
+                            order: 0,
+                        },
+                    ],
+                },
+            ],
+        };
+        expect(getRoadmapStats(withMilestones)).toMatchObject({ totalTasks: 2, completedTasks: 1, percent: 50 });
     });
 });

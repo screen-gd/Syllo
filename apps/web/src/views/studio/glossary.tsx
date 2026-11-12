@@ -58,6 +58,14 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
         if (!roadmap) return;
         try {
             getStorage().saveRoadmap(upsertGlossaryTerm(roadmap, draft));
+            const cardId = draft.id && glossaryReviewId(roadmap.id, draft.id);
+            const card = cardId && reviews.find((item) => item.id === cardId);
+            if (card)
+                saveReview({
+                    ...card,
+                    prompt: draft.term.trim(),
+                    answer: draft.definition.trim(),
+                });
             setDraft(null);
         } catch {
             toast.error(STORAGE_ERROR);

@@ -134,6 +134,16 @@ describe("getVideoChecks", () => {
         expect(calls).toEqual({ transcript: 1, generate: 1 });
     });
 
+    it("does not serve cached checks to a request with different chapter labels", async () => {
+        const { deps, calls } = fakeDeps(transcript(420));
+        const first = await getVideoChecks({ videoId: "relabelled-video", title: "Demo", chapters, durationSeconds: 420 }, deps);
+        const relabelled = chapters.map((chapter, index) => ({ ...chapter, label: `Mine ${index}` }));
+        const second = await getVideoChecks({ videoId: "relabelled-video", title: "Demo", chapters: relabelled, durationSeconds: 420 }, deps);
+        expect(first.checks.map((check) => check.label)).toEqual(["Intro", "How it works", "Pitfalls"]);
+        expect(second.checks.map((check) => check.label)).toEqual(["Mine 0", "Mine 1", "Mine 2"]);
+        expect(calls).toEqual({ transcript: 1, generate: 2 });
+    });
+
     it("reports a missing transcript without calling the model, and does not retry within a day", async () => {
         const { deps, calls } = fakeDeps(null);
         const input = { videoId: "silent-video", title: "Demo", chapters, durationSeconds: 420 };

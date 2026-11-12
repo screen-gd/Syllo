@@ -138,7 +138,13 @@ export function setLearningTaskDone(
     const current = getLearningTasks(roadmap).find(
         (item) => item.task.id === taskId,
     )?.task;
-    if (completed && current && !current.completed && !current.done) {
+    const finishing =
+        completed && !!current && !current.completed && !current.done;
+    // Save the lesson first, so a failed write never counts an open lesson.
+    const updated = updateLearningTasks(roadmap, (task) =>
+        task.id === taskId ? { ...task, completed, done: completed } : task,
+    );
+    if (finishing) {
         const storage = getStorage();
         storage.saveLearningRecord(
             recordTaskCompletion(
@@ -146,9 +152,7 @@ export function setLearningTaskDone(
             ),
         );
     }
-    return updateLearningTasks(roadmap, (task) =>
-        task.id === taskId ? { ...task, completed, done: completed } : task,
-    );
+    return updated;
 }
 
 export function setLearningSubtaskDone(

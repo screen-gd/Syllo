@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { getScoutDb, nowIso, type ScoutDatabase } from "./db";
 import { fetchTranscript, markTranscriptFetched, type TranscriptSegment } from "./fetch/transcripts";
@@ -173,12 +174,13 @@ function sectionPrompt(title: string, sections: VideoSection[]) {
     });
 }
 
+/** Cached checks carry chapter labels, so the labels are part of the key. */
 export function checksSignature(chapters: VideoChapterInput[]) {
     const layout = [...chapters]
-        .map((chapter) => Math.floor(chapter.seconds))
-        .sort((a, b) => a - b)
-        .join(",");
-    return `check.v${SCOUT_PROMPTS.check.version}:${layout}`;
+        .map((chapter) => [Math.floor(chapter.seconds), chapter.label.trim()] as const)
+        .sort((a, b) => a[0] - b[0] || a[1].localeCompare(b[1]));
+    const labels = createHash("sha256").update(JSON.stringify(layout.map(([, label]) => label))).digest("base64url");
+    return `check.v${SCOUT_PROMPTS.check.version}:${layout.map(([seconds]) => seconds).join(",")}:${labels}`;
 }
 
 export interface VideoChecksDeps {
