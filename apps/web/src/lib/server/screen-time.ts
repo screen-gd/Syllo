@@ -266,7 +266,11 @@ export function allowSitesFor({
         host = host.replace(/\.+$/, "");
         if (!host) return;
         sites.push(host);
-        if (host === "youtu.be" || host.endsWith("youtube-nocookie.com"))
+        if (
+            host === "youtu.be" ||
+            host === "youtube-nocookie.com" ||
+            host.endsWith(".youtube-nocookie.com")
+        )
             sites.push("youtube.com");
     };
     if (requestHost) {

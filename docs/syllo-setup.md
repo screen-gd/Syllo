@@ -81,7 +81,7 @@ This works only when Syllo runs on the same computer as Screen Time. A hosted Sy
 | Original workspace before the new bridge | `syllo:workspace-before-personal-v1` | Excluded |
 | Scout drafts, sources, transcripts, jobs | Local `.data/syllo.db` SQLite file | Excluded |
 | AI keys | Browser settings or worker environment | Excluded |
-| Screen Time link setting | `syllo:screen-time-link` in localStorage | Excluded |
+| Screen Time link setting | `syllo:screen-time-link:v1` in localStorage | Excluded |
 
 Settings exports metadata and the legacy workspace backup. EPUB binaries and API keys are excluded; retain your original books. Restore merges newer metadata by record timestamp. Sync uses the newest revision of each record, including deletion markers; simultaneous edits to the same record do not merge individual fields. Signing out keeps this device's local cache.
 

@@ -330,6 +330,15 @@ describe("allowSitesFor", () => {
         ).toEqual(["youtu.be", "youtube.com", "youtube-nocookie.com"]);
     });
 
+    it("does not unlock youtube.com for lookalike nocookie hosts", () => {
+        expect(
+            allowSitesFor({
+                requestHost: null,
+                resourceUrls: ["https://evil-youtube-nocookie.com/x"],
+            }),
+        ).toEqual(["evil-youtube-nocookie.com"]);
+    });
+
     it("skips non-http urls and dedupes", () => {
         expect(
             allowSitesFor({

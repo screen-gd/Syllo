@@ -7,7 +7,7 @@ import {
 } from "./contract";
 
 const PATH = "/api/screen-time/session";
-const LINK_KEY = "syllo:screen-time-link";
+const LINK_KEY = "syllo:screen-time-link:v1";
 const REQUEST_TIMEOUT_MS = 5000;
 
 async function callApi(init: RequestInit): Promise<ScreenTimeStatus> {
@@ -40,19 +40,28 @@ export const screenTimeApi = {
 };
 
 const listeners = new Set<() => void>();
+// localStorage reads show up on every timer tick through the snapshot, so the
+// value is cached in memory and only re-read after a real change.
+let cached: boolean | null = null;
 
 function readLinked(): boolean {
-    try {
-        return localStorage.getItem(LINK_KEY) === "on";
-    } catch {
-        return false;
+    if (cached === null) {
+        try {
+            cached = localStorage.getItem(LINK_KEY) === "on";
+        } catch {
+            cached = false;
+        }
     }
+    return cached;
 }
 
 function subscribe(listener: () => void): () => void {
     listeners.add(listener);
     const onStorage = (event: StorageEvent) => {
-        if (event.key === null || event.key === LINK_KEY) listener();
+        if (event.key === null || event.key === LINK_KEY) {
+            cached = null;
+            listener();
+        }
     };
     window.addEventListener("storage", onStorage);
     return () => {
@@ -78,6 +87,7 @@ export function useScreenTimeLink(): readonly [
         } catch {
             /* Storage may be blocked; the toggle just stays off. */
         }
+        cached = on;
         for (const listener of listeners) listener();
     };
     return [linked, setLinked] as const;

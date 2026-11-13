@@ -3,10 +3,11 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PomodoroProvider, { Pomodoro } from "@/components/learning/Pomodoro";
+import { useScreenTimeLink } from "@/lib/screen-time/client";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
-const LINK_KEY = "syllo:screen-time-link";
+const LINK_KEY = "syllo:screen-time-link:v1";
 const SESSION_KEY = "syllo:pomodoro-session";
 
 interface FetchCall {
@@ -19,7 +20,13 @@ let calls: FetchCall[];
 let container: HTMLDivElement;
 let root: Root;
 
-beforeEach(() => {
+/** Subscribes to the link store so a storage event can reset its cache. */
+function LinkProbe() {
+    useScreenTimeLink();
+    return null;
+}
+
+beforeEach(async () => {
     localStorage.clear();
     calls = [];
     vi.stubGlobal(
@@ -53,6 +60,16 @@ beforeEach(() => {
     container = document.createElement("div");
     document.body.appendChild(container);
     root = createRoot(container);
+    // The link flag is cached in the module; a storage event clears the cache
+    // while the probe keeps a subscription alive.
+    await act(async () => {
+        root.render(<LinkProbe />);
+    });
+    await act(async () => {
+        window.dispatchEvent(
+            new StorageEvent("storage", { key: LINK_KEY }),
+        );
+    });
 });
 
 afterEach(async () => {
@@ -73,6 +90,19 @@ async function render() {
     });
 }
 
+/**
+ * Turn the link on the way another tab would: write the key, then notify
+ * listeners through a storage event so the module cache picks it up.
+ */
+async function linkOn() {
+    localStorage.setItem(LINK_KEY, "on");
+    await act(async () => {
+        window.dispatchEvent(
+            new StorageEvent("storage", { key: LINK_KEY }),
+        );
+    });
+}
+
 async function click(text: string) {
     const button = Array.from(container.querySelectorAll("button")).find(
         (el) => el.textContent === text,
@@ -89,7 +119,7 @@ function storeSession(session: Record<string, unknown>) {
 
 describe("pomodoro screen time link", () => {
     it("posts a session for the full focus period on Start", async () => {
-        localStorage.setItem(LINK_KEY, "on");
+        await linkOn();
         await render();
         await click("Start");
         const post = calls.find((call) => call.method === "POST");
@@ -105,7 +135,7 @@ describe("pomodoro screen time link", () => {
     });
 
     it("deletes the session on Pause", async () => {
-        localStorage.setItem(LINK_KEY, "on");
+        await linkOn();
         await render();
         await click("Start");
         await click("Pause");
@@ -114,7 +144,7 @@ describe("pomodoro screen time link", () => {
     });
 
     it("reposts the remaining time for a stored running focus", async () => {
-        localStorage.setItem(LINK_KEY, "on");
+        await linkOn();
         storeSession({
             mode: "focus",
             remaining: 300,
@@ -129,7 +159,7 @@ describe("pomodoro screen time link", () => {
     });
 
     it("sends a stop for a stored idle timer so nothing keeps blocking", async () => {
-        localStorage.setItem(LINK_KEY, "on");
+        await linkOn();
         storeSession({ mode: "focus", remaining: 1500, endAt: null });
         await render();
         expect(calls).toHaveLength(1);
