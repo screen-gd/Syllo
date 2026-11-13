@@ -85,7 +85,7 @@ export function useScreenTimeLink(): readonly [
             if (on) localStorage.setItem(LINK_KEY, "on");
             else localStorage.removeItem(LINK_KEY);
         } catch {
-            /* Storage may be blocked; the toggle just stays off. */
+            /* Storage may be blocked; the choice then holds for this visit. */
         }
         cached = on;
         for (const listener of listeners) listener();
