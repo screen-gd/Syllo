@@ -1,6 +1,10 @@
 import type { Resource, Roadmap, Section, Task, Video } from "@/types";
 import { detectPlatform } from "./video-utils";
 import { getStorage } from "./storage";
+import {
+    normalizeLearningRecord,
+    recordTaskCompletion,
+} from "./learning-session";
 
 export interface LearningTask {
     task: Task;
@@ -122,14 +126,39 @@ function updateLearningTasks(
     return updated;
 }
 
+/**
+ * Mark a lesson done or not done. Finishing a lesson that was open counts
+ * toward the Learning Record's streak and daily totals.
+ */
 export function setLearningTaskDone(
     roadmap: Roadmap,
     taskId: string,
     completed: boolean,
 ): Roadmap {
-    return updateLearningTasks(roadmap, (task) =>
+    const current = getLearningTasks(roadmap).find(
+        (item) => item.task.id === taskId,
+    )?.task;
+    const finishing =
+        completed && !!current && !current.completed && !current.done;
+    // Save the lesson first, so a failed write never counts an open lesson.
+    const updated = updateLearningTasks(roadmap, (task) =>
         task.id === taskId ? { ...task, completed, done: completed } : task,
     );
+    if (finishing) {
+        const storage = getStorage();
+        try {
+            storage.saveLearningRecord(
+                recordTaskCompletion(
+                    normalizeLearningRecord(storage.getLearningRecord()),
+                ),
+            );
+        } catch (error) {
+            // Reopen the lesson, so marking it done again still earns credit.
+            storage.saveRoadmap(roadmap);
+            throw error;
+        }
+    }
+    return updated;
 }
 
 export function setLearningSubtaskDone(

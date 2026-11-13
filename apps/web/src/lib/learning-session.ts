@@ -32,3 +32,13 @@ export function addLearningTime(record: LearningRecord, moduleId: string | undef
         moduleTimeMs: moduleId ? { ...record.moduleTimeMs, [moduleId]: (record.moduleTimeMs[moduleId] ?? 0) + milliseconds } : record.moduleTimeMs,
     };
 }
+
+/** Lessons finished on each of the last `days` days, oldest first, ending today. */
+export function recentActivity(record: LearningRecord, days = 7, now = new Date()) {
+    return Array.from({ length: days }, (_, index) => {
+        const date = new Date(now);
+        date.setDate(now.getDate() - (days - 1 - index));
+        const key = day(date);
+        return { date: key, weekday: date.toLocaleDateString(undefined, { weekday: "short" }), count: record.tasksByDate[key] ?? 0 };
+    });
+}

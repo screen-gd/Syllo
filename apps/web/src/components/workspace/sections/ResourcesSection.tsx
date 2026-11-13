@@ -9,7 +9,7 @@ interface Props {
     onUpdate: (updater: (s: Section) => Section) => void;
 }
 
-export default function Resources({ section, onUpdate }: Props) {
+export default function Resources({ section }: Props) {
     const [viewerUrl, setViewerUrl] = useState<string | null>(null);
 
     const getIcon = (type: string) => {

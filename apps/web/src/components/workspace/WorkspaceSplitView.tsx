@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import type { Roadmap, Section, ModuleSection, Task } from "@/types";
-import { CheckCircle2, Circle, Clock, ChevronRight, Play, FileText, Target, BookOpen } from "lucide-react";
+import { useState, useEffect } from "react";
+import type { Roadmap, ModuleSection, Task } from "@/types";
+import { CheckCircle2, ChevronRight, Target, BookOpen } from "lucide-react";
 import ContextPanel from "./ContextPanel";
 import { cn } from "@/lib/utils";
 

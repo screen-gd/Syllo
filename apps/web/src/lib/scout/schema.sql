@@ -111,3 +111,20 @@ CREATE TABLE IF NOT EXISTS scout_kv (
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+
+-- Transcripts read for in-lesson recall questions, with their timestamps.
+CREATE TABLE IF NOT EXISTS video_transcripts (
+    video_id TEXT PRIMARY KEY,
+    status TEXT NOT NULL,
+    segments TEXT NOT NULL DEFAULT '[]',
+    fetched_at TEXT NOT NULL
+);
+
+-- Recall questions per video, keyed by prompt version and chapter layout.
+CREATE TABLE IF NOT EXISTS video_checks (
+    video_id TEXT NOT NULL,
+    signature TEXT NOT NULL,
+    checks TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (video_id, signature)
+);

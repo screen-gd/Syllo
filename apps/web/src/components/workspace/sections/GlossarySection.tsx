@@ -10,7 +10,7 @@ interface Props {
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-export default function GlossarySection({ section, onUpdate }: Props) {
+export default function GlossarySection({ section }: Props) {
     const [activeLetter, setActiveLetter] = useState<string | null>(null);
     const [expandedTermId, setExpandedTermId] = useState<string | null>(null);
 

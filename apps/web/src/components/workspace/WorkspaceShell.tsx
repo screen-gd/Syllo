@@ -6,12 +6,11 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { Roadmap, Section, ModuleSection as ModuleSectionType, CalendarSection, SrsItem } from "@/types";
 import { useProgress } from "@/hooks/useProgress";
 import { useStreak } from "@/hooks/useStreak";
-import { useAchievements, BadgeType, BADGES_CONFIG } from "@/hooks/useAchievements";
+import { useAchievements } from "@/hooks/useAchievements";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
 import ProgressRing from "@/components/shared/ProgressRing";
 import SectionRenderer from "@/components/workspace/SectionRenderer";
 import WorkspaceSplitView from "@/components/workspace/WorkspaceSplitView";
-import ShareEmbedModal from "@/components/workspace/ShareEmbedModal";
 import SettingsModal from "@/components/workspace/SettingsModal";
 import SrsReviewModal from "@/components/workspace/SrsReviewModal";
 import {
@@ -29,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { SECTION_LABELS } from "@/lib/constants";
-import { Search, Settings, Home, ArrowRight, CheckCircle2, Circle, LayoutDashboard, SearchCode, BookOpen, Video, ListTodo, Trophy, Layers, Calendar, Clock, Lock, Target, Flame, Info, Plus, Share, RefreshCw, HardDrive, BarChart2, HelpCircle, X, FileText, Braces, Printer, History, ChevronDown, Key } from "lucide-react";
+import { Search, Settings, Home, ArrowRight, CheckCircle2, Circle, LayoutDashboard, SearchCode, BookOpen, Video, ListTodo, Trophy, Layers, Calendar, Clock, Lock, Target, Flame, Info, Plus, RefreshCw, HardDrive, BarChart2, HelpCircle, X, FileText, Braces, Printer, History, ChevronDown, Key } from "lucide-react";
 import { exportAsMarkdown, exportAsJSON, exportAsPDF } from "@/lib/export";
 import { saveVersion, getVersions } from "@/lib/versioning";
 import { getWorkspacePersistence } from "@/lib/workspace-persistence";
@@ -56,7 +55,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
     // Gamification Hooks
     const { currentStreak, isAtRisk, logActivity, tasksCompletedToday, tasksCompletedYesterday } = useStreak();
-    const { unlockedBadges, unlockBadge, recentBadge, clearRecentBadge, getBadges } = useAchievements();
+    const { unlockBadge, recentBadge, clearRecentBadge, getBadges } = useAchievements();
     const { sessionTimeMs, getModuleTime } = useTimeTracker(activeSectionId !== "dashboard" ? activeSectionId : undefined);
     const navigate = useNavigate();
     const [userConfig, setUserConfig] = useState<any>(null);
@@ -119,8 +118,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
         return () => window.removeEventListener('keydown', handleGlobalKeys);
     }, [activeSectionId, roadmap.sections]);
 
-    // Share & Embed Modal
-    const [shareModalOpen, setShareModalOpen] = useState(false);
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [showVersionHistory, setShowVersionHistory] = useState(false);
     const [versions, setVersions] = useState<any[]>([]);
@@ -247,7 +244,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
         // Detect new task completion
         if (progress.completedTasks > prevCompletedTasks.current) {
-            const tasksCompletedNow = progress.completedTasks - prevCompletedTasks.current;
             logActivity(true); // Log as task completion
 
             // First Step
@@ -333,27 +329,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
-
-    const isEmptySection = (section: Section): boolean => {
-        if (section.type === "progress") return false;
-        if (section.type === "notes") return false;
-
-        if (section.type === "module") {
-            const md = (section as ModuleSectionType).data;
-            if (!md) return true;
-            return !md.description && !md.concepts &&
-                (!md.tasks || md.tasks.length === 0) &&
-                (!md.resources || md.resources.length === 0) &&
-                (!md.videos || md.videos.length === 0) &&
-                (!md.objectives || md.objectives.length === 0);
-        }
-
-        if (section.type === "custom") {
-            return !section.data || !section.data.items || section.data.items.length === 0;
-        }
-
-        return false; // we no longer hide anything
-    };
 
     const validSections = roadmap.sections;
     const activeSection = validSections.find((s) => s.id === activeSectionId);
@@ -907,14 +882,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 >
                                     <History size={16} />
                                 </button>
-
-                                <button
-                                    onClick={() => setShareModalOpen(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-accent/10 hover:bg-accent/20 text-accent rounded-lg text-xs font-bold transition-colors border border-accent/30"
-                                >
-                                    <Share size={14} />
-                                    Share & Embed
-                                </button>
                             </div>
                         </div>
                     )}
@@ -1299,12 +1266,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
                             <Plus size={16} /> Add Video
                         </button>
-                        <button
-                            onClick={() => setShareModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors"
-                        >
-                            <Share size={16} /> Share Workspace
-                        </button>
                         <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-warning/50 hover:bg-warning/10 hover:text-warning transition-colors">
                             <RefreshCw size={16} /> Regenerate Workspace
                         </button>
@@ -1432,12 +1393,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             </AlertDialog>
 
             {/* Modals */}
-            <ShareEmbedModal
-                roadmap={roadmap}
-                isOpen={shareModalOpen}
-                onClose={() => setShareModalOpen(false)}
-                onUpdateRoadmap={onUpdateRoadmap}
-            />
             <SettingsModal
                 roadmap={roadmap}
                 isOpen={settingsModalOpen}

@@ -1,12 +1,8 @@
 import { fetchPrivateApi } from "@/lib/private-api-fetch";
 import { Suspense, useCallback, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 import {
-    ChevronDown,
-    ChevronUp,
     FileUp,
-    KeyRound,
     Loader2,
     Wand2,
     ArrowRight,
@@ -61,7 +57,6 @@ function CreatePageContent() {
     const [isDragging, setIsDragging] = useState(false);
     const [loadingStep, setLoadingStep] = useState(0);
     const [error, setError] = useState("");
-    const [upgradeMessage, setUpgradeMessage] = useState("");
 
     // Draft State
     const [draftRoadmap, setDraftRoadmap] = useState<Roadmap | null>(null);
@@ -131,11 +126,6 @@ function CreatePageContent() {
                 const payload = await response
                     .json()
                     .catch(() => ({ error: "Failed to generate workspace" }));
-                if (payload.error === "limit_reached") {
-                    setUpgradeMessage(payload.message ?? "Plan limit reached.");
-                    setCreationStep("input");
-                    return;
-                }
                 throw new Error(
                     payload.message ?? payload.error ?? "Something went wrong",
                 );
@@ -428,32 +418,6 @@ function CreatePageContent() {
                 )}
             </div>
 
-            {upgradeMessage && (
-                <div className="fixed inset-x-0 bottom-0 z-[80] flex justify-center p-4 sm:p-6">
-                    <div className="w-full max-w-lg rounded-2xl border border-border bg-surface p-5 shadow-2xl">
-                        <p className="text-sm leading-6 text-text">
-                            {upgradeMessage}
-                        </p>
-                        <div className="mt-4 flex flex-wrap gap-3">
-                            <Link
-                                to="/settings"
-                                search={{ tab: "ai" }}
-                                className="button-primary"
-                            >
-                                <KeyRound size={14} />
-                                Add your own key
-                            </Link>
-                            <button
-                                type="button"
-                                onClick={() => setUpgradeMessage("")}
-                                className="button-secondary"
-                            >
-                                Dismiss
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     );
 }

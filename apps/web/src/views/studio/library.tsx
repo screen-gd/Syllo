@@ -6,6 +6,7 @@ import { importEpub } from "@/lib/personal/books";
 import { personalEntries, usePersonalData } from "@/lib/personal/store";
 import { useCloudSync } from "@/components/sync/CloudSync";
 import type { LibraryBook } from "@/lib/personal/schema";
+import { topicStyle } from "@/lib/topic-color";
 
 function spineStyle(
     book: LibraryBook,
@@ -77,11 +78,15 @@ export default function LibraryPage() {
                 <div>
                     <h1>Library</h1>
                     <p>
-                        {books.length} book{books.length === 1 ? "" : "s"} ·{" "}
-                        {
-                            books.filter((book) => book.status === "reading")
-                                .length
-                        }{" "}
+                        <span className="sy-num">{books.length}</span> book
+                        {books.length === 1 ? "" : "s"} ·{" "}
+                        <span className="sy-num">
+                            {
+                                books.filter(
+                                    (book) => book.status === "reading",
+                                ).length
+                            }
+                        </span>{" "}
                         currently reading
                     </p>
                 </div>
@@ -112,7 +117,7 @@ export default function LibraryPage() {
                     Importing {importing}
                 </p>
             )}
-            <div className="sy-library-tools">
+            <div className="sy-library-tools sy-toolstrip">
                 <label className="sy-search">
                     <Search />
                     <input
@@ -173,7 +178,7 @@ export default function LibraryPage() {
                 </div>
             </div>
             {!books.length ? (
-                <div className="sy-empty bordered">
+                <div className="sy-tray">
                     <h2>Your books belong here.</h2>
                     <p style={{ marginTop: 8 }}>
                         Import an EPUB to read, highlight, and save your place.
@@ -187,7 +192,7 @@ export default function LibraryPage() {
                     </p>
                 </div>
             ) : !filtered.length ? (
-                <p className="sy-empty">No books match these filters.</p>
+                <p className="sy-tray">No books match these filters.</p>
             ) : view === "spines" ? (
                 groups.map((group) => {
                     const items = filtered.filter(
@@ -205,10 +210,16 @@ export default function LibraryPage() {
                             ? statusNames[group]
                             : group;
                     return (
-                        <section className="sy-shelf-group" key={group}>
-                            <h2>
-                                {label} · {items.length}
-                            </h2>
+                        <section
+                            className="sy-box sy-shelf-group"
+                            key={group}
+                        >
+                            <div className="sy-section-head">
+                                <h2>{label}</h2>
+                                <span className="sy-readout">
+                                    {items.length}
+                                </span>
+                            </div>
                             <div className="sy-shelf">
                                 {items.map((book) => (
                                     <Link
@@ -236,26 +247,38 @@ export default function LibraryPage() {
                     );
                 })
             ) : (
-                filtered.map((book) => (
-                    <Link
-                        className="sy-library-row"
-                        key={book.id}
-                        to="/read/$id"
-                        params={{ id: book.id }}
-                    >
-                        <div>
-                            <h3>{book.title}</h3>
-                            <p>{book.author}</p>
-                        </div>
-                        <span>{book.category}</span>
-                        <span>
-                            {statusNames[book.status]}
-                            {book.percent > 0
-                                ? ` · ${Math.round(book.percent)}%`
-                                : ""}
-                        </span>
-                    </Link>
-                ))
+                <section className="sy-box flush">
+                    <div className="sy-section-head">
+                        <h2>Books</h2>
+                        <span className="sy-readout">{filtered.length}</span>
+                    </div>
+                    {filtered.map((book) => (
+                        <Link
+                            className="sy-library-row sy-row sy-spined"
+                            key={book.id}
+                            to="/read/$id"
+                            params={{ id: book.id }}
+                            style={topicStyle(`book:${book.id}`)}
+                        >
+                            <div>
+                                <h3>{book.title}</h3>
+                                <p>{book.author}</p>
+                            </div>
+                            <span>{book.category}</span>
+                            <span>
+                                {statusNames[book.status]}
+                                {book.percent > 0 && (
+                                    <>
+                                        {" · "}
+                                        <span className="sy-num">
+                                            {Math.round(book.percent)}%
+                                        </span>
+                                    </>
+                                )}
+                            </span>
+                        </Link>
+                    ))}
+                </section>
             )}
         </div>
     );

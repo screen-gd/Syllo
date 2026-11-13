@@ -1,4 +1,4 @@
-/* ZNS RoadMap Studio type definitions */
+/* Syllo type definitions */
 
 /* Video ladder levels, lowest to highest */
 export const LEARNING_LEVELS = ["basics", "intermediate", "advanced"] as const;
@@ -280,60 +280,6 @@ export interface SrsItem {
     status?: "suggested" | "kept" | "skipped";
     fsrs?: import("zod").infer<typeof import("@/lib/personal/schema").fsrsCardSchema>;
     source?: { url?: string; bookId?: string; cfi?: string; seconds?: number; quote?: string; taskId?: string };
-}
-
-export interface CreditStatus {
-    planId: string;
-    allowance: number;
-    used: number;
-    remaining: number;
-    resetDate: string;
-}
-
-export interface CreditTransaction {
-    id: string;
-    kind: "workspace_generation" | "module_regeneration" | "quiz" | "export_pdf" | "review" | "adjustment";
-    amount: number;
-    createdAt: string;
-    metadata?: Record<string, string>;
-}
-
-export interface PrivacySettings {
-    anonymousAnalytics: boolean;
-    allowPublicGallery: boolean;
-}
-
-export interface ProgressSnapshot {
-    id: string;
-    roadmapId: string;
-    sectionId: string;
-    completionRate: number;
-    completedTasks: number;
-    totalTasks: number;
-    createdAt: string;
-}
-
-export interface CoachingSession {
-    id: string;
-    roadmapId: string;
-    date: string;
-    durationMinutes: number;
-    topics: string[];
-    nextSteps: string;
-}
-
-export interface PublicRoadmapCard {
-    id: string;
-    title: string;
-    summary?: string;
-    mode: "general" | "intern";
-    contentType?: string;
-    difficulty?: "beginner" | "intermediate" | "advanced";
-    totalEstimatedDuration?: string;
-    moduleCount?: number;
-    forkCount: number;
-    updatedAt: string;
-    isSeed?: boolean;
 }
 
 /* API types */

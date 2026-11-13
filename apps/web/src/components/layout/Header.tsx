@@ -6,9 +6,9 @@ import { usePathname } from "@/lib/router-nav";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 import { cn } from "@/lib/utils";
-import { MARKETING_NAV_ITEMS } from "@/lib/navigation";
+import { PUBLIC_NAV_ITEMS } from "@/lib/navigation";
 
-/** Top bar for the public pages. The studio uses `StudioSidebar` instead. */
+/** Top bar for the public pages. The studio uses `LearningSidebar` instead. */
 export default function Header() {
     const pathname = usePathname();
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -22,12 +22,12 @@ export default function Header() {
             <div className="page-shell-wide flex h-14 items-center justify-between gap-4">
                 <Link to="/" className="flex min-w-0 items-center gap-2.5">
                     <Logo />
-                    <span className="truncate text-[15px] font-semibold tracking-tight text-text">RoadMap Studio</span>
+                    <span className="truncate text-[15px] font-semibold tracking-tight text-text">Syllo</span>
                 </Link>
 
                 <nav aria-label="Main navigation" className="hidden items-center gap-1 lg:flex">
-                    {MARKETING_NAV_ITEMS.map((item) => {
-                        const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                    {PUBLIC_NAV_ITEMS.map((item) => {
+                        const active = pathname.startsWith(item.href);
                         return (
                             <Link
                                 key={item.href}
@@ -65,8 +65,8 @@ export default function Header() {
             {mobileOpen && (
                 <div id="mobile-nav" className="border-t border-border bg-page lg:hidden">
                     <nav aria-label="Mobile navigation" className="page-shell-wide flex flex-col gap-1 py-4">
-                        {MARKETING_NAV_ITEMS.map((item) => {
-                            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                        {PUBLIC_NAV_ITEMS.map((item) => {
+                            const active = pathname.startsWith(item.href);
                             return (
                                 <Link
                                     key={item.href}

@@ -1,7 +1,6 @@
 import type { AIProvider } from "@/lib/ai-config";
 import type { ModuleSection, Roadmap } from "@/types";
 import { generateStructuredJson } from "@/lib/server/ai";
-import { deductCredits } from "@/lib/server/credits";
 
 function getGlossaryTerms(roadmap: Roadmap) {
     return roadmap.sections
@@ -37,19 +36,6 @@ export async function generateQuiz(options: {
         throw new Error("Not enough module material to generate a quiz");
     }
 
-    const creditResult = await deductCredits({
-        kind: "quiz",
-        userApiKey: options.userApiKey,
-        metadata: {
-            roadmapId: options.roadmap.id,
-            sectionId: section.id,
-        },
-    });
-
-    if (creditResult.reason === "insufficient") {
-        return { success: false, error: "insufficient_credits", creditStatus: creditResult.status };
-    }
-
     const prompt = `
 Return only valid JSON with this shape:
 {
@@ -80,7 +66,6 @@ ${source}
 
     return {
         success: true,
-        creditStatus: creditResult.status,
         quiz: {
             sectionId: section.id,
             title: `${section.title} Quiz`,

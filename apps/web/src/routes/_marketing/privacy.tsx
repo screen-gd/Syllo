@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_marketing/privacy")({
             { title: `Privacy Policy | ${APP_NAME}` },
             {
                 name: "description",
-                content: "Read how ZNS RoadMap Studio handles local storage and your user data.",
+                content: "Read how Syllo stores your learning data.",
             },
         ],
         links: [{ rel: "canonical", href: `${getAppUrl()}/privacy` }],

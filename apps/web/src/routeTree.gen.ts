@@ -12,45 +12,32 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as MarketingRouteImport } from './routes/_marketing'
 import { Route as StudioRouteImport } from './routes/_studio'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
-import { Route as MarketingContactRouteImport } from './routes/_marketing/contact'
-import { Route as MarketingGalleryRouteImport } from './routes/_marketing/gallery'
-import { Route as MarketingPricingRouteImport } from './routes/_marketing/pricing'
 import { Route as MarketingPrivacyRouteImport } from './routes/_marketing/privacy'
 import { Route as MarketingTermsRouteImport } from './routes/_marketing/terms'
-import { Route as StudioAnalyticsRouteImport } from './routes/_studio/analytics'
 import { Route as StudioCreateRouteImport } from './routes/_studio/create'
 import { Route as StudioDashboardRouteImport } from './routes/_studio/dashboard'
+import { Route as StudioGlossaryRouteImport } from './routes/_studio/glossary'
 import { Route as StudioLearnRouteImport } from './routes/_studio/learn'
 import { Route as StudioLibraryRouteImport } from './routes/_studio/library'
 import { Route as StudioNotesRouteImport } from './routes/_studio/notes'
+import { Route as StudioProgressRouteImport } from './routes/_studio/progress'
 import { Route as StudioReviewsRouteImport } from './routes/_studio/reviews'
 import { Route as StudioScoutRouteImport } from './routes/_studio/scout'
 import { Route as StudioSettingsRouteImport } from './routes/_studio/settings'
 import { Route as StudioWorkspacesRouteImport } from './routes/_studio/workspaces'
 import { Route as ApiParseRoadmapRouteImport } from './routes/api/parse-roadmap'
-import { Route as EmbedIdRouteImport } from './routes/embed.$id'
-import { Route as ShareIdRouteImport } from './routes/share.$id'
 import { Route as WorkspaceIdRouteImport } from './routes/workspace.$id'
 import { Route as StudioReadIdRouteImport } from './routes/_studio/read.$id'
-import { Route as ApiCreditsStatusRouteImport } from './routes/api/credits/status'
-import { Route as ApiDashboardCoachingRouteImport } from './routes/api/dashboard/coaching'
-import { Route as ApiDashboardReviewRouteImport } from './routes/api/dashboard/review'
-import { Route as ApiGalleryForkRouteImport } from './routes/api/gallery/fork'
-import { Route as ApiGalleryListRouteImport } from './routes/api/gallery/list'
-import { Route as ApiGallerySetPublicRouteImport } from './routes/api/gallery/set-public'
 import { Route as ApiQuizGenerateRouteImport } from './routes/api/quiz/generate'
 import { Route as ApiScoutAgentsRouteImport } from './routes/api/scout/agents'
+import { Route as ApiScoutChecksRouteImport } from './routes/api/scout/checks'
 import { Route as ApiScoutDigestRouteImport } from './routes/api/scout/digest'
 import { Route as ApiScoutRecentRouteImport } from './routes/api/scout/recent'
 import { Route as ApiScoutResourcesRouteImport } from './routes/api/scout/resources'
 import { Route as ApiScoutSettingsRouteImport } from './routes/api/scout/settings'
 import { Route as ApiScoutSourcesRouteImport } from './routes/api/scout/sources'
 import { Route as ApiScoutStartRouteImport } from './routes/api/scout/start'
-import { Route as ApiSettingsDeleteRouteImport } from './routes/api/settings/delete'
-import { Route as ApiSettingsExportRouteImport } from './routes/api/settings/export'
-import { Route as ApiSettingsPrivacyRouteImport } from './routes/api/settings/privacy'
 import { Route as ApiSrsSaveRouteImport } from './routes/api/srs/save'
 import { Route as ApiScoutPacksIdRouteImport } from './routes/api/scout/packs.$id'
 import { Route as ApiScoutPacksIdApproveRouteImport } from './routes/api/scout/packs.$id.approve'
@@ -68,29 +55,9 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MarketingIndexRoute = MarketingIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingContactRoute = MarketingContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingGalleryRoute = MarketingGalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => MarketingRoute,
-} as any)
-const MarketingPricingRoute = MarketingPricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
   getParentRoute: () => MarketingRoute,
 } as any)
 const MarketingPrivacyRoute = MarketingPrivacyRouteImport.update({
@@ -103,11 +70,6 @@ const MarketingTermsRoute = MarketingTermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => MarketingRoute,
 } as any)
-const StudioAnalyticsRoute = StudioAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => StudioRoute,
-} as any)
 const StudioCreateRoute = StudioCreateRouteImport.update({
   id: '/create',
   path: '/create',
@@ -116,6 +78,11 @@ const StudioCreateRoute = StudioCreateRouteImport.update({
 const StudioDashboardRoute = StudioDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioGlossaryRoute = StudioGlossaryRouteImport.update({
+  id: '/glossary',
+  path: '/glossary',
   getParentRoute: () => StudioRoute,
 } as any)
 const StudioLearnRoute = StudioLearnRouteImport.update({
@@ -131,6 +98,11 @@ const StudioLibraryRoute = StudioLibraryRouteImport.update({
 const StudioNotesRoute = StudioNotesRouteImport.update({
   id: '/notes',
   path: '/notes',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioProgressRoute = StudioProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
   getParentRoute: () => StudioRoute,
 } as any)
 const StudioReviewsRoute = StudioReviewsRouteImport.update({
@@ -158,16 +130,6 @@ const ApiParseRoadmapRoute = ApiParseRoadmapRouteImport.update({
   path: '/api/parse-roadmap',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EmbedIdRoute = EmbedIdRouteImport.update({
-  id: '/embed/$id',
-  path: '/embed/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ShareIdRoute = ShareIdRouteImport.update({
-  id: '/share/$id',
-  path: '/share/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const WorkspaceIdRoute = WorkspaceIdRouteImport.update({
   id: '/workspace/$id',
   path: '/workspace/$id',
@@ -178,36 +140,6 @@ const StudioReadIdRoute = StudioReadIdRouteImport.update({
   path: '/read/$id',
   getParentRoute: () => StudioRoute,
 } as any)
-const ApiCreditsStatusRoute = ApiCreditsStatusRouteImport.update({
-  id: '/api/credits/status',
-  path: '/api/credits/status',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiDashboardCoachingRoute = ApiDashboardCoachingRouteImport.update({
-  id: '/api/dashboard/coaching',
-  path: '/api/dashboard/coaching',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiDashboardReviewRoute = ApiDashboardReviewRouteImport.update({
-  id: '/api/dashboard/review',
-  path: '/api/dashboard/review',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiGalleryForkRoute = ApiGalleryForkRouteImport.update({
-  id: '/api/gallery/fork',
-  path: '/api/gallery/fork',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiGalleryListRoute = ApiGalleryListRouteImport.update({
-  id: '/api/gallery/list',
-  path: '/api/gallery/list',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiGallerySetPublicRoute = ApiGallerySetPublicRouteImport.update({
-  id: '/api/gallery/set-public',
-  path: '/api/gallery/set-public',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiQuizGenerateRoute = ApiQuizGenerateRouteImport.update({
   id: '/api/quiz/generate',
   path: '/api/quiz/generate',
@@ -216,6 +148,11 @@ const ApiQuizGenerateRoute = ApiQuizGenerateRouteImport.update({
 const ApiScoutAgentsRoute = ApiScoutAgentsRouteImport.update({
   id: '/api/scout/agents',
   path: '/api/scout/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiScoutChecksRoute = ApiScoutChecksRouteImport.update({
+  id: '/api/scout/checks',
+  path: '/api/scout/checks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiScoutDigestRoute = ApiScoutDigestRouteImport.update({
@@ -248,21 +185,6 @@ const ApiScoutStartRoute = ApiScoutStartRouteImport.update({
   path: '/api/scout/start',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSettingsDeleteRoute = ApiSettingsDeleteRouteImport.update({
-  id: '/api/settings/delete',
-  path: '/api/settings/delete',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSettingsExportRoute = ApiSettingsExportRouteImport.update({
-  id: '/api/settings/export',
-  path: '/api/settings/export',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSettingsPrivacyRoute = ApiSettingsPrivacyRouteImport.update({
-  id: '/api/settings/privacy',
-  path: '/api/settings/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiSrsSaveRoute = ApiSrsSaveRouteImport.update({
   id: '/api/srs/save',
   path: '/api/srs/save',
@@ -282,44 +204,31 @@ const ApiScoutPacksIdApproveRoute = ApiScoutPacksIdApproveRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/contact': typeof MarketingContactRoute
-  '/gallery': typeof MarketingGalleryRoute
-  '/pricing': typeof MarketingPricingRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/terms': typeof MarketingTermsRoute
-  '/analytics': typeof StudioAnalyticsRoute
   '/create': typeof StudioCreateRoute
   '/dashboard': typeof StudioDashboardRoute
+  '/glossary': typeof StudioGlossaryRoute
   '/learn': typeof StudioLearnRoute
   '/library': typeof StudioLibraryRoute
   '/notes': typeof StudioNotesRoute
+  '/progress': typeof StudioProgressRoute
   '/reviews': typeof StudioReviewsRoute
   '/scout': typeof StudioScoutRoute
   '/settings': typeof StudioSettingsRoute
   '/workspaces': typeof StudioWorkspacesRoute
   '/api/parse-roadmap': typeof ApiParseRoadmapRoute
-  '/embed/$id': typeof EmbedIdRoute
-  '/share/$id': typeof ShareIdRoute
   '/workspace/$id': typeof WorkspaceIdRoute
   '/read/$id': typeof StudioReadIdRoute
-  '/api/credits/status': typeof ApiCreditsStatusRoute
-  '/api/dashboard/coaching': typeof ApiDashboardCoachingRoute
-  '/api/dashboard/review': typeof ApiDashboardReviewRoute
-  '/api/gallery/fork': typeof ApiGalleryForkRoute
-  '/api/gallery/list': typeof ApiGalleryListRoute
-  '/api/gallery/set-public': typeof ApiGallerySetPublicRoute
   '/api/quiz/generate': typeof ApiQuizGenerateRoute
   '/api/scout/agents': typeof ApiScoutAgentsRoute
+  '/api/scout/checks': typeof ApiScoutChecksRoute
   '/api/scout/digest': typeof ApiScoutDigestRoute
   '/api/scout/recent': typeof ApiScoutRecentRoute
   '/api/scout/resources': typeof ApiScoutResourcesRoute
   '/api/scout/settings': typeof ApiScoutSettingsRoute
   '/api/scout/sources': typeof ApiScoutSourcesRoute
   '/api/scout/start': typeof ApiScoutStartRoute
-  '/api/settings/delete': typeof ApiSettingsDeleteRoute
-  '/api/settings/export': typeof ApiSettingsExportRoute
-  '/api/settings/privacy': typeof ApiSettingsPrivacyRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
   '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
   '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
@@ -327,44 +236,31 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof MarketingIndexRoute
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/contact': typeof MarketingContactRoute
-  '/gallery': typeof MarketingGalleryRoute
-  '/pricing': typeof MarketingPricingRoute
   '/privacy': typeof MarketingPrivacyRoute
   '/terms': typeof MarketingTermsRoute
-  '/analytics': typeof StudioAnalyticsRoute
   '/create': typeof StudioCreateRoute
   '/dashboard': typeof StudioDashboardRoute
+  '/glossary': typeof StudioGlossaryRoute
   '/learn': typeof StudioLearnRoute
   '/library': typeof StudioLibraryRoute
   '/notes': typeof StudioNotesRoute
+  '/progress': typeof StudioProgressRoute
   '/reviews': typeof StudioReviewsRoute
   '/scout': typeof StudioScoutRoute
   '/settings': typeof StudioSettingsRoute
   '/workspaces': typeof StudioWorkspacesRoute
   '/api/parse-roadmap': typeof ApiParseRoadmapRoute
-  '/embed/$id': typeof EmbedIdRoute
-  '/share/$id': typeof ShareIdRoute
   '/workspace/$id': typeof WorkspaceIdRoute
   '/read/$id': typeof StudioReadIdRoute
-  '/api/credits/status': typeof ApiCreditsStatusRoute
-  '/api/dashboard/coaching': typeof ApiDashboardCoachingRoute
-  '/api/dashboard/review': typeof ApiDashboardReviewRoute
-  '/api/gallery/fork': typeof ApiGalleryForkRoute
-  '/api/gallery/list': typeof ApiGalleryListRoute
-  '/api/gallery/set-public': typeof ApiGallerySetPublicRoute
   '/api/quiz/generate': typeof ApiQuizGenerateRoute
   '/api/scout/agents': typeof ApiScoutAgentsRoute
+  '/api/scout/checks': typeof ApiScoutChecksRoute
   '/api/scout/digest': typeof ApiScoutDigestRoute
   '/api/scout/recent': typeof ApiScoutRecentRoute
   '/api/scout/resources': typeof ApiScoutResourcesRoute
   '/api/scout/settings': typeof ApiScoutSettingsRoute
   '/api/scout/sources': typeof ApiScoutSourcesRoute
   '/api/scout/start': typeof ApiScoutStartRoute
-  '/api/settings/delete': typeof ApiSettingsDeleteRoute
-  '/api/settings/export': typeof ApiSettingsExportRoute
-  '/api/settings/privacy': typeof ApiSettingsPrivacyRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
   '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
   '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
@@ -374,45 +270,32 @@ export interface FileRoutesById {
   '/_marketing': typeof MarketingRouteWithChildren
   '/_studio': typeof StudioRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_marketing/contact': typeof MarketingContactRoute
-  '/_marketing/gallery': typeof MarketingGalleryRoute
-  '/_marketing/pricing': typeof MarketingPricingRoute
   '/_marketing/privacy': typeof MarketingPrivacyRoute
   '/_marketing/terms': typeof MarketingTermsRoute
-  '/_studio/analytics': typeof StudioAnalyticsRoute
   '/_studio/create': typeof StudioCreateRoute
   '/_studio/dashboard': typeof StudioDashboardRoute
+  '/_studio/glossary': typeof StudioGlossaryRoute
   '/_studio/learn': typeof StudioLearnRoute
   '/_studio/library': typeof StudioLibraryRoute
   '/_studio/notes': typeof StudioNotesRoute
+  '/_studio/progress': typeof StudioProgressRoute
   '/_studio/reviews': typeof StudioReviewsRoute
   '/_studio/scout': typeof StudioScoutRoute
   '/_studio/settings': typeof StudioSettingsRoute
   '/_studio/workspaces': typeof StudioWorkspacesRoute
   '/api/parse-roadmap': typeof ApiParseRoadmapRoute
-  '/embed/$id': typeof EmbedIdRoute
-  '/share/$id': typeof ShareIdRoute
   '/workspace/$id': typeof WorkspaceIdRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/_studio/read/$id': typeof StudioReadIdRoute
-  '/api/credits/status': typeof ApiCreditsStatusRoute
-  '/api/dashboard/coaching': typeof ApiDashboardCoachingRoute
-  '/api/dashboard/review': typeof ApiDashboardReviewRoute
-  '/api/gallery/fork': typeof ApiGalleryForkRoute
-  '/api/gallery/list': typeof ApiGalleryListRoute
-  '/api/gallery/set-public': typeof ApiGallerySetPublicRoute
   '/api/quiz/generate': typeof ApiQuizGenerateRoute
   '/api/scout/agents': typeof ApiScoutAgentsRoute
+  '/api/scout/checks': typeof ApiScoutChecksRoute
   '/api/scout/digest': typeof ApiScoutDigestRoute
   '/api/scout/recent': typeof ApiScoutRecentRoute
   '/api/scout/resources': typeof ApiScoutResourcesRoute
   '/api/scout/settings': typeof ApiScoutSettingsRoute
   '/api/scout/sources': typeof ApiScoutSourcesRoute
   '/api/scout/start': typeof ApiScoutStartRoute
-  '/api/settings/delete': typeof ApiSettingsDeleteRoute
-  '/api/settings/export': typeof ApiSettingsExportRoute
-  '/api/settings/privacy': typeof ApiSettingsPrivacyRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
   '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
   '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
@@ -422,44 +305,31 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/robots.txt'
-    | '/sitemap.xml'
-    | '/contact'
-    | '/gallery'
-    | '/pricing'
     | '/privacy'
     | '/terms'
-    | '/analytics'
     | '/create'
     | '/dashboard'
+    | '/glossary'
     | '/learn'
     | '/library'
     | '/notes'
+    | '/progress'
     | '/reviews'
     | '/scout'
     | '/settings'
     | '/workspaces'
     | '/api/parse-roadmap'
-    | '/embed/$id'
-    | '/share/$id'
     | '/workspace/$id'
     | '/read/$id'
-    | '/api/credits/status'
-    | '/api/dashboard/coaching'
-    | '/api/dashboard/review'
-    | '/api/gallery/fork'
-    | '/api/gallery/list'
-    | '/api/gallery/set-public'
     | '/api/quiz/generate'
     | '/api/scout/agents'
+    | '/api/scout/checks'
     | '/api/scout/digest'
     | '/api/scout/recent'
     | '/api/scout/resources'
     | '/api/scout/settings'
     | '/api/scout/sources'
     | '/api/scout/start'
-    | '/api/settings/delete'
-    | '/api/settings/export'
-    | '/api/settings/privacy'
     | '/api/srs/save'
     | '/api/scout/packs/$id'
     | '/api/scout/packs/$id/approve'
@@ -467,44 +337,31 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/robots.txt'
-    | '/sitemap.xml'
-    | '/contact'
-    | '/gallery'
-    | '/pricing'
     | '/privacy'
     | '/terms'
-    | '/analytics'
     | '/create'
     | '/dashboard'
+    | '/glossary'
     | '/learn'
     | '/library'
     | '/notes'
+    | '/progress'
     | '/reviews'
     | '/scout'
     | '/settings'
     | '/workspaces'
     | '/api/parse-roadmap'
-    | '/embed/$id'
-    | '/share/$id'
     | '/workspace/$id'
     | '/read/$id'
-    | '/api/credits/status'
-    | '/api/dashboard/coaching'
-    | '/api/dashboard/review'
-    | '/api/gallery/fork'
-    | '/api/gallery/list'
-    | '/api/gallery/set-public'
     | '/api/quiz/generate'
     | '/api/scout/agents'
+    | '/api/scout/checks'
     | '/api/scout/digest'
     | '/api/scout/recent'
     | '/api/scout/resources'
     | '/api/scout/settings'
     | '/api/scout/sources'
     | '/api/scout/start'
-    | '/api/settings/delete'
-    | '/api/settings/export'
-    | '/api/settings/privacy'
     | '/api/srs/save'
     | '/api/scout/packs/$id'
     | '/api/scout/packs/$id/approve'
@@ -513,45 +370,32 @@ export interface FileRouteTypes {
     | '/_marketing'
     | '/_studio'
     | '/robots.txt'
-    | '/sitemap.xml'
-    | '/_marketing/contact'
-    | '/_marketing/gallery'
-    | '/_marketing/pricing'
     | '/_marketing/privacy'
     | '/_marketing/terms'
-    | '/_studio/analytics'
     | '/_studio/create'
     | '/_studio/dashboard'
+    | '/_studio/glossary'
     | '/_studio/learn'
     | '/_studio/library'
     | '/_studio/notes'
+    | '/_studio/progress'
     | '/_studio/reviews'
     | '/_studio/scout'
     | '/_studio/settings'
     | '/_studio/workspaces'
     | '/api/parse-roadmap'
-    | '/embed/$id'
-    | '/share/$id'
     | '/workspace/$id'
     | '/_marketing/'
     | '/_studio/read/$id'
-    | '/api/credits/status'
-    | '/api/dashboard/coaching'
-    | '/api/dashboard/review'
-    | '/api/gallery/fork'
-    | '/api/gallery/list'
-    | '/api/gallery/set-public'
     | '/api/quiz/generate'
     | '/api/scout/agents'
+    | '/api/scout/checks'
     | '/api/scout/digest'
     | '/api/scout/recent'
     | '/api/scout/resources'
     | '/api/scout/settings'
     | '/api/scout/sources'
     | '/api/scout/start'
-    | '/api/settings/delete'
-    | '/api/settings/export'
-    | '/api/settings/privacy'
     | '/api/srs/save'
     | '/api/scout/packs/$id'
     | '/api/scout/packs/$id/approve'
@@ -561,28 +405,17 @@ export interface RootRouteChildren {
   MarketingRoute: typeof MarketingRouteWithChildren
   StudioRoute: typeof StudioRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiParseRoadmapRoute: typeof ApiParseRoadmapRoute
-  EmbedIdRoute: typeof EmbedIdRoute
-  ShareIdRoute: typeof ShareIdRoute
   WorkspaceIdRoute: typeof WorkspaceIdRoute
-  ApiCreditsStatusRoute: typeof ApiCreditsStatusRoute
-  ApiDashboardCoachingRoute: typeof ApiDashboardCoachingRoute
-  ApiDashboardReviewRoute: typeof ApiDashboardReviewRoute
-  ApiGalleryForkRoute: typeof ApiGalleryForkRoute
-  ApiGalleryListRoute: typeof ApiGalleryListRoute
-  ApiGallerySetPublicRoute: typeof ApiGallerySetPublicRoute
   ApiQuizGenerateRoute: typeof ApiQuizGenerateRoute
   ApiScoutAgentsRoute: typeof ApiScoutAgentsRoute
+  ApiScoutChecksRoute: typeof ApiScoutChecksRoute
   ApiScoutDigestRoute: typeof ApiScoutDigestRoute
   ApiScoutRecentRoute: typeof ApiScoutRecentRoute
   ApiScoutResourcesRoute: typeof ApiScoutResourcesRoute
   ApiScoutSettingsRoute: typeof ApiScoutSettingsRoute
   ApiScoutSourcesRoute: typeof ApiScoutSourcesRoute
   ApiScoutStartRoute: typeof ApiScoutStartRoute
-  ApiSettingsDeleteRoute: typeof ApiSettingsDeleteRoute
-  ApiSettingsExportRoute: typeof ApiSettingsExportRoute
-  ApiSettingsPrivacyRoute: typeof ApiSettingsPrivacyRoute
   ApiSrsSaveRoute: typeof ApiSrsSaveRoute
   ApiScoutPacksIdRoute: typeof ApiScoutPacksIdRouteWithChildren
 }
@@ -610,39 +443,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_marketing/': {
       id: '/_marketing/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof MarketingIndexRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/contact': {
-      id: '/_marketing/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof MarketingContactRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/gallery': {
-      id: '/_marketing/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof MarketingGalleryRouteImport
-      parentRoute: typeof MarketingRoute
-    }
-    '/_marketing/pricing': {
-      id: '/_marketing/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof MarketingPricingRouteImport
       parentRoute: typeof MarketingRoute
     }
     '/_marketing/privacy': {
@@ -659,13 +464,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingTermsRouteImport
       parentRoute: typeof MarketingRoute
     }
-    '/_studio/analytics': {
-      id: '/_studio/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof StudioAnalyticsRouteImport
-      parentRoute: typeof StudioRoute
-    }
     '/_studio/create': {
       id: '/_studio/create'
       path: '/create'
@@ -678,6 +476,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof StudioDashboardRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/_studio/glossary': {
+      id: '/_studio/glossary'
+      path: '/glossary'
+      fullPath: '/glossary'
+      preLoaderRoute: typeof StudioGlossaryRouteImport
       parentRoute: typeof StudioRoute
     }
     '/_studio/learn': {
@@ -699,6 +504,13 @@ declare module '@tanstack/react-router' {
       path: '/notes'
       fullPath: '/notes'
       preLoaderRoute: typeof StudioNotesRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/_studio/progress': {
+      id: '/_studio/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof StudioProgressRouteImport
       parentRoute: typeof StudioRoute
     }
     '/_studio/reviews': {
@@ -736,20 +548,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiParseRoadmapRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/embed/$id': {
-      id: '/embed/$id'
-      path: '/embed/$id'
-      fullPath: '/embed/$id'
-      preLoaderRoute: typeof EmbedIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/share/$id': {
-      id: '/share/$id'
-      path: '/share/$id'
-      fullPath: '/share/$id'
-      preLoaderRoute: typeof ShareIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/workspace/$id': {
       id: '/workspace/$id'
       path: '/workspace/$id'
@@ -764,48 +562,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioReadIdRouteImport
       parentRoute: typeof StudioRoute
     }
-    '/api/credits/status': {
-      id: '/api/credits/status'
-      path: '/api/credits/status'
-      fullPath: '/api/credits/status'
-      preLoaderRoute: typeof ApiCreditsStatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/dashboard/coaching': {
-      id: '/api/dashboard/coaching'
-      path: '/api/dashboard/coaching'
-      fullPath: '/api/dashboard/coaching'
-      preLoaderRoute: typeof ApiDashboardCoachingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/dashboard/review': {
-      id: '/api/dashboard/review'
-      path: '/api/dashboard/review'
-      fullPath: '/api/dashboard/review'
-      preLoaderRoute: typeof ApiDashboardReviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/gallery/fork': {
-      id: '/api/gallery/fork'
-      path: '/api/gallery/fork'
-      fullPath: '/api/gallery/fork'
-      preLoaderRoute: typeof ApiGalleryForkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/gallery/list': {
-      id: '/api/gallery/list'
-      path: '/api/gallery/list'
-      fullPath: '/api/gallery/list'
-      preLoaderRoute: typeof ApiGalleryListRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/gallery/set-public': {
-      id: '/api/gallery/set-public'
-      path: '/api/gallery/set-public'
-      fullPath: '/api/gallery/set-public'
-      preLoaderRoute: typeof ApiGallerySetPublicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/quiz/generate': {
       id: '/api/quiz/generate'
       path: '/api/quiz/generate'
@@ -818,6 +574,13 @@ declare module '@tanstack/react-router' {
       path: '/api/scout/agents'
       fullPath: '/api/scout/agents'
       preLoaderRoute: typeof ApiScoutAgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/scout/checks': {
+      id: '/api/scout/checks'
+      path: '/api/scout/checks'
+      fullPath: '/api/scout/checks'
+      preLoaderRoute: typeof ApiScoutChecksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/scout/digest': {
@@ -862,27 +625,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiScoutStartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/settings/delete': {
-      id: '/api/settings/delete'
-      path: '/api/settings/delete'
-      fullPath: '/api/settings/delete'
-      preLoaderRoute: typeof ApiSettingsDeleteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/settings/export': {
-      id: '/api/settings/export'
-      path: '/api/settings/export'
-      fullPath: '/api/settings/export'
-      preLoaderRoute: typeof ApiSettingsExportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/settings/privacy': {
-      id: '/api/settings/privacy'
-      path: '/api/settings/privacy'
-      fullPath: '/api/settings/privacy'
-      preLoaderRoute: typeof ApiSettingsPrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/srs/save': {
       id: '/api/srs/save'
       path: '/api/srs/save'
@@ -908,18 +650,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface MarketingRouteChildren {
-  MarketingContactRoute: typeof MarketingContactRoute
-  MarketingGalleryRoute: typeof MarketingGalleryRoute
-  MarketingPricingRoute: typeof MarketingPricingRoute
   MarketingPrivacyRoute: typeof MarketingPrivacyRoute
   MarketingTermsRoute: typeof MarketingTermsRoute
   MarketingIndexRoute: typeof MarketingIndexRoute
 }
 
 const MarketingRouteChildren: MarketingRouteChildren = {
-  MarketingContactRoute: MarketingContactRoute,
-  MarketingGalleryRoute: MarketingGalleryRoute,
-  MarketingPricingRoute: MarketingPricingRoute,
   MarketingPrivacyRoute: MarketingPrivacyRoute,
   MarketingTermsRoute: MarketingTermsRoute,
   MarketingIndexRoute: MarketingIndexRoute,
@@ -930,12 +666,13 @@ const MarketingRouteWithChildren = MarketingRoute._addFileChildren(
 )
 
 interface StudioRouteChildren {
-  StudioAnalyticsRoute: typeof StudioAnalyticsRoute
   StudioCreateRoute: typeof StudioCreateRoute
   StudioDashboardRoute: typeof StudioDashboardRoute
+  StudioGlossaryRoute: typeof StudioGlossaryRoute
   StudioLearnRoute: typeof StudioLearnRoute
   StudioLibraryRoute: typeof StudioLibraryRoute
   StudioNotesRoute: typeof StudioNotesRoute
+  StudioProgressRoute: typeof StudioProgressRoute
   StudioReviewsRoute: typeof StudioReviewsRoute
   StudioScoutRoute: typeof StudioScoutRoute
   StudioSettingsRoute: typeof StudioSettingsRoute
@@ -944,12 +681,13 @@ interface StudioRouteChildren {
 }
 
 const StudioRouteChildren: StudioRouteChildren = {
-  StudioAnalyticsRoute: StudioAnalyticsRoute,
   StudioCreateRoute: StudioCreateRoute,
   StudioDashboardRoute: StudioDashboardRoute,
+  StudioGlossaryRoute: StudioGlossaryRoute,
   StudioLearnRoute: StudioLearnRoute,
   StudioLibraryRoute: StudioLibraryRoute,
   StudioNotesRoute: StudioNotesRoute,
+  StudioProgressRoute: StudioProgressRoute,
   StudioReviewsRoute: StudioReviewsRoute,
   StudioScoutRoute: StudioScoutRoute,
   StudioSettingsRoute: StudioSettingsRoute,
@@ -976,28 +714,17 @@ const rootRouteChildren: RootRouteChildren = {
   MarketingRoute: MarketingRouteWithChildren,
   StudioRoute: StudioRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiParseRoadmapRoute: ApiParseRoadmapRoute,
-  EmbedIdRoute: EmbedIdRoute,
-  ShareIdRoute: ShareIdRoute,
   WorkspaceIdRoute: WorkspaceIdRoute,
-  ApiCreditsStatusRoute: ApiCreditsStatusRoute,
-  ApiDashboardCoachingRoute: ApiDashboardCoachingRoute,
-  ApiDashboardReviewRoute: ApiDashboardReviewRoute,
-  ApiGalleryForkRoute: ApiGalleryForkRoute,
-  ApiGalleryListRoute: ApiGalleryListRoute,
-  ApiGallerySetPublicRoute: ApiGallerySetPublicRoute,
   ApiQuizGenerateRoute: ApiQuizGenerateRoute,
   ApiScoutAgentsRoute: ApiScoutAgentsRoute,
+  ApiScoutChecksRoute: ApiScoutChecksRoute,
   ApiScoutDigestRoute: ApiScoutDigestRoute,
   ApiScoutRecentRoute: ApiScoutRecentRoute,
   ApiScoutResourcesRoute: ApiScoutResourcesRoute,
   ApiScoutSettingsRoute: ApiScoutSettingsRoute,
   ApiScoutSourcesRoute: ApiScoutSourcesRoute,
   ApiScoutStartRoute: ApiScoutStartRoute,
-  ApiSettingsDeleteRoute: ApiSettingsDeleteRoute,
-  ApiSettingsExportRoute: ApiSettingsExportRoute,
-  ApiSettingsPrivacyRoute: ApiSettingsPrivacyRoute,
   ApiSrsSaveRoute: ApiSrsSaveRoute,
   ApiScoutPacksIdRoute: ApiScoutPacksIdRouteWithChildren,
 }

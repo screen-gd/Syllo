@@ -4,6 +4,12 @@ import { getScoutAccessToken } from "@/lib/scout/api-client";
 const privateApis = createMiddleware().server(async ({ request, next }) => {
     const path = new URL(request.url).pathname;
     if (path.startsWith("/api/") || path.startsWith("/_serverFn/")) {
+        const { isCrossOriginRequest } = await import("@/lib/server/request-origin");
+        if (isCrossOriginRequest(request))
+            return Response.json(
+                { success: false, error: "Cross-origin requests are not allowed." },
+                { status: 403 },
+            );
         const { canAccessServer } = await import("@/lib/server/access");
         if (!(await canAccessServer(request)))
             return Response.json(

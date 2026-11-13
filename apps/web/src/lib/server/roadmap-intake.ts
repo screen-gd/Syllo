@@ -1,4 +1,3 @@
-import { deductCredits } from "@/lib/server/credits";
 import { generateStructuredJson, testAiConnection } from "@/lib/server/ai";
 import { getAiProviderInvalidKeyMessage, isAiProvider } from "@/lib/ai-config";
 import { truncateForAi } from "@/lib/openai";
@@ -432,27 +431,6 @@ export async function handleRoadmapIntake(req: Request) {
                         message: (aiError as { message?: string } | undefined)?.message || "Provider connection failed",
                     },
                     { status: 502 }
-                );
-            }
-        }
-
-        if (!useUserKey) {
-            const creditResult = await deductCredits({
-                kind: "workspace_generation",
-                userApiKey: undefined,
-                metadata: {
-                    mode: mode === "intern" ? "intern" : "general",
-                },
-            });
-
-            if (!creditResult.charged && creditResult.reason === "insufficient") {
-                return Response.json(
-                    {
-                        error: "limit_reached",
-                        plan: creditResult.status.planId,
-                        message: `You have ${creditResult.status.remaining} credits remaining. Workspace generation costs 10 credits. Add your own provider key or upgrade for a higher allowance.`,
-                    },
-                    { status: 403 }
                 );
             }
         }

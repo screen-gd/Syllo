@@ -9,7 +9,7 @@ interface Props {
     onUpdate: (updater: (s: Section) => Section) => void;
 }
 
-export default function Videos({ section, onUpdate }: Props) {
+export default function Videos({ section }: Props) {
     const [activeVideoId, setActiveVideoId] = useState<string>(
         section.data[0]?.id || ""
     );
