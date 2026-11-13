@@ -109,11 +109,6 @@ async function readConnection(
     return { base: url.origin, token: parsed.data.token, pid: parsed.data.pid };
 }
 
-/** AbortSignal.timeout rejects with a DOMException named TimeoutError. */
-function isTimeoutError(error: unknown): boolean {
-    return error instanceof Error && error.name === "TimeoutError";
-}
-
 /** A stale connection file often outlives the app; EPERM still means alive. */
 function processAlive(pid: number): boolean {
     try {
@@ -179,10 +174,12 @@ async function callScreenTime(
             },
         );
     } catch (error) {
-        // A timeout means the app is alive but slow, not gone: surface it so
-        // a half-finished stop does not read as "not running".
-        if (isTimeoutError(error)) return { kind: "unavailable" };
-        return { kind: "not-running" };
+        // Only a refused connection proves the app is gone. A timeout or a
+        // dropped socket leaves the session state uncertain, so report it.
+        const cause = error instanceof Error ? error.cause : undefined;
+        return hasCode(cause, "ECONNREFUSED")
+            ? { kind: "not-running" }
+            : { kind: "unavailable" };
     }
 }
 

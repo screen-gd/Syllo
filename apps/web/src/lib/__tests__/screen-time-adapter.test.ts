@@ -35,6 +35,7 @@ interface RecordedRequest {
 let server: http.Server;
 let requests: RecordedRequest[];
 let hang: boolean;
+let destroy: boolean;
 let responder: (request: RecordedRequest) => {
     status: number;
     payload: unknown;
@@ -46,6 +47,7 @@ let connectionPath: string;
 beforeEach(async () => {
     requests = [];
     hang = false;
+    destroy = false;
     responder = () => ({ status: 200, payload: { session: null } });
     server = http.createServer((req, res) => {
         let raw = "";
@@ -67,6 +69,10 @@ beforeEach(async () => {
             };
             requests.push(recorded);
             if (hang) return;
+            if (destroy) {
+                req.socket.destroy();
+                return;
+            }
             const { status, payload } = responder(recorded);
             res.writeHead(status, { "Content-Type": "application/json" });
             res.end(JSON.stringify(payload));
@@ -309,6 +315,15 @@ describe("screen time http adapter", () => {
         },
         10_000,
     );
+
+    it("reports unavailable when the connection drops mid-call", async () => {
+        await writeConnection();
+        destroy = true;
+        await expect(
+            stopFocusSession({ connectionPath }),
+        ).resolves.toEqual({ kind: "unavailable" });
+        expect(requests[0].method).toBe("DELETE");
+    });
 });
 
 describe("connectionFilePath", () => {
