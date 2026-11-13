@@ -245,6 +245,50 @@ describe("createFocusSync", () => {
         expect(sync.version()).toBe(0);
     });
 
+    it("stops the running session when a short focus replaces it", async () => {
+        const { sent, statuses, sync, hold } = makeSync(() => 0);
+        let release!: () => void;
+        hold(new Promise<void>((done) => (release = done)));
+        sync.update({
+            kind: "start",
+            goal: "g",
+            resourceUrls: [],
+            endAt: 1_500_000,
+        });
+        sync.update({ kind: "stop" });
+        sync.update({
+            kind: "start",
+            goal: "short",
+            resourceUrls: [],
+            endAt: 58_000,
+        });
+        release();
+        await vi.waitFor(() => expect(statuses).toHaveLength(2));
+        expect(sent[0]).toMatchObject({ kind: "start" });
+        expect(sent[1]).toEqual({ kind: "stop" });
+    });
+
+    it("stays quiet when the short focus is the running period", async () => {
+        let now = 0;
+        const { sent, statuses, sync } = makeSync(() => now);
+        sync.update({
+            kind: "start",
+            goal: "g",
+            resourceUrls: [],
+            endAt: 90_000,
+        });
+        await vi.waitFor(() => expect(statuses).toHaveLength(1));
+        now = 60_000;
+        sync.update({
+            kind: "start",
+            goal: "renamed",
+            resourceUrls: [],
+            endAt: 90_000,
+        });
+        await new Promise((done) => setTimeout(done, 0));
+        expect(sent).toHaveLength(1);
+    });
+
     it("clamps the duration to the screen time maximum", () => {
         const { sent, sync } = makeSync(() => 0);
         sync.update({

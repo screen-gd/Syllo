@@ -172,9 +172,14 @@ export function createFocusSync({
             if (durationSeconds <= 0) {
                 outgoing = { kind: "stop" };
             } else if (durationSeconds < MIN_FOCUS_SECONDS) {
-                // Under a minute left: Screen Time would refuse anyway, so
-                // stay quiet instead of sending a doomed start.
-                return;
+                // Under a minute left: Screen Time would refuse the start
+                // anyway. If it still holds an earlier session of ours,
+                // stop that instead of leaving it blocking.
+                if (lastSentStart && lastStartEndAt !== intent.endAt) {
+                    outgoing = { kind: "stop" };
+                } else {
+                    return;
+                }
             } else {
                 outgoing = {
                     kind: "start",
