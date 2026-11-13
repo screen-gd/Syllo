@@ -43,7 +43,8 @@ import {
     usePersonalData,
 } from "@/lib/personal/store";
 import StudyVideo from "@/components/learning/StudyVideo";
-import { Pomodoro } from "@/components/learning/Pomodoro";
+import { Pomodoro, useStudyFocus } from "@/components/learning/Pomodoro";
+import type { StudyFocus } from "@/lib/screen-time/client";
 import ReviewComposer from "@/components/learning/ReviewComposer";
 import TermComposer from "@/components/learning/TermComposer";
 import {
@@ -202,6 +203,23 @@ export default function LearnPage({
     const uid = useId().replace(/:/g, "");
     const tabId = (key: TabKey) => `${uid}-tab-${key}`;
     const panelId = (key: TabKey) => `${uid}-panel-${key}`;
+
+    // The Pomodoro provider uses this to name the Screen Time session and to
+    // keep the lesson's links reachable while blocking runs.
+    const studyFocus = useMemo<StudyFocus | null>(() => {
+        if (!item) return null;
+        const title = item.task.title || item.task.text;
+        const goal = [title, item.sectionTitle].filter(Boolean).join(" · ");
+        const resourceUrls = [
+            ...item.resources.map((resource) => resource.url),
+            ...(videoResource ? [videoResource.url] : []),
+        ].flatMap((value) => {
+            const safe = safeResourceUrl(value);
+            return safe ? [safe] : [];
+        });
+        return { goal, resourceUrls };
+    }, [item, videoResource]);
+    useStudyFocus(studyFocus);
 
     useEffect(() => {
         if (!activeId || !activeRoadmap) return;

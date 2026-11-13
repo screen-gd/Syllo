@@ -63,6 +63,14 @@ Scout reads captions from your machine, caches source text in `.data/syllo.db`, 
 
 Scout's flow is goal, source review, draft roadmap, then your explicit approval. Review cards are suggestions until kept. You can add URLs manually without an AI key. Optional creator RSS checks are off on a fresh database; if enabled, they run at 03:00 Asia/Dubai while the local worker runs. They only suggest links and do not rewrite approved roadmaps.
 
+## Screen Time focus link
+
+Syllo can start a focus session in the Screen Time app while a Pomodoro focus period runs. Screen Time then blocks your chosen distracting apps and sites. Pausing, resetting, or ending the period stops the session.
+
+Turn it on in Settings. It is off by default. Syllo tells Screen Time your goal, how long the period runs, and which sites stay open: Syllo itself and the lesson's links. Your app and site rules stay configured in Screen Time.
+
+This works only when Syllo runs on the same computer as Screen Time. A hosted Syllo cannot reach it, and there is no pairing step. The Screen Time token stays in the connection file on Syllo's server and never reaches the browser. The timer keeps working when Screen Time is not installed or not running.
+
 ## Where data lives
 
 | Data | Local storage | Optional cloud |
@@ -73,6 +81,7 @@ Scout's flow is goal, source review, draft roadmap, then your explicit approval.
 | Original workspace before the new bridge | `syllo:workspace-before-personal-v1` | Excluded |
 | Scout drafts, sources, transcripts, jobs | Local `.data/syllo.db` SQLite file | Excluded |
 | AI keys | Browser settings or worker environment | Excluded |
+| Screen Time link setting | `syllo:screen-time-link` in localStorage | Excluded |
 
 Settings exports metadata and the legacy workspace backup. EPUB binaries and API keys are excluded; retain your original books. Restore merges newer metadata by record timestamp. Sync uses the newest revision of each record, including deletion markers; simultaneous edits to the same record do not merge individual fields. Signing out keeps this device's local cache.
 

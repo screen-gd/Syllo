@@ -38,6 +38,7 @@ import { Route as ApiScoutResourcesRouteImport } from './routes/api/scout/resour
 import { Route as ApiScoutSettingsRouteImport } from './routes/api/scout/settings'
 import { Route as ApiScoutSourcesRouteImport } from './routes/api/scout/sources'
 import { Route as ApiScoutStartRouteImport } from './routes/api/scout/start'
+import { Route as ApiScreenTimeSessionRouteImport } from './routes/api/screen-time/session'
 import { Route as ApiSrsSaveRouteImport } from './routes/api/srs/save'
 import { Route as ApiScoutPacksIdRouteImport } from './routes/api/scout/packs.$id'
 import { Route as ApiScoutPacksIdApproveRouteImport } from './routes/api/scout/packs.$id.approve'
@@ -185,6 +186,11 @@ const ApiScoutStartRoute = ApiScoutStartRouteImport.update({
   path: '/api/scout/start',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiScreenTimeSessionRoute = ApiScreenTimeSessionRouteImport.update({
+  id: '/api/screen-time/session',
+  path: '/api/screen-time/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSrsSaveRoute = ApiSrsSaveRouteImport.update({
   id: '/api/srs/save',
   path: '/api/srs/save',
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/api/scout/settings': typeof ApiScoutSettingsRoute
   '/api/scout/sources': typeof ApiScoutSourcesRoute
   '/api/scout/start': typeof ApiScoutStartRoute
+  '/api/screen-time/session': typeof ApiScreenTimeSessionRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
   '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
   '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
@@ -261,6 +268,7 @@ export interface FileRoutesByTo {
   '/api/scout/settings': typeof ApiScoutSettingsRoute
   '/api/scout/sources': typeof ApiScoutSourcesRoute
   '/api/scout/start': typeof ApiScoutStartRoute
+  '/api/screen-time/session': typeof ApiScreenTimeSessionRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
   '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
   '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
@@ -296,6 +304,7 @@ export interface FileRoutesById {
   '/api/scout/settings': typeof ApiScoutSettingsRoute
   '/api/scout/sources': typeof ApiScoutSourcesRoute
   '/api/scout/start': typeof ApiScoutStartRoute
+  '/api/screen-time/session': typeof ApiScreenTimeSessionRoute
   '/api/srs/save': typeof ApiSrsSaveRoute
   '/api/scout/packs/$id': typeof ApiScoutPacksIdRouteWithChildren
   '/api/scout/packs/$id/approve': typeof ApiScoutPacksIdApproveRoute
@@ -330,6 +339,7 @@ export interface FileRouteTypes {
     | '/api/scout/settings'
     | '/api/scout/sources'
     | '/api/scout/start'
+    | '/api/screen-time/session'
     | '/api/srs/save'
     | '/api/scout/packs/$id'
     | '/api/scout/packs/$id/approve'
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/api/scout/settings'
     | '/api/scout/sources'
     | '/api/scout/start'
+    | '/api/screen-time/session'
     | '/api/srs/save'
     | '/api/scout/packs/$id'
     | '/api/scout/packs/$id/approve'
@@ -396,6 +407,7 @@ export interface FileRouteTypes {
     | '/api/scout/settings'
     | '/api/scout/sources'
     | '/api/scout/start'
+    | '/api/screen-time/session'
     | '/api/srs/save'
     | '/api/scout/packs/$id'
     | '/api/scout/packs/$id/approve'
@@ -416,6 +428,7 @@ export interface RootRouteChildren {
   ApiScoutSettingsRoute: typeof ApiScoutSettingsRoute
   ApiScoutSourcesRoute: typeof ApiScoutSourcesRoute
   ApiScoutStartRoute: typeof ApiScoutStartRoute
+  ApiScreenTimeSessionRoute: typeof ApiScreenTimeSessionRoute
   ApiSrsSaveRoute: typeof ApiSrsSaveRoute
   ApiScoutPacksIdRoute: typeof ApiScoutPacksIdRouteWithChildren
 }
@@ -625,6 +638,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiScoutStartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/screen-time/session': {
+      id: '/api/screen-time/session'
+      path: '/api/screen-time/session'
+      fullPath: '/api/screen-time/session'
+      preLoaderRoute: typeof ApiScreenTimeSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/srs/save': {
       id: '/api/srs/save'
       path: '/api/srs/save'
@@ -725,6 +745,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiScoutSettingsRoute: ApiScoutSettingsRoute,
   ApiScoutSourcesRoute: ApiScoutSourcesRoute,
   ApiScoutStartRoute: ApiScoutStartRoute,
+  ApiScreenTimeSessionRoute: ApiScreenTimeSessionRoute,
   ApiSrsSaveRoute: ApiSrsSaveRoute,
   ApiScoutPacksIdRoute: ApiScoutPacksIdRouteWithChildren,
 }
