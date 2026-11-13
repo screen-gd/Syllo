@@ -29,7 +29,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="mb-10 text-center sm:text-left">
-                <h2 className="text-2xl font-semibold text-text mb-2 drop-shadow-md">
+                <h2 className="text-2xl font-semibold text-text mb-2">
                     🏁 {section.title}
                 </h2>
                 <p className="text-text-muted text-sm">Visualize your journey and track major checkpoints.</p>
@@ -37,10 +37,8 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
 
             {/* Timeline */}
             <div className="relative isolate px-2 sm:px-0">
-                {/* Glow behind the line */}
-                <div className="absolute left-6 top-4 bottom-4 w-1 bg-accent/20 blur-sm rounded-full hidden sm:block" />
-                {/* Vertical line structure */}
-                <div className="absolute left-[23.5px] top-4 bottom-8 w-1 sm:block hidden rounded-full bg-accent via-border/50 to-transparent" />
+                {/* A single hairline runs behind the milestone dots. */}
+                <div className="absolute left-6 top-4 bottom-4 w-px bg-border hidden sm:block" />
 
                 <div className="space-y-6">
                     {(section.data || []).map((milestone, i) => {
@@ -53,7 +51,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                             ? "border-accent bg-accent/5 "
                             : inProgress
                                 ? "border-accent bg-accent/5  ring-1 ring-border-strong"
-                                : "border-border bg-surface/50 opacity-80 hover:opacity-100";
+                                : "border-border bg-surface opacity-80 hover:opacity-100";
 
                         const dotColor = milestone.completed
                             ? "bg-accent border-accent "
@@ -72,7 +70,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                     <div className={`w-4 h-4 rounded-full border-2 transition-all duration-500 ease-out ${dotColor}`} />
                                 </div>
 
-                                <div className={`rounded-2xl overflow-hidden transition-all duration-500 border-l-[3px] border-r border-t border-b hover:-translate-y-1  ${stateColor} ${isExpanded && !inProgress && !milestone.completed ? "ring-1 ring-border-strong" : ""}`}>
+                                <div className={`rounded-2xl overflow-hidden transition-all duration-500 border-l-[3px] border-r border-t border-b  ${stateColor} ${isExpanded && !inProgress && !milestone.completed ? "ring-1 ring-border-strong" : ""}`}>
 
                                     {/* Header click area */}
                                     <button
@@ -88,7 +86,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                 toggleComplete(milestone.id);
                                             }}
                                         >
-                                            {milestone.completed && <span className="text-text text-[12px] font-bold shadow-sm">✓</span>}
+                                            {milestone.completed && <span className="text-text text-[12px] font-bold">✓</span>}
                                         </div>
 
                                         <div className="flex-1 min-w-0">
@@ -112,9 +110,9 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                     {/* Accordion Expandable body */}
                                     <div className={`grid transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                                         <div className="overflow-hidden">
-                                            <div className="px-5 sm:px-6 pb-6 pt-2 space-y-8 border-t border-border mx-2 bg-transparent to-obsidian/30">
+                                            <div className="px-5 sm:px-6 pb-6 pt-2 space-y-8 border-t border-border mx-2 bg-transparent">
 
-                                                <p className="text-text-muted text-sm leading-relaxed whitespace-pre-line bg-surface/60 p-4 rounded-xl border border-border shadow-inner">
+                                                <p className="text-text-muted text-sm leading-relaxed whitespace-pre-line bg-surface-subtle p-4 rounded-xl border border-border">
                                                     {milestone.description}
                                                 </p>
 
@@ -136,7 +134,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                                                 return { ...ms, data: (ms.data || []).map((m: Milestone) => m.id === milestone.id ? { ...m, tasks: (m.tasks || []).map((t) => t.id === task.id ? { ...t, completed: !t.completed } : t) } : m) };
                                                                             });
                                                                         }}
-                                                                        className="mt-1 w-4 h-4 rounded transition-colors accent-indigo-500 border-border cursor-pointer"
+                                                                        className="mt-1 w-4 h-4 rounded transition-colors accent-[var(--color-accent)] border-border cursor-pointer"
                                                                     />
                                                                     <span className={`text-sm leading-relaxed transition-all duration-300 ${task.completed ? "text-text-muted line-through decoration-text-soft" : "text-text group-hover:text-accent-strong"}`}>
                                                                         {task.title}
@@ -155,7 +153,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                         </h4>
                                                         <div className="grid grid-cols-1 gap-4">
                                                             {(milestone.videos || []).map((video) => (
-                                                                <div key={video.id} className="rounded-xl overflow-hidden border border-border shadow-lg bg-page relative group">
+                                                                <div key={video.id} className="rounded-xl overflow-hidden border border-border bg-page relative group">
                                                                     <VideoPlayer url={video.url} title={video.title} description={video.description} />
                                                                 </div>
                                                             ))}
@@ -174,7 +172,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                                 <button
                                                                     key={res.id}
                                                                     type="button"
-                                                                    className="flex items-start gap-3 p-3 rounded-xl bg-surface-muted/40 hover:bg-surface-subtle border border-border text-left transition-all duration-200 group hover:-translate-y-0.5 hover:shadow-lg"
+                                                                    className="flex items-start gap-3 p-3 rounded-xl bg-surface-subtle hover:bg-surface-muted border border-border text-left transition-colors duration-200 group"
                                                                     onClick={() => setViewerUrl(res.url)}
                                                                 >
                                                                     <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-sm shrink-0 border border-accent/20 group-hover:bg-accent/20 transition-all">

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
-import ListSkeleton from "@/components/shared/ListSkeleton";
 import { Segmented } from "@/components/ui/segmented";
 import { useReviews } from "@/hooks/useReviews";
 import { personalEntries } from "@/lib/personal/store";
@@ -302,7 +301,31 @@ export default function ReviewsPage() {
             </div>
 
             {!loaded ? (
-                <ListSkeleton rows={3} />
+                <article
+                    className="sy-card sy-review-card"
+                    role="status"
+                    aria-label="Loading"
+                >
+                    <span className="sy-skel line" style={{ width: "26%" }} />
+                    <span
+                        className="sy-skel title"
+                        style={{ width: "64%", marginTop: 12 }}
+                    />
+                    <div className="sy-skel-pair" style={{ marginTop: 14 }}>
+                        <span
+                            className="sy-skel line-sm"
+                            style={{ width: "82%" }}
+                        />
+                        <span
+                            className="sy-skel line-sm"
+                            style={{ width: "58%" }}
+                        />
+                    </div>
+                    <span
+                        className="sy-skel action"
+                        style={{ width: 168, marginTop: 22 }}
+                    />
+                </article>
             ) : view === "due" ? (
                 <>
                     {current ? (

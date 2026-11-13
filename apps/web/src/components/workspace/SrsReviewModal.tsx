@@ -114,7 +114,7 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
 
                 <div className="p-6">
                     {items.length === 0 ? (
-                        <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 p-8 text-center">
+                        <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface-subtle p-8 text-center">
                             <RotateCcw size={28} className="mb-4 text-text-muted" />
                             <h3 className="font-display text-2xl text-text">Nothing due right now</h3>
                             <p className="mt-3 max-w-md text-sm leading-relaxed text-text-muted">
@@ -123,7 +123,7 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                         </div>
                     ) : (
                         <div className="space-y-6">
-                            <div className="rounded-2xl border border-border bg-surface/40 p-6">
+                            <div className="rounded-2xl border border-border bg-surface-subtle p-6">
                                 <div className="mb-3 font-display text-xs text-text-muted">
                                     Prompt
                                 </div>

@@ -314,7 +314,7 @@ export default function LearnPage({
                 data: {
                     text: draft.trim(),
                     quote: "",
-                    color: "#b7c9e8",
+                    color: "#8fb0e6",
                     createdAt: new Date().toISOString(),
                     anchor: {
                         kind: "lesson",
@@ -345,7 +345,7 @@ export default function LearnPage({
                 data: {
                     text: practice.trim(),
                     quote: "",
-                    color: "#b7c9e8",
+                    color: "#8fb0e6",
                     createdAt: new Date().toISOString(),
                     anchor: {
                         kind: "lesson",
@@ -375,7 +375,7 @@ export default function LearnPage({
                 data: {
                     text: recallText.trim(),
                     quote: "",
-                    color: "#b7c9e8",
+                    color: "#8fb0e6",
                     createdAt: new Date().toISOString(),
                     anchor: {
                         kind: "lesson",
@@ -436,8 +436,78 @@ export default function LearnPage({
 
     if (!loaded)
         return (
-            <div className="sy-desk sy-desk-simple" aria-busy="true">
-                <p className="sy-desk-empty">Loading your learning topic…</p>
+            <div className="sy-desk" role="status" aria-label="Loading">
+                <header className="sy-desk-top">
+                    <span className="sy-skel line" style={{ width: "30%" }} />
+                </header>
+                <div className="sy-desk-grid">
+                    <aside className="sy-desk-work" aria-label="Video and notes">
+                        <div className="sy-desk-card sy-desk-video">
+                            <div className="sy-desk-card-head">
+                                <span
+                                    className="sy-skel line-sm"
+                                    style={{ width: "34%" }}
+                                />
+                            </div>
+                            <span className="sy-skel video" />
+                            <div className="sy-desk-video-foot">
+                                <div className="sy-skel-pair">
+                                    <span className="sy-skel line-sm" />
+                                    <span
+                                        className="sy-skel line-sm"
+                                        style={{ width: "60%" }}
+                                    />
+                                </div>
+                                <span
+                                    className="sy-skel action"
+                                    style={{ width: 96, flex: "none" }}
+                                />
+                            </div>
+                        </div>
+                        <div className="sy-desk-card sy-desk-notes">
+                            <div className="sy-desk-card-head">
+                                <span
+                                    className="sy-skel line-sm"
+                                    style={{ width: "24%" }}
+                                />
+                            </div>
+                            <div className="sy-skel-body">
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "90%" }}
+                                />
+                                <span
+                                    className="sy-skel line-sm"
+                                    style={{ width: "70%" }}
+                                />
+                            </div>
+                        </div>
+                    </aside>
+                    <div className="sy-desk-panel">
+                        <header className="sy-desk-claim">
+                            <span
+                                className="sy-skel title"
+                                style={{ width: "45%" }}
+                            />
+                        </header>
+                        <div className="sy-desk-surface">
+                            <div className="sy-skel-body">
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "92%" }}
+                                />
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "84%" }}
+                                />
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "58%" }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     if (!roadmap)

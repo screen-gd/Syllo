@@ -45,7 +45,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
                                 type="checkbox"
                                 checked={item.completed || false}
                                 onChange={() => toggleItem(item.id)}
-                                className="w-4 h-4 rounded accent-indigo-accent"
+                                className="w-4 h-4 rounded accent-[var(--color-accent)]"
                             />
                             <div className="min-w-0 flex-1">
                                 <span className={`text-sm ${item.completed ? "text-text-muted line-through" : "text-text"}`}>

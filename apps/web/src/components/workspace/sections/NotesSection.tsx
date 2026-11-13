@@ -69,7 +69,7 @@ export default function Notes({ section, onUpdate }: Props) {
         <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col lg:flex-row gap-6 animate-fade-in relative z-10">
 
             {/* Sidebar List */}
-            <div className="w-full lg:w-80 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border shadow-xl animate-slide-up bg-surface/60">
+            <div className="w-full lg:w-80 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border animate-slide-up bg-surface">
                 <div className="p-5 border-b border-border/50 flex items-center justify-between z-10 sticky top-0 bg-surface rounded-t-2xl">
                     <div className="flex items-center gap-2">
                         <h2 className="font-display text-lg font-semibold text-text">📝 Notes</h2>
@@ -117,15 +117,12 @@ export default function Notes({ section, onUpdate }: Props) {
             {activeNote ? (
                 <div className="flex-1 flex flex-col min-h-0 surface rounded-2xl border border-border bg-page animate-slide-up relative overflow-hidden" style={{ animationDelay: '0.1s' }}>
 
-                    {/* Editor glow effect inner */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 blur-[100px] pointer-events-none rounded-full" />
-
-                    <div className="p-6 sm:p-8 lg:px-12 lg:pt-10 flex-shrink-0 border-b border-border pb-6 bg-surface/30">
+                    <div className="p-6 sm:p-8 lg:px-12 lg:pt-10 flex-shrink-0 border-b border-border pb-6 bg-surface-subtle">
                         <input
                             type="text"
                             value={activeNote.title}
                             onChange={(e) => updateNote(activeNote.id, { title: e.target.value })}
-                            className="mb-2 w-full bg-transparent border-none text-2xl font-display font-semibold text-text placeholder:text-text-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-strong focus-visible:ring-offset-2 sm:text-3xl"
+                            className="mb-2 w-full bg-transparent border-none text-2xl font-display font-semibold text-text placeholder:text-text-muted/40 focus-visible:outline-2 focus-visible:outline-accent sm:text-3xl"
                             placeholder="Note Title"
                         />
                         <div className="flex items-center gap-4 text-xs font-bold text-text-muted/60">
@@ -138,7 +135,7 @@ export default function Notes({ section, onUpdate }: Props) {
                     <div className="flex-1 overflow-y-auto lg:px-12 px-6 sm:px-8 py-8 relative group">
 
                         <textarea
-                            className="custom-scrollbar relative z-10 h-full w-full resize-none border-none bg-transparent text-[15px] font-serif leading-8 text-text drop-shadow-sm placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-strong focus-visible:ring-offset-2 sm:text-base"
+                            className="custom-scrollbar relative z-10 h-full w-full resize-none border-none bg-transparent text-[15px] font-serif leading-8 text-text placeholder:text-text-muted focus-visible:outline-2 focus-visible:outline-accent sm:text-base"
                             value={activeNote.content}
                             onChange={(e) => updateNote(activeNote.id, { content: e.target.value })}
                             onKeyDown={handleKeyDown}
@@ -147,7 +144,7 @@ export default function Notes({ section, onUpdate }: Props) {
                     </div>
                 </div>
             ) : (
-                <div className="flex-1 flex items-center justify-center surface rounded-2xl border-border border-dashed border shadow-lg m-2 lg:m-0">
+                <div className="flex-1 flex items-center justify-center surface rounded-2xl border-border border-dashed border m-2 lg:m-0">
                     <p className="text-text-muted font-display text-lg">Select or create a note to begin.</p>
                 </div>
             )}

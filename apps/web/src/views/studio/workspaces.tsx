@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import ListSkeleton from "@/components/shared/ListSkeleton";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
@@ -163,7 +162,32 @@ export default function WorkspacesPage() {
                     </div>
                 )
             ) : (
-                <ListSkeleton />
+                <section className="sy-box flush sy-workspace-list">
+                    <div className="sy-section-head">
+                        <h2>Topics</h2>
+                        <span
+                            className="sy-skel line-sm"
+                            style={{ width: 28 }}
+                        />
+                    </div>
+                    <div role="status" aria-label="Loading">
+                        {[0, 1, 2].map((row) => (
+                            <div
+                                className="sy-skel-row sy-skel-pair"
+                                key={row}
+                            >
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "32%" }}
+                                />
+                                <span
+                                    className="sy-skel line-sm"
+                                    style={{ width: "70%" }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </section>
             )}
         </div>
     );

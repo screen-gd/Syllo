@@ -45,7 +45,7 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "ma
         >
             <div className="absolute inset-0 bg-black/70" />
 
-            <Card className={`relative ${maxWidth} w-full shadow-[0_12px_32px_rgba(0,0,0,0.6)]`} style={{ overscrollBehavior: "contain" }}>
+            <Card className={`relative ${maxWidth} w-full shadow-[0_8px_30px_rgba(24,25,27,0.12)]`} style={{ overscrollBehavior: "contain" }}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border px-5 py-4">
                     <CardTitle className="font-display text-base font-semibold text-text">{title}</CardTitle>
                     <Button

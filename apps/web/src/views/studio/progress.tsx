@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import ListSkeleton from "@/components/shared/ListSkeleton";
 import { useReviews } from "@/hooks/useReviews";
 import { getLadder, LEVEL_LABEL } from "@/lib/ladder";
 import {
@@ -22,7 +21,58 @@ export default function ProgressPage() {
                 <header className="sy-page-head">
                     <h1>Progress</h1>
                 </header>
-                <ListSkeleton />
+                <div role="status" aria-label="Loading">
+                    <div className="sy-stats">
+                        {[0, 1, 2, 3].map((tile) => (
+                            <div className="sy-stat" key={tile}>
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "42%" }}
+                                />
+                                <span
+                                    className="sy-skel line-sm"
+                                    style={{ width: "64%" }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    <section className="sy-box sy-week-box">
+                        <div className="sy-section-head">
+                            <h2>Last 7 days</h2>
+                        </div>
+                        <ol className="sy-week">
+                            {Array.from({ length: 7 }, (_, day) => (
+                                <li key={day}>
+                                    <span className="sy-skel dot" />
+                                    <span
+                                        className="sy-skel line-sm"
+                                        style={{ width: "60%" }}
+                                    />
+                                </li>
+                            ))}
+                        </ol>
+                    </section>
+                    <section className="sy-box flush">
+                        <div className="sy-section-head">
+                            <h2>Topics</h2>
+                        </div>
+                        {[0, 1, 2].map((row) => (
+                            <div
+                                className="sy-skel-row sy-skel-pair"
+                                key={row}
+                            >
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "34%" }}
+                                />
+                                <span
+                                    className="sy-skel line-sm"
+                                    style={{ width: "68%" }}
+                                />
+                            </div>
+                        ))}
+                    </section>
+                </div>
             </div>
         );
 

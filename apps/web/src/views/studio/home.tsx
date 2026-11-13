@@ -100,16 +100,77 @@ export default function HomePage() {
             <div className="sy-page">
                 <header className="sy-page-head">
                     <h1>Home</h1>
+                    <Link className="sy-button secondary" to="/scout">
+                        <Telescope />
+                        New learning goal
+                    </Link>
                 </header>
                 <div className="sy-home-grid" role="status" aria-label="Loading">
                     <div className="sy-home-main">
-                        <div className="sy-box sy-box-skeleton" />
-                        <div className="sy-box sy-box-skeleton" />
+                        <section className="sy-box">
+                            <div className="sy-section-head">
+                                <h2>Continue learning</h2>
+                            </div>
+                            <span className="sy-skel hero" />
+                        </section>
+                        <section className="sy-box flush sy-home-topics">
+                            <div className="sy-section-head">
+                                <h2>Your learning topics</h2>
+                            </div>
+                            {[0, 1, 2].map((row) => (
+                                <div
+                                    className="sy-skel-row sy-skel-pair"
+                                    key={row}
+                                >
+                                    <span
+                                        className="sy-skel line"
+                                        style={{ width: "40%" }}
+                                    />
+                                    <span
+                                        className="sy-skel line-sm"
+                                        style={{ width: "70%" }}
+                                    />
+                                </div>
+                            ))}
+                        </section>
                     </div>
-                    <div className="sy-home-aside">
-                        <div className="sy-box sy-box-skeleton short" />
-                        <div className="sy-box sy-box-skeleton short" />
-                    </div>
+                    <aside className="sy-home-aside">
+                        <section className="sy-box">
+                            <div className="sy-section-head">
+                                <h2>This week</h2>
+                            </div>
+                            <span className="sy-skel block" />
+                            <div className="sy-skel-dots">
+                                {Array.from({ length: 7 }, (_, day) => (
+                                    <span className="sy-skel dot" key={day} />
+                                ))}
+                            </div>
+                        </section>
+                        <section className="sy-box">
+                            <div className="sy-section-head">
+                                <h2>Reviews</h2>
+                            </div>
+                            <div className="sy-skel-split">
+                                <span className="sy-skel deck" />
+                                <div>
+                                    <span
+                                        className="sy-skel line"
+                                        style={{ width: "50%" }}
+                                    />
+                                    <span
+                                        className="sy-skel line-sm"
+                                        style={{ width: "70%" }}
+                                    />
+                                </div>
+                            </div>
+                        </section>
+                        <section className="sy-box">
+                            <div className="sy-section-head">
+                                <h2>Currently reading</h2>
+                            </div>
+                            <span className="sy-skel block" />
+                        </section>
+                    </aside>
                 </div>
             </div>
         );

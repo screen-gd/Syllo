@@ -24,8 +24,8 @@ function flattenToc(items: NavItem[]): NavItem[] {
 }
 
 function applyReaderAppearance(rendition: Rendition, size: number, night: boolean) {
-    const foreground = night ? "#e1dfd9" : "#2a2925";
-    const background = night ? "#191a1d" : "#f0eee7";
+    const foreground = night ? "#e1dfd9" : "#18191b";
+    const background = night ? "#191a1d" : "#ffffff";
     rendition.themes.default({
         body: {
             color: `${foreground} !important`,
@@ -288,7 +288,7 @@ export default function ReaderPage({
             data: {
                 text: text.trim(),
                 quote: selection.quote,
-                color: "#c5ce7b",
+                color: "#a5ad4a",
                 anchor: { kind: "book", bookId: id, cfi: selection.cfi },
                 createdAt: new Date().toISOString(),
             },
@@ -390,12 +390,14 @@ export default function ReaderPage({
                     {error}
                 </p>
             )}
-            {!ready && !error && (
-                <p role="status" className="sy-loading">
-                    Opening your book…
-                </p>
-            )}
             <div className={`sy-reader${night ? " night" : ""}`}>
+                {!ready && !error && (
+                    <div
+                        className="sy-skel reader"
+                        role="status"
+                        aria-label="Loading"
+                    />
+                )}
                 <div className="sy-reader-mount" ref={host} />
             </div>
             <div className="sy-reader-pagination">

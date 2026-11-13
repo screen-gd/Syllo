@@ -47,7 +47,7 @@ export default function CalendarSection({ section, onUpdate }: Props) {
                                 type="checkbox"
                                 checked={event.completed}
                                 onChange={() => toggleEvent(event.id)}
-                                className="w-4 h-4 rounded accent-indigo-accent mt-0.5 shrink-0"
+                                className="w-4 h-4 rounded accent-[var(--color-accent)] mt-0.5 shrink-0"
                                 aria-label={`Mark "${event.title}" as done`}
                             />
                             <div className="flex-1 min-w-0">

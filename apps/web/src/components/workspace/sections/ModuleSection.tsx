@@ -375,7 +375,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
     return (
         <div className="flex flex-col h-full bg-page rounded-2xl border border-border overflow-hidden animate-fade-in relative">
             {/* Module Top Header */}
-            <div className="px-8 pt-8 pb-6 border-b border-border bg-surface/30">
+            <div className="px-8 pt-8 pb-6 border-b border-border bg-surface-subtle">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-xl bg-accent/10 border border-accent/20 flex flex-col items-center justify-center shrink-0">
@@ -437,11 +437,11 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                 <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} />
                             </button>
                             {showRegenConfirm && (
-                                <div className="absolute right-0 top-full mt-2 w-64 p-3 bg-surface-muted border border-border rounded-lg shadow-xl z-50 animate-in fade-in zoom-in duration-200">
+                                <div className="absolute right-0 top-full mt-2 w-64 p-3 bg-surface-muted border border-border rounded-lg shadow-[0_8px_30px_rgba(24,25,27,0.12)] z-50 animate-in fade-in zoom-in duration-200">
                                     <p className="text-sm text-text mb-3">Regenerate just this module? Your other modules will not change.</p>
                                     <div className="flex justify-end gap-2">
                                         <button onClick={() => setShowRegenConfirm(false)} className="px-3 py-1.5 text-xs text-text-muted hover:text-text transition-colors">Cancel</button>
-                                        <button onClick={handleRegenerate} className="px-3 py-1.5 text-xs bg-text hover:bg-[#e6e6e6] text-page rounded-full font-medium transition-colors">Confirm</button>
+                                        <button onClick={handleRegenerate} className="px-3 py-1.5 text-xs bg-text hover:bg-[#2c2d30] text-page rounded-full font-medium transition-colors">Confirm</button>
                                     </div>
                                 </div>
                             )}
@@ -546,7 +546,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                         <div className="space-y-3">
                             {tasks.map((task: Task) => (
-                                <div key={task.id} className={`group border bg-surface/40 hover:bg-surface/80 rounded-xl transition-all overflow-hidden border-border`}>
+                                <div key={task.id} className={`group border bg-surface-subtle hover:bg-surface-muted rounded-xl transition-colors overflow-hidden border-border`}>
                                     <button
                                         type="button"
                                         className="w-full flex items-start gap-4 p-5 text-left"
@@ -619,9 +619,9 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                     <button
                                         key={res.id}
                                         onClick={() => setSidePanelResource(res)}
-                                        className={`flex items-start gap-4 p-5 text-left border rounded-xl transition-all duration-200 hover:-translate-y-1 ${sidePanelResource?.id === res.id
+                                        className={`flex items-start gap-4 p-5 text-left border rounded-xl transition-all duration-200 ${sidePanelResource?.id === res.id
                                             ? "border-accent bg-accent/10 "
-                                            : "border-border bg-surface/40 hover:border-border-strong hover:bg-surface/80"
+                                            : "border-border bg-surface-subtle hover:border-border-strong hover:bg-surface-muted"
                                             }`}
                                     >
                                         <div className="w-10 h-10 rounded-lg bg-surface border border-border flex items-center justify-center text-xl shrink-0">
@@ -704,7 +704,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         )}
 
                         {!quizData ? (
-                            <div className="rounded-2xl border border-dashed border-border bg-surface/30 p-8 text-center">
+                            <div className="rounded-2xl border border-dashed border-border bg-surface-subtle p-8 text-center">
                                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-accent/20 bg-accent/10 text-accent">
                                     <Target size={20} />
                                 </div>
@@ -732,7 +732,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                     const isCorrect = selectedAnswer === question.answerIndex;
 
                                     return (
-                                        <div key={question.id} className="rounded-2xl border border-border bg-surface/40 p-6">
+                                        <div key={question.id} className="rounded-2xl border border-border bg-surface-subtle p-6">
                                             <div className="mb-4 flex items-start justify-between gap-4">
                                                 <div>
                                                     <div className="mb-2 font-display text-xs text-text-muted">
@@ -780,7 +780,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                             </div>
 
                                             {quizSubmitted && (
-                                                <div className="mt-4 rounded-xl border border-border bg-black/20 px-4 py-3 text-sm leading-relaxed text-text-muted">
+                                                <div className="mt-4 rounded-xl border border-border bg-surface-subtle px-4 py-3 text-sm leading-relaxed text-text-muted">
                                                     <span className="font-medium text-text">Explanation:</span> {question.explanation}
                                                 </div>
                                             )}
@@ -793,7 +793,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                         type="button"
                                         onClick={handleQuizSubmit}
                                         disabled={quizData.questions.some((question) => selectedAnswers[question.id] === undefined)}
-                                        className="inline-flex items-center gap-2 rounded-full bg-text px-5 py-3 text-xs font-medium text-page transition-colors hover:bg-[#e6e6e6] disabled:cursor-not-allowed disabled:opacity-60"
+                                        className="inline-flex items-center gap-2 rounded-full bg-text px-5 py-3 text-xs font-medium text-page transition-colors hover:bg-[#2c2d30] disabled:cursor-not-allowed disabled:opacity-60"
                                     >
                                         Submit answers
                                     </button>
@@ -818,7 +818,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                     </div>
                                     <div>
                                         <h3 className="font-display text-2xl text-text mb-2">{videos.find(v => v.id === activeVideoId)?.title}</h3>
-                                        <p className="font-body text-text-muted leading-relaxed bg-surface/50 p-6 rounded-xl border border-border">
+                                        <p className="font-body text-text-muted leading-relaxed bg-surface-subtle p-6 rounded-xl border border-border">
                                             {videos.find(v => v.id === activeVideoId)?.description}
                                         </p>
                                     </div>
@@ -826,8 +826,8 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                             )}
                         </div>
                         {/* Playlist Sidebar */}
-                        <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-border bg-surface/20 flex flex-col shrink-0 overflow-y-auto">
-                            <div className="p-4 border-b border-border font-display text-xs text-text-muted sticky top-0 bg-surface/90 z-10">
+                        <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-border bg-surface-subtle flex flex-col shrink-0 overflow-y-auto">
+                            <div className="p-4 border-b border-border font-display text-xs text-text-muted sticky top-0 bg-surface-subtle z-10">
                                 Playlist
                             </div>
                             <div className="flex flex-col p-2 gap-1">
@@ -836,7 +836,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                         key={v.id}
                                         onClick={() => setActiveVideoId(v.id)}
                                         className={`flex flex-col items-start gap-1 p-3 rounded-lg text-left transition-all ${activeVideoId === v.id
-                                            ? "bg-accent/10 border border-accent/20 shadow-inner"
+                                            ? "bg-accent/10 border border-accent/20"
                                             : "hover:bg-surface border border-transparent"
                                             }`}
                                     >
@@ -868,14 +868,14 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                             value={notesText}
                             onChange={(e) => setNotesText(e.target.value)}
                             placeholder="Type your notes for this module here... Autosaves as you type."
-                            className="flex-1 w-full bg-surface/30 border border-border rounded-xl p-6 font-body text-text text-base leading-relaxed placeholder:text-text-muted/30 resize-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-strong focus-visible:ring-offset-2"
+                            className="flex-1 w-full bg-surface-subtle border border-border rounded-xl p-6 font-body text-text text-base leading-relaxed placeholder:text-text-muted/30 resize-none transition-colors focus-visible:outline-2 focus-visible:outline-accent"
                         />
                     </div>
                 )}
             </div>
 
             {/* Bottom Nav */}
-            <div className="p-4 border-t border-border flex items-center justify-between bg-surface/50 shrink-0">
+            <div className="p-4 border-t border-border flex items-center justify-between bg-surface-subtle shrink-0">
                 <button
                     onClick={() => prevModule && onNavigate?.(prevModule.id)}
                     disabled={!prevModule}

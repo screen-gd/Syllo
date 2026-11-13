@@ -19,7 +19,7 @@ export default function Videos({ section }: Props) {
     return (
         <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col animate-fade-in relative z-10">
             <div className="mb-6 shrink-0 text-center sm:text-left">
-                <h2 className="font-display text-4xl font-semibold text-text mb-2 drop-shadow-md flex items-center justify-center sm:justify-start gap-3">
+                <h2 className="font-display text-4xl font-semibold text-text mb-2 flex items-center justify-center sm:justify-start gap-3">
                     <span className="text-accent">▶</span> {section.title}
                 </h2>
                 <p className="text-text-muted text-sm">Distraction-free viewing experience.</p>
@@ -36,7 +36,7 @@ export default function Videos({ section }: Props) {
                                 description={activeVideo.description}
                             />
                         </div>
-                        <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-surface to-obsidian">
+                        <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-surface">
                             <div className="flex items-center gap-3 mb-4">
                                 <span className="bg-accent/20 text-accent text-[12px] font-bold px-2.5 py-1 rounded">Now Playing</span>
                                 {activeVideo.duration && <span className="text-text-muted text-sm tabular-nums">⏱ {activeVideo.duration}</span>}
@@ -58,13 +58,13 @@ export default function Videos({ section }: Props) {
                 )}
 
                 {/* Playlist Sidebar */}
-                <div className="w-full lg:w-96 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border overflow-hidden shadow-xl animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                    <div className="p-4 border-b border-border/50 bg-surface/80 shrink-0 flex items-center justify-between">
+                <div className="w-full lg:w-96 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border overflow-hidden animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                    <div className="p-4 border-b border-border/50 bg-surface shrink-0 flex items-center justify-between">
                         <h3 className="font-display font-bold text-text text-sm text-text-muted">Playlist</h3>
                         <span className="text-[12px] bg-surface px-2 py-0.5 rounded text-text-muted">{section.data.length} items</span>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-page/30">
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-page">
                         {section.data.map((video) => {
                             const isActive = video.id === activeVideoId;
                             const pseudoProgress = (video.id.length * 7) % 100; // Deterministic visual mock progress
@@ -94,15 +94,15 @@ export default function Videos({ section }: Props) {
                                         )}
                                         {/* Duration Tag */}
                                         {video.duration && (
-                                            <div className="absolute bottom-1 right-1 bg-black/80 font-mono text-xs text-text px-1 rounded">
+                                            <div className="absolute bottom-1 right-1 bg-black/80 font-mono text-xs text-white px-1 rounded">
                                                 {video.duration}
                                             </div>
                                         )}
                                         {/* Active Overlay */}
                                         {isActive && (
-                                            <div className="absolute inset-0 bg-accent/20 flex items-center justify-center backdrop-blur-[2px]">
-                                                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center drop-shadow-md">
-                                                    <span className="text-text text-[12px] ml-0.5">▶</span>
+                                            <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
+                                                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+                                                    <span className="text-white text-[12px] ml-0.5">▶</span>
                                                 </div>
                                             </div>
                                         )}
@@ -119,9 +119,9 @@ export default function Videos({ section }: Props) {
                                         </div>
 
                                         {/* Visual Mock Progress Bar */}
-                                        <div className="w-full h-1 bg-black/50 overflow-hidden rounded-full mt-2">
+                                        <div className="w-full h-1 bg-surface-muted overflow-hidden rounded-full mt-2">
                                             {pseudoProgress > 0 && (
-                                                <div className={`h-full bg-accent/80 rounded-full transition-all duration-1000`} style={{ width: `${pseudoProgress}%` }} />
+                                                <div className={`h-full bg-accent rounded-full transition-all duration-1000`} style={{ width: `${pseudoProgress}%` }} />
                                             )}
                                         </div>
                                     </div>

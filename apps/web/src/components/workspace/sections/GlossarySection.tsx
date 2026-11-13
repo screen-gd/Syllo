@@ -38,14 +38,14 @@ export default function GlossarySection({ section }: Props) {
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
             <div className="text-center sm:text-left">
-                <h2 className="text-2xl font-semibold text-text mb-2 drop-shadow-md">
+                <h2 className="text-2xl font-semibold text-text mb-2">
                     📖 {section.title}
                 </h2>
                 <p className="text-text-muted text-sm">Key definitions and terminology.</p>
             </div>
 
             {/* A-Z Filter Bar */}
-            <div className="surface rounded-2xl p-4 sm:p-5 flex flex-wrap gap-2 sm:gap-3 justify-center border border-border shadow-lg bg-surface/80 sticky top-20 z-10 transition-all duration-300">
+            <div className="surface rounded-2xl p-4 sm:p-5 flex flex-wrap gap-2 sm:gap-3 justify-center border border-border bg-surface sticky top-20 z-10 transition-all duration-300">
                 <button
                     onClick={() => setActiveLetter(null)}
                     className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-all ${activeLetter === null
@@ -104,7 +104,7 @@ export default function GlossarySection({ section }: Props) {
                                             <span className={`font-bold text-base transition-colors duration-300 ${isExpanded ? 'text-accent' : 'text-text group-hover:text-accent-strong'}`}>
                                                 {item.term}
                                             </span>
-                                            <span className={`text-text-muted text-xs shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-black/20 transition-transform duration-300 ease-in-out ${isExpanded ? 'rotate-180 bg-accent/20 text-accent' : ''}`}>
+                                            <span className={`text-text-muted text-xs shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-surface-muted transition-transform duration-300 ease-in-out ${isExpanded ? 'rotate-180 bg-accent-soft text-accent-strong' : ''}`}>
                                                 ▼
                                             </span>
                                         </button>

@@ -36,7 +36,7 @@ import { getUserConfig } from "@/lib/userConfig";
 import { getStorage } from "@/lib/storage";
 import { seedSrsItems } from "@/lib/srs";
 
-const LEGACY_WORKSPACE_ACCENT = "#6366f1";
+const LEGACY_WORKSPACE_ACCENTS = new Set(["#6366f1", "#4cb3f0"]);
 
 interface WorkspaceShellProps {
     roadmap: Roadmap;
@@ -134,10 +134,10 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
     const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
     const branding = roadmap.branding;
-    // A workspace may carry its own accent. "#6366f1" was the old default that
-    // the branding modal saved for everyone, so it counts as no choice.
+    // A workspace may carry its own accent. "#6366f1" and "#4cb3f0" were old
+    // defaults the branding modal saved for everyone, so they count as no choice.
     const customAccent =
-        branding?.accentColor && branding.accentColor.toLowerCase() !== LEGACY_WORKSPACE_ACCENT ? branding.accentColor : null;
+        branding?.accentColor && !LEGACY_WORKSPACE_ACCENTS.has(branding.accentColor.toLowerCase()) ? branding.accentColor : null;
     const workspaceTitle = branding?.customTitle || roadmap.title;
     const logoUrl = branding?.logoUrl;
     const hideWatermark = branding?.hideWatermark || false;
@@ -659,7 +659,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                         <div className="w-8 h-8 rounded-full flex items-center justify-center relative overflow-hidden bg-page">
                                                             {/* Mini circular indicator when collapsed */}
                                                             <svg viewBox="0 0 36 36" className="absolute inset-0 w-full h-full -rotate-90">
-                                                                <circle cx="18" cy="18" r="16" fill="transparent" stroke="var(--color-obsidian-elevated)" strokeWidth="4" />
+                                                                <circle cx="18" cy="18" r="16" fill="transparent" stroke="var(--color-surface-muted)" strokeWidth="4" />
                                                                 <circle cx="18" cy="18" r="16" fill="transparent" stroke={modulePercent === 100 ? "var(--color-success)" : "var(--color-accent)"} strokeWidth="4" strokeDasharray="100" strokeDashoffset={100 - modulePercent} />
                                                             </svg>
                                                             <span className="text-[12px] font-bold z-10">{idx + 1}</span>
@@ -813,7 +813,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                     <HelpCircle size={16} />
                                 </button>
                                 {showShortcuts && (
-                                    <div className="absolute top-16 right-6 w-80 bg-surface-muted border border-border rounded-xl shadow-2xl z-50 animate-fade-in p-5">
+                                    <div className="absolute top-16 right-6 w-80 bg-surface-muted border border-border rounded-xl shadow-[0_8px_30px_rgba(24,25,27,0.12)] z-50 animate-fade-in p-5">
                                         <div className="flex items-center justify-between mb-4">
                                             <h3 className="font-display text-xs text-text font-bold">Keyboard Shortcuts</h3>
                                             <button
@@ -859,7 +859,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         Export <ChevronDown size={12} />
                                     </button>
                                     {showExportMenu && (
-                                        <div className="absolute right-0 top-full mt-2 w-48 bg-surface-muted border border-border rounded-lg shadow-xl z-50 animate-in fade-in zoom-in duration-200 py-1">
+                                        <div className="absolute right-0 top-full mt-2 w-48 bg-surface-muted border border-border rounded-lg shadow-[0_8px_30px_rgba(24,25,27,0.12)] z-50 animate-in fade-in zoom-in duration-200 py-1">
                                             <button onClick={() => { exportAsMarkdown(roadmap); setShowExportMenu(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-text hover:bg-surface text-left">
                                                 <FileText size={14} /> Download as Markdown
                                             </button>
@@ -944,7 +944,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         </p>
                                     )}
                                     {roadmap.objectives && roadmap.objectives.length > 0 && (
-                                        <div className="mt-8 text-left w-full bg-surface/40 border border-border rounded-2xl p-8 shadow-inner">
+                                        <div className="mt-8 text-left w-full bg-surface-subtle border border-border rounded-2xl p-8">
                                             <h3 className="font-display text-xs text-text-muted mb-6 flex items-center gap-2">
                                                 <span className="w-4 h-[1px] bg-accent" />
                                                 Learning Objectives
@@ -966,8 +966,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 {/* Intelligent Insights Row */}
                                 <div className="grid lg:grid-cols-3 gap-6">
                                     {/* Progress Ring & Continue */}
-                                    <div id="tour-progress" className="lg:col-span-2 flex flex-col items-center justify-center bg-surface/30 border border-border rounded-2xl p-10 relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-accent/5 to-transparent pointer-events-none" />
+                                    <div id="tour-progress" className="lg:col-span-2 flex flex-col items-center justify-center bg-surface-subtle border border-border rounded-2xl p-10 relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-accent/5 pointer-events-none" />
 
                                         <div className="flex flex-col sm:flex-row items-center gap-10">
                                             <ProgressRing percent={progress.overall} size={140} strokeWidth={8} className="" />
@@ -979,7 +979,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 <div className="flex flex-col gap-3 sm:flex-row">
                                                     <button
                                                         onClick={() => onNavigate(firstIncompleteModule.id)}
-                                                        className="px-8 py-4 bg-text hover:bg-[#e6e6e6] text-page font-display text-xs font-medium rounded-full transition-all flex items-center gap-3 group"
+                                                        className="px-8 py-4 bg-text hover:bg-[#2c2d30] text-page font-display text-xs font-medium rounded-full transition-all flex items-center gap-3 group"
                                                     >
                                                         Continue Learning
                                                         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -999,7 +999,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                                     {/* Smart Insights Card */}
                                     <div className="flex flex-col gap-4">
-                                        <div className="bg-surface/40 border border-border rounded-2xl p-6 flex-1">
+                                        <div className="bg-surface-subtle border border-border rounded-2xl p-6 flex-1">
                                             <h3 className="font-display text-xs text-text-muted mb-4 flex items-center gap-2">
                                                 <Target size={14} className="text-accent" />
                                                 Your Progress
@@ -1036,7 +1036,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         </div>
 
                                         {calendarEvents.length > 0 && (
-                                            <div className="bg-surface/40 border border-border rounded-2xl p-6 flex-1">
+                                            <div className="bg-surface-subtle border border-border rounded-2xl p-6 flex-1">
                                                 <h3 className="font-display text-xs text-text-muted mb-4 flex items-center gap-2">
                                                     <Calendar size={14} className="text-accent" />
                                                     Upcoming Deadlines
@@ -1075,7 +1075,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         { label: "Resources", value: totalResources, icon: <BookOpen size={18} /> },
                                         { label: "Videos", value: totalVideos, icon: <Video size={18} /> },
                                     ].map((stat, i) => (
-                                        <div key={i} className="bg-surface/40 border border-border rounded-xl p-5 flex items-center gap-4">
+                                        <div key={i} className="bg-surface-subtle border border-border rounded-xl p-5 flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-lg bg-surface flex items-center justify-center text-accent">
                                                 {stat.icon}
                                             </div>
@@ -1134,9 +1134,9 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                         key={mod.id}
                                                         id={idx === 0 ? "tour-first-module" : undefined}
                                                         onClick={() => onNavigate(mod.id)}
-                                                        className="group relative flex flex-col items-start bg-surface/30 border border-border hover:border-accent/30 rounded-xl p-6 text-left transition-all hover:bg-surface/80 overflow-hidden"
+                                                        className="group relative flex flex-col items-start bg-surface-subtle border border-border hover:border-border-strong rounded-xl p-6 text-left transition-all hover:bg-surface-muted overflow-hidden"
                                                     >
-                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-accent/10 transition-colors" />
+                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 -mr-10 -mt-10 pointer-events-none group-hover:bg-accent/10 transition-colors" />
 
                                                         <div className="flex items-center justify-between w-full mb-4">
                                                             <span className="font-mono text-[12px] text-text-muted/50 group-hover:text-accent transition-colors">
@@ -1257,22 +1257,22 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             {!isReadOnly && (
                 <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
                     <div className={`flex flex-col items-end gap-2 transition-all duration-300 origin-bottom right-0 ${quickActionsOpen ? " opacity-100 pointer-events-auto" : " opacity-0 pointer-events-none"}`}>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
                             <Plus size={16} /> Add Note
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
                             <Plus size={16} /> Add Resource
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
                             <Plus size={16} /> Add Video
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold shadow-lg hover:border-warning/50 hover:bg-warning/10 hover:text-warning transition-colors">
+                        <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold hover:border-warning/50 hover:bg-warning/10 hover:text-warning transition-colors">
                             <RefreshCw size={16} /> Regenerate Workspace
                         </button>
                     </div>
                     <button
                         onClick={() => setQuickActionsOpen(!quickActionsOpen)}
-                        className="w-14 h-14 bg-text rounded-full flex items-center justify-center text-page shadow-xl hover:bg-[#e6e6e6] transition-all duration-300"
+                        className="w-14 h-14 bg-text rounded-full flex items-center justify-center text-page shadow-[0_8px_30px_rgba(24,25,27,0.12)] hover:bg-[#2c2d30] transition-all duration-300"
                     >
                         <Plus className={`transition-transform duration-300 ${quickActionsOpen ? "rotate-45" : ""}`} size={24} />
                     </button>
@@ -1293,7 +1293,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                     {tourTarget && (
                         <div
-                            className="absolute bg-surface-muted border border-border rounded-2xl p-6 shadow-2xl z-[70] animate-scale-in flex flex-col pointer-events-auto w-72"
+                            className="absolute bg-surface-muted border border-border rounded-2xl p-6 shadow-[0_8px_30px_rgba(24,25,27,0.12)] z-[70] animate-scale-in flex flex-col pointer-events-auto w-72"
                             style={{
                                 top: tourStep === 0 ? Math.max(20, tourTarget.top) // Sidebar
                                     : tourStep === 1 ? tourTarget.bottom + 20 // Progress ring
@@ -1305,7 +1305,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 transition: 'top 0.4s ease, left 0.4s ease'
                             }}
                         >
-                            <h4 className="font-display text-base font-semibold text-text mb-2 text-accent-strong drop-shadow-sm">
+                            <h4 className="font-display text-base font-semibold text-text mb-2 text-accent-strong">
                                 {tourStep === 0 ? "These are your course modules" :
                                     tourStep === 1 ? "Your completion is tracked here" :
                                         tourStep === 2 ? "Click any module to start learning" :
@@ -1319,7 +1319,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             </p>
                             <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
                                 <button onClick={endTour} className="text-xs text-text-muted hover:text-text transition-colors">End Tour</button>
-                                <button onClick={handleNextTourStep} className="px-5 py-2 rounded-full bg-text hover:bg-[#e6e6e6] text-page font-medium text-xs">
+                                <button onClick={handleNextTourStep} className="px-5 py-2 rounded-full bg-text hover:bg-[#2c2d30] text-page font-medium text-xs">
                                     Next →
                                 </button>
                             </div>
@@ -1331,7 +1331,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             {/* Version History Drawer */}
             {showVersionHistory && (
                 <div className="fixed inset-0 z-50 flex justify-end bg-page/50" onClick={() => setShowVersionHistory(false)}>
-                    <div className="w-full max-w-md bg-page border-l border-border h-full shadow-2xl animate-in slide-in-from-right duration-300 overflow-y-auto" onClick={e => e.stopPropagation()}>
+                    <div className="w-full max-w-md bg-page border-l border-border h-full shadow-[0_8px_30px_rgba(24,25,27,0.12)] animate-in slide-in-from-right duration-300 overflow-y-auto" onClick={e => e.stopPropagation()}>
                         <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-page z-10">
                             <h3 className="font-display text-xs text-text font-bold">Version History</h3>
                             <button

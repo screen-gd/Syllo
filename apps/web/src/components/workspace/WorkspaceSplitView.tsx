@@ -167,7 +167,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
 
             {/* RIGHT PANE: 35% CONTEXT */}
             {selectedNode ? (
-                <div className="w-[35%] bg-page/50 flex flex-col h-full hidden lg:flex border-l border-border animate-in slide-in-from-right-8 duration-500 shadow-2xl">
+                <div className="w-[35%] bg-page flex flex-col h-full hidden lg:flex border-l border-border animate-in slide-in-from-right-8 duration-500">
                     <ContextPanel 
                         selectedNode={selectedNode} 
                         roadmap={roadmap}
@@ -178,8 +178,8 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                     />
                 </div>
             ) : (
-                <div className="w-[35%] bg-page/50 hidden lg:flex flex-col items-center justify-center p-12 text-center border-l border-border shadow-inner">
-                    <div className="w-16 h-16 rounded-2xl bg-surface border border-border flex items-center justify-center text-text-soft mb-6 drop-shadow-md">
+                <div className="w-[35%] bg-page hidden lg:flex flex-col items-center justify-center p-12 text-center border-l border-border">
+                    <div className="w-16 h-16 rounded-2xl bg-surface border border-border flex items-center justify-center text-text-soft mb-6">
                         <BookOpen size={24} />
                     </div>
                     <h3 className="text-xl font-display text-text mb-2 tracking-tight">Context Panel</h3>

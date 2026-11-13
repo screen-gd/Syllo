@@ -104,7 +104,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
     return (
         <div className="max-w-4xl mx-auto space-y-10">
             <div className="text-center sm:text-left">
-                <h2 className="text-2xl font-semibold text-text mb-2 drop-shadow-md">
+                <h2 className="text-2xl font-semibold text-text mb-2">
                     ✅ {section.title}
                 </h2>
                 <p className="text-text-muted text-sm">Actionable items to keep you moving forward.</p>
@@ -118,7 +118,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                     return (
                         <div
                             key={group.id}
-                            className="surface rounded-2xl p-5 sm:p-6 shadow-lg transition-all duration-300 border border-border animate-slide-up hover:-translate-y-1 group"
+                            className="surface rounded-2xl p-5 sm:p-6 transition-all duration-300 border border-border animate-slide-up group"
                             style={{ animationDelay: `${i * 0.05}s` }}
                         >
                             <div className="flex items-center justify-between mb-5">
@@ -127,7 +127,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                     {group.title}
                                 </h3>
                                 <div className="flex items-center gap-3">
-                                    <span className="bg-surface-muted px-2.5 py-1 rounded-full text-[12px] font-bold text-text-muted border border-border shadow-inner">
+                                    <span className="bg-surface-muted px-2.5 py-1 rounded-full text-[12px] font-bold text-text-muted border border-border">
                                         {completedCount} / {totalCount} done
                                     </span>
                                     {completedCount > 0 && (
@@ -142,7 +142,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                             </div>
 
                             {(group.tasks || []).length === 0 ? (
-                                <div className="py-8 text-center border border-dashed border-border rounded-xl bg-surface/60">
+                                <div className="py-8 text-center border border-dashed border-border rounded-xl bg-surface-subtle">
                                     <p className="text-text-muted text-sm italic">All tasks completed! 🎉</p>
                                 </div>
                             ) : (
@@ -158,9 +158,9 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                                         type="checkbox"
                                                         checked={task.completed}
                                                         onChange={() => toggleComplete(group.id, task.id)}
-                                                        className="peer appearance-none w-5 h-5 rounded-md border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-all cursor-pointer hover:border-accent shadow-inner"
+                                                        className="peer appearance-none w-5 h-5 rounded-md border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-all cursor-pointer hover:border-accent"
                                                     />
-                                                    <span className="absolute text-text text-[12px] font-semibold pointer-events-none opacity-0 peer-checked:opacity-100 drop-shadow-md">✓</span>
+                                                    <span className="absolute text-white text-[12px] font-semibold pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
                                                 </div>
                                                 <div className="flex-1 min-w-0 pt-0.5">
                                                     <span

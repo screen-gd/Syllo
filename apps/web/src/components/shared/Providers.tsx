@@ -11,6 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <OfflineSupport />
             <CloudSync><PomodoroProvider>{children}</PomodoroProvider></CloudSync>
             <Toaster
+                theme="light"
                 position="bottom-right"
                 toastOptions={{
                     unstyled: true,

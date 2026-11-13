@@ -64,7 +64,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
 "w-full flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
                         task.completed 
                             ? "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20" 
-                            : "bg-text border-accent text-page hover:bg-[#e6e6e6]"
+                            : "bg-text border-accent text-page hover:bg-[#2c2d30]"
                     )}
                 >
                     {task.completed ? <><CheckCircle2 size={16} /> Completed</> : "Mark as Complete"}
@@ -166,7 +166,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                                     href={res.url} 
                                     target="_blank" 
                                     rel="noreferrer"
-                                    className="flex items-start gap-4 p-4 rounded-xl border border-border bg-[var(--color-surface)] hover:border-text-soft hover:shadow-md transition-all group"
+                                    className="flex items-start gap-4 p-4 rounded-xl border border-border bg-[var(--color-surface)] hover:border-text-soft transition-all group"
                                 >
                                     <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-muted)] flex items-center justify-center text-text-muted shrink-0 group-hover:text-accent transition-colors">
                                         {resourceTypeIcon(res.type)}

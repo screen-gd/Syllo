@@ -14,7 +14,7 @@ interface SettingsModalProps {
 export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBranding }: SettingsModalProps) {
     const [titleOverride, setTitleOverride] = useState(roadmap.branding?.customTitle || "");
     const [hideWatermark, setHideWatermark] = useState(roadmap.branding?.hideWatermark || false);
-    const [accentColor, setAccentColor] = useState(roadmap.branding?.accentColor || "#4cb3f0");
+    const [accentColor, setAccentColor] = useState(roadmap.branding?.accentColor || "#3F4CC4");
     const [logoUrl, setLogoUrl] = useState(roadmap.branding?.logoUrl || "");
 
     if (!isOpen) return null;
@@ -33,7 +33,7 @@ export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBrandi
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 transition-opacity" onClick={onClose} />
             
-            <div className="relative bg-surface-muted border border-border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            <div className="relative bg-surface-muted border border-border rounded-2xl w-full max-w-lg overflow-hidden shadow-[0_8px_30px_rgba(24,25,27,0.12)] animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
                     <h2 className="font-display text-xl text-text">Workspace Settings</h2>
@@ -125,7 +125,7 @@ export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBrandi
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-border flex justify-end gap-3 shrink-0 bg-surface/50">
+                <div className="px-6 py-4 border-t border-border flex justify-end gap-3 shrink-0 bg-surface">
                     <button 
                         onClick={onClose}
                         className="px-4 py-2 rounded-lg text-sm text-text-muted hover:text-text hover:bg-surface transition-colors"
@@ -134,7 +134,7 @@ export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBrandi
                     </button>
                     <button 
                         onClick={handleSave}
-                        className="px-6 py-2 bg-text hover:bg-[#e6e6e6] text-page rounded-full text-sm font-medium transition-colors"
+                        className="px-6 py-2 bg-text hover:bg-[#2c2d30] text-page rounded-full text-sm font-medium transition-colors"
                     >
                         Save Settings
                     </button>

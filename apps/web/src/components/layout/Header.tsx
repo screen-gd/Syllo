@@ -35,7 +35,7 @@ export default function Header() {
                                 aria-current={active ? "page" : undefined}
                                 className={cn(
                                     "rounded-full px-3 py-1.5 text-sm transition-colors",
-                                    active ? "text-text" : "text-[#bbbbbb] hover:text-text",
+                                    active ? "text-text" : "text-text-muted hover:text-text",
                                 )}
                             >
                                 {item.label}
@@ -72,7 +72,7 @@ export default function Header() {
                                     key={item.href}
                                     to={item.href}
                                     aria-current={active ? "page" : undefined}
-                                    className={cn("py-2 text-sm", active ? "text-text" : "text-[#bbbbbb] hover:text-text")}
+                                    className={cn("py-2 text-sm", active ? "text-text" : "text-text-muted hover:text-text")}
                                 >
                                     {item.label}
                                 </Link>

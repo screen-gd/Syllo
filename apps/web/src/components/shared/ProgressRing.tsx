@@ -35,7 +35,7 @@ export default function ProgressRing({
                         cx={size / 2}
                         cy={size / 2}
                         r={radius}
-                        stroke="var(--color-obsidian-elevated)"
+                        stroke="var(--color-surface-muted)"
                         strokeWidth={strokeWidth}
                     />
                     {/* Progress circle */}
@@ -43,7 +43,7 @@ export default function ProgressRing({
                         cx={size / 2}
                         cy={size / 2}
                         r={radius}
-                        stroke="url(#progress-gradient)"
+                        stroke="var(--color-accent)"
                         strokeWidth={strokeWidth}
                         strokeLinecap="round"
                         strokeDasharray={circumference}
@@ -51,12 +51,6 @@ export default function ProgressRing({
                         transform={`rotate(-90 ${size / 2} ${size / 2})`}
                         style={{ transition: "stroke-dashoffset 0.6s ease-out" }}
                     />
-                    <defs>
-                        <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="var(--color-indigo-glow)" />
-                            <stop offset="100%" stopColor="var(--color-violet-accent)" />
-                        </linearGradient>
-                    </defs>
                 </svg>
             </div>
             {/* Percentage text */}

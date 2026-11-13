@@ -174,7 +174,6 @@ export default function SourcesPanel({
                             <option
                                 key={item.value}
                                 value={item.value}
-                                className="bg-[#111]"
                             >
                                 {item.label}
                             </option>

@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Download, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
-import ListSkeleton from "@/components/shared/ListSkeleton";
 import { Segmented } from "@/components/ui/segmented";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
 import { downloadBlob } from "@/lib/export";
@@ -268,7 +267,34 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
             )}
 
             {!loaded ? (
-                <ListSkeleton />
+                <section className="sy-box flush sy-note-group">
+                    <div className="sy-section-head">
+                        <h2 className="sy-box-title">
+                            <span className="sy-skel dot" />
+                            <span
+                                className="sy-skel title"
+                                style={{ width: "30%" }}
+                            />
+                        </h2>
+                    </div>
+                    <div role="status" aria-label="Loading">
+                        {[0, 1, 2].map((row) => (
+                            <div
+                                className="sy-skel-row sy-skel-pair"
+                                key={row}
+                            >
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "36%" }}
+                                />
+                                <span
+                                    className="sy-skel line-sm"
+                                    style={{ width: "74%" }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </section>
             ) : notes.length === 0 ? (
                 <div className="sy-tray">
                     <p>

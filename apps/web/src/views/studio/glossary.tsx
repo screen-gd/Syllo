@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
-import ListSkeleton from "@/components/shared/ListSkeleton";
 import { useReviews } from "@/hooks/useReviews";
 import {
     collectGlossary,
@@ -267,7 +266,35 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
             )}
 
             {!loaded ? (
-                <ListSkeleton />
+                <section className="sy-box flush sy-term-group">
+                    <div className="sy-section-head">
+                        <span
+                            className="sy-skel title"
+                            style={{ width: 20 }}
+                        />
+                        <span
+                            className="sy-skel line-sm"
+                            style={{ width: 28 }}
+                        />
+                    </div>
+                    <div role="status" aria-label="Loading">
+                        {[0, 1, 2].map((row) => (
+                            <div
+                                className="sy-skel-row sy-skel-pair"
+                                key={row}
+                            >
+                                <span
+                                    className="sy-skel line"
+                                    style={{ width: "30%" }}
+                                />
+                                <span
+                                    className="sy-skel line-sm"
+                                    style={{ width: "72%" }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </section>
             ) : roadmaps.length === 0 ? (
                 <div className="sy-tray">
                     <p>Terms belong to a learning topic. Start one first.</p>

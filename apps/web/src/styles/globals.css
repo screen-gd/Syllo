@@ -12,11 +12,12 @@
 }
 
 /*
- * Theme: true black, flat.
+ * Theme: light, flat.
  *
- * Elevation is a lightness step (page #000, surface #111, raised #2a2a2a), not
- * a border or a shadow. White is the primary text and the primary button fill.
- * The accent is a sky blue reserved for data and selection marks (progress,
+ * Elevation is a lightness step (page #f7f7f5, surface #fff, raised #e6e6e1)
+ * plus a single hairline border; there are no shadows except on floating
+ * layers. Near-black is the primary text and the primary button fill.
+ * The accent is an indigo reserved for data and selection marks (progress,
  * due counts, the current item); it never fills buttons or nav.
  *
  * Every component reads these tokens through Tailwind utilities such as
@@ -24,25 +25,25 @@
  * `--color-accent` with their own branding colour.
  */
 @theme {
-    --color-page: #000000;
-    --color-surface: #111111;
-    --color-surface-subtle: #171717;
-    --color-surface-muted: #1f1f1f;
-    --color-raised: #2a2a2a;
-    --color-border: #222222;
-    --color-border-strong: #3a3a3a;
-    --color-text: #ffffff;
-    --color-text-muted: #b4b4b4;
-    --color-text-soft: #949494;
-    --color-accent: #4cb3f0;
-    --color-accent-strong: #7cc6f4;
-    --color-accent-soft: #0e2230;
-    --color-success: #3fc07a;
-    --color-success-soft: #172a1d;
-    --color-warning: #e5a93b;
-    --color-warning-soft: #2b2414;
-    --color-danger: #e5566f;
-    --color-danger-soft: #2c1a20;
+    --color-page: #f7f7f5;
+    --color-surface: #ffffff;
+    --color-surface-subtle: #f2f2ef;
+    --color-surface-muted: #ebebe7;
+    --color-raised: #e6e6e1;
+    --color-border: #e5e5e0;
+    --color-border-strong: #cdcdc6;
+    --color-text: #18191b;
+    --color-text-muted: #4f5257;
+    --color-text-soft: #6b6e75;
+    --color-accent: #3f4cc4;
+    --color-accent-strong: #2f3aa8;
+    --color-accent-soft: #eef0fd;
+    --color-success: #1f8a4c;
+    --color-success-soft: #e6f4ea;
+    --color-warning: #a8690a;
+    --color-warning-soft: #fbf1dc;
+    --color-danger: #c4314b;
+    --color-danger-soft: #fbe9ec;
 
     --font-sans: var(--font-geist-sans), "Helvetica Neue", system-ui, sans-serif;
     --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -60,7 +61,7 @@
 }
 
 :root {
-    color-scheme: dark;
+    color-scheme: light;
 }
 
 /* Element defaults sit in the base layer so utilities can override them. */
@@ -134,14 +135,13 @@
     }
 
     ::selection {
-        background: var(--color-raised);
-        color: var(--color-text);
+        background: var(--color-accent-soft);
     }
 
-    /* Keyboard focus only: a neutral outline, never a coloured glow. */
+    /* Keyboard focus only: a plain accent outline, no ring or offset. */
     :focus-visible {
-        outline: 2px solid rgba(255, 255, 255, 0.55);
-        outline-offset: 2px;
+        outline: 2px solid var(--color-accent);
+        outline-offset: 0;
     }
 
     .tabular-nums,
@@ -159,7 +159,7 @@
     }
 
     ::-webkit-scrollbar-thumb {
-        background: var(--color-raised);
+        background: var(--color-border-strong);
         border: 2px solid var(--color-page);
         border-radius: 999px;
     }
@@ -254,7 +254,7 @@
         min-height: 34px;
         padding: 0 12px;
         border-radius: var(--radius-md);
-        color: #bbbbbb;
+        color: var(--color-text-muted);
         font-size: 14px;
         transition: color 140ms ease;
     }
@@ -265,7 +265,7 @@
     }
 
     .settings-nav-link[data-active="true"] {
-        background: var(--color-surface);
+        background: var(--color-surface-muted);
     }
 
     .settings-content {
@@ -275,6 +275,7 @@
 
     .settings-section {
         padding: 22px;
+        border: 1px solid var(--color-border);
         border-radius: var(--radius-2xl);
         background: var(--color-surface);
     }
@@ -313,6 +314,7 @@
         flex-direction: column;
         gap: 12px;
         padding: 12px;
+        border: 1px solid var(--color-border);
         border-radius: var(--radius-2xl);
         background: var(--color-surface);
     }
@@ -382,6 +384,7 @@
     .studio-orbit-shell,
     .studio-orbit-rail,
     .studio-hero {
+        border: 1px solid var(--color-border);
         border-radius: var(--radius-2xl);
         background: var(--color-surface);
     }
@@ -397,15 +400,15 @@
     }
 
     .studio-data-tile-accent {
-        box-shadow: inset 0 0 0 1px var(--color-accent);
+        border: 1px solid var(--color-accent);
     }
 
     .studio-data-tile-success {
-        box-shadow: inset 0 0 0 1px var(--color-success);
+        border: 1px solid var(--color-success);
     }
 
     .studio-danger {
-        box-shadow: inset 0 0 0 1px var(--color-danger);
+        border: 1px solid var(--color-danger);
     }
 
     .studio-empty {
@@ -469,11 +472,11 @@
     .field-textarea,
     .field-select {
         width: 100%;
-        border: 1px solid #2e2e2e;
+        border: 0;
         border-radius: var(--radius-lg);
-        background: var(--color-surface);
+        background: var(--color-surface-subtle);
         color: var(--color-text);
-        transition: border-color 140ms ease;
+        transition: background-color 140ms ease;
     }
 
     .studio-input,
@@ -492,13 +495,8 @@
     .studio-input:hover,
     .field-input:hover,
     .field-textarea:hover,
-    .field-select:hover,
-    .studio-input:focus,
-    .field-input:focus,
-    .field-textarea:focus,
-    .field-select:focus {
-        border-color: #4a4a4a;
-        outline: none;
+    .field-select:hover {
+        background: var(--color-surface-muted);
     }
 
     .studio-input::placeholder,
@@ -507,7 +505,7 @@
         color: var(--color-text-soft);
     }
 
-    /* Buttons are pills. Primary is inverted white; there is one per screen. */
+    /* Buttons are pills. Primary is inverted dark; there is one per screen. */
     .button-primary,
     .button-secondary,
     .button-ghost,
@@ -518,13 +516,13 @@
         gap: 8px;
         min-height: 36px;
         padding: 0 16px;
+        border: 0;
         border-radius: 999px;
         font-size: 14px;
         font-weight: 500;
         white-space: nowrap;
         transition:
             background-color 140ms ease,
-            border-color 140ms ease,
             color 140ms ease,
             opacity 140ms ease;
     }
@@ -534,43 +532,48 @@
     .button-ghost:disabled,
     .btn:disabled {
         cursor: not-allowed;
-        opacity: 0.5;
+        opacity: 0.45;
     }
 
     .button-primary,
     .btn-primary {
-        border: 1px solid var(--color-text);
         background: var(--color-text);
-        color: var(--color-page);
+        color: #ffffff;
     }
 
     .button-primary:hover,
     .btn-primary:hover {
-        background: #e6e6e6;
-        border-color: #e6e6e6;
+        background: #2c2d30;
     }
 
     .button-secondary,
     .btn-secondary {
-        border: 1px solid var(--color-border-strong);
-        background: transparent;
+        background: var(--color-surface-muted);
         color: var(--color-text);
     }
 
     .button-secondary:hover,
     .btn-secondary:hover {
-        border-color: #555555;
-        background: var(--color-surface-subtle);
+        background: var(--color-raised);
     }
 
     .button-ghost {
-        border: 1px solid transparent;
         background: transparent;
         color: var(--color-text-muted);
     }
 
     .button-ghost:hover {
         color: var(--color-text);
+    }
+
+    /* Extra contrast when the user asks for it: fields get a hairline. */
+    @media (prefers-contrast: more) {
+        .studio-input,
+        .field-input,
+        .field-textarea,
+        .field-select {
+            border: 1px solid var(--color-border-strong);
+        }
     }
 
     /* Loading placeholder: a flat bar at the final size, no shimmer. */
