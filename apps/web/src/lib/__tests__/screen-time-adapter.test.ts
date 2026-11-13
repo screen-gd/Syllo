@@ -34,6 +34,7 @@ interface RecordedRequest {
 
 let server: http.Server;
 let requests: RecordedRequest[];
+let hang: boolean;
 let responder: (request: RecordedRequest) => {
     status: number;
     payload: unknown;
@@ -44,6 +45,7 @@ let connectionPath: string;
 
 beforeEach(async () => {
     requests = [];
+    hang = false;
     responder = () => ({ status: 200, payload: { session: null } });
     server = http.createServer((req, res) => {
         let raw = "";
@@ -64,6 +66,7 @@ beforeEach(async () => {
                 body,
             };
             requests.push(recorded);
+            if (hang) return;
             const { status, payload } = responder(recorded);
             res.writeHead(status, { "Content-Type": "application/json" });
             res.end(JSON.stringify(payload));
@@ -81,6 +84,8 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+    // Drop any request the fake server left hanging before closing.
+    server.closeAllConnections();
     await new Promise<void>((resolve) => {
         server.close(() => resolve());
     });
@@ -291,6 +296,19 @@ describe("screen time http adapter", () => {
             getFocusStatus({ connectionPath }),
         ).resolves.toEqual({ kind: "unavailable" });
     });
+
+    it(
+        "reports unavailable when the call times out",
+        async () => {
+            await writeConnection();
+            hang = true;
+            await expect(
+                stopFocusSession({ connectionPath }),
+            ).resolves.toEqual({ kind: "unavailable" });
+            expect(requests[0].method).toBe("DELETE");
+        },
+        10_000,
+    );
 });
 
 describe("connectionFilePath", () => {
