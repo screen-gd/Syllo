@@ -8,8 +8,8 @@
 /* Sidebar: a quiet rail on the page background. */
 .sy-nav-item {
     transition:
-        background-color 120ms ease,
-        color 120ms ease;
+        background-color var(--dur-press) ease-out,
+        color var(--dur-press) ease-out;
 }
 .sy-nav-item[aria-current="page"] {
     background: var(--color-surface-muted);
@@ -40,7 +40,7 @@
     margin-top: 16px;
 }
 .sy-nav-topics > p {
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 .sy-nav-topics .sy-topic-dot {
     margin-top: 5px;
@@ -73,9 +73,9 @@
 .sy-app .button-primary,
 .sy-app .button-secondary {
     transition:
-        background-color 120ms ease,
-        color 120ms ease,
-        opacity 120ms ease;
+        background-color var(--dur-press) ease-out,
+        color var(--dur-press) ease-out,
+        opacity var(--dur-press) ease-out;
 }
 .sy-button.primary,
 .sy-app .sy-action[data-variant="default"],
@@ -83,10 +83,12 @@
     background: var(--color-text);
     color: #ffffff;
 }
-.sy-button.primary:hover:not(:disabled),
-.sy-app .sy-action[data-variant="default"]:hover:not(:disabled),
-.sy-app .button-primary:hover {
-    background: #2c2d30;
+@media (hover: hover) and (pointer: fine) {
+    .sy-button.primary:hover:not(:disabled),
+    .sy-app .sy-action[data-variant="default"]:hover:not(:disabled),
+    .sy-app .button-primary:hover {
+        background: #2c2d30;
+    }
 }
 .sy-button.secondary,
 .sy-button.icon,
@@ -96,12 +98,14 @@
     background: var(--color-surface-muted);
     color: var(--color-text);
 }
-.sy-button.secondary:hover:not(:disabled),
-.sy-button.icon:hover:not(:disabled),
-.sy-app .sy-action[data-variant="secondary"]:hover:not(:disabled),
-.sy-app .sy-action[data-variant="outline"]:hover:not(:disabled),
-.sy-app .button-secondary:hover {
-    background: var(--color-raised);
+@media (hover: hover) and (pointer: fine) {
+    .sy-button.secondary:hover:not(:disabled),
+    .sy-button.icon:hover:not(:disabled),
+    .sy-app .sy-action[data-variant="secondary"]:hover:not(:disabled),
+    .sy-app .sy-action[data-variant="outline"]:hover:not(:disabled),
+    .sy-app .button-secondary:hover {
+        background: var(--color-raised);
+    }
 }
 
 /* Fields: a flat grey well; inside a tray they stay white so they read. */
@@ -114,11 +118,13 @@
     background-color: var(--color-surface-subtle);
     border: 0;
 }
-.sy-select:hover,
-.sy-input:hover,
-.sy-textarea:hover,
-.sy-app .sy-control:hover {
-    background-color: var(--color-surface-muted);
+@media (hover: hover) and (pointer: fine) {
+    .sy-select:hover,
+    .sy-input:hover,
+    .sy-textarea:hover,
+    .sy-app .sy-control:hover {
+        background-color: var(--color-surface-muted);
+    }
 }
 .sy-tray :is(.sy-input, .sy-select, .sy-textarea, .sy-control, input) {
     background-color: var(--color-surface);
@@ -144,6 +150,7 @@
 .sy-progress > span {
     border-radius: 3px;
     background: var(--color-accent);
+    transition: width var(--dur-base) var(--ease-out);
 }
 .sy-progress.topic > span {
     background: var(--topic, var(--color-accent));
@@ -157,21 +164,29 @@
     background: var(--color-surface-subtle);
 }
 .sy-view-switch button {
+    position: relative;
     width: calc(var(--sy-control-height) - 6px);
     height: calc(var(--sy-control-height) - 6px);
 }
 .sy-view-switch button[aria-pressed="true"] {
-    background: var(--color-surface);
     color: var(--color-text);
+}
+/* The white chip is a shared-layout element that slides between options. */
+.sy-view-switch-ind {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--sy-radius);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
+}
+.sy-view-switch button > svg {
+    position: relative;
 }
 .sy-app .sy-segmented button {
-    transition: color 120ms ease;
+    transition: color var(--dur-press) ease-out;
 }
 .sy-app .sy-segmented button[aria-checked="true"] {
-    background: var(--color-surface);
     color: var(--color-text);
-    border: 1px solid var(--color-border);
 }
 .sy-tabs button[aria-selected="true"] {
     border-bottom-color: var(--color-text);
@@ -182,13 +197,13 @@
 .sy-row-actions > :is(button, a),
 .sy-time-link {
     transition:
-        color 120ms ease,
-        opacity 120ms ease;
+        color var(--dur-press) ease-out,
+        transform var(--dur-press) ease-out;
 }
 .sy-button.quiet:active:not(:disabled),
 .sy-row-actions > :is(button, a):active,
 .sy-time-link:active {
-    opacity: 0.6;
+    transform: scale(0.97);
 }
 .sy-app :is(button, a, summary) {
     -webkit-tap-highlight-color: transparent;
@@ -244,7 +259,7 @@
     min-width: 0;
     padding: 24px;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
     background: var(--color-surface);
 }
 .sy-box + .sy-box,
@@ -256,12 +271,13 @@
     margin: -24px -24px 16px;
     padding: 13px 24px;
     border-bottom: 1px solid var(--color-border);
-    border-radius: 10px 10px 0 0;
+    border-radius: 14px 14px 0 0;
 }
 .sy-box > .sy-section-head h2 {
-    font-size: 14px;
+    font-size: 0.9375rem;
     font-weight: 600;
-    letter-spacing: 0;
+    letter-spacing: -0.006em;
+    line-height: 1.35;
 }
 .sy-box > :last-child {
     margin-bottom: 0;
@@ -276,7 +292,7 @@
     border-radius: var(--sy-radius);
     background: var(--color-surface-subtle);
     color: var(--color-text-muted);
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.7;
 }
 
@@ -288,11 +304,11 @@
     border-top: 1px solid var(--color-border);
 }
 
-/* Numbers read like an instrument. */
+/* Numbers set in the text face with tabular figures. */
 .sy-num {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
 }
 /* A flat readout pill for one figure. */
 .sy-readout {
@@ -302,9 +318,9 @@
     padding: 2px 8px;
     border-radius: 5px;
     background: var(--color-surface-subtle);
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text);
 }
 .sy-readout[data-live] {
@@ -354,7 +370,7 @@
     padding: 1px 7px;
     border-radius: 999px;
     background: var(--color-surface-muted);
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 18px;
     color: var(--color-text-muted);
 }
@@ -510,10 +526,12 @@
     border: 1px solid var(--color-border);
     border-radius: var(--sy-radius);
     background: var(--color-surface);
-    transition: background-color 120ms ease;
+    transition: background-color var(--dur-press) ease-out;
 }
-.sy-starter:hover {
-    background: var(--color-surface-subtle);
+@media (hover: hover) and (pointer: fine) {
+    .sy-starter:hover {
+        background: var(--color-surface-subtle);
+    }
 }
 .sy-starter-knob {
     display: grid;
@@ -529,15 +547,17 @@
     position: absolute;
     top: 14px;
     right: 16px;
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-starter b {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 550;
 }
 .sy-starter small {
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.5;
     color: var(--color-text-muted);
 }
@@ -577,13 +597,15 @@
     border-left: 1px solid var(--color-border);
 }
 .sy-gauges b {
-    font-size: 24px;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.5rem;
     font-weight: 500;
     line-height: 1.1;
     color: var(--color-text);
 }
 .sy-gauges span {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-week-leds {
@@ -597,7 +619,7 @@
     display: grid;
     gap: 6px;
     justify-items: center;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 
@@ -610,7 +632,7 @@
 }
 .sy-deck-row p {
     margin-top: 3px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-deck {
@@ -624,7 +646,9 @@
     background: var(--color-surface-muted);
 }
 .sy-deck b {
-    font-size: 22px;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.375rem;
     font-weight: 500;
     color: var(--color-text-soft);
 }
@@ -656,4 +680,52 @@
 }
 .sy-box.flush > .sy-tray {
     margin-bottom: 14px;
+}
+
+/*
+ * Press response: every control settles its colour over --dur-fast and
+ * answers pointer-down with a scale over --dur-press. Large tappable
+ * surfaces move less so the layout still feels steady.
+ */
+:is(
+    .sy-button,
+    .sy-action,
+    .sy-rate,
+    .sy-icon-button,
+    .icon-button,
+    .button-primary,
+    .button-secondary,
+    .button-ghost,
+    .btn
+) {
+    transition:
+        transform var(--dur-press) ease-out,
+        background-color var(--dur-fast) var(--ease-out),
+        color var(--dur-fast) var(--ease-out);
+}
+:is(
+    .sy-button,
+    .sy-action,
+    .sy-rate,
+    .sy-icon-button,
+    .icon-button,
+    .button-primary,
+    .button-secondary,
+    .button-ghost,
+    .btn
+):active:not(:disabled) {
+    transform: scale(0.97);
+}
+:is(.sy-starter, .sy-deck, .sy-topic, .sy-resume, .sy-nav-item) {
+    transition:
+        transform var(--dur-press) ease-out,
+        background-color var(--dur-fast) var(--ease-out),
+        color var(--dur-fast) var(--ease-out);
+}
+:is(.sy-starter, .sy-deck, .sy-topic, .sy-resume, .sy-nav-item):active:not(:disabled) {
+    transform: scale(0.985);
+}
+a.sy-row:active,
+.sy-workspace-row.sy-row:active {
+    background: var(--color-surface-subtle);
 }

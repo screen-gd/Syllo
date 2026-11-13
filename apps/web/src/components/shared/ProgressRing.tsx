@@ -49,12 +49,15 @@ export default function ProgressRing({
                         strokeDasharray={circumference}
                         strokeDashoffset={offset}
                         transform={`rotate(-90 ${size / 2} ${size / 2})`}
-                        style={{ transition: "stroke-dashoffset 0.6s ease-out" }}
+                        style={{
+                            transition:
+                                "stroke-dashoffset var(--dur-base) var(--ease-out)",
+                        }}
                     />
                 </svg>
             </div>
             {/* Percentage text */}
-            <span className="absolute text-[12px] font-bold font-display text-text tabular-nums">
+            <span className="absolute text-[0.75rem] font-bold font-display text-text tabular-nums">
                 {percent}%
             </span>
         </div>

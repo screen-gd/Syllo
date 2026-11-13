@@ -67,7 +67,7 @@ export default function SubmissionsSection({ section, onUpdate }: Props) {
 
     return (
         <div className="max-w-3xl">
-            <div className="flex items-center justify-between mb-6 animate-fade-in">
+            <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-text">📤 {section.title}</h2>
                 <button type="button" className="btn btn-primary text-xs" onClick={() => setShowSubmit(true)}>
                     Submit Work
@@ -76,7 +76,7 @@ export default function SubmissionsSection({ section, onUpdate }: Props) {
 
             {/* Submit form */}
             {showSubmit ? (
-                <div className="surface rounded-xl p-4 mb-6 space-y-3 animate-scale-in">
+                <div className="surface rounded-xl p-4 mb-6 space-y-3 sy-pop">
                     <input className="input" placeholder="Submission title…" value={newSub.title} onChange={(e) => setNewSub({ ...newSub, title: e.target.value })} />
                     <textarea className="input min-h-[100px] resize-y" placeholder="Description — what did you accomplish?…" value={newSub.description} onChange={(e) => setNewSub({ ...newSub, description: e.target.value })} />
                     <input className="input" placeholder="Link to your work (optional)…" type="url" value={newSub.attachment} onChange={(e) => setNewSub({ ...newSub, attachment: e.target.value })} />
@@ -116,7 +116,7 @@ export default function SubmissionsSection({ section, onUpdate }: Props) {
                             </div>
                         ) : null}
                         <div className="flex items-center justify-between mt-3">
-                            <span className="text-text-muted text-[12px] tabular-nums">
+                            <span className="text-text-muted text-[0.75rem] tabular-nums">
                                 {new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date(sub.createdAt))}
                             </span>
                             {sub.status === "submitted" ? (

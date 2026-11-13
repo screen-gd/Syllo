@@ -40,7 +40,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
         const moduleId = selectedNode.moduleId;
         
         return (
-            <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="space-y-8 duration-300">
                 <div className="flex items-start justify-between">
                     <div>
                         <div className="flex items-center gap-2 mb-3">
@@ -111,7 +111,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
         const data = mod.data;
 
         return (
-            <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="space-y-8 duration-300">
                 <div>
                      <div className="flex items-center gap-2 mb-3">
                         <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs font-bold">Module</span>

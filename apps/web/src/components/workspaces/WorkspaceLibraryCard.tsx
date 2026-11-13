@@ -117,7 +117,7 @@ export default function WorkspaceLibraryCard({
                     <Link
                         to="/learn"
                         search={{ roadmap: roadmap.id }}
-                        className="min-w-0 break-words text-[15px] font-medium text-text after:absolute after:inset-0 hover:underline hover:underline-offset-4"
+                        className="min-w-0 break-words text-[0.9375rem] font-medium text-text after:absolute after:inset-0 hover:underline hover:underline-offset-4"
                     >
                         {displayTitle}
                     </Link>
@@ -125,7 +125,7 @@ export default function WorkspaceLibraryCard({
                         <span className="sy-badge">Built by Scout</span>
                     ) : null}
                 </div>
-                <p className="mt-1 text-[13px] text-text-soft">
+                <p className="mt-1 text-[0.8125rem] text-text-soft">
                     <span className="sy-num">{stats.moduleCount}</span> module
                     {stats.moduleCount === 1 ? "" : "s"} ·{" "}
                     {getRoadmapStateLabel(stats.progressState)} · {updated}
@@ -133,7 +133,7 @@ export default function WorkspaceLibraryCard({
             </div>
 
             <div className="sy-workspace-progress">
-                <div className="flex items-baseline justify-between text-[13px]">
+                <div className="flex items-baseline justify-between text-[0.8125rem]">
                     <span className="sy-num text-text">{stats.percent}%</span>
                     <span className="text-text-soft">
                         <span className="sy-num">{stats.completedTasks}</span>{" "}

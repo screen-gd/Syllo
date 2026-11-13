@@ -21,7 +21,7 @@ export default function Footer() {
                         <Link
                             key={link.href}
                             to={link.href}
-                            className="border-b border-transparent pb-1 text-[12px] font-semibold text-text-muted transition-colors hover:border-border hover:text-text"
+                            className="border-b border-transparent pb-1 text-[0.75rem] font-semibold text-text-muted transition-colors hover:border-border hover:text-text"
                         >
                             {link.label}
                         </Link>

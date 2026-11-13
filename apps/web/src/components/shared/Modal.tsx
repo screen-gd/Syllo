@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FADE, SPRING } from "@/components/shared/motion";
 
 interface ModalProps {
     isOpen: boolean;
@@ -14,8 +16,6 @@ interface ModalProps {
 }
 
 export default function Modal({ isOpen, onClose, title, children, maxWidth = "max-w-lg" }: ModalProps) {
-    const overlayRef = useRef<HTMLDivElement>(null);
-
     const handleKeyDown = useCallback(
         (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
@@ -33,19 +33,27 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "ma
         };
     }, [isOpen, handleKeyDown]);
 
-    if (!isOpen) return null;
-
     return (
-        <div
-            ref={overlayRef}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            onClick={(e) => {
-                if (e.target === overlayRef.current) onClose();
-            }}
-        >
-            <div className="absolute inset-0 bg-black/70" />
+        <AnimatePresence>
+            {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+                className="absolute inset-0 bg-scrim"
+                onClick={onClose}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={FADE}
+            />
 
-            <Card className={`relative ${maxWidth} w-full shadow-[0_8px_30px_rgba(24,25,27,0.12)]`} style={{ overscrollBehavior: "contain" }}>
+            <motion.div
+                className={`relative ${maxWidth} w-full`}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={SPRING}
+            >
+            <Card className="shadow-[var(--shadow-sheet)]" style={{ overscrollBehavior: "contain" }}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-border px-5 py-4">
                     <CardTitle className="font-display text-base font-semibold text-text">{title}</CardTitle>
                     <Button
@@ -61,6 +69,9 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "ma
                 </CardHeader>
                 <CardContent className="p-5">{children}</CardContent>
             </Card>
+            </motion.div>
         </div>
+            )}
+        </AnimatePresence>
     );
 }

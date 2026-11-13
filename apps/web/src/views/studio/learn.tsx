@@ -7,6 +7,8 @@ import {
     type KeyboardEvent,
 } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { motion } from "motion/react";
+import { SPRING } from "@/components/shared/motion";
 import {
     ArrowRight,
     Check,
@@ -514,7 +516,6 @@ export default function LearnPage({
         return (
             <div className="sy-desk sy-desk-simple">
                 <div className="sy-desk-simple-inner">
-                    <p className="sy-desk-eyebrow">Learn</p>
                     <h1>
                         {roadmapId
                             ? "This learning topic is not on this device"
@@ -1271,6 +1272,13 @@ export default function LearnPage({
                                         <span className="sy-desk-tab-count">
                                             {count}
                                         </span>
+                                    )}
+                                    {tab === key && (
+                                        <motion.span
+                                            className="sy-desk-tab-ind"
+                                            layoutId="sy-desk-tabs"
+                                            transition={SPRING}
+                                        />
                                     )}
                                 </button>
                             );

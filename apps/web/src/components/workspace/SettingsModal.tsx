@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { X, Image as ImageIcon, Paintbrush, Lock } from "lucide-react";
 import type { Roadmap } from "@/types";
+import { FADE, SPRING } from "@/components/shared/motion";
 
 interface SettingsModalProps {
     roadmap: Roadmap;
@@ -17,8 +19,6 @@ export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBrandi
     const [accentColor, setAccentColor] = useState(roadmap.branding?.accentColor || "#3F4CC4");
     const [logoUrl, setLogoUrl] = useState(roadmap.branding?.logoUrl || "");
 
-    if (!isOpen) return null;
-
     const handleSave = () => {
         onUpdateBranding({
             customTitle: titleOverride,
@@ -30,10 +30,25 @@ export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBrandi
     };
 
     return (
+        <AnimatePresence>
+            {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 transition-opacity" onClick={onClose} />
-            
-            <div className="relative bg-surface-muted border border-border rounded-2xl w-full max-w-lg overflow-hidden shadow-[0_8px_30px_rgba(24,25,27,0.12)] animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            <motion.div
+                className="absolute inset-0 bg-scrim"
+                onClick={onClose}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={FADE}
+            />
+
+            <motion.div
+                className="relative bg-surface-muted border border-border rounded-[1.125rem] w-full max-w-lg overflow-hidden shadow-[var(--shadow-sheet)] flex flex-col max-h-[90vh]"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={SPRING}
+            >
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
                     <h2 className="font-display text-xl text-text">Workspace Settings</h2>
@@ -139,7 +154,9 @@ export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBrandi
                         Save Settings
                     </button>
                 </div>
-            </div>
+            </motion.div>
         </div>
+            )}
+        </AnimatePresence>
     );
 }

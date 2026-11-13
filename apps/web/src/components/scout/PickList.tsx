@@ -24,7 +24,7 @@ export default function PickList({
         <div>
             {groupPicks(resources).map((group) => (
                 <section key={group.level} className="mt-6 first:mt-0">
-                    <h3 className="text-[13px] font-medium text-text-soft">
+                    <h3 className="text-[0.8125rem] font-medium text-text-soft">
                         {PICK_GROUP_LABEL[group.level]}
                     </h3>
                     <ul className="mt-2 divide-y divide-border">
@@ -108,7 +108,7 @@ function PickRow({
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-1.5 block break-words text-[15px] font-medium leading-snug text-[var(--color-text)] underline-offset-4 hover:underline"
+                        className="mt-1.5 block break-words text-[0.9375rem] font-medium leading-snug text-[var(--color-text)] underline-offset-4 hover:underline"
                     >
                         {resource.title}
                     </a>

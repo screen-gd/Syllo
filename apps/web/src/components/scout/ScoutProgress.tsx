@@ -36,7 +36,7 @@ export default function ScoutProgress({ step, detail }: ScoutProgressProps) {
                             </span>
                             <span
                                 className={cn(
-"text-[13px]",
+"text-[0.8125rem]",
                                     active ? "text-[var(--color-text)]" : "text-[var(--color-text-soft)]",
                                 )}
                             >

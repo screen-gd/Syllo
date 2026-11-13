@@ -1,4 +1,7 @@
+import { useId } from "react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { SPRING } from "@/components/shared/motion";
 
 interface SegmentedProps<T extends string> {
     label: string;
@@ -19,6 +22,7 @@ export function Segmented<T extends string>({
     onChange,
     className,
 }: SegmentedProps<T>) {
+    const groupId = useId();
     return (
         <div
             role="radiogroup"
@@ -38,13 +42,20 @@ export function Segmented<T extends string>({
                         aria-checked={selected}
                         onClick={() => onChange(option.key)}
                         className={cn(
-                            "min-h-8 rounded px-3 py-1 text-[13px] transition-colors",
+                            "relative min-h-8 rounded px-3 py-1 text-[0.8125rem] transition-colors",
                             selected
-                                ? "bg-raised text-text"
+                                ? "text-text"
                                 : "text-text-soft hover:text-text",
                         )}
                     >
-                        {option.label}
+                        {selected && (
+                            <motion.span
+                                layoutId={`seg-${groupId}`}
+                                className="absolute inset-0 rounded border border-border bg-surface"
+                                transition={SPRING}
+                            />
+                        )}
+                        <span className="relative">{option.label}</span>
                     </button>
                 );
             })}

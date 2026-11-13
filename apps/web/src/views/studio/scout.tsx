@@ -442,7 +442,7 @@ export default function ScoutPage() {
                                             void start();
                                     }}
                                     placeholder="UI design for developers"
-                                    className="h-11 text-[15px]"
+                                    className="h-11 text-[0.9375rem]"
                                     maxLength={400}
                                 />
 
@@ -503,7 +503,7 @@ export default function ScoutPage() {
 
                                 {recentPacks.length > 0 ? (
                                     <div className="sy-cut pt-5">
-                                        <h3 className="text-[13px] text-text-soft">
+                                        <h3 className="text-[0.8125rem] text-text-soft">
                                             Past goals
                                         </h3>
                                         <ul className="sy-grooved mt-1">
@@ -566,7 +566,7 @@ export default function ScoutPage() {
                                     </div>
                                 ) : lastPackHref ? (
                                     <div className="sy-cut pt-5">
-                                        <p className="text-[13px] text-text-soft">
+                                        <p className="text-[0.8125rem] text-text-soft">
                                             Last Scout workspace
                                         </p>
                                         <Link
@@ -713,7 +713,7 @@ export default function ScoutPage() {
                                 </div>
 
                                 {failedResources > 0 ? (
-                                    <p className="rounded-xl bg-warning-soft px-3 py-2 text-[13px] text-warning">
+                                    <p className="rounded-xl bg-warning-soft px-3 py-2 text-[0.8125rem] text-warning">
                                         {failedResources} resource
                                         {failedResources === 1 ? "" : "s"} could
                                         not be read and will be skipped.

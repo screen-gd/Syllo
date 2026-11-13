@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import type { SrsItem } from "@/types";
 import { applySrsReview, type SrsRating } from "@/lib/spaced-repetition";
+import { FADE, SPRING } from "@/components/shared/motion";
 import { X, Brain, RotateCcw } from "lucide-react";
 
 interface SrsReviewModalProps {
@@ -16,17 +18,17 @@ const REVIEW_LABELS: Record<SrsRating, { title: string; hint: string; className:
     hard: {
         title: "Hard",
         hint: "Bring this card back sooner.",
-        className: "border-danger/30 bg-danger/10 text-danger hover:bg-danger/20",
+        className: "bg-danger/10 text-danger hover:bg-danger/20",
     },
     okay: {
         title: "Okay",
         hint: "Keep the normal pace.",
-        className: "border-warning/30 bg-warning/10 text-warning hover:bg-warning/20",
+        className: "bg-warning/10 text-warning hover:bg-warning/20",
     },
     easy: {
         title: "Easy",
         hint: "Push this card further out.",
-        className: "border-accent/30 bg-accent/10 text-accent hover:bg-accent/20",
+        className: "bg-accent/10 text-accent hover:bg-accent/20",
     },
 };
 
@@ -53,8 +55,6 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
         return `Card ${Math.min(currentIndex + 1, items.length)} of ${items.length}`;
     }, [currentIndex, items.length]);
 
-    if (!isOpen) return null;
-
     const handleRate = async (rating: SrsRating) => {
         if (!currentItem || isSaving) return;
 
@@ -79,8 +79,23 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
     };
 
     return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-page/80 px-4">
-            <div className="relative w-full max-w-3xl overflow-hidden rounded-3xl border border-border bg-surface-muted">
+        <AnimatePresence>
+            {isOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
+            <motion.div
+                className="absolute inset-0 bg-scrim"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={FADE}
+            />
+            <motion.div
+                className="relative w-full max-w-3xl overflow-hidden rounded-[1.125rem] border border-border bg-surface-muted shadow-[var(--shadow-sheet)]"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={SPRING}
+            >
                 <div className="flex items-center justify-between border-b border-border px-6 py-5">
                     <div>
                         <div className="mb-1 flex items-center gap-2 text-accent">
@@ -92,7 +107,7 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-lg border border-border bg-surface p-2 text-text-muted transition-colors hover:text-text"
+                        className="rounded-lg bg-surface p-2 text-text-muted transition-all hover:text-text active:scale-[0.97]"
                         aria-label="Close review modal"
                     >
                         <X size={16} />
@@ -140,7 +155,7 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                                     <button
                                         type="button"
                                         onClick={() => setShowAnswer(true)}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/20"
+                                        className="inline-flex items-center gap-2 rounded-lg bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition-all hover:bg-accent/20 active:scale-[0.97]"
                                     >
                                         Reveal answer
                                     </button>
@@ -156,7 +171,7 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                                             type="button"
                                             disabled={!showAnswer || isSaving}
                                             onClick={() => void handleRate(rating)}
-                                            className={`rounded-2xl border px-4 py-4 text-left transition-all disabled:cursor-not-allowed disabled:opacity-50 ${config.className}`}
+                                            className={`rounded-2xl px-4 py-4 text-left transition-all active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-50 ${config.className}`}
                                         >
                                             <div className="font-display text-xs">{config.title}</div>
                                             <div className="mt-2 text-sm leading-relaxed">{config.hint}</div>
@@ -167,7 +182,9 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                         </div>
                     )}
                 </div>
-            </div>
+            </motion.div>
         </div>
+            )}
+        </AnimatePresence>
     );
 }

@@ -5,23 +5,19 @@ import { cn } from "@/lib/utils";
 
 /** Neutral controls; reserve the inverted primary for the main action. */
 const buttonVariants = cva(
-    "sy-action inline-flex items-center justify-center gap-2 whitespace-normal rounded-md text-sm font-medium transition-[border-color,color,opacity] disabled:pointer-events-none disabled:opacity-50",
+    "sy-action inline-flex items-center justify-center gap-2 whitespace-normal rounded-md text-sm font-medium transition-[color,opacity] disabled:pointer-events-none disabled:opacity-50",
     {
         variants: {
             variant: {
-                default:
-                    "border border-text bg-text text-page hover:border-[#2c2d30] hover:bg-[#2c2d30]",
-                secondary:
-                    "border border-border-strong bg-transparent text-text hover:border-text-muted hover:bg-surface-muted",
-                ghost: "border border-transparent text-text-muted hover:text-text",
-                destructive:
-                    "border border-danger/40 bg-transparent text-danger hover:border-danger hover:bg-danger-soft",
-                outline:
-                    "border border-border-strong bg-transparent text-text hover:border-text-muted hover:bg-surface-muted",
+                default: "",
+                secondary: "",
+                ghost: "text-text-muted hover:text-text",
+                destructive: "text-danger hover:bg-danger-soft",
+                outline: "",
             },
             size: {
                 default: "min-h-10 px-4 py-2",
-                sm: "min-h-9 px-3 py-1.5 text-[13px]",
+                sm: "min-h-9 px-3 py-1.5 text-[0.8125rem]",
                 lg: "min-h-11 px-5 py-2.5",
                 icon: "min-h-10 w-10 shrink-0",
             },

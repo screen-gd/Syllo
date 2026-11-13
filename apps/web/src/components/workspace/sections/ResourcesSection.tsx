@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ResourceSection, Section, Resource } from "@/types";
 import ContentViewer from "@/components/shared/ContentViewer";
+import { AnimatePresence } from "motion/react";
 
 interface Props {
     section: ResourceSection;
@@ -28,7 +29,7 @@ export default function Resources({ section }: Props) {
     const categories = Array.from(new Set(section.data.map((r: Resource) => r.category || "Uncategorized"))).sort();
 
     return (
-        <div className="max-w-6xl mx-auto space-y-12 animate-fade-in">
+        <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center sm:text-left">
                 <h2 className="font-display text-4xl font-semibold text-text mb-3">
                     📚 {section.title}
@@ -44,7 +45,7 @@ export default function Resources({ section }: Props) {
                             <div className="flex items-center gap-3 mb-6 px-2 sm:px-0">
                                 <h3 className="font-display font-bold text-text text-lg text-text-muted">{category}</h3>
                                 <div className="flex-1 h-px bg-surface-muted" />
-                                <span className="text-[12px] font-bold text-text bg-surface-muted px-2 py-0.5 rounded">{catResources.length} items</span>
+                                <span className="text-[0.75rem] font-bold text-text bg-surface-muted px-2 py-0.5 rounded">{catResources.length} items</span>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                 {catResources.map((res: Resource) => (
@@ -60,7 +61,7 @@ export default function Resources({ section }: Props) {
                                             <div className="w-10 h-10 rounded-xl bg-page flex items-center justify-center text-xl shrink-0 transition-transform duration-300 border border-border">
                                                 {getIcon(res.type)}
                                             </div>
-                                            <span className="text-[12px] font-bold text-text-muted bg-surface px-2 py-1 rounded">
+                                            <span className="text-[0.75rem] font-bold text-text-muted bg-surface px-2 py-1 rounded">
                                                 {res.type}
                                             </span>
                                         </div>
@@ -85,9 +86,14 @@ export default function Resources({ section }: Props) {
                 })}
             </div>
 
-            {viewerUrl && (
-                <ContentViewer url={viewerUrl} onClose={() => setViewerUrl(null)} />
-            )}
+            <AnimatePresence>
+                {viewerUrl && (
+                    <ContentViewer
+                        url={viewerUrl}
+                        onClose={() => setViewerUrl(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

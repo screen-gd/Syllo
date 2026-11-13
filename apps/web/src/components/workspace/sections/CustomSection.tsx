@@ -34,7 +34,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
     if (data.layout === "checklist") {
         return (
             <div className="max-w-3xl">
-                <h2 className="text-xl font-semibold text-text mb-2 animate-fade-in">
+                <h2 className="text-xl font-semibold text-text mb-2">
                     🔧 {section.title}
                 </h2>
                 {data.description ? <p className="text-text-muted text-sm mb-6">{data.description}</p> : null}
@@ -65,7 +65,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
     if (data.layout === "cards") {
         return (
             <div className="max-w-4xl">
-                <h2 className="text-xl font-semibold text-text mb-2 animate-fade-in">
+                <h2 className="text-xl font-semibold text-text mb-2">
                     🔧 {section.title}
                 </h2>
                 {data.description ? <p className="text-text-muted text-sm mb-6">{data.description}</p> : null}
@@ -97,7 +97,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
     // Default: list layout
     return (
         <div className="max-w-3xl">
-            <h2 className="text-xl font-semibold text-text mb-2 animate-fade-in">
+            <h2 className="text-xl font-semibold text-text mb-2">
                 🔧 {section.title}
             </h2>
             {data.description ? <p className="text-text-muted text-sm mb-6">{data.description}</p> : null}

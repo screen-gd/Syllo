@@ -141,7 +141,7 @@ export default function SmartEmbed({ url, title, description }: SmartEmbedProps)
                 <div className="absolute inset-0 flex items-center justify-center bg-surface-muted/80 z-10 border border-border">
                     <div className="flex flex-col items-center gap-3">
                         <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                        <span className="text-text-muted text-[12px]">Loading resource...</span>
+                        <span className="text-text-muted text-[0.75rem]">Loading resource...</span>
                     </div>
                 </div>
             )}

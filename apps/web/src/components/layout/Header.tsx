@@ -18,11 +18,11 @@ export default function Header() {
     }, [pathname]);
 
     return (
-        <header className="sticky top-0 z-50 border-b border-border bg-page">
+        <header className="sy-material sticky top-0 z-50">
             <div className="page-shell-wide flex h-14 items-center justify-between gap-4">
                 <Link to="/" className="flex min-w-0 items-center gap-2.5">
                     <Logo />
-                    <span className="truncate text-[15px] font-semibold tracking-tight text-text">Syllo</span>
+                    <span className="truncate text-[0.9375rem] font-semibold tracking-tight text-text">Syllo</span>
                 </Link>
 
                 <nav aria-label="Main navigation" className="hidden items-center gap-1 lg:flex">

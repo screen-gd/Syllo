@@ -51,7 +51,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
     };
 
     return (
-        <div className="flex h-full w-full overflow-hidden animate-in fade-in duration-300">
+        <div className="flex h-full w-full overflow-hidden duration-300">
             {/* LEFT PANE: 60% TIMELINE */}
             <div className={cn(
 "flex-1 overflow-y-auto no-scrollbar border-r border-border transition-all duration-300",
@@ -167,7 +167,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
 
             {/* RIGHT PANE: 35% CONTEXT */}
             {selectedNode ? (
-                <div className="w-[35%] bg-page flex flex-col h-full hidden lg:flex border-l border-border animate-in slide-in-from-right-8 duration-500">
+                <div className="w-[35%] bg-page flex flex-col h-full hidden lg:flex border-l border-border duration-500">
                     <ContextPanel 
                         selectedNode={selectedNode} 
                         roadmap={roadmap}

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
+import { motion } from "motion/react";
+import { FADE, SPRING } from "@/components/shared/motion";
 
 interface ContentViewerProps {
     url: string;
@@ -30,16 +32,24 @@ export default function ContentViewer({ url, title, onClose }: ContentViewerProp
     return (
         <div className="fixed inset-0 z-50 flex">
             {/* Backdrop */}
-            <div
-                className="absolute inset-0 bg-black/60"
+            <motion.div
+                className="absolute inset-0 bg-scrim"
                 onClick={onClose}
                 role="presentation"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={FADE}
             />
 
             {/* Panel */}
-            <div
-                className="relative ml-auto w-full max-w-4xl h-full bg-surface-muted border-l border-border flex flex-col animate-slide-in-right"
+            <motion.div
+                className="relative ml-auto w-full max-w-4xl h-full bg-surface-muted border-l border-border flex flex-col shadow-[var(--shadow-sheet)]"
                 style={{ overscrollBehavior: "contain" }}
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={SPRING}
             >
                 {/* Toolbar */}
                 <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-surface">
@@ -93,7 +103,7 @@ export default function ContentViewer({ url, title, onClose }: ContentViewerProp
                         />
                     )}
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }

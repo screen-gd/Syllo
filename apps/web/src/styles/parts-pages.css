@@ -49,14 +49,14 @@
 }
 .sy-section-head > .sy-readout {
     color: var(--color-text);
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 .sy-section-head > .sy-readout[data-live] {
     color: var(--color-accent-strong);
 }
 .sy-box > .sy-section-head h2.sy-initial {
-    font-family: var(--font-mono);
-    font-size: 22px;
+    font-family: var(--font-sans);
+    font-size: 1.375rem;
     font-weight: 600;
     line-height: 1;
     color: var(--color-text);
@@ -82,7 +82,7 @@
 .sy-toolstrip {
     padding: 8px;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
     background: var(--color-surface);
 }
 
@@ -134,7 +134,7 @@
     padding-inline: 4px;
 }
 .sy-rate-row .sy-rate small {
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 .sy-review-card + .sy-review-box,
 .sy-tray + .sy-review-box {
@@ -143,9 +143,9 @@
 
 /* Progress: large readout figures, and a dot per day. */
 .sy-stat b.sy-num {
-    font-size: 30px;
+    font-size: 1.875rem;
     font-weight: 500;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
 }
 .sy-stat-label {
     display: inline-flex;
@@ -213,7 +213,7 @@
         gap: 16px;
     }
     .sy-stat b.sy-num {
-        font-size: 26px;
+        font-size: 1.625rem;
     }
     .sy-toolstrip {
         padding: 6px;

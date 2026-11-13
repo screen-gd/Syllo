@@ -48,7 +48,7 @@ export default function VideoPlayer({ url, title, description }: VideoPlayerProp
                     {description ? (
                         <p className="text-text-muted text-sm mt-0.5 line-clamp-2">{description}</p>
                     ) : null}
-                    <span className="text-text-muted text-[12px] capitalize">{platform}</span>
+                    <span className="text-text-muted text-[0.75rem] capitalize">{platform}</span>
                 </div>
             ) : null}
         </div>

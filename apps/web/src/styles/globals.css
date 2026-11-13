@@ -44,6 +44,10 @@
     --color-warning-soft: #fbf1dc;
     --color-danger: #c4314b;
     --color-danger-soft: #fbe9ec;
+    --color-scrim: rgba(24, 25, 27, 0.32);
+
+    --shadow-pop: 0 8px 30px rgba(24, 25, 27, 0.12);
+    --shadow-sheet: 0 24px 60px rgba(24, 25, 27, 0.18);
 
     --font-sans: var(--font-geist-sans), "Helvetica Neue", system-ui, sans-serif;
     --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -62,6 +66,20 @@
 
 :root {
     color-scheme: light;
+
+    /* Motion: press feedback is instant, overlays use one shared ease. */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --dur-press: 100ms;
+    --dur-fast: 160ms;
+    --dur-base: 240ms;
+
+    /* Type scale: size / leading / tracking are tuned per step. */
+    --text-title1: 1.75rem;
+    --text-title2: 1.25rem;
+    --text-headline: 0.9375rem;
+    --text-body: 0.9375rem;
+    --text-callout: 0.875rem;
+    --text-caption: 0.75rem;
 }
 
 /* Element defaults sit in the base layer so utilities can override them. */
@@ -73,6 +91,7 @@
     }
 
     html {
+        font-size: 100%;
         scroll-behavior: smooth;
         background: var(--color-page);
     }
@@ -83,8 +102,8 @@
         background: var(--color-page);
         color: var(--color-text);
         font-family: var(--font-sans);
-        font-size: 14px;
-        line-height: 1.5;
+        font-size: var(--text-body);
+        line-height: 1.55;
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -209,7 +228,7 @@
     }
 
     .app-header-block h1 {
-        font-size: 22px;
+        font-size: 1.375rem;
         line-height: 1.25;
     }
 
@@ -255,13 +274,15 @@
         padding: 0 12px;
         border-radius: var(--radius-md);
         color: var(--color-text-muted);
-        font-size: 14px;
-        transition: color 140ms ease;
+        font-size: 0.875rem;
+        transition: color var(--dur-fast) var(--ease-out);
     }
 
-    .settings-nav-link:hover,
-    .settings-nav-link[data-active="true"] {
-        color: var(--color-text);
+    @media (hover: hover) and (pointer: fine) {
+        .settings-nav-link:hover,
+        .settings-nav-link[data-active="true"] {
+            color: var(--color-text);
+        }
     }
 
     .settings-nav-link[data-active="true"] {
@@ -358,14 +379,14 @@
     .field-label {
         display: block;
         color: var(--color-text-soft);
-        font-size: 12px;
+        font-size: 0.75rem;
         font-weight: 500;
     }
 
     .field-label {
         margin-bottom: 8px;
         color: var(--color-text-muted);
-        font-size: 13px;
+        font-size: 0.8125rem;
     }
 
     .text-balance {
@@ -424,7 +445,7 @@
 
     .studio-table thead th {
         color: var(--color-text-soft);
-        font-size: 12px;
+        font-size: 0.75rem;
         font-weight: 400;
         text-align: left;
     }
@@ -442,11 +463,13 @@
     }
 
     .interactive-row {
-        transition: background-color 140ms ease;
+        transition: background-color var(--dur-fast) var(--ease-out);
     }
 
-    .interactive-row:hover {
-        background: var(--color-surface-subtle);
+    @media (hover: hover) and (pointer: fine) {
+        .interactive-row:hover {
+            background: var(--color-surface-subtle);
+        }
     }
 
     /* Neutral pill for a state or a count. */
@@ -460,7 +483,7 @@
         border-radius: 999px;
         background: var(--color-raised);
         color: var(--color-text);
-        font-size: 12px;
+        font-size: 0.75rem;
         font-weight: 500;
         white-space: nowrap;
     }
@@ -476,7 +499,7 @@
         border-radius: var(--radius-lg);
         background: var(--color-surface-subtle);
         color: var(--color-text);
-        transition: background-color 140ms ease;
+        transition: background-color var(--dur-fast) var(--ease-out);
     }
 
     .studio-input,
@@ -492,11 +515,13 @@
         resize: vertical;
     }
 
-    .studio-input:hover,
-    .field-input:hover,
-    .field-textarea:hover,
-    .field-select:hover {
-        background: var(--color-surface-muted);
+    @media (hover: hover) and (pointer: fine) {
+        .studio-input:hover,
+        .field-input:hover,
+        .field-textarea:hover,
+        .field-select:hover {
+            background: var(--color-surface-muted);
+        }
     }
 
     .studio-input::placeholder,
@@ -518,13 +543,13 @@
         padding: 0 16px;
         border: 0;
         border-radius: 999px;
-        font-size: 14px;
+        font-size: 0.875rem;
         font-weight: 500;
         white-space: nowrap;
         transition:
-            background-color 140ms ease,
-            color 140ms ease,
-            opacity 140ms ease;
+            background-color var(--dur-fast) var(--ease-out),
+            color var(--dur-fast) var(--ease-out),
+            opacity var(--dur-fast) var(--ease-out);
     }
 
     .button-primary:disabled,
@@ -541,9 +566,11 @@
         color: #ffffff;
     }
 
-    .button-primary:hover,
-    .btn-primary:hover {
-        background: #2c2d30;
+    @media (hover: hover) and (pointer: fine) {
+        .button-primary:hover,
+        .btn-primary:hover {
+            background: #2c2d30;
+        }
     }
 
     .button-secondary,
@@ -552,9 +579,11 @@
         color: var(--color-text);
     }
 
-    .button-secondary:hover,
-    .btn-secondary:hover {
-        background: var(--color-raised);
+    @media (hover: hover) and (pointer: fine) {
+        .button-secondary:hover,
+        .btn-secondary:hover {
+            background: var(--color-raised);
+        }
     }
 
     .button-ghost {
@@ -562,8 +591,10 @@
         color: var(--color-text-muted);
     }
 
-    .button-ghost:hover {
-        color: var(--color-text);
+    @media (hover: hover) and (pointer: fine) {
+        .button-ghost:hover {
+            color: var(--color-text);
+        }
     }
 
     /* Extra contrast when the user asks for it: fields get a hairline. */
@@ -629,4 +660,148 @@
         padding-block: clamp(40px, 6vw, 80px);
     }
 
+}
+
+
+/*
+ * Motion and floating layers.
+ *
+ * Controls answer a press instantly with a small scale; overlays enter and
+ * leave on one spring (in motion.ts) or the matching CSS curves below. Small
+ * floating surfaces use --shadow-pop, large sheets --shadow-sheet.
+ */
+
+/* Menus and popovers scale in from their trigger corner. */
+@keyframes sy-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+.sy-pop {
+    animation: sy-pop var(--dur-fast) var(--ease-out) both;
+}
+
+/* Revealed answers and secondary rows rise a few pixels into place. */
+@keyframes sy-rise {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.sy-rise {
+    animation: sy-rise var(--dur-base) var(--ease-out) both;
+}
+
+/* Radix alert dialogs animate through their data-state attribute. */
+@keyframes sy-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes sy-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+/* scale animates the standalone property so Tailwind's translate stays put. */
+@keyframes sy-dialog-in {
+    from {
+        opacity: 0;
+        scale: 0.96;
+    }
+    to {
+        opacity: 1;
+        scale: 1;
+    }
+}
+@keyframes sy-dialog-out {
+    from {
+        opacity: 1;
+        scale: 1;
+    }
+    to {
+        opacity: 0;
+        scale: 0.96;
+    }
+}
+[data-slot="alert-dialog-overlay"][data-state="open"] {
+    animation: sy-fade-in var(--dur-fast) var(--ease-out) both;
+}
+[data-slot="alert-dialog-overlay"][data-state="closed"] {
+    animation: sy-fade-out var(--dur-fast) ease-out both;
+}
+[data-slot="alert-dialog-content"][data-state="open"] {
+    animation: sy-dialog-in var(--dur-base) var(--ease-out) both;
+}
+[data-slot="alert-dialog-content"][data-state="closed"] {
+    animation: sy-dialog-out var(--dur-fast) ease-out both;
+}
+
+/*
+ * Translucent chrome: only bars that content scrolls beneath get material.
+ * The desk tab strip sits directly under the desk top bar, so it stays solid -
+ * never stack a translucent layer on a translucent layer.
+ */
+.sy-mobile-nav,
+.sy-desk-top,
+.sy-material {
+    background: color-mix(in srgb, var(--color-page) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+}
+.sy-mobile-nav {
+    border-top: 1px solid rgba(24, 25, 27, 0.06);
+}
+.sy-desk-top,
+.sy-material {
+    border-bottom: 1px solid rgba(24, 25, 27, 0.06);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .sy-mobile-nav,
+    .sy-desk-top,
+    .sy-material {
+        background: var(--color-page);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
+@media (prefers-contrast: more) {
+    .sy-mobile-nav,
+    .sy-desk-top,
+    .sy-material {
+        background: var(--color-page);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+    .sy-mobile-nav {
+        border-top: 1px solid var(--color-border-strong);
+    }
+    .sy-desk-top,
+    .sy-material {
+        border-bottom: 1px solid var(--color-border-strong);
+    }
+}
+
+/* Touch targets grow to 44px+ on coarse pointers. */
+@media (pointer: coarse) {
+    :root {
+        --sy-control-height: 2.75rem;
+    }
+    .sy-nav a,
+    .sy-nav .sy-nav-item,
+    .sy-mobile-nav a,
+    .sy-desk-tabs button,
+    .sy-segmented button,
+    .sy-view-switch button {
+        min-height: 2.75rem;
+    }
 }

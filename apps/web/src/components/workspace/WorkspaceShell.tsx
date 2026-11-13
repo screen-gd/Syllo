@@ -3,7 +3,9 @@ import { fetchPrivateApi } from "@/lib/private-api-fetch";
 
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import type { Roadmap, Section, ModuleSection as ModuleSectionType, CalendarSection, SrsItem } from "@/types";
+import { FADE, SPRING } from "@/components/shared/motion";
 import { useProgress } from "@/hooks/useProgress";
 import { useStreak } from "@/hooks/useStreak";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -592,8 +594,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                                 <div className="rounded-md border border-border bg-[var(--color-surface-subtle)] p-3">
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className="font-display text-[12px] text-text-muted">Total Progress</span>
-                                        <span className="font-display text-[12px] text-accent font-bold">{progress.overall}%</span>
+                                        <span className="font-display text-[0.75rem] text-text-muted">Total Progress</span>
+                                        <span className="font-display text-[0.75rem] text-accent font-bold">{progress.overall}%</span>
                                     </div>
                                     <div className="h-1 bg-surface rounded-full overflow-hidden">
                                         <div className="h-full bg-accent rounded-full transition-all duration-1000" style={{ width: `${progress.overall}%` }} />
@@ -650,7 +652,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <span className="block text-sm truncate">
-                                                                    <span className="text-text-muted/50 mr-2 text-[12px] font-mono">{String(idx + 1).padStart(2, "0")}</span>
+                                                                    <span className="text-text-muted/50 mr-2 text-[0.75rem] font-mono">{String(idx + 1).padStart(2, "0")}</span>
                                                                     {section.title}
                                                                 </span>
                                                             </div>
@@ -662,7 +664,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                                 <circle cx="18" cy="18" r="16" fill="transparent" stroke="var(--color-surface-muted)" strokeWidth="4" />
                                                                 <circle cx="18" cy="18" r="16" fill="transparent" stroke={modulePercent === 100 ? "var(--color-success)" : "var(--color-accent)"} strokeWidth="4" strokeDasharray="100" strokeDashoffset={100 - modulePercent} />
                                                             </svg>
-                                                            <span className="text-[12px] font-bold z-10">{idx + 1}</span>
+                                                            <span className="text-[0.75rem] font-bold z-10">{idx + 1}</span>
                                                         </div>
                                                     )}
                                                 </button>
@@ -789,7 +791,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                 {/* Mobile overlay */}
                 {sidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-page/80 z-20 sm:hidden transition-opacity duration-300"
+                        className="fixed inset-0 bg-scrim z-20 sm:hidden transition-opacity duration-300"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
@@ -813,7 +815,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                     <HelpCircle size={16} />
                                 </button>
                                 {showShortcuts && (
-                                    <div className="absolute top-16 right-6 w-80 bg-surface-muted border border-border rounded-xl shadow-[0_8px_30px_rgba(24,25,27,0.12)] z-50 animate-fade-in p-5">
+                                    <div className="absolute top-16 right-6 w-80 bg-surface-muted border border-border rounded-xl shadow-[var(--shadow-pop)] z-50 sy-pop origin-top-right p-5">
                                         <div className="flex items-center justify-between mb-4">
                                             <h3 className="font-display text-xs text-text font-bold">Keyboard Shortcuts</h3>
                                             <button
@@ -859,7 +861,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         Export <ChevronDown size={12} />
                                     </button>
                                     {showExportMenu && (
-                                        <div className="absolute right-0 top-full mt-2 w-48 bg-surface-muted border border-border rounded-lg shadow-[0_8px_30px_rgba(24,25,27,0.12)] z-50 animate-in fade-in zoom-in duration-200 py-1">
+                                        <div className="absolute right-0 top-full mt-2 w-48 bg-surface-muted border border-border rounded-lg shadow-[var(--shadow-pop)] z-50 sy-pop origin-top-right py-1">
                                             <button onClick={() => { exportAsMarkdown(roadmap); setShowExportMenu(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-text hover:bg-surface text-left">
                                                 <FileText size={14} /> Download as Markdown
                                             </button>
@@ -920,7 +922,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                         {activeSectionId === "dashboard" ? (
                             // COURSE DASHBOARD
-                            <div className="animate-fade-in p-6 sm:p-10 lg:p-16 max-w-6xl mx-auto space-y-12">
+                            <div className=" p-6 sm:p-10 lg:p-16 max-w-6xl mx-auto space-y-12">
                                 {/* Dashboard Header */}
                                 <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto relative">
                                     {/* Streak indicator right side */}
@@ -931,7 +933,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         </div>
                                     )}
                                     <div className="inline-flex items-center justify-center px-3 py-1 rounded-full border border-accent/30 bg-accent/10">
-                                        <span className="font-display text-[12px] text-accent font-bold">
+                                        <span className="font-display text-[0.75rem] text-accent font-bold">
                                             {roadmap.mode} Course
                                         </span>
                                     </div>
@@ -1009,7 +1011,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                     <span className="text-sm text-text-muted">Tasks Today</span>
                                                     <span className="text-sm font-bold text-text flex items-center gap-2">
                                                         {tasksCompletedToday}
-                                                        {tasksCompletedToday > tasksCompletedYesterday && <span className="text-accent text-[12px]">↑</span>}
+                                                        {tasksCompletedToday > tasksCompletedYesterday && <span className="text-accent text-[0.75rem]">↑</span>}
                                                     </span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
@@ -1027,9 +1029,9 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 <div className="h-[1px] bg-surface w-full my-2"></div>
                                                 {mostTimeSpentModule.module && (
                                                     <div className="flex flex-col gap-1">
-                                                        <span className="text-[12px] text-text-muted font-display">Most time spent on</span>
+                                                        <span className="text-[0.75rem] text-text-muted font-display">Most time spent on</span>
                                                         <span className="text-sm text-accent line-clamp-1">{mostTimeSpentModule.module.title}</span>
-                                                        <span className="text-[12px] text-text-muted">{formatTime(mostTimeSpentModule.time)}</span>
+                                                        <span className="text-[0.75rem] text-text-muted">{formatTime(mostTimeSpentModule.time)}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -1057,7 +1059,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                                         {days < 0 ? 'Past' : `${Math.ceil(days)}d`}
                                                                     </span>
                                                                 </div>
-                                                                <span className="text-[12px] text-text-muted">{new Date(event.date).toLocaleDateString()}</span>
+                                                                <span className="text-[0.75rem] text-text-muted">{new Date(event.date).toLocaleDateString()}</span>
                                                             </div>
                                                         )
                                                     })}
@@ -1106,7 +1108,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 <div className="text-3xl mb-2">{badge.icon}</div>
                                                 <div className="text-xs font-bold text-text leading-tight mb-1">{badge.title}</div>
                                                 {!badge.unlockedAt && (
-                                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-page/90 opacity-0 hover:opacity-100 transition-opacity rounded-xl p-2 z-10">
+                                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface/90 opacity-0 hover:opacity-100 transition-opacity rounded-xl p-2 z-10">
                                                         <Lock size={12} className="mb-1 text-text-muted" />
                                                         <span className="text-xs text-text-muted">{badge.description}</span>
                                                     </div>
@@ -1139,7 +1141,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                         <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 -mr-10 -mt-10 pointer-events-none group-hover:bg-accent/10 transition-colors" />
 
                                                         <div className="flex items-center justify-between w-full mb-4">
-                                                            <span className="font-mono text-[12px] text-text-muted/50 group-hover:text-accent transition-colors">
+                                                            <span className="font-mono text-[0.75rem] text-text-muted/50 group-hover:text-accent transition-colors">
                                                                 MOD {String(idx + 1).padStart(2, "0")}
                                                             </span>
                                                             <span className={`font-display text-xs   px-2 py-1 rounded border ${status === "Complete" ? "border-accent/30 text-accent" :
@@ -1289,11 +1291,11 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             {/* TOUR OVERLAY */}
             {tourStep >= 0 && (
                 <div className="fixed inset-0 z-[50] pointer-events-none">
-                    <div className="absolute inset-0 bg-black/60 transition-opacity duration-300 pointer-events-auto" />
+                    <div className="absolute inset-0 bg-scrim transition-opacity duration-300 pointer-events-auto" />
 
                     {tourTarget && (
                         <div
-                            className="absolute bg-surface-muted border border-border rounded-2xl p-6 shadow-[0_8px_30px_rgba(24,25,27,0.12)] z-[70] animate-scale-in flex flex-col pointer-events-auto w-72"
+                            className="absolute bg-surface-muted border border-border rounded-2xl p-6 shadow-[var(--shadow-pop)] z-[70] sy-pop flex flex-col pointer-events-auto w-72"
                             style={{
                                 top: tourStep === 0 ? Math.max(20, tourTarget.top) // Sidebar
                                     : tourStep === 1 ? tourTarget.bottom + 20 // Progress ring
@@ -1329,9 +1331,18 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             )}
 
             {/* Version History Drawer */}
+            <AnimatePresence>
             {showVersionHistory && (
-                <div className="fixed inset-0 z-50 flex justify-end bg-page/50" onClick={() => setShowVersionHistory(false)}>
-                    <div className="w-full max-w-md bg-page border-l border-border h-full shadow-[0_8px_30px_rgba(24,25,27,0.12)] animate-in slide-in-from-right duration-300 overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setShowVersionHistory(false)}>
+                    <motion.div className="absolute inset-0 bg-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={FADE} />
+                    <motion.div
+                        className="relative w-full max-w-md bg-page border-l border-border h-full shadow-[var(--shadow-sheet)] overflow-y-auto"
+                        onClick={e => e.stopPropagation()}
+                        initial={{ x: "100%" }}
+                        animate={{ x: 0 }}
+                        exit={{ x: "100%" }}
+                        transition={SPRING}
+                    >
                         <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-page z-10">
                             <h3 className="font-display text-xs text-text font-bold">Version History</h3>
                             <button
@@ -1364,9 +1375,10 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 ))
                             )}
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             )}
+            </AnimatePresence>
 
             <AlertDialog
                 open={Boolean(versionToRestore)}

@@ -17,7 +17,7 @@ export default function Videos({ section }: Props) {
     const activeVideo = section.data.find((v) => v.id === activeVideoId) || section.data[0];
 
     return (
-        <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col animate-fade-in relative z-10">
+        <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col relative z-10">
             <div className="mb-6 shrink-0 text-center sm:text-left">
                 <h2 className="font-display text-4xl font-semibold text-text mb-2 flex items-center justify-center sm:justify-start gap-3">
                     <span className="text-accent">▶</span> {section.title}
@@ -38,7 +38,7 @@ export default function Videos({ section }: Props) {
                         </div>
                         <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-surface">
                             <div className="flex items-center gap-3 mb-4">
-                                <span className="bg-accent/20 text-accent text-[12px] font-bold px-2.5 py-1 rounded">Now Playing</span>
+                                <span className="bg-accent/20 text-accent text-[0.75rem] font-bold px-2.5 py-1 rounded">Now Playing</span>
                                 {activeVideo.duration && <span className="text-text-muted text-sm tabular-nums">⏱ {activeVideo.duration}</span>}
                             </div>
                             <h3 className="text-xl font-semibold text-text mb-4">{activeVideo.title}</h3>
@@ -61,7 +61,7 @@ export default function Videos({ section }: Props) {
                 <div className="w-full lg:w-96 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border overflow-hidden animate-slide-up" style={{ animationDelay: '0.1s' }}>
                     <div className="p-4 border-b border-border/50 bg-surface shrink-0 flex items-center justify-between">
                         <h3 className="font-display font-bold text-text text-sm text-text-muted">Playlist</h3>
-                        <span className="text-[12px] bg-surface px-2 py-0.5 rounded text-text-muted">{section.data.length} items</span>
+                        <span className="text-[0.75rem] bg-surface px-2 py-0.5 rounded text-text-muted">{section.data.length} items</span>
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-page">
@@ -102,7 +102,7 @@ export default function Videos({ section }: Props) {
                                         {isActive && (
                                             <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
                                                 <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
-                                                    <span className="text-white text-[12px] ml-0.5">▶</span>
+                                                    <span className="text-white text-[0.75rem] ml-0.5">▶</span>
                                                 </div>
                                             </div>
                                         )}
@@ -113,7 +113,7 @@ export default function Videos({ section }: Props) {
                                             <span className={`text-sm font-bold line-clamp-2 leading-snug transition-colors ${isActive ? 'text-accent' : 'text-text group-hover:text-accent-strong'}`}>
                                                 {video.title}
                                             </span>
-                                            <span className="text-[12px] text-text-muted mt-1 block">
+                                            <span className="text-[0.75rem] text-text-muted mt-1 block">
                                                 {video.platform}
                                             </span>
                                         </div>

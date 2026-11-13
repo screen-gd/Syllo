@@ -8,8 +8,8 @@
     --sy-space-section: 32px;
     --sy-space-block: 24px;
     --sy-space-field: 16px;
-    --sy-control-height: 40px;
-    --sy-radius: 8px;
+    --sy-control-height: 2.5rem;
+    --sy-radius: 10px;
     --radius-2xl: var(--sy-radius);
     --radius-xl: var(--sy-radius);
     display: grid;
@@ -17,7 +17,7 @@
     min-height: 100dvh;
     background: var(--color-page);
     color: var(--color-text);
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 1.55;
 }
 .sy-main {
@@ -40,25 +40,28 @@
     min-width: 0;
 }
 .sy-app h1 {
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.3;
+    font-size: 1.75rem;
+    font-weight: 650;
+    letter-spacing: -0.022em;
+    line-height: 1.15;
 }
 .sy-app h2 {
-    font-size: 16px;
+    font-size: 1.25rem;
     font-weight: 600;
-    letter-spacing: -0.15px;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
 }
 .sy-app h3 {
-    font-size: 14px;
+    font-size: 0.9375rem;
     font-weight: 600;
+    letter-spacing: -0.006em;
+    line-height: 1.35;
 }
 .sy-muted {
     color: var(--color-text-muted);
 }
 .sy-small {
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 .sy-page-head {
     display: flex;
@@ -81,7 +84,7 @@
     gap: 0;
 }
 .sy-page-head p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--color-text-muted);
     margin-top: 6px;
 }
@@ -89,7 +92,7 @@
     display: flex;
     align-items: center;
     gap: 9px;
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 600;
     letter-spacing: -0.6px;
 }
@@ -124,18 +127,20 @@
     padding: 7px 10px;
     color: var(--color-text-muted);
     border-radius: var(--sy-radius);
-    font-size: 13px;
+    font-size: 0.8125rem;
     overflow-wrap: anywhere;
 }
-.sy-nav-item:hover {
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-nav-item:hover {
+        color: var(--color-text);
+    }
 }
 .sy-nav-topics {
     margin-top: 30px;
     padding: 0 10px;
 }
 .sy-nav-topics > p {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
     margin-bottom: 10px;
 }
@@ -143,7 +148,7 @@
     display: flex;
     align-items: flex-start;
     gap: 9px;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.6;
     color: var(--color-text-muted);
     padding: 8px 0;
@@ -163,7 +168,7 @@
     min-height: var(--sy-control-height);
     padding: 8px 13px;
     border-radius: var(--sy-radius);
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 450;
     max-width: 100%;
     white-space: normal;
@@ -189,8 +194,10 @@
     padding-inline: 0;
     color: var(--color-text-muted);
 }
-.sy-button.quiet:hover {
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-button.quiet:hover {
+        color: var(--color-text);
+    }
 }
 .sy-button.icon {
     width: var(--sy-control-height);
@@ -215,7 +222,7 @@
 .sy-section-head > a,
 .sy-section-head > button,
 .sy-section-head > span {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-section-head > a,
@@ -287,20 +294,20 @@
     gap: 10px;
 }
 .sy-resume-copy h2 {
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 500;
     line-height: 1.4;
 }
 .sy-resume-copy p {
     color: var(--color-text-muted);
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 .sy-resume-copy > .sy-button {
     margin-top: auto;
 }
 .sy-next-label {
     padding-top: 12px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-topic {
@@ -317,7 +324,7 @@
 .sy-topic p {
     margin-top: 5px;
     color: var(--color-text-muted);
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 .sy-topic > div:last-child {
     display: flex;
@@ -325,7 +332,7 @@
     gap: 14px;
 }
 .sy-topic-count {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -341,6 +348,7 @@
     display: block;
     height: 100%;
     background: var(--color-accent);
+    transition: width var(--dur-base) var(--ease-out);
 }
 .sy-current-book {
     display: grid;
@@ -350,16 +358,16 @@
     margin-bottom: var(--sy-space-block);
 }
 .sy-current-book h3 {
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.45;
 }
 .sy-current-book p {
-    font-size: 12px;
+    font-size: 0.75rem;
     margin-top: 5px;
     color: var(--color-text-muted);
 }
 .sy-current-book .sy-button {
-    font-size: 12px;
+    font-size: 0.75rem;
     margin-top: 5px;
 }
 .sy-book-cover {
@@ -395,14 +403,14 @@
     border-top: 1px solid var(--color-border);
 }
 .sy-review-row p {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     margin-top: 5px;
 }
 .sy-empty {
     padding: 16px 0;
     color: var(--color-text-muted);
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.8;
 }
 .sy-empty .sy-button {
@@ -412,7 +420,7 @@
     padding: 24px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
 }
 .sy-empty p + p {
     margin-top: 8px;
@@ -423,7 +431,7 @@
     border-radius: var(--sy-radius);
     background: var(--color-danger-soft);
     color: var(--color-danger);
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.6;
 }
 .sy-library-tools {
@@ -458,7 +466,7 @@
     border: 0;
     outline: none;
     color: var(--color-text);
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 .sy-filters {
     display: flex;
@@ -562,7 +570,7 @@
 }
 .sy-library-row p,
 .sy-library-row > span {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     margin-top: 4px;
 }
@@ -571,7 +579,7 @@
     gap: 8px;
     align-items: center;
     color: var(--color-text-muted);
-    font-size: 12px;
+    font-size: 0.75rem;
     margin-bottom: 22px;
     flex-wrap: wrap;
 }
@@ -589,7 +597,7 @@
     min-width: 0;
 }
 .sy-study-title {
-    font-size: 17px !important;
+    font-size: 1.0625rem !important;
     margin-bottom: 7px;
 }
 .sy-embed {
@@ -615,14 +623,14 @@
     gap: 12px;
     margin: 12px 0 22px;
     color: var(--color-text-muted);
-    font-size: 12px;
+    font-size: 0.75rem;
     flex-wrap: wrap;
 }
 .sy-check {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     margin-top: 15px;
     cursor: pointer;
 }
@@ -633,7 +641,7 @@
 .sy-check small {
     display: block;
     color: var(--color-text-muted);
-    font-size: 12px;
+    font-size: 0.75rem;
     margin-top: 4px;
 }
 .sy-tabs {
@@ -643,7 +651,7 @@
     margin-bottom: 18px;
 }
 .sy-tabs button {
-    font-size: 13px;
+    font-size: 0.8125rem;
     padding-bottom: 11px;
     border-bottom: 2px solid transparent;
     color: var(--color-text-muted);
@@ -675,7 +683,7 @@
     flex-wrap: wrap;
 }
 .sy-note-controls small {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-saved-note {
@@ -683,7 +691,7 @@
     border-bottom: 1px solid var(--color-border);
 }
 .sy-saved-note p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.75;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -699,7 +707,7 @@
     padding-left: 12px;
 }
 .sy-time-link {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-accent);
     display: inline-flex;
     gap: 5px;
@@ -717,17 +725,18 @@
     gap: 12px;
 }
 .sy-pomodoro-head h2 {
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 400;
 }
 .sy-pomodoro-head span {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-timer-clock {
-    font-size: 36px;
-    letter-spacing: -1px;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
+    font-size: 2.25rem;
+    letter-spacing: 0;
     margin: 10px 0 13px;
 }
 .sy-timer-actions {
@@ -740,7 +749,7 @@
     margin-top: 16px;
 }
 .sy-timer-settings label {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-timer-settings input {
@@ -759,7 +768,7 @@
     gap: 9px;
     padding: 12px 0;
     border-bottom: 1px solid var(--color-border);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     width: 100%;
     text-align: left;
@@ -785,7 +794,7 @@
     gap: 16px;
     padding: 16px 0;
     border-bottom: 1px solid var(--color-border);
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 .sy-reader-head {
     display: flex;
@@ -795,7 +804,7 @@
     flex-wrap: wrap;
 }
 .sy-reader-head p {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     margin-top: 6px;
 }
@@ -837,7 +846,7 @@
     margin-top: 12px;
 }
 .sy-reader-pagination span {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-reader-notes {
@@ -859,7 +868,7 @@
     flex-wrap: wrap;
 }
 .sy-reader-fields label {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     display: grid;
     gap: 6px;
@@ -871,12 +880,12 @@
 .sy-card {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
     padding: 24px;
     overflow-wrap: anywhere;
 }
 .sy-card h2 {
-    font-size: 19px;
+    font-size: 1.1875rem;
     line-height: 1.6;
     font-weight: 450;
     margin-bottom: 18px;
@@ -901,7 +910,7 @@
     overflow-wrap: anywhere;
 }
 .sy-suggestion p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--color-text-muted);
     margin-top: 7px;
     line-height: 1.8;
@@ -920,10 +929,10 @@
 .sy-form label {
     display: grid;
     gap: 7px;
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 .sy-form-hint {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     line-height: 1.7;
 }
@@ -933,7 +942,7 @@
     margin-top: var(--sy-space-section);
 }
 .sy-sync-panel > p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--color-text-muted);
     margin-top: 8px;
 }
@@ -942,7 +951,7 @@
     border-radius: 5px;
 }
 .sy-loading {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--color-text-muted);
     padding-block: 28px;
 }
@@ -956,7 +965,7 @@
     max-width: 100%;
     padding: 8px 14px;
     border-radius: var(--sy-radius);
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 22px;
     white-space: normal;
     text-align: center;
@@ -982,7 +991,7 @@
     min-height: var(--sy-control-height);
     border-radius: var(--sy-radius);
     padding: 8px 12px;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 22px;
 }
 .sy-app textarea.sy-control {
@@ -1032,7 +1041,7 @@
 .sy-workspace-list {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
 }
 .sy-workspace-row {
     position: relative;
@@ -1055,7 +1064,7 @@
     min-width: 0;
     padding: 24px;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
     background: var(--color-surface);
 }
 /* The main column and source rail divide the remaining width after one 24px gutter. */
@@ -1086,7 +1095,7 @@
     gap: 8px;
     min-height: var(--sy-control-height);
     color: var(--color-text-muted);
-    font-size: 13px;
+    font-size: 0.8125rem;
     cursor: pointer;
     list-style: none;
 }
@@ -1141,7 +1150,7 @@
     margin-top: 0;
 }
 .sy-settings-content p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.7;
     color: var(--color-text-muted);
     overflow-wrap: anywhere;
@@ -1155,7 +1164,7 @@
 .sy-create-pane {
     min-width: 0;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
     background: var(--color-surface);
 }
 .sy-create-pane-body {
@@ -1198,7 +1207,7 @@
 .sy-example {
     min-height: 32px;
     padding: 4px 10px;
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 .sy-agent-snippet {
     white-space: pre-wrap;
@@ -1206,7 +1215,7 @@
     padding: 16px;
     background: var(--color-surface-subtle);
     border-radius: var(--sy-radius);
-    font-size: 12px;
+    font-size: 0.75rem;
     margin: 12px 0;
 }
 .sy-manual-roadmap {
@@ -1217,7 +1226,7 @@
 .sy-manual-roadmap summary {
     cursor: pointer;
     color: var(--color-text-muted);
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 .sy-manual-roadmap .sy-form {
     margin-top: 16px;
@@ -1295,7 +1304,7 @@
     display: flex;
     gap: 6px 12px;
     flex-wrap: wrap;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-note-meta b {
@@ -1308,15 +1317,17 @@
     gap: 6px 16px;
     flex-wrap: wrap;
     margin-top: 10px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-row-actions > :is(button, a) {
     color: var(--color-text-muted);
     cursor: pointer;
 }
-.sy-row-actions > :is(button, a):hover {
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-row-actions > :is(button, a):hover {
+        color: var(--color-text);
+    }
 }
 .sy-row-actions > .sy-time-link {
     color: var(--color-accent);
@@ -1344,7 +1355,7 @@
     font-weight: 550;
 }
 .sy-term dd p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.75;
     color: var(--color-text-muted);
     white-space: pre-wrap;
@@ -1366,7 +1377,7 @@
     line-height: 1.3;
 }
 .sy-rate small {
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 400;
     font-variant-numeric: tabular-nums;
     opacity: 0.7;
@@ -1388,16 +1399,17 @@
     padding: 18px 20px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
 }
 .sy-stat b {
-    font-size: 26px;
-    font-weight: 560;
-    letter-spacing: -0.6px;
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
+    font-size: 1.625rem;
+    font-weight: 560;
+    letter-spacing: -0.02em;
 }
 .sy-stat span {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-week {
@@ -1421,12 +1433,12 @@
     color: var(--color-accent-strong);
 }
 .sy-week b {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 550;
     font-variant-numeric: tabular-nums;
 }
 .sy-week span {
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 .sy-skeleton-list {
     display: grid;
@@ -1445,11 +1457,13 @@
     gap: 6px 18px;
     flex-wrap: wrap;
     margin-top: 16px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
-.sy-home-links a:hover {
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-home-links a:hover {
+        color: var(--color-text);
+    }
 }
 .sy-desk-notes-head b {
     margin-right: auto;
@@ -1457,8 +1471,10 @@
 .sy-desk-notes-head a {
     color: var(--color-text-soft);
 }
-.sy-desk-notes-head a:hover {
-    color: var(--color-accent);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-notes-head a:hover {
+        color: var(--color-accent);
+    }
 }
 @media (max-width: 760px) {
     .sy-stats {
@@ -1534,7 +1550,7 @@
         justify-content: space-between;
     }
     .sy-mobile-nav .sy-brand {
-        font-size: 17px;
+        font-size: 1.0625rem;
         gap: 8px;
     }
     .sy-mobile-nav .sy-brand svg {
@@ -1560,7 +1576,7 @@
         justify-content: center;
         min-height: 44px;
         padding: 6px 10px;
-        font-size: 13px;
+        font-size: 0.8125rem;
         color: var(--color-text-muted);
         border-radius: var(--sy-radius);
     }
@@ -1582,7 +1598,7 @@
 }
 @media (max-width: 760px) {
     .sy-app {
-        --sy-control-height: 44px;
+        --sy-control-height: 2.5rem;
         --sy-space-section: 28px;
     }
     .sy-main {
@@ -1618,10 +1634,10 @@
         margin-bottom: 0;
     }
     .sy-current-book h3 {
-        font-size: 14px;
+        font-size: 0.875rem;
     }
     .sy-current-book .sy-button {
-        font-size: 12px;
+        font-size: 0.75rem;
     }
     .sy-review-row {
         margin-top: 24px;
@@ -1640,11 +1656,11 @@
     }
     .sy-select,
     .sy-input {
-        font-size: 14px;
+        font-size: 0.875rem;
     }
     .sy-search input {
         padding-block: 10px;
-        font-size: 14px;
+        font-size: 0.875rem;
     }
     .sy-segmented button {
         min-height: 36px;
@@ -1653,7 +1669,7 @@
         height: calc(var(--spine-height, 220px) * 0.85);
     }
     .sy-spine-title {
-        font-size: 14px;
+        font-size: 0.875rem;
         max-height: 140px;
     }
     .sy-library-row {
@@ -1703,7 +1719,7 @@
         gap: 12px;
     }
     .sy-app h1 {
-        font-size: 22px;
+        font-size: 1.375rem;
     }
     .sy-current-books {
         grid-template-columns: minmax(0, 1fr);
@@ -1723,15 +1739,17 @@
         flex-wrap: wrap;
     }
     .sy-reader-pagination .sy-button {
-        font-size: 12px;
+        font-size: 0.75rem;
     }
     .sy-suggestion-actions {
         gap: 10px;
     }
 }
 @media (prefers-reduced-motion: reduce) {
-    .sy-spine:hover {
-        transform: none;
+    @media (hover: hover) and (pointer: fine) {
+        .sy-spine:hover {
+            transform: none;
+        }
     }
 }
 
@@ -1764,7 +1782,7 @@
     outline-offset: 0;
 }
 .sy-desk-mono {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
 }
 
@@ -1787,15 +1805,17 @@
     align-items: center;
     gap: 7px;
     min-width: 0;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-desk-crumb a {
     color: inherit;
     flex: none;
 }
-.sy-desk-crumb a:hover {
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-crumb a:hover {
+        color: var(--color-text);
+    }
 }
 .sy-desk-crumb-sep {
     color: var(--color-border-strong);
@@ -1825,15 +1845,15 @@
     flex: none;
 }
 .sy-desk-count {
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     color: var(--color-text-soft);
     white-space: nowrap;
 }
 .sy-desk-top .sy-button {
     min-height: 32px;
-    font-size: 12px;
+    font-size: 0.75rem;
     gap: 6px;
     white-space: nowrap;
 }
@@ -1875,7 +1895,7 @@
 .sy-desk-card {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 14px;
     overflow: hidden;
 }
 .sy-desk-card-head {
@@ -1885,7 +1905,7 @@
     gap: 10px;
     padding: 10px 14px;
     border-bottom: 1px solid var(--color-border);
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.4;
     letter-spacing: 0.07em;
     text-transform: uppercase;
@@ -1925,7 +1945,7 @@
     border-bottom: 1px solid var(--color-border);
 }
 .sy-desk-video-empty p {
-    font-size: 12.5px;
+    font-size: 0.7813rem;
     line-height: 1.65;
     color: var(--color-text-soft);
 }
@@ -1941,7 +1961,7 @@
 }
 .sy-desk-video-foot b {
     display: block;
-    font-size: 12.5px;
+    font-size: 0.7813rem;
     font-weight: 550;
     line-height: 1.45;
     overflow-wrap: anywhere;
@@ -1949,7 +1969,7 @@
 .sy-desk-video-foot span {
     display: block;
     margin-top: 2px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
     font-variant-numeric: tabular-nums;
 }
@@ -1958,11 +1978,13 @@
     align-items: center;
     gap: 5px;
     flex: none;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
-.sy-desk-external:hover {
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-external:hover {
+        color: var(--color-text);
+    }
 }
 .sy-desk-manual {
     border-top: 1px solid var(--color-border);
@@ -1970,12 +1992,14 @@
 }
 .sy-desk-manual summary {
     padding: 9px 0;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.5;
     color: var(--color-text-soft);
 }
-.sy-desk-manual summary:hover {
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-manual summary:hover {
+        color: var(--color-text);
+    }
 }
 .sy-desk-manual-row {
     display: flex;
@@ -1985,19 +2009,19 @@
 .sy-desk-manual-row label {
     display: grid;
     gap: 5px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-desk-manual-row .sy-input {
     width: 88px;
     min-height: 34px;
     padding: 4px 8px;
-    font-size: 12px;
+    font-size: 0.75rem;
     background: var(--color-surface-subtle);
 }
 .sy-desk-manual-row .sy-button {
     min-height: 34px;
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 
 /* Chapters */
@@ -2017,13 +2041,15 @@
     padding: 8px 14px 8px 12px;
     border-left: 2px solid transparent;
     text-align: left;
-    font-size: 12.5px;
+    font-size: 0.7813rem;
     line-height: 1.5;
     color: var(--color-text-muted);
 }
-.sy-desk-chapters button:hover {
-    background: var(--color-surface-subtle);
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-chapters button:hover {
+        background: var(--color-surface-subtle);
+        color: var(--color-text);
+    }
 }
 .sy-desk-chapters button[aria-current="true"] {
     background: var(--color-surface-subtle);
@@ -2032,7 +2058,7 @@
     border-left-color: var(--color-accent);
 }
 .sy-desk-chapters button .sy-desk-mono {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
     padding-top: 2px;
 }
@@ -2078,7 +2104,7 @@
 }
 .sy-desk-notes-empty {
     padding: 13px 14px;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.6;
     color: var(--color-text-soft);
 }
@@ -2100,17 +2126,19 @@
 }
 .sy-desk-note-time {
     padding-top: 2px;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-accent);
     white-space: nowrap;
 }
-.sy-desk-note-time:hover {
-    text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-note-time:hover {
+        text-decoration: underline;
+    }
 }
 .sy-desk-note-list p {
-    font-size: 12.5px;
+    font-size: 0.7813rem;
     line-height: 1.6;
     color: var(--color-text);
     overflow-wrap: anywhere;
@@ -2120,8 +2148,10 @@
     padding: 2px;
     color: var(--color-text-soft);
 }
-.sy-desk-note-del:hover {
-    color: var(--color-danger);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-note-del:hover {
+        color: var(--color-danger);
+    }
 }
 
 /* Lessons */
@@ -2141,13 +2171,15 @@
     width: 100%;
     padding: 9px 14px;
     text-align: left;
-    font-size: 12.5px;
+    font-size: 0.7813rem;
     line-height: 1.5;
     color: var(--color-text-muted);
 }
-.sy-desk-lessons button:hover {
-    background: var(--color-surface-subtle);
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-lessons button:hover {
+        background: var(--color-surface-subtle);
+        color: var(--color-text);
+    }
 }
 .sy-desk-lessons button[aria-current="step"] {
     background: var(--color-surface-subtle);
@@ -2155,7 +2187,7 @@
     font-weight: 550;
 }
 .sy-desk-lessons button .sy-desk-mono {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-desk-pip {
@@ -2185,12 +2217,12 @@
     border-top: 0;
 }
 .sy-desk-level-head .sy-desk-mono {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-desk-level-tag {
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-text-soft);
@@ -2201,7 +2233,7 @@
     justify-content: space-between;
     gap: 10px;
     padding: 10px 14px;
-    font-size: 12.5px;
+    font-size: 0.7813rem;
     font-weight: 550;
     color: var(--color-accent);
     border-top: 1px solid var(--color-border);
@@ -2210,13 +2242,15 @@
     width: 14px;
     height: 14px;
 }
-.sy-desk-levelup:hover {
-    background: var(--color-surface-subtle);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-levelup:hover {
+        background: var(--color-surface-subtle);
+    }
 }
 .sy-desk-deeper-head {
     padding: 10px 14px 4px;
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-text-soft);
@@ -2224,7 +2258,7 @@
 .sy-desk-reason {
     display: block;
     margin-top: 1px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-desk-recall {
@@ -2236,7 +2270,7 @@
 }
 .sy-desk-recall-hint {
     margin: 0;
-    font-size: 12.5px;
+    font-size: 0.7813rem;
     color: var(--color-text-soft);
 }
 
@@ -2254,7 +2288,7 @@
 }
 .sy-recall-question {
     margin: 0;
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 1.5;
     font-weight: 550;
     color: var(--color-text);
@@ -2277,15 +2311,15 @@
 .sy-recall-source > span {
     display: block;
     margin-bottom: 4px;
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-text-soft);
 }
 .sy-recall-yours p {
     margin: 0;
-    font-size: 13.5px;
+    font-size: 0.8438rem;
     line-height: 1.6;
     color: var(--color-text);
 }
@@ -2298,13 +2332,13 @@
 }
 .sy-recall-source blockquote p {
     margin: 0;
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.6;
     color: var(--color-text);
 }
 .sy-recall-gist {
     margin: 10px 0 0;
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.6;
     color: var(--color-text-muted);
 }
@@ -2318,7 +2352,7 @@
     gap: 8px;
     padding: 10px 16px;
     border-top: 1px solid var(--color-border);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
     cursor: pointer;
 }
@@ -2341,14 +2375,14 @@
     justify-content: space-between;
     align-items: baseline;
     gap: 14px;
-    font-size: 12.5px;
+    font-size: 0.7813rem;
     line-height: 1.5;
     color: var(--color-text-muted);
 }
 .sy-recall-steps-head {
     margin: 36px 0 14px;
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.11em;
     text-transform: uppercase;
@@ -2365,7 +2399,7 @@
     border: 0;
 }
 .sy-desk-pomodoro-card .sy-timer-clock {
-    font-size: 30px;
+    font-size: 1.875rem;
     letter-spacing: -0.8px;
     margin: 8px 0 12px;
 }
@@ -2392,8 +2426,8 @@
 }
 .sy-desk-eyebrow {
     margin: 0;
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-text-soft);
@@ -2403,7 +2437,7 @@
     align-items: center;
     gap: 7px;
     flex: none;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-desk-done input {
@@ -2417,7 +2451,7 @@
 }
 .sy-desk-claim h1 {
     margin-top: 10px;
-    font-size: 34px;
+    font-size: 2.125rem;
     font-weight: 560;
     letter-spacing: -1.1px;
     line-height: 1.14;
@@ -2428,7 +2462,7 @@
     flex-wrap: wrap;
     gap: 4px 10px;
     margin-top: 12px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 .sy-desk-claim-meta span + span::before {
@@ -2451,6 +2485,7 @@
     border-bottom: 1px solid var(--color-border);
 }
 .sy-desk-tabs button {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -2458,21 +2493,32 @@
     padding: 10px 1px 11px;
     border-bottom: 2px solid transparent;
     background: none;
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 500;
     color: var(--color-text-soft);
     white-space: nowrap;
 }
-.sy-desk-tabs button:hover {
-    color: var(--color-text);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-tabs button:hover {
+        color: var(--color-text);
+    }
 }
 .sy-desk-tabs button[aria-selected="true"] {
     color: var(--color-text);
-    border-bottom-color: var(--color-text);
+}
+/* The active-tab line is a shared-layout element that slides between tabs. */
+.sy-desk-tab-ind {
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--color-text);
 }
 .sy-desk-tab-count {
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     line-height: 1;
     color: var(--color-text-muted);
     background: var(--color-surface-muted);
@@ -2494,10 +2540,10 @@
     display: none;
 }
 .sy-desk-copy {
-    max-width: 700px;
+    max-width: 70ch;
 }
 .sy-desk-lede {
-    font-size: 17px;
+    font-size: 1.0625rem;
     line-height: 1.68;
     color: var(--color-text);
     letter-spacing: -0.1px;
@@ -2507,8 +2553,8 @@
 }
 .sy-desk-block > h2 {
     margin-bottom: 14px;
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.11em;
     text-transform: uppercase;
@@ -2519,8 +2565,8 @@
     margin-bottom: 14px;
 }
 .sy-desk-prose p {
-    font-size: 15px;
-    line-height: 1.78;
+    font-size: 1rem;
+    line-height: 1.65;
     color: var(--color-text);
 }
 .sy-desk-prose p + p {
@@ -2542,13 +2588,13 @@
     gap: 10px;
     padding: 11px 0;
     border-bottom: 1px solid var(--color-border);
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.6;
     color: var(--color-text);
 }
 .sy-desk-objectives .sy-desk-mono {
     padding-top: 3px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-soft);
 }
 
@@ -2568,15 +2614,17 @@
     background: var(--color-surface-subtle);
     color: inherit;
     transition:
-        border-color 0.12s ease,
-        background 0.12s ease;
+        border-color var(--dur-press) ease-out,
+        background var(--dur-press) ease-out;
 }
-.sy-desk-source:hover {
-    border-color: var(--color-border-strong);
-    background: var(--color-surface);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-source:hover {
+        border-color: var(--color-border-strong);
+        background: var(--color-surface);
+    }
 }
 .sy-desk-source-type {
-    font-size: 12px;
+    font-size: 0.75rem;
     letter-spacing: 0.07em;
     text-transform: uppercase;
     color: var(--color-text-soft);
@@ -2590,7 +2638,7 @@
 }
 .sy-desk-source-body b {
     display: block;
-    font-size: 13.5px;
+    font-size: 0.8438rem;
     font-weight: 550;
     line-height: 1.45;
     overflow-wrap: anywhere;
@@ -2598,7 +2646,7 @@
 .sy-desk-source-body small {
     display: block;
     margin-top: 2px;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.55;
     color: var(--color-text-soft);
 }
@@ -2609,14 +2657,14 @@
 
 /* Check tab */
 .sy-desk-tab-head h2 {
-    font-size: 21px;
+    font-size: 1.3125rem;
     font-weight: 550;
     letter-spacing: -0.4px;
     line-height: 1.25;
 }
 .sy-desk-tab-head p {
     margin-top: 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.7;
     color: var(--color-text-soft);
 }
@@ -2634,7 +2682,7 @@
     align-items: flex-start;
     gap: 12px;
     padding: 13px 0;
-    font-size: 14.5px;
+    font-size: 0.9063rem;
     line-height: 1.55;
     color: var(--color-text);
     cursor: pointer;
@@ -2659,8 +2707,8 @@
     margin-top: 22px;
 }
 .sy-desk-field > span {
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
     letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--color-text-soft);
@@ -2670,7 +2718,7 @@
     padding: 13px 14px;
     background: var(--color-surface-subtle);
     color: var(--color-text);
-    font-size: 14.5px;
+    font-size: 0.9063rem;
     line-height: 1.7;
 }
 .sy-desk .sy-textarea::placeholder {
@@ -2691,8 +2739,10 @@
     border: 0;
     border-radius: 6px;
 }
-.sy-desk-review > .sy-button.quiet:hover {
-    background: var(--color-raised);
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk-review > .sy-button.quiet:hover {
+        background: var(--color-raised);
+    }
 }
 .sy-desk-review > .sy-form {
     padding: 18px;
@@ -2704,11 +2754,11 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--color-text-muted);
 }
 .sy-desk-hint {
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.7;
     color: var(--color-text-soft);
 }
@@ -2727,7 +2777,7 @@
 }
 .sy-desk-next p {
     margin-top: 5px;
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 550;
     line-height: 1.45;
     overflow-wrap: anywhere;
@@ -2737,8 +2787,10 @@
 }
 
 /* Shared controls take the same flat styles as the rest of the app. */
-.sy-desk .sy-button.primary:hover:not(:disabled) {
-    background: #2c2d30;
+@media (hover: hover) and (pointer: fine) {
+    .sy-desk .sy-button.primary:hover:not(:disabled) {
+        background: #2c2d30;
+    }
 }
 .sy-desk input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 .sy-desk textarea {
@@ -2762,7 +2814,7 @@
 }
 .sy-desk-empty {
     padding: 12px 0;
-    font-size: 13.5px;
+    font-size: 0.8438rem;
     line-height: 1.7;
     color: var(--color-text-soft);
 }
@@ -2779,13 +2831,13 @@
 }
 .sy-desk-simple h1 {
     margin-top: 10px;
-    font-size: 27px;
+    font-size: 1.6875rem;
     letter-spacing: -0.7px;
     line-height: 1.25;
 }
 .sy-desk-simple .sy-desk-lede {
     margin-top: 12px;
-    font-size: 14.5px;
+    font-size: 0.9063rem;
     color: var(--color-text-muted);
 }
 .sy-desk-simple .sy-desk-actions {
@@ -2810,7 +2862,7 @@
         gap: 22px;
     }
     .sy-desk-claim h1 {
-        font-size: 30px;
+        font-size: 1.875rem;
     }
 }
 @media (max-width: 1024px) {
@@ -2823,7 +2875,7 @@
         padding: 16px 24px 0;
     }
     .sy-desk-claim h1 {
-        font-size: 32px;
+        font-size: 2rem;
     }
 }
 @media (max-width: 980px) {
@@ -2871,7 +2923,7 @@
         padding: 8px 20px;
     }
     .sy-desk-claim h1 {
-        font-size: 27px;
+        font-size: 1.6875rem;
         letter-spacing: -0.8px;
     }
     .sy-desk-grid {
@@ -2881,16 +2933,16 @@
         padding: 22px 22px 32px;
     }
     .sy-desk-lede {
-        font-size: 15.5px;
+        font-size: 0.9688rem;
     }
     .sy-desk-prose p {
-        font-size: 14.5px;
+        font-size: 0.9063rem;
     }
     .sy-desk-tab-head h2 {
-        font-size: 19px;
+        font-size: 1.1875rem;
     }
     .sy-desk-claim-meta {
-        font-size: 12px;
+        font-size: 0.75rem;
     }
     .sy-desk-alert {
         padding: 14px 20px 0;
@@ -2917,7 +2969,7 @@
         padding: 2px 0 0;
     }
     .sy-desk-claim h1 {
-        font-size: 24px;
+        font-size: 1.5rem;
         letter-spacing: -0.6px;
     }
     .sy-desk-claim-top {
@@ -2966,7 +3018,7 @@
         padding: 56px 20px;
     }
     .sy-desk-simple h1 {
-        font-size: 23px;
+        font-size: 1.4375rem;
     }
     .sy-desk-alert {
         padding: 12px 16px 0;

@@ -127,7 +127,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                     {group.title}
                                 </h3>
                                 <div className="flex items-center gap-3">
-                                    <span className="bg-surface-muted px-2.5 py-1 rounded-full text-[12px] font-bold text-text-muted border border-border">
+                                    <span className="bg-surface-muted px-2.5 py-1 rounded-full text-[0.75rem] font-bold text-text-muted border border-border">
                                         {completedCount} / {totalCount} done
                                     </span>
                                     {completedCount > 0 && (
@@ -160,7 +160,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                                         onChange={() => toggleComplete(group.id, task.id)}
                                                         className="peer appearance-none w-5 h-5 rounded-md border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-all cursor-pointer hover:border-accent"
                                                     />
-                                                    <span className="absolute text-white text-[12px] font-semibold pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
+                                                    <span className="absolute text-white text-[0.75rem] font-semibold pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
                                                 </div>
                                                 <div className="flex-1 min-w-0 pt-0.5">
                                                     <span
@@ -180,7 +180,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                                             </span>
                                                         )}
                                                         {task.estimatedTime && (
-                                                            <span className="ml-3 inline-flex items-center gap-1 text-[12px] text-text-muted opacity-70">
+                                                            <span className="ml-3 inline-flex items-center gap-1 text-[0.75rem] text-text-muted opacity-70">
                                                                 <Clock size={12} />
                                                                 {task.estimatedTime}
                                                             </span>

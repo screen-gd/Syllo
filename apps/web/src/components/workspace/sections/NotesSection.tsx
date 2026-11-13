@@ -66,7 +66,7 @@ export default function Notes({ section, onUpdate }: Props) {
     const wordCount = activeNote?.content.trim().split(/\s+/).filter(Boolean).length || 0;
 
     return (
-        <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col lg:flex-row gap-6 animate-fade-in relative z-10">
+        <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col lg:flex-row gap-6 relative z-10">
 
             {/* Sidebar List */}
             <div className="w-full lg:w-80 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border animate-slide-up bg-surface">
@@ -135,7 +135,7 @@ export default function Notes({ section, onUpdate }: Props) {
                     <div className="flex-1 overflow-y-auto lg:px-12 px-6 sm:px-8 py-8 relative group">
 
                         <textarea
-                            className="custom-scrollbar relative z-10 h-full w-full resize-none border-none bg-transparent text-[15px] font-serif leading-8 text-text placeholder:text-text-muted focus-visible:outline-2 focus-visible:outline-accent sm:text-base"
+                            className="custom-scrollbar relative z-10 h-full w-full resize-none border-none bg-transparent text-[0.9375rem] font-serif leading-8 text-text placeholder:text-text-muted focus-visible:outline-2 focus-visible:outline-accent sm:text-base"
                             value={activeNote.content}
                             onChange={(e) => updateNote(activeNote.id, { content: e.target.value })}
                             onKeyDown={handleKeyDown}

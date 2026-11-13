@@ -237,7 +237,7 @@ function CreatePageContent() {
                                 }}
                                 placeholder="Paste a guide, course outline or notes"
                                 className={cn(
-                                    "sy-create-input resize-y p-5 text-[15px] leading-relaxed",
+                                    "sy-create-input resize-y p-5 text-[0.9375rem] leading-relaxed",
                                     isDragging
                                         ? "border-text-soft bg-surface-subtle"
                                         : "border-border-strong",
@@ -247,7 +247,7 @@ function CreatePageContent() {
                             {!content && (
                                 <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 text-text-soft">
                                     <FileUp size={28} strokeWidth={1.5} />
-                                    <p className="text-[13px]">
+                                    <p className="text-[0.8125rem]">
                                         or drop a .md or .txt file
                                     </p>
                                 </div>
@@ -275,7 +275,7 @@ function CreatePageContent() {
                                     <FileUp size={15} /> Upload file
                                 </Button>
                                 {hasContent ? (
-                                    <span className="text-[13px] tabular-nums text-text-soft">
+                                    <span className="text-[0.8125rem] tabular-nums text-text-soft">
                                         {content
                                             .trim()
                                             .split(/s+/)

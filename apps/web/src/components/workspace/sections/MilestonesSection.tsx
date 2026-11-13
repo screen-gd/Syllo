@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { MilestoneSection, Section, Milestone } from "@/types";
 import VideoPlayer from "@/components/shared/VideoPlayer";
 import ContentViewer from "@/components/shared/ContentViewer";
+import { AnimatePresence } from "motion/react";
 
 interface Props {
     section: MilestoneSection;
@@ -86,16 +87,16 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                 toggleComplete(milestone.id);
                                             }}
                                         >
-                                            {milestone.completed && <span className="text-text text-[12px] font-bold">✓</span>}
+                                            {milestone.completed && <span className="text-text text-[0.75rem] font-bold">✓</span>}
                                         </div>
 
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <h3 className={`font-display font-bold text-[17px] transition-colors duration-300 ${milestone.completed ? "text-text-muted" : "text-text"
+                                                <h3 className={`font-display font-bold text-[1.0625rem] transition-colors duration-300 ${milestone.completed ? "text-text-muted" : "text-text"
                                                     } ${inProgress && !milestone.completed ? 'text-accent-strong' : ''}`}>
                                                     {milestone.title}
                                                 </h3>
-                                                {inProgress && <span className="px-2 py-0.5 rounded text-[12px] font-bold bg-accent/20 text-accent border border-accent/30">Active</span>}
+                                                {inProgress && <span className="px-2 py-0.5 rounded text-[0.75rem] font-bold bg-accent/20 text-accent border border-accent/30">Active</span>}
                                             </div>
                                             <p className={`text-sm mt-1 line-clamp-1 transition-colors ${milestone.completed ? "text-text-muted/50" : "text-text-muted"}`}>
                                                 {milestone.description}
@@ -103,7 +104,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                         </div>
 
                                         <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-surface transition-transform duration-300 group-hover:bg-surface-muted ${isExpanded ? "rotate-180 bg-surface-muted" : ""}`}>
-                                            <span className="text-[12px] text-text-muted group-hover:text-text">▼</span>
+                                            <span className="text-[0.75rem] text-text-muted group-hover:text-text">▼</span>
                                         </div>
                                     </button>
 
@@ -180,7 +181,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                                     </div>
                                                                     <div className="min-w-0 flex-1">
                                                                         <span className="text-sm font-medium text-accent-strong group-hover:text-accent-strong block truncate transition-colors">{res.title}</span>
-                                                                        {res.description && <span className="text-[12px] text-text-muted block truncate mt-0.5">{res.description}</span>}
+                                                                        {res.description && <span className="text-[0.75rem] text-text-muted block truncate mt-0.5">{res.description}</span>}
                                                                     </div>
                                                                 </button>
                                                             ))}
@@ -197,9 +198,14 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                 </div>
             </div>
 
-            {viewerUrl && (
-                <ContentViewer url={viewerUrl} onClose={() => setViewerUrl(null)} />
-            )}
+            <AnimatePresence>
+                {viewerUrl && (
+                    <ContentViewer
+                        url={viewerUrl}
+                        onClose={() => setViewerUrl(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

@@ -373,23 +373,23 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
     };
 
     return (
-        <div className="flex flex-col h-full bg-page rounded-2xl border border-border overflow-hidden animate-fade-in relative">
+        <div className="flex flex-col h-full bg-page rounded-2xl border border-border overflow-hidden relative">
             {/* Module Top Header */}
             <div className="px-8 pt-8 pb-6 border-b border-border bg-surface-subtle">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-xl bg-accent/10 border border-accent/20 flex flex-col items-center justify-center shrink-0">
-                            <span className="font-display text-[12px] text-accent font-bold">Mod</span>
+                            <span className="font-display text-[0.75rem] text-accent font-bold">Mod</span>
                             <span className="font-display text-2xl text-accent">{String(currentIndex + 1).padStart(2, "0")}</span>
                         </div>
                         <div>
                             <div className="flex items-center gap-3 mb-1">
                                 {data.estimatedTime && (
-                                    <span className="font-display text-[12px] text-text-muted">
+                                    <span className="font-display text-[0.75rem] text-text-muted">
                                         <Clock size={12} className="mr-1 inline-flex" /> {data.estimatedTime}
                                     </span>
                                 )}
-                                <span className="font-display text-[12px] text-accent px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20">
+                                <span className="font-display text-[0.75rem] text-accent px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20">
                                     {taskPercent}% Complete
                                 </span>
                             </div>
@@ -437,7 +437,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                 <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} />
                             </button>
                             {showRegenConfirm && (
-                                <div className="absolute right-0 top-full mt-2 w-64 p-3 bg-surface-muted border border-border rounded-lg shadow-[0_8px_30px_rgba(24,25,27,0.12)] z-50 animate-in fade-in zoom-in duration-200">
+                                <div className="sy-pop absolute right-0 top-full mt-2 w-64 p-3 bg-surface-muted border border-border rounded-lg shadow-[var(--shadow-pop)] z-50">
                                     <p className="text-sm text-text mb-3">Regenerate just this module? Your other modules will not change.</p>
                                     <div className="flex justify-end gap-2">
                                         <button onClick={() => setShowRegenConfirm(false)} className="px-3 py-1.5 text-xs text-text-muted hover:text-text transition-colors">Cancel</button>
@@ -461,7 +461,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                     <div className="px-8 pb-4 text-danger text-sm">{regenError}</div>
                 )}
                 {isRegenerating && (
-                    <div className="absolute inset-0 z-40 bg-page/50 flex items-center justify-center">
+                    <div className="absolute inset-0 z-40 bg-surface/70 flex items-center justify-center">
                         <div className="flex flex-col items-center gap-3">
                             <RefreshCw size={24} className="text-accent animate-spin" />
                             <span className="text-sm font-medium text-text">Regenerating module...</span>
@@ -490,7 +490,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
             <div className="flex-1 overflow-y-auto w-full relative">
                 {/* 1. Overview Tab */}
                 {activeTab === 'overview' && (
-                    <div className="p-8 max-w-4xl animate-fade-in space-y-10">
+                    <div className="p-8 max-w-4xl space-y-10">
                         {data.description && (
                             <section>
                                 <h3 className="font-display text-xs text-text-muted mb-4 border-b border-border pb-2">Description</h3>
@@ -531,10 +531,10 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                 {/* 2. Tasks Tab */}
                 {activeTab === 'tasks' && (
-                    <div className="p-8 max-w-3xl animate-fade-in">
+                    <div className="p-8 max-w-3xl">
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="font-display text-xs text-text-muted">Action Items</h3>
-                            <span className="font-display text-[12px] text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
+                            <span className="font-display text-[0.75rem] text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
                                 {completedCount} / {totalCount} Completed
                             </span>
                         </div>
@@ -571,7 +571,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                                 </span>
                                             )}
                                             {task.estimatedTime && (
-                                                <span className="ml-3 inline-flex items-center gap-1 text-[12px] text-text-muted opacity-70">
+                                                <span className="ml-3 inline-flex items-center gap-1 text-[0.75rem] text-text-muted opacity-70">
                                                     <Clock size={12} />
                                                     {task.estimatedTime}
                                                 </span>
@@ -611,7 +611,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                 {/* 3. Resources Tab */}
                 {activeTab === 'resources' && (
-                    <div className="flex h-full animate-fade-in relative overflow-hidden">
+                    <div className="flex h-full relative overflow-hidden">
                         <div className={`p-8 flex-1 overflow-y-auto transition-all duration-300 ${sidePanelResource ? "pr-[400px]" : "pr-8"}`}>
                             <h3 className="font-display text-xs text-text-muted mb-8 border-b border-border pb-2">Course Materials</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -678,7 +678,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                 )}
 
                 {activeTab === 'quiz' && (
-                    <div className="p-8 max-w-4xl animate-fade-in space-y-6">
+                    <div className="p-8 max-w-4xl space-y-6">
                         <div className="flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h3 className="font-display text-xs text-text-muted">Knowledge Check</h3>
@@ -805,7 +805,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                 {/* 4. Videos Tab */}
                 {activeTab === 'videos' && (
-                    <div className="flex flex-col lg:flex-row h-full animate-fade-in">
+                    <div className="flex flex-col lg:flex-row h-full">
                         {/* Video Player */}
                         <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
                             {activeVideoId && (
@@ -857,10 +857,10 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                 {/* 5. Notes Tab */}
                 {activeTab === 'notes' && (
-                    <div className="p-8 max-w-4xl h-full flex flex-col animate-fade-in">
+                    <div className="p-8 max-w-4xl h-full flex flex-col">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="font-display text-xs text-text-muted">Module Notes</h3>
-                            <span className="font-display text-[12px] text-accent font-bold min-w-[80px] text-right">
+                            <span className="font-display text-[0.75rem] text-accent font-bold min-w-[80px] text-right">
                                 {saveStatus}
                             </span>
                         </div>
