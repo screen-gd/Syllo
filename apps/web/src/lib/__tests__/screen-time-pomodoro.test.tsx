@@ -2,13 +2,30 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import PomodoroProvider, { Pomodoro } from "@/components/learning/Pomodoro";
-import { useScreenTimeLink } from "@/lib/screen-time/client";
+import PomodoroProvider, {
+    Pomodoro,
+    useStudyFocus,
+} from "@/components/learning/Pomodoro";
+import {
+    useScreenTimeLink,
+    type StudyFocus,
+} from "@/lib/screen-time/client";
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
 const LINK_KEY = "syllo:screen-time-link:v1";
 const SESSION_KEY = "syllo:pomodoro-session";
+const SYLLO_SESSION = {
+    id: "s1",
+    goal: "Study session",
+    source: "syllo",
+    mode: "block",
+    apps: [],
+    sites: [],
+    allowSites: [],
+    startedAt: "2026-01-01T00:00:00.000Z",
+    endsAt: "2026-01-01T00:25:00.000Z",
+};
 
 interface FetchCall {
     method: string;
@@ -17,6 +34,7 @@ interface FetchCall {
 }
 
 let calls: FetchCall[];
+let reply: unknown;
 let container: HTMLDivElement;
 let root: Root;
 
@@ -26,9 +44,16 @@ function LinkProbe() {
     return null;
 }
 
+/** Reports a lesson focus to the provider like the Learn page does. */
+function StudyProbe({ focus }: { focus: StudyFocus | null }) {
+    useStudyFocus(focus);
+    return null;
+}
+
 beforeEach(async () => {
     localStorage.clear();
     calls = [];
+    reply = { kind: "ready", session: null };
     vi.stubGlobal(
         "fetch",
         vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
@@ -47,13 +72,10 @@ beforeEach(async () => {
                 body,
             });
             return Promise.resolve(
-                new Response(
-                    JSON.stringify({ kind: "ready", session: null }),
-                    {
-                        status: 200,
-                        headers: { "Content-Type": "application/json" },
-                    },
-                ),
+                new Response(JSON.stringify(reply), {
+                    status: 200,
+                    headers: { "Content-Type": "application/json" },
+                }),
             );
         }),
     );
@@ -77,6 +99,7 @@ afterEach(async () => {
         root.unmount();
     });
     container.remove();
+    vi.useRealTimers();
     vi.unstubAllGlobals();
 });
 
@@ -170,5 +193,81 @@ describe("pomodoro screen time link", () => {
         await render();
         await click("Start");
         expect(calls).toHaveLength(0);
+    });
+
+    it("drops the label when the session is ended in screen time", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "ready", session: SYLLO_SESSION };
+        await act(async () => {
+            root.render(
+                <PomodoroProvider>
+                    <StudyProbe focus={{ goal: "One", resourceUrls: [] }} />
+                    <Pomodoro />
+                </PomodoroProvider>,
+            );
+        });
+        await click("Start");
+        expect(container.textContent).toContain("Screen Time");
+        reply = { kind: "ready", session: null };
+        await act(async () => {
+            vi.advanceTimersByTime(20_000);
+        });
+        expect(container.textContent).not.toContain("Screen Time");
+        expect(container.textContent).toContain("Pause");
+        await act(async () => {
+            vi.advanceTimersByTime(20_000);
+        });
+        await act(async () => {
+            root.render(
+                <PomodoroProvider>
+                    <StudyProbe focus={{ goal: "Two", resourceUrls: [] }} />
+                    <Pomodoro />
+                </PomodoroProvider>,
+            );
+        });
+        expect(calls.filter((call) => call.method === "POST")).toHaveLength(1);
+        expect(calls.filter((call) => call.method === "GET")).toHaveLength(1);
+    });
+
+    it("checks again when the tab becomes visible", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "ready", session: SYLLO_SESSION };
+        await render();
+        await click("Start");
+        const before = calls.filter(
+            (call) => call.method === "GET",
+        ).length;
+        await act(async () => {
+            document.dispatchEvent(new Event("visibilitychange"));
+        });
+        expect(
+            calls.filter((call) => call.method === "GET").length,
+        ).toBe(before + 1);
+    });
+
+    it("stays silent when the link is off, even as time passes", async () => {
+        vi.useFakeTimers();
+        await render();
+        await click("Start");
+        await act(async () => {
+            vi.advanceTimersByTime(60_000);
+        });
+        expect(calls).toHaveLength(0);
+    });
+
+    it("does not poll when the start was declined", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "busy", session: null };
+        await render();
+        await click("Start");
+        await act(async () => {
+            vi.advanceTimersByTime(60_000);
+        });
+        expect(
+            calls.filter((call) => call.method === "GET"),
+        ).toHaveLength(0);
     });
 });

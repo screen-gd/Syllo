@@ -83,6 +83,7 @@ export default function PomodoroProvider({
     const [study, setStudy] = useState<StudyFocus | null>(null);
     const [linked] = useScreenTimeLink();
     const [linkStatus, setLinkStatus] = useState<ScreenTimeStatus | null>(null);
+    const [tracking, setTracking] = useState(false);
     const sessionRef = useRef(session);
     sessionRef.current = session;
     const syncRef = useRef<ReturnType<typeof createFocusSync> | null>(null);
@@ -96,7 +97,13 @@ export default function PomodoroProvider({
                           resourceUrls: intent.resourceUrls,
                       })
                     : screenTimeApi.stop(),
-            onStatus: setLinkStatus,
+            onStatus: (status) => {
+                setLinkStatus(status);
+                setTracking(
+                    status.kind === "ready" &&
+                        status.session?.source === SCREEN_TIME_SOURCE,
+                );
+            },
         });
     useEffect(() => {
         try {
@@ -194,8 +201,45 @@ export default function PomodoroProvider({
         else {
             sync.release();
             setLinkStatus(null);
+            setTracking(false);
         }
     }, [loaded, linked, intent]);
+    const runningFocus = session.mode === "focus" && session.endAt !== null;
+    // While our session is believed on, watch for the user ending it in Screen
+    // Time so the label drops instead of claiming a block that is not there.
+    useEffect(() => {
+        if (!linked || !runningFocus || !tracking) return;
+        const sync = syncRef.current;
+        if (!sync) return;
+        let cancelled = false;
+        const poll = async () => {
+            const before = sync.version();
+            const result = await screenTimeApi.status();
+            if (cancelled || sync.version() !== before) return;
+            if (
+                result.kind === "ready" &&
+                result.session?.source === SCREEN_TIME_SOURCE
+            ) {
+                setLinkStatus(result);
+            } else if (result.kind === "ready") {
+                sync.markEnded();
+                setTracking(false);
+                setLinkStatus(result);
+            } else {
+                setLinkStatus(result);
+            }
+        };
+        const timer = setInterval(() => void poll(), 20_000);
+        const onVisible = () => {
+            if (document.visibilityState === "visible") void poll();
+        };
+        document.addEventListener("visibilitychange", onVisible);
+        return () => {
+            cancelled = true;
+            clearInterval(timer);
+            document.removeEventListener("visibilitychange", onVisible);
+        };
+    }, [linked, runningFocus, tracking]);
     return (
         <StudyFocusContext.Provider value={setStudy}>
             <Context.Provider

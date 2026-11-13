@@ -199,4 +199,32 @@ describe("createFocusSync", () => {
         await new Promise((done) => setTimeout(done, 0));
         expect(sent).toEqual([{ kind: "stop" }]);
     });
+
+    it("never re-sends a period the user ended in screen time", async () => {
+        const { sent, statuses, sync } = makeSync();
+        const start = (goal: string, endAt: number): FocusIntent => ({
+            kind: "start",
+            goal,
+            resourceUrls: [],
+            endAt,
+        });
+        sync.update(start("g", 60_000));
+        await vi.waitFor(() => expect(statuses).toHaveLength(1));
+        sync.markEnded();
+        sync.update(start("renamed", 60_000));
+        await new Promise((done) => setTimeout(done, 0));
+        expect(sent).toHaveLength(1);
+        sync.update(start("g", 90_000));
+        await vi.waitFor(() => expect(sent).toHaveLength(2));
+    });
+
+    it("bumps its version for each dispatch", async () => {
+        const { statuses, sync } = makeSync();
+        expect(sync.version()).toBe(0);
+        sync.update({ kind: "stop" });
+        expect(sync.version()).toBe(1);
+        await vi.waitFor(() => expect(statuses).toHaveLength(1));
+        sync.update({ kind: "start", goal: "g", resourceUrls: [], endAt: 60_000 });
+        expect(sync.version()).toBe(2);
+    });
 });

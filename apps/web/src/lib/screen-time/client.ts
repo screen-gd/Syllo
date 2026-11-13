@@ -156,6 +156,9 @@ export function createFocusSync({
     let inFlight = false;
     let pending: FocusIntent | null = null;
     let lastSentStart = false;
+    let lastStartEndAt: number | null = null;
+    let endedAt: number | null = null;
+    let dispatches = 0;
 
     function dispatch(intent: FocusIntent): void {
         let outgoing: SendIntent;
@@ -173,6 +176,9 @@ export function createFocusSync({
                           durationSeconds,
                       };
         }
+        if (intent.kind === "start" && outgoing.kind === "start")
+            lastStartEndAt = intent.endAt;
+        dispatches += 1;
         inFlight = true;
         lastSentStart = outgoing.kind === "start";
         send(outgoing)
@@ -188,6 +194,15 @@ export function createFocusSync({
 
     function update(intent: FocusIntent): void {
         const key = intentKey(intent);
+        if (endedAt !== null) {
+            // The user ended this session in Screen Time; a start for the
+            // same period is remembered but never re-sent.
+            if (intent.kind === "start" && intent.endAt === endedAt) {
+                lastKey = key;
+                return;
+            }
+            endedAt = null;
+        }
         if (inFlight) {
             // Whatever is queued loses to the newest intent, including "the
             // same as what is already being sent".
@@ -199,12 +214,23 @@ export function createFocusSync({
         dispatch(intent);
     }
 
+    /** How many requests went out; callers discard poll results from before. */
+    function version(): number {
+        return dispatches;
+    }
+
+    /** Stop re-sending the current period after Screen Time ended it. */
+    function markEnded(): void {
+        endedAt = lastStartEndAt;
+    }
+
     function release(): void {
         pending = null;
+        endedAt = null;
         if (lastSentStart) update({ kind: "stop" });
         lastKey = null;
         lastSentStart = false;
     }
 
-    return { update, release };
+    return { update, release, markEnded, version };
 }
