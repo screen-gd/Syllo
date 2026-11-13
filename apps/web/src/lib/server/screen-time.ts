@@ -3,7 +3,10 @@ import os from "node:os";
 import path from "node:path";
 import { z } from "zod";
 import {
+    focusGoal,
     focusSessionSchema,
+    MAX_FOCUS_SECONDS,
+    MIN_FOCUS_SECONDS,
     SCREEN_TIME_SOURCE,
     type ScreenTimeStatus,
 } from "@/lib/screen-time/contract";
@@ -210,9 +213,12 @@ export async function startFocusSession(
     options?: { connectionPath?: string },
 ): Promise<ScreenTimeStatus> {
     const result = await callScreenTime(resolvePath(options), "POST", {
-        goal,
+        goal: focusGoal(goal),
         source: SCREEN_TIME_SOURCE,
-        durationSeconds,
+        durationSeconds: Math.min(
+            MAX_FOCUS_SECONDS,
+            Math.max(MIN_FOCUS_SECONDS, durationSeconds),
+        ),
         allowSites,
     });
     if (!(result instanceof Response)) return result;
@@ -238,6 +244,16 @@ export async function stopFocusSession(options?: {
 }): Promise<ScreenTimeStatus> {
     const result = await callScreenTime(resolvePath(options), "DELETE");
     if (!(result instanceof Response)) return result;
+    if (result.status === 409) {
+        // Not our session to stop: report whatever is running instead.
+        const parsed = sessionResponseSchema.safeParse(
+            await parseBody(result),
+        );
+        return {
+            kind: "ready",
+            session: parsed.success ? parsed.data.session : null,
+        };
+    }
     if (!result.ok) return mapFailureStatus(result);
     const parsed = z
         .object({ session: z.null() })

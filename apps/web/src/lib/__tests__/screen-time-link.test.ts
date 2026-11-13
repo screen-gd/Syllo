@@ -4,7 +4,11 @@ import {
     focusIntent,
     type FocusIntent,
 } from "@/lib/screen-time/client";
-import type { ScreenTimeStatus } from "@/lib/screen-time/contract";
+import {
+    focusGoal,
+    focusStartRequestSchema,
+    type ScreenTimeStatus,
+} from "@/lib/screen-time/contract";
 
 type SendIntent =
     | { kind: "stop" }
@@ -226,5 +230,65 @@ describe("createFocusSync", () => {
         await vi.waitFor(() => expect(statuses).toHaveLength(1));
         sync.update({ kind: "start", goal: "g", resourceUrls: [], endAt: 60_000 });
         expect(sync.version()).toBe(2);
+    });
+
+    it("skips a start with under a minute left", async () => {
+        const { sent, sync } = makeSync(() => 40_000);
+        sync.update({
+            kind: "start",
+            goal: "g",
+            resourceUrls: [],
+            endAt: 70_000,
+        });
+        await new Promise((done) => setTimeout(done, 0));
+        expect(sent).toHaveLength(0);
+        expect(sync.version()).toBe(0);
+    });
+
+    it("clamps the duration to the screen time maximum", () => {
+        const { sent, sync } = makeSync(() => 0);
+        sync.update({
+            kind: "start",
+            goal: "g",
+            resourceUrls: [],
+            endAt: 50_000_000,
+        });
+        expect(sent[0]).toMatchObject({
+            kind: "start",
+            durationSeconds: 43_200,
+        });
+    });
+});
+
+describe("focusGoal", () => {
+    it("collapses whitespace and falls back when blank", () => {
+        expect(focusGoal("   ")).toBe("Study session");
+        expect(focusGoal("  Kern   ing \n basics ")).toBe("Kern ing basics");
+    });
+
+    it("cuts long goals at a word boundary and marks them", () => {
+        const separated = `${"A".repeat(150)} · ${"B".repeat(150)}`;
+        expect(focusGoal(separated)).toBe(`${"A".repeat(150)}…`);
+        const solid = focusGoal("x".repeat(250));
+        expect(solid).toHaveLength(200);
+        expect(solid.endsWith("…")).toBe(true);
+        expect(focusGoal("short")).toBe("short");
+    });
+
+    it("rejects a requested duration under a minute", () => {
+        expect(
+            focusStartRequestSchema.safeParse({
+                goal: "g",
+                durationSeconds: 30,
+                resourceUrls: [],
+            }).success,
+        ).toBe(false);
+        expect(
+            focusStartRequestSchema.safeParse({
+                goal: "g",
+                durationSeconds: 60,
+                resourceUrls: [],
+            }).success,
+        ).toBe(true);
     });
 });

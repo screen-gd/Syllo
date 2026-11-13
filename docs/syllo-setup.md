@@ -67,7 +67,7 @@ Scout's flow is goal, source review, draft roadmap, then your explicit approval.
 
 Syllo can start a focus session in the Screen Time app while a Pomodoro focus period runs. Screen Time then blocks your chosen distracting apps and sites. Pausing, resetting, or ending the period stops the session.
 
-Turn it on in Settings. It is off by default. Syllo tells Screen Time your goal, how long the period runs, and which sites stay open: Syllo itself and the lesson's links. Your app and site rules stay configured in Screen Time.
+Turn it on in Settings. It is off by default. Syllo tells Screen Time your goal, how long the period runs, and which sites stay open: Syllo itself and the lesson's links. Your app and site rules stay configured in Screen Time. A focus period with under a minute left does not start a session. Ending the session in Screen Time leaves the Syllo timer running.
 
 This works only when Syllo runs on the same computer as Screen Time. A hosted Syllo cannot reach it, and there is no pairing step. The Screen Time token stays in the connection file on Syllo's server and never reaches the browser. The timer keeps working when Screen Time is not installed or not running.
 

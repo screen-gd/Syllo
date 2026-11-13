@@ -3,6 +3,7 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { z } from "zod";
 import {
     allowSitesFor,
     connectionFilePath,
@@ -148,6 +149,54 @@ describe("screen time http adapter", () => {
         ).resolves.toEqual({ kind: "ready", session: null });
         expect(requests[0].method).toBe("DELETE");
         expect(requests[0].url).toBe("/api/v1/focus/session?source=syllo");
+    });
+
+    it("trims a long goal to the screen time limit", async () => {
+        await writeConnection();
+        const separated = `${"A".repeat(150)} · ${"B".repeat(150)}`;
+        await startFocusSession(
+            { goal: separated, durationSeconds: 60, allowSites: [] },
+            { connectionPath },
+        );
+        const sent = z
+            .object({ goal: z.string() })
+            .parse(requests[0].body).goal;
+        expect(sent).toBe(`${"A".repeat(150)}…`);
+        expect(sent.length).toBeLessThanOrEqual(200);
+        await startFocusSession(
+            { goal: "x".repeat(250), durationSeconds: 60, allowSites: [] },
+            { connectionPath },
+        );
+        const hard = z
+            .object({ goal: z.string() })
+            .parse(requests[1].body).goal;
+        expect(hard).toHaveLength(200);
+        expect(hard.endsWith("…")).toBe(true);
+    });
+
+    it("falls back for a blank goal and clamps a long duration", async () => {
+        await writeConnection();
+        await startFocusSession(
+            { goal: "   ", durationSeconds: 50_000, allowSites: [] },
+            { connectionPath },
+        );
+        expect(requests[0].body).toMatchObject({
+            goal: "Study session",
+            durationSeconds: 43_200,
+        });
+    });
+
+    it("maps a delete 409 to the session that is actually running", async () => {
+        await writeConnection();
+        const other = { ...SESSION, source: "other-app" };
+        responder = () => ({ status: 409, payload: { session: other } });
+        await expect(
+            stopFocusSession({ connectionPath }),
+        ).resolves.toEqual({ kind: "ready", session: other });
+        responder = () => ({ status: 409, payload: { junk: true } });
+        await expect(
+            stopFocusSession({ connectionPath }),
+        ).resolves.toEqual({ kind: "ready", session: null });
     });
 
     it("maps a 409 to busy with the other session", async () => {

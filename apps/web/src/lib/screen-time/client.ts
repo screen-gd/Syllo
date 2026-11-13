@@ -1,6 +1,9 @@
 import { useSyncExternalStore } from "react";
 import { fetchPrivateApi } from "@/lib/private-api-fetch";
 import {
+    focusGoal,
+    MAX_FOCUS_SECONDS,
+    MIN_FOCUS_SECONDS,
     screenTimeStatusSchema,
     type FocusStartRequest,
     type ScreenTimeStatus,
@@ -112,7 +115,7 @@ export function focusIntent(
     if (session.mode === "focus" && session.endAt !== null)
         return {
             kind: "start",
-            goal: (study?.goal.trim() || "Study session").slice(0, 200),
+            goal: focusGoal(study?.goal ?? ""),
             resourceUrls: study?.resourceUrls ?? [],
             endAt: session.endAt,
         };
@@ -166,15 +169,23 @@ export function createFocusSync({
             outgoing = { kind: "stop" };
         } else {
             const durationSeconds = Math.ceil((intent.endAt - now()) / 1000);
-            outgoing =
-                durationSeconds <= 0
-                    ? { kind: "stop" }
-                    : {
-                          kind: "start",
-                          goal: intent.goal,
-                          resourceUrls: intent.resourceUrls,
-                          durationSeconds,
-                      };
+            if (durationSeconds <= 0) {
+                outgoing = { kind: "stop" };
+            } else if (durationSeconds < MIN_FOCUS_SECONDS) {
+                // Under a minute left: Screen Time would refuse anyway, so
+                // stay quiet instead of sending a doomed start.
+                return;
+            } else {
+                outgoing = {
+                    kind: "start",
+                    goal: intent.goal,
+                    resourceUrls: intent.resourceUrls,
+                    durationSeconds: Math.min(
+                        durationSeconds,
+                        MAX_FOCUS_SECONDS,
+                    ),
+                };
+            }
         }
         if (intent.kind === "start" && outgoing.kind === "start")
             lastStartEndAt = intent.endAt;
