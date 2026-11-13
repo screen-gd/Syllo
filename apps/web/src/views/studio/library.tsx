@@ -1,7 +1,5 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link } from "@tanstack/react-router";
-import { motion } from "motion/react";
-import { SPRING } from "@/components/shared/motion";
 import { Library, List, Search, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { importEpub } from "@/lib/personal/books";
@@ -167,13 +165,6 @@ export default function LibraryPage() {
                             aria-pressed={view === "spines"}
                             onClick={() => setView("spines")}
                         >
-                            {view === "spines" && (
-                                <motion.span
-                                    className="sy-view-switch-ind"
-                                    layoutId="sy-view-switch"
-                                    transition={SPRING}
-                                />
-                            )}
                             <Library size={17} />
                         </button>
                         <button
@@ -181,13 +172,6 @@ export default function LibraryPage() {
                             aria-pressed={view === "list"}
                             onClick={() => setView("list")}
                         >
-                            {view === "list" && (
-                                <motion.span
-                                    className="sy-view-switch-ind"
-                                    layoutId="sy-view-switch"
-                                    transition={SPRING}
-                                />
-                            )}
                             <List size={17} />
                         </button>
                     </div>

@@ -68,10 +68,12 @@
     color-scheme: light;
 
     /* Motion: press feedback is instant, overlays use one shared ease. */
-    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --dur-press: 100ms;
-    --dur-fast: 160ms;
-    --dur-base: 240ms;
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+    --dur-press: 160ms;
+    --dur-fast: 150ms;
+    --dur-base: 200ms;
 
     /* Type scale: size / leading / tracking are tuned per step. */
     --text-title1: 1.75rem;
@@ -613,18 +615,29 @@
         background: var(--color-surface-muted);
     }
 
-    /* Kept for markup that still references it; screens do not perform entrances. */
-    .stagger-enter {
-        opacity: 1;
-    }
 
+    /* Reduced motion: gentler, not zero. Transforms stop; colour and opacity
+       feedback stays responsive at the fast duration. */
     @media (prefers-reduced-motion: reduce) {
+        :is(button, a, [role="button"]):active {
+            transform: none !important;
+            scale: none !important;
+        }
+        [class*="transition-transform"] {
+            transition-property: none;
+        }
+        .sy-pop {
+            transition-property: opacity;
+        }
+        [data-slot="alert-dialog-content"][data-state="open"] {
+            animation-name: sy-fade-in;
+        }
+        [data-slot="alert-dialog-content"][data-state="closed"] {
+            animation-name: sy-fade-out;
+        }
         *,
         *::before,
         *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
             scroll-behavior: auto !important;
         }
     }
@@ -666,39 +679,23 @@
 /*
  * Motion and floating layers.
  *
- * Controls answer a press instantly with a small scale; overlays enter and
- * leave on one spring (in motion.ts) or the matching CSS curves below. Small
- * floating surfaces use --shadow-pop, large sheets --shadow-sheet.
+ * Motion is rare and purposeful: press feedback on real buttons, opacity
+ * fades on overlays and reveals, and slides only where a surface leaves by
+ * the edge it entered. Small surfaces use --shadow-pop, sheets --shadow-sheet.
  */
 
 /* Menus and popovers scale in from their trigger corner. */
-@keyframes sy-pop {
-    from {
+.sy-pop {
+    transform-origin: top right;
+    transition:
+        opacity var(--dur-fast) var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+}
+@starting-style {
+    .sy-pop {
         opacity: 0;
         transform: scale(0.96);
     }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-.sy-pop {
-    animation: sy-pop var(--dur-fast) var(--ease-out) both;
-}
-
-/* Revealed answers and secondary rows rise a few pixels into place. */
-@keyframes sy-rise {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-.sy-rise {
-    animation: sy-rise var(--dur-base) var(--ease-out) both;
 }
 
 /* Radix alert dialogs animate through their data-state attribute. */
@@ -732,16 +729,16 @@
     }
 }
 [data-slot="alert-dialog-overlay"][data-state="open"] {
-    animation: sy-fade-in var(--dur-fast) var(--ease-out) both;
+    animation: sy-fade-in var(--dur-base) var(--ease-out) both;
 }
 [data-slot="alert-dialog-overlay"][data-state="closed"] {
-    animation: sy-fade-out var(--dur-fast) ease-out both;
+    animation: sy-fade-out var(--dur-fast) var(--ease-out) both;
 }
 [data-slot="alert-dialog-content"][data-state="open"] {
     animation: sy-dialog-in var(--dur-base) var(--ease-out) both;
 }
 [data-slot="alert-dialog-content"][data-state="closed"] {
-    animation: sy-dialog-out var(--dur-fast) ease-out both;
+    animation: sy-dialog-out var(--dur-fast) var(--ease-out) both;
 }
 
 /*

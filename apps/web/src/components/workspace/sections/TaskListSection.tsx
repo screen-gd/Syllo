@@ -111,15 +111,14 @@ export default function TaskListSection({ section, onUpdate }: Props) {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                {(section.data || []).map((group, i) => {
+                {(section.data || []).map((group) => {
                     const totalCount = (group.tasks || []).length;
                     const completedCount = (group.tasks || []).filter(t => t.completed).length;
 
                     return (
                         <div
                             key={group.id}
-                            className="surface rounded-2xl p-5 sm:p-6 transition-all duration-300 border border-border animate-slide-up group"
-                            style={{ animationDelay: `${i * 0.05}s` }}
+                            className="surface rounded-2xl p-5 sm:p-6 border border-border group"
                         >
                             <div className="flex items-center justify-between mb-5">
                                 <h3 className="font-display font-bold text-text text-sm text-text flex items-center gap-2">
@@ -150,7 +149,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                     {(group.tasks || []).map((task) => (
                                         <div
                                             key={task.id}
-                                            className={`relative bg-surface-muted/40 border rounded-xl p-3 sm:p-4 transition-all duration-500 ease-out hover:bg-surface-subtle hover:border-border ${task.completed ? "opacity-40  grayscale" : "opacity-100 "} ${focusedTaskPath?.g === section.data.indexOf(group) && focusedTaskPath?.t === group.tasks.indexOf(task) ? "border-accent " : "border-border"}`}
+                                            className={`relative bg-surface-muted/40 border rounded-xl p-3 sm:p-4 transition-colors hover:bg-surface-subtle hover:border-border ${task.completed ? "opacity-40  grayscale" : "opacity-100 "} ${focusedTaskPath?.g === section.data.indexOf(group) && focusedTaskPath?.t === group.tasks.indexOf(task) ? "border-accent " : "border-border"}`}
                                         >
                                             <label className="flex items-start gap-3 cursor-pointer group/label">
                                                 <div className="relative flex items-center justify-center w-5 h-5 mt-0.5 shrink-0">
@@ -158,13 +157,13 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                                         type="checkbox"
                                                         checked={task.completed}
                                                         onChange={() => toggleComplete(group.id, task.id)}
-                                                        className="peer appearance-none w-5 h-5 rounded-md border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-all cursor-pointer hover:border-accent"
+                                                        className="peer appearance-none w-5 h-5 rounded-md border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-colors cursor-pointer hover:border-accent"
                                                     />
                                                     <span className="absolute text-white text-[0.75rem] font-semibold pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
                                                 </div>
                                                 <div className="flex-1 min-w-0 pt-0.5">
                                                     <span
-                                                        className={`block text-sm sm:text-base transition-all duration-300 font-medium ${task.completed
+                                                        className={`block text-sm sm:text-base transition-colors font-medium ${task.completed
                                                             ? "text-text-muted line-through decoration-text-soft"
                                                             : "text-text group-hover/label:text-accent-strong"
                                                             }`}
@@ -202,12 +201,12 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                                                     type="checkbox"
                                                                     checked={st.completed}
                                                                     onChange={() => toggleComplete(group.id, task.id, st.id)}
-                                                                    className="peer appearance-none w-4 h-4 rounded border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-all cursor-pointer hover:border-accent"
+                                                                    className="peer appearance-none w-4 h-4 rounded border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-colors cursor-pointer hover:border-accent"
                                                                 />
                                                                 <span className="absolute text-text text-xs font-semibold pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
                                                             </div>
                                                             <span
-                                                                className={`text-xs transition-colors duration-200 mt-0.5 ${st.completed
+                                                                className={`text-xs transition-colors mt-0.5 ${st.completed
                                                                     ? "text-text-muted line-through"
                                                                     : "text-text-muted group-hover/sub:text-text"
                                                                     }`}

@@ -614,7 +614,7 @@ export default function ScoutPage() {
 
                                 <div className="h-1.5 overflow-hidden rounded-full bg-raised">
                                     <div
-                                        className="h-full rounded-full bg-accent transition-[width] duration-700"
+                                        className="h-full rounded-full bg-accent"
                                         style={{
                                             width: `${Math.max(4, Math.min(100, pack.progress))}%`,
                                         }}

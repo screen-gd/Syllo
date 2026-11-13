@@ -70,11 +70,10 @@ export default function CustomSection({ section, onUpdate }: Props) {
                 </h2>
                 {data.description ? <p className="text-text-muted text-sm mb-6">{data.description}</p> : null}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {data.items.map((item, i) => (
+                    {data.items.map((item) => (
                         <div
                             key={item.id}
-                            className="surface rounded-xl p-4 card-hover animate-slide-up"
-                            style={{ animationDelay: `${i * 0.03}s` }}
+                            className="surface rounded-xl p-4 card-hover"
                         >
                             <h4 className="font-display font-semibold text-base text-text mb-1">{item.title}</h4>
                             {item.description ? <p className="text-text-muted text-sm">{item.description}</p> : null}
@@ -102,11 +101,10 @@ export default function CustomSection({ section, onUpdate }: Props) {
             </h2>
             {data.description ? <p className="text-text-muted text-sm mb-6">{data.description}</p> : null}
             <div className="space-y-2">
-                {data.items.map((item, i) => (
+                {data.items.map((item) => (
                     <div
                         key={item.id}
-                        className="surface rounded-lg p-4 animate-slide-up content-auto"
-                        style={{ animationDelay: `${i * 0.03}s` }}
+                        className="surface rounded-lg p-4 content-auto"
                     >
                         <h4 className="font-display font-semibold text-base text-text">{item.title}</h4>
                         {item.description ? <p className="text-text-muted text-sm mt-1">{item.description}</p> : null}

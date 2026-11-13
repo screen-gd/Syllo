@@ -40,7 +40,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
         const moduleId = selectedNode.moduleId;
         
         return (
-            <div className="space-y-8 duration-300">
+            <div className="space-y-8">
                 <div className="flex items-start justify-between">
                     <div>
                         <div className="flex items-center gap-2 mb-3">
@@ -61,7 +61,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                 <button 
                     onClick={() => onUpdateTask(moduleId, task.id)}
                     className={cn(
-"w-full flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
+"w-full flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-colors",
                         task.completed 
                             ? "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20" 
                             : "bg-text border-accent text-page hover:bg-[#2c2d30]"
@@ -111,7 +111,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
         const data = mod.data;
 
         return (
-            <div className="space-y-8 duration-300">
+            <div className="space-y-8">
                 <div>
                      <div className="flex items-center gap-2 mb-3">
                         <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs font-bold">Module</span>
@@ -123,7 +123,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                     <button 
                         onClick={() => onUpdateModule(mod.id)}
                         className={cn(
-"flex-1 flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
+"flex-1 flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-colors",
                             data.completed 
                                 ? "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20" 
                                 : "bg-surface border-border text-text hover:border-text-soft"
@@ -166,7 +166,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                                     href={res.url} 
                                     target="_blank" 
                                     rel="noreferrer"
-                                    className="flex items-start gap-4 p-4 rounded-xl border border-border bg-[var(--color-surface)] hover:border-text-soft transition-all group"
+                                    className="flex items-start gap-4 p-4 rounded-xl border border-border bg-[var(--color-surface)] hover:border-text-soft transition-colors group"
                                 >
                                     <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-muted)] flex items-center justify-center text-text-muted shrink-0 group-hover:text-accent transition-colors">
                                         {resourceTypeIcon(res.type)}

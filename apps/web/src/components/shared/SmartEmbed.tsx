@@ -107,7 +107,7 @@ export default function SmartEmbed({ url, title, description }: SmartEmbedProps)
     // Blocked or unknown: show fallback card
     if (iframeBlocked) {
         return (
-            <div className="w-full border border-border bg-surface-muted/60 p-6 flex items-center gap-5 transition-all hover:border-accent/30 hover:bg-surface-muted/80 group">
+            <div className="w-full border border-border bg-surface-muted/60 p-6 flex items-center gap-5 transition-colors hover:border-accent/30 hover:bg-surface-muted/80 group">
                 {/* next/image is not practical here because favicon domains are fully dynamic. */}
                 <img
                     src={getFaviconUrl(url)}

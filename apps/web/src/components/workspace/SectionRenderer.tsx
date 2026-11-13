@@ -41,7 +41,7 @@ export default function SectionRenderer({ section, roadmap, onUpdate, onNavigate
     };
 
     return (
-        <div key={section.id} className=" transition-all duration-300">
+        <div key={section.id}>
             {renderContent()}
         </div>
     );

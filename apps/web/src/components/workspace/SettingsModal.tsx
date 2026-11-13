@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X, Image as ImageIcon, Paintbrush, Lock } from "lucide-react";
 import type { Roadmap } from "@/types";
-import { FADE, SPRING } from "@/components/shared/motion";
+import { ENTER, EXIT } from "@/components/shared/motion";
 
 interface SettingsModalProps {
     roadmap: Roadmap;
@@ -37,17 +37,15 @@ export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBrandi
                 className="absolute inset-0 bg-scrim"
                 onClick={onClose}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={FADE}
+                animate={{ opacity: 1, transition: ENTER }}
+                exit={{ opacity: 0, transition: EXIT }}
             />
 
             <motion.div
                 className="relative bg-surface-muted border border-border rounded-[1.125rem] w-full max-w-lg overflow-hidden shadow-[var(--shadow-sheet)] flex flex-col max-h-[90vh]"
                 initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={SPRING}
+                animate={{ opacity: 1, scale: 1, transition: ENTER }}
+                exit={{ opacity: 0, scale: 0.96, transition: EXIT }}
             >
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">

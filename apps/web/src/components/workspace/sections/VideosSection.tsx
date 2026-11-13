@@ -28,7 +28,7 @@ export default function Videos({ section }: Props) {
             <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-6">
                 {/* Main Player Area */}
                 {activeVideo ? (
-                    <div className="flex-1 flex flex-col min-h-0 group animate-slide-up rounded-2xl overflow-hidden border border-border bg-page">
+                    <div className="flex-1 flex flex-col min-h-0 group rounded-2xl overflow-hidden border border-border bg-page">
                         <div className="relative w-full aspect-video bg-page flex-shrink-0">
                             <VideoPlayer
                                 url={activeVideo.url}
@@ -58,7 +58,7 @@ export default function Videos({ section }: Props) {
                 )}
 
                 {/* Playlist Sidebar */}
-                <div className="w-full lg:w-96 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border overflow-hidden animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                <div className="w-full lg:w-96 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border overflow-hidden">
                     <div className="p-4 border-b border-border/50 bg-surface shrink-0 flex items-center justify-between">
                         <h3 className="font-display font-bold text-text text-sm text-text-muted">Playlist</h3>
                         <span className="text-[0.75rem] bg-surface px-2 py-0.5 rounded text-text-muted">{section.data.length} items</span>
@@ -77,13 +77,13 @@ export default function Videos({ section }: Props) {
                                 <button
                                     key={video.id}
                                     type="button"
-                                    className={`w-full flex gap-3 p-3 rounded-xl text-left transition-all duration-300 relative group overflow-hidden ${isActive
+                                    className={`w-full flex gap-3 p-3 rounded-xl text-left transition-colors relative group overflow-hidden ${isActive
                                         ? "bg-accent/10 border border-accent/20 "
                                         : "hover:bg-surface border border-transparent hover:border-border"
                                         }`}
                                     onClick={() => setActiveVideoId(video.id)}
                                 >
-                                    <div className={`relative w-28 aspect-video rounded-lg shrink-0 overflow-hidden bg-surface-muted flex items-center justify-center transition-transform duration-500 ${isActive ? 'ring-1 ring-border-strong' : ''}`}>
+                                    <div className={`relative w-28 aspect-video rounded-lg shrink-0 overflow-hidden bg-surface-muted flex items-center justify-center ${isActive ? 'ring-1 ring-border-strong' : ''}`}>
                                         {imgUrl ? (
                                             <>
                                                 {/* next/image is not practical here because thumbnail hosts are provider-controlled. */}
@@ -121,7 +121,7 @@ export default function Videos({ section }: Props) {
                                         {/* Visual Mock Progress Bar */}
                                         <div className="w-full h-1 bg-surface-muted overflow-hidden rounded-full mt-2">
                                             {pseudoProgress > 0 && (
-                                                <div className={`h-full bg-accent rounded-full transition-all duration-1000`} style={{ width: `${pseudoProgress}%` }} />
+                                                <div className={`h-full bg-accent rounded-full`} style={{ width: `${pseudoProgress}%` }} />
                                             )}
                                         </div>
                                     </div>

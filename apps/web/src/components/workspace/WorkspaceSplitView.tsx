@@ -51,10 +51,10 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
     };
 
     return (
-        <div className="flex h-full w-full overflow-hidden duration-300">
+        <div className="flex h-full w-full overflow-hidden">
             {/* LEFT PANE: 60% TIMELINE */}
             <div className={cn(
-"flex-1 overflow-y-auto no-scrollbar border-r border-border transition-all duration-300",
+"flex-1 overflow-y-auto no-scrollbar border-r border-border",
                 selectedNode ? "lg:w-[65%] lg:flex-none lg:max-w-[65%]" : "w-full"
             )}>
                 <div className="max-w-3xl mx-auto p-8 lg:p-12 pb-32 space-y-12">
@@ -78,7 +78,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                     {/* Timeline dot */}
                                     <div className="absolute -left-[29px] top-4 w-14 h-14 bg-page rounded-full flex items-center justify-center">
                                         <div className={cn(
-"w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all ",
+"w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-colors ",
                                             progress === 100 ? "bg-accent border-accent text-page " : 
                                             progress > 0 ? "border-accent text-accent bg-accent/10 " : 
 "border-border text-text-soft bg-surface"
@@ -92,7 +92,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                         <button 
                                             onClick={() => setSelectedNode({ type: "module", id: mod.id, data: mod })}
                                             className={cn(
-"w-full text-left p-6 rounded-2xl border transition-all duration-300 ease-in-out",
+"w-full text-left p-6 rounded-2xl border transition-colors",
                                                 isModuleSelected ? "border-accent/50 bg-accent/5 " : "border-border bg-surface hover:border-border-strong"
                                             )}
                                         >
@@ -116,7 +116,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                                                 setSelectedNode({ type: "task", id: task.id, moduleId: mod.id, data: task });
                                                             }}
                                                             className={cn(
-"group/task flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 cursor-pointer",
+"group/task flex items-start gap-4 p-4 rounded-xl border transition-colors cursor-pointer",
                                                                 isTaskSelected ? "border-accent/40 bg-accent/10" : "border-border bg-surface hover:border-border hover:bg-surface-muted"
                                                             )}
                                                         >
@@ -126,25 +126,25 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                                                     onUpdateTask(mod.id, task.id);
                                                                 }}
                                                                 className={cn(
-"mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded-sm border transition-all duration-300 cursor-pointer",
+"mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded-sm border transition-colors cursor-pointer",
                                                                     task.completed ? "bg-accent border-accent text-page " : "border-border-strong bg-surface hover:border-accent/50"
                                                                 )}
                                                             >
                                                                 {task.completed && <CheckCircle2 size={14} />}
                                                             </button>
                                                             <div className="flex-1">
-                                                                <h4 className={cn("text-sm font-medium transition-all duration-300", task.completed ? "text-text-soft line-through" : "text-text")}>
+                                                                <h4 className={cn("text-sm font-medium transition-colors", task.completed ? "text-text-soft line-through" : "text-text")}>
                                                                     {task.title}
                                                                 </h4>
                                                                 {(task.subtasks || []).length > 0 && (
                                                                     <div className="mt-2 flex gap-1.5 flex-wrap">
                                                                         {task.subtasks!.map(sub => (
-                                                                            <span key={sub.id} className={cn("w-2 h-2 rounded-full transition-all duration-300", sub.completed ? "bg-accent " : "bg-raised")} />
+                                                                            <span key={sub.id} className={cn("w-2 h-2 rounded-full transition-colors", sub.completed ? "bg-accent " : "bg-raised")} />
                                                                         ))}
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            <ChevronRight size={16} className={cn("text-text-soft transition-transform duration-300", isTaskSelected && "text-accent translate-x-1", "group-hover/task:text-text-muted group-hover/task:translate-x-0.5")} />
+                                                            <ChevronRight size={16} className={cn("text-text-soft transition-colors", isTaskSelected && "text-accent", "group-hover/task:text-text-muted")} />
                                                         </div>
                                                     )
                                                 })}
@@ -167,7 +167,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
 
             {/* RIGHT PANE: 35% CONTEXT */}
             {selectedNode ? (
-                <div className="w-[35%] bg-page flex flex-col h-full hidden lg:flex border-l border-border duration-500">
+                <div className="w-[35%] bg-page flex flex-col h-full hidden lg:flex border-l border-border">
                     <ContextPanel 
                         selectedNode={selectedNode} 
                         roadmap={roadmap}

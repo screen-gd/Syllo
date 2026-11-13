@@ -348,7 +348,6 @@
     display: block;
     height: 100%;
     background: var(--color-accent);
-    transition: width var(--dur-base) var(--ease-out);
 }
 .sy-current-book {
     display: grid;
@@ -1109,6 +1108,15 @@
 .sy-source-disclosure[open] .sy-disclosure-chevron {
     transform: rotate(180deg);
 }
+/* Disclosed content fades in; the panel itself snaps open. */
+.sy-app details[open] > :not(summary) {
+    transition: opacity var(--dur-fast) var(--ease-out);
+}
+@starting-style {
+    .sy-app details[open] > :not(summary) {
+        opacity: 0;
+    }
+}
 .sy-source-fields {
     display: grid;
     gap: 12px;
@@ -1745,14 +1753,6 @@
         gap: 10px;
     }
 }
-@media (prefers-reduced-motion: reduce) {
-    @media (hover: hover) and (pointer: fine) {
-        .sy-spine:hover {
-            transform: none;
-        }
-    }
-}
-
 /* ============================================================
    Learn · Desk
    A paper workbench for one lesson. It shares the app's light
@@ -2485,7 +2485,6 @@
     border-bottom: 1px solid var(--color-border);
 }
 .sy-desk-tabs button {
-    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -2505,16 +2504,7 @@
 }
 .sy-desk-tabs button[aria-selected="true"] {
     color: var(--color-text);
-}
-/* The active-tab line is a shared-layout element that slides between tabs. */
-.sy-desk-tab-ind {
-    position: absolute;
-    right: 0;
-    bottom: -1px;
-    left: 0;
-    height: 2px;
-    border-radius: 1px;
-    background: var(--color-text);
+    border-bottom-color: var(--color-text);
 }
 .sy-desk-tab-count {
     font-family: var(--font-sans);

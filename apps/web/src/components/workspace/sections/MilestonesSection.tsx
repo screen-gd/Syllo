@@ -63,15 +63,14 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                         return (
                             <div
                                 key={milestone.id}
-                                className="relative sm:pl-16 animate-slide-up"
-                                style={{ animationDelay: `${i * 0.08}s` }}
+                                className="relative sm:pl-16"
                             >
                                 {/* Timeline connector visual dot */}
                                 <div className="absolute left-4 top-8 -translate-x-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center z-10">
-                                    <div className={`w-4 h-4 rounded-full border-2 transition-all duration-500 ease-out ${dotColor}`} />
+                                    <div className={`w-4 h-4 rounded-full border-2 transition-colors ${dotColor}`} />
                                 </div>
 
-                                <div className={`rounded-2xl overflow-hidden transition-all duration-500 border-l-[3px] border-r border-t border-b  ${stateColor} ${isExpanded && !inProgress && !milestone.completed ? "ring-1 ring-border-strong" : ""}`}>
+                                <div className={`rounded-2xl overflow-hidden transition-colors border-l-[3px] border-r border-t border-b  ${stateColor} ${isExpanded && !inProgress && !milestone.completed ? "ring-1 ring-border-strong" : ""}`}>
 
                                     {/* Header click area */}
                                     <button
@@ -80,7 +79,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                         onClick={() => setExpandedId(isExpanded ? null : milestone.id)}
                                     >
                                         <div
-                                            className={`relative flex items-center justify-center w-6 h-6 rounded flex-shrink-0 transition-all duration-300 ${milestone.completed ? 'bg-accent' : 'bg-surface-muted border border-border group-hover:border-accent'
+                                            className={`relative flex items-center justify-center w-6 h-6 rounded flex-shrink-0 transition-colors ${milestone.completed ? 'bg-accent' : 'bg-surface-muted border border-border group-hover:border-accent'
                                                 }`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -92,7 +91,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
 
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <h3 className={`font-display font-bold text-[1.0625rem] transition-colors duration-300 ${milestone.completed ? "text-text-muted" : "text-text"
+                                                <h3 className={`font-display font-bold text-[1.0625rem] transition-colors ${milestone.completed ? "text-text-muted" : "text-text"
                                                     } ${inProgress && !milestone.completed ? 'text-accent-strong' : ''}`}>
                                                     {milestone.title}
                                                 </h3>
@@ -103,13 +102,13 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                             </p>
                                         </div>
 
-                                        <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-surface transition-transform duration-300 group-hover:bg-surface-muted ${isExpanded ? "rotate-180 bg-surface-muted" : ""}`}>
+                                        <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-surface transition-transform group-hover:bg-surface-muted ${isExpanded ? "rotate-180 bg-surface-muted" : ""}`}>
                                             <span className="text-[0.75rem] text-text-muted group-hover:text-text">▼</span>
                                         </div>
                                     </button>
 
                                     {/* Accordion Expandable body */}
-                                    <div className={`grid transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                                    <div className={`grid transition-opacity ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                                         <div className="overflow-hidden">
                                             <div className="px-5 sm:px-6 pb-6 pt-2 space-y-8 border-t border-border mx-2 bg-transparent">
 
@@ -125,7 +124,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                         </h4>
                                                         <div className="space-y-2 grid grid-cols-1">
                                                             {(milestone.tasks || []).map((task) => (
-                                                                <label key={task.id} className={`group relative flex items-start gap-3 p-3 rounded-xl hover:bg-surface-subtle border border-border cursor-pointer transition-all duration-300 ${task.completed ? "bg-accent/5 border-accent/10" : "bg-surface-muted/40"}`}>
+                                                                <label key={task.id} className={`group relative flex items-start gap-3 p-3 rounded-xl hover:bg-surface-subtle border border-border cursor-pointer transition-colors ${task.completed ? "bg-accent/5 border-accent/10" : "bg-surface-muted/40"}`}>
                                                                     <input
                                                                         type="checkbox"
                                                                         checked={task.completed}
@@ -137,7 +136,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                                         }}
                                                                         className="mt-1 w-4 h-4 rounded transition-colors accent-[var(--color-accent)] border-border cursor-pointer"
                                                                     />
-                                                                    <span className={`text-sm leading-relaxed transition-all duration-300 ${task.completed ? "text-text-muted line-through decoration-text-soft" : "text-text group-hover:text-accent-strong"}`}>
+                                                                    <span className={`text-sm leading-relaxed transition-colors ${task.completed ? "text-text-muted line-through decoration-text-soft" : "text-text group-hover:text-accent-strong"}`}>
                                                                         {task.title}
                                                                     </span>
                                                                 </label>
@@ -173,10 +172,10 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                                 <button
                                                                     key={res.id}
                                                                     type="button"
-                                                                    className="flex items-start gap-3 p-3 rounded-xl bg-surface-subtle hover:bg-surface-muted border border-border text-left transition-colors duration-200 group"
+                                                                    className="flex items-start gap-3 p-3 rounded-xl bg-surface-subtle hover:bg-surface-muted border border-border text-left transition-colors group"
                                                                     onClick={() => setViewerUrl(res.url)}
                                                                 >
-                                                                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-sm shrink-0 border border-accent/20 group-hover:bg-accent/20 transition-all">
+                                                                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-sm shrink-0 border border-accent/20 group-hover:bg-accent/20 transition-colors">
                                                                         <span className="">📄</span>
                                                                     </div>
                                                                     <div className="min-w-0 flex-1">

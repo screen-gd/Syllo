@@ -17,8 +17,7 @@ export default function ProgressRing({
 
     return (
         <div className={`relative inline-flex items-center justify-center ${className}`}>
-            {/* Animate wrapper div, not SVG directly (vercel best practice: 6.1) */}
-            <div className="transition-transform duration-300">
+            <div>
                 <svg
                     width={size}
                     height={size}
@@ -49,10 +48,6 @@ export default function ProgressRing({
                         strokeDasharray={circumference}
                         strokeDashoffset={offset}
                         transform={`rotate(-90 ${size / 2} ${size / 2})`}
-                        style={{
-                            transition:
-                                "stroke-dashoffset var(--dur-base) var(--ease-out)",
-                        }}
                     />
                 </svg>
             </div>

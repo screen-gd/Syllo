@@ -69,14 +69,14 @@ export default function Notes({ section, onUpdate }: Props) {
         <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col lg:flex-row gap-6 relative z-10">
 
             {/* Sidebar List */}
-            <div className="w-full lg:w-80 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border animate-slide-up bg-surface">
+            <div className="w-full lg:w-80 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border bg-surface">
                 <div className="p-5 border-b border-border/50 flex items-center justify-between z-10 sticky top-0 bg-surface rounded-t-2xl">
                     <div className="flex items-center gap-2">
                         <h2 className="font-display text-lg font-semibold text-text">📝 Notes</h2>
                     </div>
                     <button
                         onClick={addNote}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-raised text-text-muted hover:text-text transition-all duration-300"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-raised text-text-muted hover:text-text transition-colors"
                         title="Create new note"
                     >
                         +
@@ -89,7 +89,7 @@ export default function Notes({ section, onUpdate }: Props) {
                             <button
                                 key={note.id}
                                 onClick={() => setActiveNoteId(note.id)}
-                                className={`w-full text-left p-4 rounded-xl transition-all duration-300 group overflow-hidden relative ${isActive
+                                className={`w-full text-left p-4 rounded-xl transition-colors group overflow-hidden relative ${isActive
                                     ? "bg-accent/10 border border-accent/20 "
                                     : "hover:bg-page border border-transparent hover:border-border"
                                     }`}
@@ -115,7 +115,7 @@ export default function Notes({ section, onUpdate }: Props) {
 
             {/* Editor Main */}
             {activeNote ? (
-                <div className="flex-1 flex flex-col min-h-0 surface rounded-2xl border border-border bg-page animate-slide-up relative overflow-hidden" style={{ animationDelay: '0.1s' }}>
+                <div className="flex-1 flex flex-col min-h-0 surface rounded-2xl border border-border bg-page relative overflow-hidden">
 
                     <div className="p-6 sm:p-8 lg:px-12 lg:pt-10 flex-shrink-0 border-b border-border pb-6 bg-surface-subtle">
                         <input

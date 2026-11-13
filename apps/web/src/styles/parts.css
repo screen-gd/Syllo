@@ -6,11 +6,6 @@
  */
 
 /* Sidebar: a quiet rail on the page background. */
-.sy-nav-item {
-    transition:
-        background-color var(--dur-press) ease-out,
-        color var(--dur-press) ease-out;
-}
 .sy-nav-item[aria-current="page"] {
     background: var(--color-surface-muted);
     color: var(--color-text);
@@ -150,59 +145,50 @@
 .sy-progress > span {
     border-radius: 3px;
     background: var(--color-accent);
-    transition: width var(--dur-base) var(--ease-out);
 }
 .sy-progress.topic > span {
     background: var(--topic, var(--color-accent));
 }
 
-/* Switches sit on a grey track; the chosen option is a white chip. */
+/* Switches sit on a grey track; the chosen option is a white chip. The
+   chip radius is concentric: track radius minus the 3px padding. */
 .sy-view-switch,
 .sy-app .sy-segmented {
     padding: 3px;
-    border-radius: calc(var(--sy-radius) + 3px);
+    border-radius: var(--sy-radius);
     background: var(--color-surface-subtle);
 }
 .sy-view-switch button {
-    position: relative;
     width: calc(var(--sy-control-height) - 6px);
     height: calc(var(--sy-control-height) - 6px);
 }
 .sy-view-switch button[aria-pressed="true"] {
-    color: var(--color-text);
-}
-/* The white chip is a shared-layout element that slides between options. */
-.sy-view-switch-ind {
-    position: absolute;
-    inset: 0;
-    border-radius: var(--sy-radius);
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
-}
-.sy-view-switch button > svg {
-    position: relative;
+    color: var(--color-text);
+    border-radius: calc(var(--sy-radius) - 3px);
 }
 .sy-app .sy-segmented button {
     transition: color var(--dur-press) ease-out;
 }
 .sy-app .sy-segmented button[aria-checked="true"] {
+    background: var(--color-surface);
     color: var(--color-text);
+    border-radius: calc(var(--sy-radius) - 3px);
 }
 .sy-tabs button[aria-selected="true"] {
     border-bottom-color: var(--color-text);
 }
 
-/* Quiet and text buttons still answer a press. */
-.sy-button.quiet,
-.sy-row-actions > :is(button, a),
-.sy-time-link {
+/* Quiet buttons are covered by the shared press rule; text links only tint. */
+.sy-row-actions > :is(button, a) {
     transition:
         color var(--dur-press) ease-out,
         transform var(--dur-press) ease-out;
 }
-.sy-button.quiet:active:not(:disabled),
-.sy-row-actions > :is(button, a):active,
-.sy-time-link:active {
+.sy-time-link {
+    transition: color var(--dur-press) ease-out;
+}
+.sy-row-actions > :is(button, a):active {
     transform: scale(0.97);
 }
 .sy-app :is(button, a, summary) {
@@ -243,15 +229,7 @@
         border: 1px solid var(--color-border-strong);
     }
 }
-@media (prefers-reduced-motion: reduce) {
-    .sy-button,
-    .sy-app .sy-action,
-    .sy-app .button-primary,
-    .sy-app .button-secondary,
-    .sy-nav-item {
-        transition: none;
-    }
-}
+/* Reduced-motion handling lives in globals.css. */
 
 /* A flat card that holds one section. */
 .sy-box {
@@ -683,9 +661,9 @@
 }
 
 /*
- * Press response: every control settles its colour over --dur-fast and
- * answers pointer-down with a scale over --dur-press. Large tappable
- * surfaces move less so the layout still feels steady.
+ * Press response: every real button settles its colour over --dur-fast and
+ * answers pointer-down with a scale over --dur-press. Rows and cards answer
+ * with colour only; scaling big surfaces reads as layout shift.
  */
 :is(
     .sy-button,
@@ -700,8 +678,8 @@
 ) {
     transition:
         transform var(--dur-press) ease-out,
-        background-color var(--dur-fast) var(--ease-out),
-        color var(--dur-fast) var(--ease-out);
+        background-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
 }
 :is(
     .sy-button,
@@ -716,14 +694,10 @@
 ):active:not(:disabled) {
     transform: scale(0.97);
 }
-:is(.sy-starter, .sy-deck, .sy-topic, .sy-resume, .sy-nav-item) {
+:is(.sy-starter, .sy-deck, .sy-topic, .sy-resume) {
     transition:
-        transform var(--dur-press) ease-out,
-        background-color var(--dur-fast) var(--ease-out),
-        color var(--dur-fast) var(--ease-out);
-}
-:is(.sy-starter, .sy-deck, .sy-topic, .sy-resume, .sy-nav-item):active:not(:disabled) {
-    transform: scale(0.985);
+        background-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
 }
 a.sy-row:active,
 .sy-workspace-row.sy-row:active {

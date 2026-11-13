@@ -64,8 +64,8 @@ export default function ProgressSection({ roadmap }: Props) {
             {progress.phaseProgress.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <h3 className="col-span-1 border-b border-border pb-2 mb-2 sm:col-span-2 font-display text-lg font-bold text-text-muted">Phase Breakdown</h3>
-                    {progress.phaseProgress.map((pm: { id: string; title: string; percent: number }, i: number) => (
-                        <div key={pm.id} className="surface rounded-xl p-5 border border-border transition-all duration-300 animate-slide-up bg-surface" style={{ animationDelay: `${i * 0.05}s` }}>
+                    {progress.phaseProgress.map((pm: { id: string; title: string; percent: number }) => (
+                        <div key={pm.id} className="surface rounded-xl p-5 border border-border bg-surface">
                             <div className="flex justify-between items-center mb-3">
                                 <span className="text-sm font-bold text-text truncate pr-2">{pm.title}</span>
                                 <span className={`text-xs font-bold tabular-nums px-2 py-0.5 rounded-md bg-surface-muted ${pm.percent === 100 ? 'text-accent' : 'text-accent'}`}>
@@ -74,7 +74,7 @@ export default function ProgressSection({ roadmap }: Props) {
                             </div>
                             <div className="w-full h-2 rounded-full overflow-hidden bg-surface-muted">
                                 <div
-                                    className="h-full rounded-full transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] bg-accent relative"
+                                    className="h-full rounded-full bg-accent relative"
                                     style={{ width: `${pm.percent}%` }}
                                 >
                                     {pm.percent === 100 && (

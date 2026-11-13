@@ -5,7 +5,7 @@ import { fetchPrivateApi } from "@/lib/private-api-fetch";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Roadmap, Section, ModuleSection as ModuleSectionType, CalendarSection, SrsItem } from "@/types";
-import { FADE, SPRING } from "@/components/shared/motion";
+import { DRAWER, ENTER, EXIT } from "@/components/shared/motion";
 import { useProgress } from "@/hooks/useProgress";
 import { useStreak } from "@/hooks/useStreak";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -532,7 +532,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
         >
             {/* Gamification Toast */}
             {recentBadge && (
-                <div className="fixed bottom-6 right-6 z-50 animate-slide-up-fade flex items-center gap-4 bg-surface-muted border border-accent/30 p-4 rounded-2xl cursor-pointer" onClick={clearRecentBadge}>
+                <div className="fixed bottom-6 right-6 z-50 flex items-center gap-4 bg-surface-muted border border-accent/30 p-4 rounded-2xl cursor-pointer" onClick={clearRecentBadge}>
                     <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/50 flex items-center justify-center text-2xl">
                         {recentBadge.icon}
                     </div>
@@ -547,7 +547,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                 {/* Sidebar */}
                 <aside
                     id="tour-sidebar"
-                    className={`${sidebarOpen ? "w-64 sm:w-72" : "w-16"} shrink-0 border-r border-border bg-[var(--color-surface)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-30 flex flex-col group`}
+                    className={`${sidebarOpen ? "w-64 sm:w-72" : "w-16"} shrink-0 border-r border-border bg-[var(--color-surface)] overflow-hidden z-30 flex flex-col group`}
                 >
                     {/* Header: Collapse Toggle */}
                     <div className="h-14 flex items-center px-4 border-b border-border">
@@ -598,7 +598,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         <span className="font-display text-[0.75rem] text-accent font-bold">{progress.overall}%</span>
                                     </div>
                                     <div className="h-1 bg-surface rounded-full overflow-hidden">
-                                        <div className="h-full bg-accent rounded-full transition-all duration-1000" style={{ width: `${progress.overall}%` }} />
+                                        <div className="h-full bg-accent rounded-full" style={{ width: `${progress.overall}%` }} />
                                     </div>
                                 </div>
                             </div>
@@ -610,7 +610,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 <button
                                     type="button"
                                     onClick={() => onNavigate("dashboard")}
-                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 text-sm hover:bg-surface ${activeSectionId === "dashboard" ? "bg-accent/12 border-l-[3px] border-accent text-text font-medium font-medium" : "text-text-muted"
+                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-sm hover:bg-surface ${activeSectionId === "dashboard" ? "bg-accent/12 border-l-[3px] border-accent text-text font-medium font-medium" : "text-text-muted"
                                         } ${!sidebarOpen && 'justify-center'}`}
                                     title="Overview"
                                 >
@@ -639,9 +639,9 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                     key={section.id}
                                                     type="button"
                                                     title={section.title}
-                                                    className={`w-full flex items-center px-3 py-2.5 rounded-lg text-left text-sm transition-all duration-200 group ${isActive
+                                                    className={`w-full flex items-center px-3 py-2.5 rounded-lg text-left text-sm transition-colors group ${isActive
                                                         ? "bg-accent/12 border-l-[3px] border-accent text-text font-medium"
-                                                        : "border-l-[3px] border-transparent text-text-muted hover:text-text hover:bg-surface-subtle duration-150"
+                                                        : "border-l-[3px] border-transparent text-text-muted hover:text-text hover:bg-surface-subtle "
                                                         } ${!sidebarOpen && 'justify-center !px-0'}`}
                                                     onClick={() => onNavigate(section.id)}
                                                 >
@@ -690,7 +690,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 <button
                                                     key={section.id}
                                                     type="button"
-                                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 text-sm hover:bg-surface ${isActive ? "text-accent font-medium bg-accent/5" : "text-text-muted hover:text-text"
+                                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors text-sm hover:bg-surface ${isActive ? "text-accent font-medium bg-accent/5" : "text-text-muted hover:text-text"
                                                         }`}
                                                     onClick={() => onNavigate(section.id)}
                                                 >
@@ -791,7 +791,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                 {/* Mobile overlay */}
                 {sidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-scrim z-20 sm:hidden transition-opacity duration-300"
+                        className="fixed inset-0 bg-scrim z-20 sm:hidden transition-opacity duration-150"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
@@ -981,10 +981,10 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 <div className="flex flex-col gap-3 sm:flex-row">
                                                     <button
                                                         onClick={() => onNavigate(firstIncompleteModule.id)}
-                                                        className="px-8 py-4 bg-text hover:bg-[#2c2d30] text-page font-display text-xs font-medium rounded-full transition-all flex items-center gap-3 group"
+                                                        className="px-8 py-4 bg-text hover:bg-[#2c2d30] text-page font-display text-xs font-medium rounded-full transition-colors flex items-center gap-3 group"
                                                     >
                                                         Continue Learning
-                                                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                                        <ArrowRight size={16} />
                                                     </button>
                                                     <button
                                                         type="button"
@@ -1099,7 +1099,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         {getBadges().map(badge => (
                                             <div
                                                 key={badge.id}
-                                                className={`relative flex flex-col items-center text-center p-4 rounded-xl border transition-all ${badge.unlockedAt
+                                                className={`relative flex flex-col items-center text-center p-4 rounded-xl border transition-colors ${badge.unlockedAt
                                                     ? "bg-accent/10 border-accent/30 hover:bg-accent/20"
                                                     : "bg-surface border-border opacity-50 grayscale hover:grayscale-0"
                                                     }`}
@@ -1136,7 +1136,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                         key={mod.id}
                                                         id={idx === 0 ? "tour-first-module" : undefined}
                                                         onClick={() => onNavigate(mod.id)}
-                                                        className="group relative flex flex-col items-start bg-surface-subtle border border-border hover:border-border-strong rounded-xl p-6 text-left transition-all hover:bg-surface-muted overflow-hidden"
+                                                        className="group relative flex flex-col items-start bg-surface-subtle border border-border hover:border-border-strong rounded-xl p-6 text-left transition-colors hover:bg-surface-muted overflow-hidden"
                                                     >
                                                         <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 -mr-10 -mt-10 pointer-events-none group-hover:bg-accent/10 transition-colors" />
 
@@ -1169,7 +1169,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                             </div>
                                                             <div className="h-1 bg-surface rounded-full overflow-hidden">
                                                                 <div
-                                                                    className={`h-full rounded-full transition-all duration-700 ${modPercent === 100 ? "bg-accent" : "bg-accent"}`}
+                                                                    className={`h-full rounded-full ${modPercent === 100 ? "bg-accent" : "bg-accent"}`}
                                                                     style={{ width: `${modPercent}%` }}
                                                                 />
                                                             </div>
@@ -1258,7 +1258,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             {/* QUICK ACTIONS FAB */}
             {!isReadOnly && (
                 <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-                    <div className={`flex flex-col items-end gap-2 transition-all duration-300 origin-bottom right-0 ${quickActionsOpen ? " opacity-100 pointer-events-auto" : " opacity-0 pointer-events-none"}`}>
+                    <div className={`flex flex-col items-end gap-2 transition-opacity duration-150 right-0 ${quickActionsOpen ? " opacity-100 pointer-events-auto" : " opacity-0 pointer-events-none"}`}>
                         <button className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted border border-border rounded-full text-sm font-bold hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition-colors">
                             <Plus size={16} /> Add Note
                         </button>
@@ -1274,9 +1274,9 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                     </div>
                     <button
                         onClick={() => setQuickActionsOpen(!quickActionsOpen)}
-                        className="w-14 h-14 bg-text rounded-full flex items-center justify-center text-page shadow-[0_8px_30px_rgba(24,25,27,0.12)] hover:bg-[#2c2d30] transition-all duration-300"
+                        className="w-14 h-14 bg-text rounded-full flex items-center justify-center text-page shadow-[0_8px_30px_rgba(24,25,27,0.12)] hover:bg-[#2c2d30] transition-colors"
                     >
-                        <Plus className={`transition-transform duration-300 ${quickActionsOpen ? "rotate-45" : ""}`} size={24} />
+                        <Plus className={`transition-transform ${quickActionsOpen ? "rotate-45" : ""}`} size={24} />
                     </button>
                 </div>
             )}
@@ -1291,7 +1291,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             {/* TOUR OVERLAY */}
             {tourStep >= 0 && (
                 <div className="fixed inset-0 z-[50] pointer-events-none">
-                    <div className="absolute inset-0 bg-scrim transition-opacity duration-300 pointer-events-auto" />
+                    <div className="absolute inset-0 bg-scrim transition-opacity duration-150 pointer-events-auto" />
 
                     {tourTarget && (
                         <div
@@ -1304,7 +1304,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 left: tourStep === 0 ? tourTarget.right + 20 // Sidebar
                                     : tourStep === 1 || tourStep === 2 ? Math.max(20, tourTarget.left + (tourTarget.width / 2) - 144)
                                         : Math.min(window.innerWidth - 300, tourTarget.left),
-                                transition: 'top 0.4s ease, left 0.4s ease'
                             }}
                         >
                             <h4 className="font-display text-base font-semibold text-text mb-2 text-accent-strong">
@@ -1332,16 +1331,15 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
             {/* Version History Drawer */}
             <AnimatePresence>
-            {showVersionHistory && (
+                {showVersionHistory && (
                 <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setShowVersionHistory(false)}>
-                    <motion.div className="absolute inset-0 bg-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={FADE} />
+                    <motion.div className="absolute inset-0 bg-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: ENTER }} exit={{ opacity: 0, transition: EXIT }} />
                     <motion.div
                         className="relative w-full max-w-md bg-page border-l border-border h-full shadow-[var(--shadow-sheet)] overflow-y-auto"
                         onClick={e => e.stopPropagation()}
                         initial={{ x: "100%" }}
-                        animate={{ x: 0 }}
-                        exit={{ x: "100%" }}
-                        transition={SPRING}
+                        animate={{ x: 0, transition: DRAWER }}
+                        exit={{ x: "100%", transition: { ...DRAWER, duration: 0.2 } }}
                     >
                         <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-page z-10">
                             <h3 className="font-display text-xs text-text font-bold">Version History</h3>
@@ -1377,7 +1375,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         </div>
                     </motion.div>
                 </div>
-            )}
+                )}
             </AnimatePresence>
 
             <AlertDialog

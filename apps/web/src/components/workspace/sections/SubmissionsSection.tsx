@@ -89,11 +89,10 @@ export default function SubmissionsSection({ section, onUpdate }: Props) {
 
             {/* Submissions list */}
             <div className="space-y-3">
-                {section.data.map((sub, i) => (
+                {section.data.map((sub) => (
                     <div
                         key={sub.id}
-                        className="surface rounded-xl p-4 card-hover animate-slide-up content-auto"
-                        style={{ animationDelay: `${i * 0.05}s` }}
+                        className="surface rounded-xl p-4 card-hover content-auto"
                     >
                         <div className="flex items-start justify-between gap-3 mb-2">
                             <h3 className="font-display font-bold text-text text-sm text-text flex-1">{sub.title}</h3>

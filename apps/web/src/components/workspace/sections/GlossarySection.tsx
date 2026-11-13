@@ -45,10 +45,10 @@ export default function GlossarySection({ section }: Props) {
             </div>
 
             {/* A-Z Filter Bar */}
-            <div className="surface rounded-2xl p-4 sm:p-5 flex flex-wrap gap-2 sm:gap-3 justify-center border border-border bg-surface sticky top-20 z-10 transition-all duration-300">
+            <div className="surface rounded-2xl p-4 sm:p-5 flex flex-wrap gap-2 sm:gap-3 justify-center border border-border bg-surface sticky top-20 z-10">
                 <button
                     onClick={() => setActiveLetter(null)}
-                    className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-all ${activeLetter === null
+                    className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-colors ${activeLetter === null
                             ? "bg-raised text-text "
                             : "text-text-muted hover:bg-page hover:text-text"
                         }`}
@@ -63,7 +63,7 @@ export default function GlossarySection({ section }: Props) {
                             key={letter}
                             disabled={!hasTerms}
                             onClick={() => setActiveLetter(letter)}
-                            className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-all ${activeLetter === letter
+                            className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-colors ${activeLetter === letter
                                     ? "bg-raised text-text "
                                     : hasTerms
                                         ? "text-text-muted hover:bg-page hover:text-text"
@@ -77,8 +77,8 @@ export default function GlossarySection({ section }: Props) {
             </div>
 
             <div className="space-y-10 px-2 sm:px-0">
-                {lettersToShow.map((letter, i) => (
-                    <div key={letter} className="animate-slide-up" style={{ animationDelay: `${i * 0.05}s` }}>
+                {lettersToShow.map((letter) => (
+                    <div key={letter}>
                         <div className="flex items-center gap-4 mb-4">
                             <h3 className="font-display text-2xl font-semibold text-accent w-8 text-center">{letter}</h3>
                             <div className="h-px bg-accent/30 to-transparent flex-1" />
@@ -91,7 +91,7 @@ export default function GlossarySection({ section }: Props) {
                                 return (
                                     <div
                                         key={item.id}
-                                        className={`surface rounded-2xl overflow-hidden border transition-all duration-300 ${isExpanded
+                                        className={`surface rounded-2xl overflow-hidden border transition-colors ${isExpanded
                                                 ? 'border-accent/40  bg-surface-muted/80 ring-1 ring-border-strong'
                                                 : 'border-border hover:border-border hover:bg-surface-subtle'
                                             }`}
@@ -101,16 +101,16 @@ export default function GlossarySection({ section }: Props) {
                                             className="w-full text-left p-5 flex items-start justify-between gap-4 outline-none group"
                                             onClick={() => toggleExpand(item.id)}
                                         >
-                                            <span className={`font-bold text-base transition-colors duration-300 ${isExpanded ? 'text-accent' : 'text-text group-hover:text-accent-strong'}`}>
+                                            <span className={`font-bold text-base transition-colors ${isExpanded ? 'text-accent' : 'text-text group-hover:text-accent-strong'}`}>
                                                 {item.term}
                                             </span>
-                                            <span className={`text-text-muted text-xs shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-surface-muted transition-transform duration-300 ease-in-out ${isExpanded ? 'rotate-180 bg-accent-soft text-accent-strong' : ''}`}>
+                                            <span className={`text-text-muted text-xs shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-surface-muted transition-transform ${isExpanded ? 'rotate-180 bg-accent-soft text-accent-strong' : ''}`}>
                                                 ▼
                                             </span>
                                         </button>
 
                                         {/* Smooth Accordion Body */}
-                                        <div className={`grid transition-all duration-300 ease-in-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                                        <div className={`grid transition-opacity ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
                                             <div className="overflow-hidden">
                                                 <div className="p-5 pt-0 text-sm text-text-muted leading-relaxed border-t border-border bg-transparent">
                                                     {item.definition}

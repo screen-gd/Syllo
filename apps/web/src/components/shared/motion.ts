@@ -1,4 +1,8 @@
-/** Default UI spring: critically damped, no overshoot (Apple damping 1.0, response ~0.35). */
-export const SPRING = { type: "spring", bounce: 0, duration: 0.35 } as const;
-/** Scrim and other opacity-only fades. */
-export const FADE = { duration: 0.2, ease: [0.22, 1, 0.36, 1] } as const;
+/** Dialog and scrim enter: strong ease-out, 200ms. */
+export const ENTER = { duration: 0.2, ease: [0.23, 1, 0.32, 1] } as const;
+
+/** Dialog and scrim exit: same curve, faster so closing never feels slow. */
+export const EXIT = { duration: 0.15, ease: [0.23, 1, 0.32, 1] } as const;
+
+/** Side panels sliding from an edge: iOS-like drawer curve. */
+export const DRAWER = { duration: 0.3, ease: [0.32, 0.72, 0, 1] } as const;

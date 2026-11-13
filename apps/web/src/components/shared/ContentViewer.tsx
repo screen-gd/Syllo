@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback } from "react";
 import { motion } from "motion/react";
-import { FADE, SPRING } from "@/components/shared/motion";
+import { DRAWER, ENTER, EXIT } from "@/components/shared/motion";
 
 interface ContentViewerProps {
     url: string;
@@ -37,9 +37,8 @@ export default function ContentViewer({ url, title, onClose }: ContentViewerProp
                 onClick={onClose}
                 role="presentation"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={FADE}
+                animate={{ opacity: 1, transition: ENTER }}
+                exit={{ opacity: 0, transition: EXIT }}
             />
 
             {/* Panel */}
@@ -47,9 +46,8 @@ export default function ContentViewer({ url, title, onClose }: ContentViewerProp
                 className="relative ml-auto w-full max-w-4xl h-full bg-surface-muted border-l border-border flex flex-col shadow-[var(--shadow-sheet)]"
                 style={{ overscrollBehavior: "contain" }}
                 initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={SPRING}
+                animate={{ x: 0, transition: DRAWER }}
+                exit={{ x: "100%", transition: { ...DRAWER, duration: 0.2 } }}
             >
                 {/* Toolbar */}
                 <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-surface">

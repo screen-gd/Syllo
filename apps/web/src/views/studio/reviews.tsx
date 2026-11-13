@@ -354,10 +354,10 @@ export default function ReviewsPage() {
                             <h2>{current.prompt}</h2>
                             {revealed === current.id ? (
                                 <>
-                                    <div className="sy-card-answer sy-rise">
+                                    <div className="sy-card-answer">
                                         {current.answer}
                                     </div>
-                                    <div className="sy-card-actions sy-rate-row sy-rise">
+                                    <div className="sy-card-actions sy-rate-row">
                                         {reviewRatings.map((rating, index) => (
                                             <button
                                                 key={rating.label}

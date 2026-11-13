@@ -38,10 +38,10 @@ export default function Resources({ section }: Props) {
             </div>
 
             <div className="space-y-12">
-                {categories.map((category, i) => {
+                {categories.map((category) => {
                     const catResources = section.data.filter((r: Resource) => (r.category || "Uncategorized") === category);
                     return (
-                        <div key={category} className="animate-slide-up" style={{ animationDelay: `${i * 0.1}s` }}>
+                        <div key={category}>
                             <div className="flex items-center gap-3 mb-6 px-2 sm:px-0">
                                 <h3 className="font-display font-bold text-text text-lg text-text-muted">{category}</h3>
                                 <div className="flex-1 h-px bg-surface-muted" />
@@ -52,13 +52,13 @@ export default function Resources({ section }: Props) {
                                     <button
                                         key={res.id}
                                         onClick={() => setViewerUrl(res.url)}
-                                        className="group relative flex flex-col p-5 rounded-2xl surface border border-border text-left transition-all duration-300 hover:bg-surface-subtle overflow-hidden"
+                                        className="group relative flex flex-col p-5 rounded-2xl surface border border-border text-left transition-colors hover:bg-surface-subtle overflow-hidden"
                                     >
                                         {/* Hover Glow Background */}
-                                        <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                                        <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
                                         <div className="flex items-start justify-between mb-4 relative z-10 w-full gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-page flex items-center justify-center text-xl shrink-0 transition-transform duration-300 border border-border">
+                                            <div className="w-10 h-10 rounded-xl bg-page flex items-center justify-center text-xl shrink-0 border border-border">
                                                 {getIcon(res.type)}
                                             </div>
                                             <span className="text-[0.75rem] font-bold text-text-muted bg-surface px-2 py-1 rounded">
@@ -67,7 +67,7 @@ export default function Resources({ section }: Props) {
                                         </div>
 
                                         <div className="relative z-10 flex flex-col flex-1">
-                                            <h4 className="font-display font-bold text-base text-text mb-2 line-clamp-2 leading-snug group-hover:text-accent-strong transition-colors duration-300">
+                                            <h4 className="font-display font-bold text-base text-text mb-2 line-clamp-2 leading-snug group-hover:text-accent-strong transition-colors">
                                                 {res.title}
                                             </h4>
                                             <p className="text-sm text-text-muted line-clamp-2 mt-auto">
@@ -75,8 +75,8 @@ export default function Resources({ section }: Props) {
                                             </p>
                                         </div>
 
-                                        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0 relative z-10 text-accent mt-4 text-sm font-bold flex items-center gap-1 w-full justify-end">
-                                            Open <span className="group-hover:translate-x-1 transition-transform">→</span>
+                                        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity relative z-10 text-accent mt-4 text-sm font-bold flex items-center gap-1 w-full justify-end">
+                                            Open <span>→</span>
                                         </div>
                                     </button>
                                 ))}

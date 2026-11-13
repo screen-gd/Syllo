@@ -431,7 +431,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         <div className="relative">
                             <button
                                 onClick={() => setShowRegenConfirm(!showRegenConfirm)}
-                                className="shrink-0 flex items-center justify-center w-11 h-11 rounded-lg transition-all bg-surface-muted text-text-muted border border-border hover:border-accent/50 hover:text-accent"
+                                className="shrink-0 flex items-center justify-center w-11 h-11 rounded-lg transition-colors bg-surface-muted text-text-muted border border-border hover:border-accent/50 hover:text-accent"
                                 title="Regenerate Module"
                             >
                                 <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} />
@@ -448,7 +448,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </div>
                         <button
                             onClick={toggleModuleComplete}
-                        className={`shrink-0 flex items-center gap-2 px-5 py-3 rounded-lg font-display text-xs   font-bold transition-all ${data.completed
+                        className={`shrink-0 flex items-center gap-2 px-5 py-3 rounded-lg font-display text-xs   font-bold transition-colors ${data.completed
                             ? "bg-accent/10 text-accent border border-accent/30 hover:bg-accent/20"
                             : "bg-surface-muted text-text-muted border border-border hover:border-accent/50 hover:text-accent"
                             }`}
@@ -474,7 +474,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         <button
                             key={tab.id}
                             onClick={() => { setActiveTab(tab.id); setSidePanelResource(null); }}
-                            className={`flex items-center gap-2 px-5 py-3 font-display text-xs   border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
+                            className={`flex items-center gap-2 px-5 py-3 font-display text-xs   border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
                                 ? "border-accent text-accent bg-accent/5"
                                 : "border-transparent text-text-muted hover:text-text hover:bg-surface"
                                 }`}
@@ -541,7 +541,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                         {/* Progress Bar */}
                         <div className="h-1 bg-surface rounded-full mb-8 overflow-hidden">
-                            <div className="h-full bg-accent transition-all duration-700" style={{ width: `${taskPercent}%` }} />
+                            <div className="h-full bg-accent" style={{ width: `${taskPercent}%` }} />
                         </div>
 
                         <div className="space-y-3">
@@ -552,7 +552,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                         className="w-full flex items-start gap-4 p-5 text-left"
                                         onClick={() => toggleTask(task.id)}
                                     >
-                                        <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all shrink-0 ${task.completed
+                                        <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${task.completed
                                             ? "bg-accent border-accent text-page"
                                             : "border-border-strong group-hover:border-accent/50"
                                             }`}>
@@ -586,10 +586,10 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                                 <button
                                                     key={sub.id}
                                                     type="button"
-                                                    className="w-full flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-surface transition-all text-left group/sub"
+                                                    className="w-full flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-surface transition-colors text-left group/sub"
                                                     onClick={() => toggleSubtask(task.id, sub.id)}
                                                 >
-                                                    <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-all shrink-0 ${sub.completed
+                                                    <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors shrink-0 ${sub.completed
                                                         ? "bg-accent/80 border-accent/80 text-text"
                                                         : "border-border-strong group-hover/sub:border-accent/50"
                                                         }`}>
@@ -612,14 +612,14 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                 {/* 3. Resources Tab */}
                 {activeTab === 'resources' && (
                     <div className="flex h-full relative overflow-hidden">
-                        <div className={`p-8 flex-1 overflow-y-auto transition-all duration-300 ${sidePanelResource ? "pr-[400px]" : "pr-8"}`}>
+                        <div className={`p-8 flex-1 overflow-y-auto ${sidePanelResource ? "pr-[400px]" : "pr-8"}`}>
                             <h3 className="font-display text-xs text-text-muted mb-8 border-b border-border pb-2">Course Materials</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {resources.map((res) => (
                                     <button
                                         key={res.id}
                                         onClick={() => setSidePanelResource(res)}
-                                        className={`flex items-start gap-4 p-5 text-left border rounded-xl transition-all duration-200 ${sidePanelResource?.id === res.id
+                                        className={`flex items-start gap-4 p-5 text-left border rounded-xl transition-colors ${sidePanelResource?.id === res.id
                                             ? "border-accent bg-accent/10 "
                                             : "border-border bg-surface-subtle hover:border-border-strong hover:bg-surface-muted"
                                             }`}
@@ -637,7 +637,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </div>
 
                         {/* Resource Side Panel */}
-                        <div className={`absolute top-0 right-0 h-full w-[400px] border-l border-border bg-surface-muted/95  transition-transform duration-300 transform  flex flex-col ${sidePanelResource ? "translate-x-0" : "translate-x-full"
+                        <div className={`absolute top-0 right-0 h-full w-[400px] border-l border-border bg-surface-muted/95 transition-transform duration-300 ease-[var(--ease-drawer)] flex flex-col ${sidePanelResource ? "translate-x-0" : "translate-x-full"
                             }`}>
                             {sidePanelResource && (
                                 <>
@@ -762,7 +762,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                                             type="button"
                                                             onClick={() => handleQuizChoice(question.id, choiceIndex)}
                                                             disabled={quizSubmitted}
-                                                            className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition-all ${
+                                                            className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
                                                                 showCorrectAnswer
                                                                     ? "border-accent/30 bg-accent/10 text-accent-strong"
                                                                     : isSelected
@@ -835,7 +835,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                     <button
                                         key={v.id}
                                         onClick={() => setActiveVideoId(v.id)}
-                                        className={`flex flex-col items-start gap-1 p-3 rounded-lg text-left transition-all ${activeVideoId === v.id
+                                        className={`flex flex-col items-start gap-1 p-3 rounded-lg text-left transition-colors ${activeVideoId === v.id
                                             ? "bg-accent/10 border border-accent/20"
                                             : "hover:bg-surface border border-transparent"
                                             }`}
@@ -879,7 +879,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                 <button
                     onClick={() => prevModule && onNavigate?.(prevModule.id)}
                     disabled={!prevModule}
-                    className={`px-5 py-2.5 flex items-center gap-3 font-display text-xs   font-bold rounded-lg transition-all ${prevModule
+                    className={`px-5 py-2.5 flex items-center gap-3 font-display text-xs   font-bold rounded-lg transition-colors ${prevModule
                         ? "hover:bg-surface-muted text-text"
                         : "opacity-30 cursor-not-allowed text-text-muted"
                         }`}
@@ -895,7 +895,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                 <button
                     onClick={() => nextModule && onNavigate?.(nextModule.id)}
                     disabled={!nextModule}
-                    className={`px-5 py-2.5 flex items-center gap-3 font-display text-xs   font-bold rounded-lg transition-all ${nextModule
+                    className={`px-5 py-2.5 flex items-center gap-3 font-display text-xs   font-bold rounded-lg transition-colors ${nextModule
                         ? "hover:bg-accent/10 text-accent border border-transparent hover:border-accent/30"
                         : "opacity-30 cursor-not-allowed text-text-muted"
                         }`}

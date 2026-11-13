@@ -27,7 +27,7 @@ export default function CostMeter({ monthCents, budgetCents, packCents = 0, clas
             <div className="h-1.5 overflow-hidden rounded-full bg-raised">
                 <div
                     className={cn(
-"h-full rounded-full transition-[width] duration-700",
+"h-full rounded-full",
                         nearLimit ? "bg-warning" : "bg-[var(--color-accent)]",
                     )}
                     style={{ width: hasBudget ? `${Math.max(percent, monthCents > 0 ? 2 : 0)}%` : "0%" }}

@@ -36,11 +36,10 @@ export default function CalendarSection({ section, onUpdate }: Props) {
             </h2>
 
             <div className="space-y-3">
-                {sorted.map((event, i) => (
+                {sorted.map((event) => (
                     <div
                         key={event.id}
-                        className="surface rounded-xl p-4 card-hover animate-slide-up content-auto"
-                        style={{ animationDelay: `${i * 0.05}s` }}
+                        className="surface rounded-xl p-4 card-hover content-auto"
                     >
                         <div className="flex items-start gap-3">
                             <input
