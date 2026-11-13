@@ -35,6 +35,7 @@ interface FetchCall {
 
 let calls: FetchCall[];
 let reply: unknown;
+let replies: unknown[];
 let container: HTMLDivElement;
 let root: Root;
 
@@ -54,6 +55,7 @@ beforeEach(async () => {
     localStorage.clear();
     calls = [];
     reply = { kind: "ready", session: null };
+    replies = [];
     vi.stubGlobal(
         "fetch",
         vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
@@ -71,8 +73,9 @@ beforeEach(async () => {
                 url: String(input),
                 body,
             });
+            const answer = replies.length > 0 ? replies.shift() : reply;
             return Promise.resolve(
-                new Response(JSON.stringify(reply), {
+                new Response(JSON.stringify(answer), {
                     status: 200,
                     headers: { "Content-Type": "application/json" },
                 }),
@@ -269,5 +272,56 @@ describe("pomodoro screen time link", () => {
         expect(
             calls.filter((call) => call.method === "GET"),
         ).toHaveLength(0);
+    });
+
+    it("does not poll when the start met an outdated screen time", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "outdated" };
+        await render();
+        await click("Start");
+        await act(async () => {
+            vi.advanceTimersByTime(60_000);
+        });
+        expect(
+            calls.filter((call) => call.method === "GET"),
+        ).toHaveLength(0);
+    });
+
+    it("retries the start once screen time is back", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "not-running" };
+        await render();
+        await click("Start");
+        expect(container.textContent).toContain(
+            "Open it to block distractions",
+        );
+        replies = [
+            { kind: "ready", session: null },
+            { kind: "ready", session: SYLLO_SESSION },
+        ];
+        await act(async () => {
+            vi.advanceTimersByTime(20_000);
+        });
+        expect(calls.filter((call) => call.method === "GET")).toHaveLength(
+            1,
+        );
+        expect(calls.filter((call) => call.method === "POST")).toHaveLength(
+            2,
+        );
+        expect(container.textContent).toContain("Screen Time");
+    });
+
+    it("warns when the stop could not reach screen time", async () => {
+        await linkOn();
+        reply = { kind: "ready", session: SYLLO_SESSION };
+        await render();
+        await click("Start");
+        reply = { kind: "unavailable" };
+        await click("Pause");
+        expect(container.textContent).toContain(
+            "Screen Time couldn't be reached. Your timer still works.",
+        );
     });
 });

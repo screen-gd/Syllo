@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import SettingsSection from "@/components/layout/SettingsSection";
 import { Switch } from "@/components/ui/switch";
 import { screenTimeApi, useScreenTimeLink } from "@/lib/screen-time/client";
@@ -15,12 +15,20 @@ import {
 export default function ScreenTimeSettings() {
     const [linked, setLinked] = useScreenTimeLink();
     const [status, setStatus] = useState<ScreenTimeStatus | null>(null);
+    const requests = useRef(0);
     const check = useCallback(() => {
         setStatus(null);
-        void screenTimeApi.status().then(setStatus);
+        const id = ++requests.current;
+        void screenTimeApi.status().then((result) => {
+            if (id === requests.current) setStatus(result);
+        });
     }, []);
     useEffect(() => {
         check();
+        // Bump the counter so a late response cannot land after unmount.
+        return () => {
+            requests.current += 1;
+        };
     }, [check]);
     return (
         <SettingsSection

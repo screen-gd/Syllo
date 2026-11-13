@@ -84,8 +84,11 @@ export default function PomodoroProvider({
     const [linked] = useScreenTimeLink();
     const [linkStatus, setLinkStatus] = useState<ScreenTimeStatus | null>(null);
     const [tracking, setTracking] = useState(false);
+    const [waiting, setWaiting] = useState(false);
     const sessionRef = useRef(session);
     sessionRef.current = session;
+    const waitingRef = useRef(waiting);
+    waitingRef.current = waiting;
     const syncRef = useRef<ReturnType<typeof createFocusSync> | null>(null);
     if (syncRef.current === null)
         syncRef.current = createFocusSync({
@@ -102,6 +105,10 @@ export default function PomodoroProvider({
                 setTracking(
                     status.kind === "ready" &&
                         status.session?.source === SCREEN_TIME_SOURCE,
+                );
+                setWaiting(
+                    status.kind === "not-running" ||
+                        status.kind === "unavailable",
                 );
             },
         });
@@ -202,13 +209,15 @@ export default function PomodoroProvider({
             sync.release();
             setLinkStatus(null);
             setTracking(false);
+            setWaiting(false);
         }
     }, [loaded, linked, intent]);
     const runningFocus = session.mode === "focus" && session.endAt !== null;
     // While our session is believed on, watch for the user ending it in Screen
-    // Time so the label drops instead of claiming a block that is not there.
+    // Time so the label drops. While a failed start is waiting for Screen Time
+    // to come back, poll too so the start can be retried once it is reachable.
     useEffect(() => {
-        if (!linked || !runningFocus || !tracking) return;
+        if (!linked || !runningFocus || (!tracking && !waiting)) return;
         const sync = syncRef.current;
         if (!sync) return;
         let cancelled = false;
@@ -216,6 +225,11 @@ export default function PomodoroProvider({
             const before = sync.version();
             const result = await screenTimeApi.status();
             if (cancelled || sync.version() !== before) return;
+            if (waitingRef.current) {
+                if (result.kind === "ready") sync.retry();
+                else setLinkStatus(result);
+                return;
+            }
             if (
                 result.kind === "ready" &&
                 result.session?.source === SCREEN_TIME_SOURCE
@@ -239,7 +253,7 @@ export default function PomodoroProvider({
             clearInterval(timer);
             document.removeEventListener("visibilitychange", onVisible);
         };
-    }, [linked, runningFocus, tracking]);
+    }, [linked, runningFocus, tracking, waiting]);
     return (
         <StudyFocusContext.Provider value={setStudy}>
             <Context.Provider
@@ -316,7 +330,10 @@ export function Pomodoro() {
                     Reset
                 </button>
             </div>
-            {linked && runningFocus && linkStatus?.kind !== "ready" ? (
+            {linked &&
+            linkStatus !== null &&
+            linkStatus.kind !== "ready" &&
+            (runningFocus || linkStatus.kind === "unavailable") ? (
                 <p className="sy-form-hint" role="status">
                     {screenTimeMessage(linkStatus)}
                 </p>

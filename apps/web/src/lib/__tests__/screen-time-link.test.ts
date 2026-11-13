@@ -204,6 +204,23 @@ describe("createFocusSync", () => {
         expect(sent).toEqual([{ kind: "stop" }]);
     });
 
+    it("still sends the stop when released twice with a start in flight", async () => {
+        const { sent, sync, hold } = makeSync();
+        let resolve!: () => void;
+        hold(new Promise<void>((done) => (resolve = done)));
+        sync.update({
+            kind: "start",
+            goal: "g",
+            resourceUrls: [],
+            endAt: 60_000,
+        });
+        sync.release();
+        sync.release();
+        resolve();
+        await vi.waitFor(() => expect(sent).toHaveLength(2));
+        expect(sent[1]).toEqual({ kind: "stop" });
+    });
+
     it("never re-sends a period the user ended in screen time", async () => {
         const { sent, statuses, sync } = makeSync();
         const start = (goal: string, endAt: number): FocusIntent => ({

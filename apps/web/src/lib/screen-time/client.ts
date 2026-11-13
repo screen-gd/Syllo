@@ -160,6 +160,7 @@ export function createFocusSync({
     let pending: FocusIntent | null = null;
     let lastSentStart = false;
     let lastStartEndAt: number | null = null;
+    let lastIntent: FocusIntent | null = null;
     let endedAt: number | null = null;
     let dispatches = 0;
 
@@ -209,6 +210,7 @@ export function createFocusSync({
     }
 
     function update(intent: FocusIntent): void {
+        lastIntent = intent;
         const key = intentKey(intent);
         if (endedAt !== null) {
             // The user ended this session in Screen Time; a start for the
@@ -241,12 +243,22 @@ export function createFocusSync({
     }
 
     function release(): void {
+        // A stop queued behind an in-flight request still has to go out, even
+        // if release runs again before it does.
+        const owesStop = lastSentStart || pending?.kind === "stop";
         pending = null;
         endedAt = null;
-        if (lastSentStart) update({ kind: "stop" });
         lastKey = null;
         lastSentStart = false;
+        if (owesStop) update({ kind: "stop" });
     }
 
-    return { update, release, markEnded, version };
+    /** Re-send the last start, used when Screen Time comes back. */
+    function retry(): void {
+        if (lastIntent?.kind !== "start") return;
+        lastKey = null;
+        update(lastIntent);
+    }
+
+    return { update, release, markEnded, retry, version };
 }
