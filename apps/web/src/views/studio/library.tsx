@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link } from "@tanstack/react-router";
 import { Library, List, Search, Upload } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/glaze/ui/toast";
 import { importEpub } from "@/lib/personal/books";
 import { personalEntries, usePersonalData } from "@/lib/personal/store";
 import { useCloudSync } from "@/components/sync/CloudSync";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, Search } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/glaze/ui/toast";
 import { Segmented } from "@/components/ui/segmented";
 import { useReviews } from "@/hooks/useReviews";
 import { personalEntries } from "@/lib/personal/store";
@@ -92,7 +92,7 @@ export default function ReviewsPage() {
             setRevealed(null);
             setAhead((ids) => ids?.filter((id) => id !== item.id) ?? null);
         } catch {
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
         }
     }
 
@@ -137,7 +137,7 @@ export default function ReviewsPage() {
                 });
             setDraft(null);
         } catch {
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
         }
     }
 

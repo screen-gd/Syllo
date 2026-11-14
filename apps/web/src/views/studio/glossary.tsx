@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Plus, Search } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/glaze/ui/toast";
 import { useReviews } from "@/hooks/useReviews";
 import {
     collectGlossary,
@@ -61,7 +61,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
         try {
             getStorage().saveRoadmap(upsertGlossaryTerm(roadmap, draft));
         } catch {
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
             return;
         }
         try {
@@ -79,7 +79,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
             } catch {
                 // The rollback is no larger than the edit, so this is unlikely.
             }
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
         }
     }
 
@@ -121,7 +121,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                     : `${targets.length} cards added to Reviews`,
             );
         } catch {
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
         }
     }
 

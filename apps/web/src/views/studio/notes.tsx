@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Download, Plus, Search } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/glaze/ui/toast";
 import { Segmented } from "@/components/ui/segmented";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
 import { downloadBlob } from "@/lib/export";
@@ -75,7 +75,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
             setDraft("");
             setComposing(false);
         } catch {
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
         }
     }
 
@@ -88,7 +88,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                 updateNoteText(entry, editing.text);
             setEditing(null);
         } catch {
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
         }
     }
 

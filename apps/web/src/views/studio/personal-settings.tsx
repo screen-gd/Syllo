@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Copy, Download } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/glaze/ui/toast";
 import { z } from "zod";
 import SyncSettings from "@/components/sync/SyncSettings";
 import ScreenTimeSettings from "@/components/learning/ScreenTimeSettings";
