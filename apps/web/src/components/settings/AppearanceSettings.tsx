@@ -18,6 +18,7 @@ import {
 
 const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
+const MAX_CUSTOM_THEMES = 20;
 const COLOR_FIELDS = [
     { key: "page", label: "Page" },
     { key: "surface", label: "Card" },
@@ -37,6 +38,8 @@ export default function AppearanceSettings() {
         void getBackgroundImage()
             .then((blob) => setHasImage(Boolean(blob)))
             .catch(() => setHasImage(false));
+        // Leaving mid-edit drops the unsaved preview.
+        return () => applyAppearance(getAppearance());
     }, []);
 
     function update(next: Appearance) {
@@ -188,13 +191,15 @@ export default function AppearanceSettings() {
                             </div>
                         );
                     })}
-                    <button
-                        type="button"
-                        className="sy-theme-card sy-theme-new"
-                        onClick={() => startDraft()}
-                    >
-                        <span className="sy-theme-name">New theme</span>
-                    </button>
+                    {appearance.customThemes.length < MAX_CUSTOM_THEMES && (
+                        <button
+                            type="button"
+                            className="sy-theme-card sy-theme-new"
+                            onClick={() => startDraft()}
+                        >
+                            <span className="sy-theme-name">New theme</span>
+                        </button>
+                    )}
                 </div>
 
                 {draft && (
@@ -234,16 +239,11 @@ export default function AppearanceSettings() {
                                                 })
                                             }
                                         />
-                                        <input
-                                            className="sy-input"
+                                        <HexField
+                                            label={`${field.label} hex`}
                                             value={draft[field.key]}
-                                            aria-label={`${field.label} hex`}
-                                            onChange={(event) =>
-                                                /^#[0-9a-f]{6}$/i.test(event.target.value) &&
-                                                previewDraft({
-                                                    ...draft,
-                                                    [field.key]: event.target.value,
-                                                })
+                                            onChange={(value) =>
+                                                previewDraft({ ...draft, [field.key]: value })
                                             }
                                         />
                                     </span>
@@ -378,6 +378,39 @@ export default function AppearanceSettings() {
                 </div>
             </div>
         </SettingsSection>
+    );
+}
+
+/** Hex text box: free typing, and only a complete #RRGGBB reaches the theme. */
+function HexField({
+    label,
+    value,
+    onChange,
+}: {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+}) {
+    const [text, setText] = useState(value);
+    const [seen, setSeen] = useState(value);
+    if (value !== seen) {
+        setSeen(value);
+        if (value.toLowerCase() !== text.toLowerCase()) setText(value);
+    }
+    return (
+        <input
+            className="sy-input"
+            value={text}
+            maxLength={7}
+            spellCheck={false}
+            aria-label={label}
+            onChange={(event) => {
+                const next = event.target.value.trim();
+                setText(next);
+                if (/^#[0-9a-f]{6}$/i.test(next)) onChange(next);
+            }}
+            onBlur={() => setText(value)}
+        />
     );
 }
 

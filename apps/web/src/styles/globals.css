@@ -784,6 +784,9 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         opacity: 0;
     }
 }
+html[data-bg] body {
+    background: transparent;
+}
 html[data-bg] .sy-app {
     background: color-mix(in srgb, var(--color-page) calc(var(--sy-bg-tint, 0.8) * 100%), transparent);
 }
