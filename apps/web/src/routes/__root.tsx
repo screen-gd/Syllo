@@ -3,7 +3,9 @@ import "@/styles/globals.css";
 import "@/styles/learning.css";
 import "@/styles/parts.css";
 import "@/styles/parts-pages.css";
+import "@/components/glaze/styles.css";
 import { Providers } from "@/components/shared/Providers";
+import { GlazePortalProvider } from "@/lib/glaze/portal";
 import { getAppUrl } from "@/lib/app-url";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
@@ -59,14 +61,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <head>
                 <HeadContent />
             </head>
-            <body className="min-h-screen bg-page text-text">
+            <body className="glaze min-h-screen bg-page text-text">
                 <a
                     href="#main-content"
                     className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-md focus:border focus:border-[color:var(--color-accent)] focus:bg-[color:color-mix(in_srgb,var(--color-accent)_16%,var(--color-surface))] focus:px-4 focus:py-2 focus:text-[color:var(--color-text)]"
                 >
                     Skip to main content
                 </a>
-                <Providers>{children}</Providers>
+                <GlazePortalProvider>
+                    <Providers>{children}</Providers>
+                </GlazePortalProvider>
                 <Scripts />
             </body>
         </html>
