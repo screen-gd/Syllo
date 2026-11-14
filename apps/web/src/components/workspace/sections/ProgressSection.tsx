@@ -21,7 +21,7 @@ export default function ProgressSection({ roadmap }: Props) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto relative">
+        <div className="relative">
             <div className="mb-10 text-center">
                 <h2 className="font-display text-4xl font-semibold text-text mb-3">
                     📊 Tracking

@@ -30,7 +30,7 @@ export default function CalendarSection({ section, onUpdate }: Props) {
     }
 
     return (
-        <div className="max-w-3xl">
+        <div>
             <h2 className="text-xl font-semibold text-text mb-6">
                 📅 {section.title}
             </h2>

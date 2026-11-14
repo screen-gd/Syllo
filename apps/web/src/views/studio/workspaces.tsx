@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
+import PageFrame from "@/components/layout/PageFrame";
 import { getStorage } from "@/lib/storage";
 import { getRoadmapStats } from "@/lib/workspace-stats";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
@@ -82,21 +83,17 @@ export default function WorkspacesPage() {
     ] as const satisfies readonly { key: SortMode; label: string }[];
 
     return (
-        <div className="studio-page">
-            <header className="sy-page-head">
-                <div className="app-header-block">
-                    <h1>Learning topics</h1>
-                    <p className="text-sm text-text-muted">
-                        Choose a topic to continue learning.
-                    </p>
-                </div>
-
+        <PageFrame
+            title="Learning topics"
+            subtitle="Choose a topic to continue learning."
+            actions={
                 <Link to="/create" className="button-primary shrink-0">
                     <Plus size={16} />
                     Add roadmap
                 </Link>
-            </header>
-
+            }
+        >
+            <div className="sy-stack">
             <div className="sy-toolbar sy-toolstrip">
                 <Segmented
                     label="Filter workspaces"
@@ -189,6 +186,7 @@ export default function WorkspacesPage() {
                     </div>
                 </section>
             )}
-        </div>
+            </div>
+        </PageFrame>
     );
 }

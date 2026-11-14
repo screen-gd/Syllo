@@ -14,6 +14,7 @@ import {
 import { saveReview } from "@/lib/reviews";
 import { getStorage } from "@/lib/storage";
 import { topicStyle } from "@/lib/topic-color";
+import PageFrame from "@/components/layout/PageFrame";
 
 const STORAGE_ERROR =
     "This could not be saved. Free some browser storage and try again.";
@@ -189,18 +190,15 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
     );
 
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <div>
-                    <h1>Glossary</h1>
-                    {loaded && (
-                        <p>
-                            {entries.length} term
-                            {entries.length === 1 ? "" : "s"}
-                        </p>
-                    )}
-                </div>
-                <div className="sy-head-actions">
+        <PageFrame
+            title="Glossary"
+            subtitle={
+                loaded
+                    ? `${entries.length} term${entries.length === 1 ? "" : "s"}`
+                    : undefined
+            }
+            actions={
+                <>
                     {uncarded.length > 1 && (
                         <button
                             className="sy-button secondary"
@@ -227,8 +225,9 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                             New term
                         </button>
                     )}
-                </div>
-            </header>
+                </>
+            }
+        >
 
             {draft && !draft.id && form}
 
@@ -405,6 +404,6 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                     </section>
                 ))
             )}
-        </div>
+        </PageFrame>
     );
 }

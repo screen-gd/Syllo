@@ -14,6 +14,7 @@ import { getBookFile, updateBook } from "@/lib/personal/books";
 import { getLocalFile, saveLocalFile } from "@/lib/personal/files";
 import { useCloudSync } from "@/components/sync/CloudSync";
 import ReviewComposer from "@/components/learning/ReviewComposer";
+import PageFrame from "@/components/layout/PageFrame";
 
 const preferencesSchema = z.object({
     size: z.number().min(14).max(30),
@@ -305,8 +306,7 @@ export default function ReaderPage({
     }
     if (!book)
         return (
-            <div className="sy-page">
-                <h1>Book not found</h1>
+            <PageFrame title="Book not found">
                 <div className="sy-empty">
                     <p>
                         Import the book on this device, or connect your synced
@@ -316,10 +316,10 @@ export default function ReaderPage({
                         Back to Library
                     </Link>
                 </div>
-            </div>
+            </PageFrame>
         );
     return (
-        <div className="sy-page">
+        <div className="sy-reader-page">
             <div className="sy-breadcrumb">
                 <Link to="/library">Library</Link>
                 <span>/</span>

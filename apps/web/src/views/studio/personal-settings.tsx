@@ -5,6 +5,7 @@ import { z } from "zod";
 import SyncSettings from "@/components/sync/SyncSettings";
 import ScreenTimeSettings from "@/components/learning/ScreenTimeSettings";
 import SettingsSection from "@/components/layout/SettingsSection";
+import PageFrame from "@/components/layout/PageFrame";
 import AppearanceSettings from "@/components/settings/AppearanceSettings";
 import {
     getPersonalSnapshot,
@@ -73,10 +74,7 @@ export default function PersonalSettingsPage() {
         }
     }
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <h1>Settings</h1>
-            </header>
+        <PageFrame title="Settings" width="reading">
             <AppearanceSettings />
             <SettingsSection
                 title="Free AI"
@@ -279,6 +277,6 @@ export default function PersonalSettingsPage() {
                     {error}
                 </p>
             )}
-        </div>
+        </PageFrame>
     );
 }

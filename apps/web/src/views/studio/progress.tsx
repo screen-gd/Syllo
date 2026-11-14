@@ -11,16 +11,14 @@ import { isDue, isScheduled } from "@/lib/reviews";
 import { getStorage } from "@/lib/storage";
 import { topicStyle } from "@/lib/topic-color";
 import { getRoadmapStats } from "@/lib/workspace-stats";
+import PageFrame from "@/components/layout/PageFrame";
 
 /** The Learning Record at a glance: streak, the last week, and each topic. */
 export default function ProgressPage() {
     const { reviews, roadmaps, records, loaded } = useReviews();
     if (!loaded)
         return (
-            <div className="sy-page">
-                <header className="sy-page-head">
-                    <h1>Progress</h1>
-                </header>
+            <PageFrame title="Progress">
                 <div role="status" aria-label="Loading">
                     <div className="sy-stats">
                         {[0, 1, 2, 3].map((tile) => (
@@ -73,7 +71,7 @@ export default function ProgressPage() {
                         ))}
                     </section>
                 </div>
-            </div>
+            </PageFrame>
         );
 
     const record = normalizeLearningRecord(getStorage().getLearningRecord());
@@ -95,11 +93,7 @@ export default function ProgressPage() {
     ];
 
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <h1>Progress</h1>
-            </header>
-
+        <PageFrame title="Progress">
             <div className="sy-stats">
                 {stats.map((stat) => {
                     const body = (
@@ -274,6 +268,6 @@ export default function ProgressPage() {
                     })
                 )}
             </section>
-        </div>
+        </PageFrame>
     );
 }

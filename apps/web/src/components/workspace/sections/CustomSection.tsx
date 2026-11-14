@@ -33,7 +33,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
     // Render based on layout
     if (data.layout === "checklist") {
         return (
-            <div className="max-w-3xl">
+            <div>
                 <h2 className="text-xl font-semibold text-text mb-2">
                     🔧 {section.title}
                 </h2>
@@ -64,7 +64,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
 
     if (data.layout === "cards") {
         return (
-            <div className="max-w-4xl">
+            <div>
                 <h2 className="text-xl font-semibold text-text mb-2">
                     🔧 {section.title}
                 </h2>
@@ -95,7 +95,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
 
     // Default: list layout
     return (
-        <div className="max-w-3xl">
+        <div>
             <h2 className="text-xl font-semibold text-text mb-2">
                 🔧 {section.title}
             </h2>

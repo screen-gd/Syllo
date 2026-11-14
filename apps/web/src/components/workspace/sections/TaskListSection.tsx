@@ -102,7 +102,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-10">
+        <div className="space-y-10">
             <div className="text-center sm:text-left">
                 <h2 className="text-2xl font-semibold text-text mb-2">
                     ✅ {section.title}

@@ -17,7 +17,7 @@ export default function Videos({ section }: Props) {
     const activeVideo = section.data.find((v) => v.id === activeVideoId) || section.data[0];
 
     return (
-        <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col relative z-10">
+        <div className="h-[max(calc(100vh-160px),600px)] flex flex-col relative z-10">
             <div className="mb-6 shrink-0 text-center sm:text-left">
                 <h2 className="font-display text-4xl font-semibold text-text mb-2 flex items-center justify-center sm:justify-start gap-3">
                     <span className="text-accent">▶</span> {section.title}

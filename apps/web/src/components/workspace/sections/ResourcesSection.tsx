@@ -29,7 +29,7 @@ export default function Resources({ section }: Props) {
     const categories = Array.from(new Set(section.data.map((r: Resource) => r.category || "Uncategorized"))).sort();
 
     return (
-        <div className="max-w-6xl mx-auto space-y-12">
+        <div className="space-y-12">
             <div className="text-center sm:text-left">
                 <h2 className="font-display text-4xl font-semibold text-text mb-3">
                     📚 {section.title}

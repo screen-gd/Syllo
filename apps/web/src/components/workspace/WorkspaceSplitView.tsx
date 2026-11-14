@@ -57,7 +57,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
 "flex-1 overflow-y-auto no-scrollbar border-r border-border",
                 selectedNode ? "lg:w-[65%] lg:flex-none lg:max-w-[65%]" : "w-full"
             )}>
-                <div className="max-w-3xl mx-auto p-8 lg:p-12 pb-32 space-y-12">
+                <div className="max-w-5xl mx-auto p-6 sm:p-8 lg:p-12 pb-32 space-y-12">
                     
                     <header className="mb-8">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 border border-accent/20 rounded-full text-xs font-semibold text-accent mb-4">

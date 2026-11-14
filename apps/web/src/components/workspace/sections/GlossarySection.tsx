@@ -36,7 +36,7 @@ export default function GlossarySection({ section }: Props) {
     const lettersToShow = activeLetter ? [activeLetter] : visibleLetters.sort();
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="space-y-8">
             <div className="text-center sm:text-left">
                 <h2 className="text-2xl font-semibold text-text mb-2">
                     📖 {section.title}

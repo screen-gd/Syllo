@@ -16,6 +16,7 @@ import {
     scheduleReview,
 } from "@/lib/reviews";
 import { topicStyle } from "@/lib/topic-color";
+import PageFrame from "@/components/layout/PageFrame";
 import type { SrsItem } from "@/types";
 
 type View = "due" | "all";
@@ -251,20 +252,14 @@ export default function ReviewsPage() {
     );
 
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <div>
-                    <h1>Reviews</h1>
-                    {loaded && (
-                        <p>
-                            {due.length} ready · {scheduled.length} card
-                            {scheduled.length === 1 ? "" : "s"}
-                            {reviewedToday
-                                ? ` · ${reviewedToday} reviewed today`
-                                : ""}
-                        </p>
-                    )}
-                </div>
+        <PageFrame
+            title="Reviews"
+            subtitle={
+                loaded
+                    ? `${due.length} ready · ${scheduled.length} card${scheduled.length === 1 ? "" : "s"}${reviewedToday ? ` · ${reviewedToday} reviewed today` : ""}`
+                    : undefined
+            }
+            actions={
                 <button
                     className="sy-button primary"
                     onClick={() => {
@@ -275,7 +270,8 @@ export default function ReviewsPage() {
                     <Plus />
                     New card
                 </button>
-            </header>
+            }
+        >
 
             <div className="sy-library-tools sy-toolstrip">
                 <Segmented
@@ -574,6 +570,6 @@ export default function ReviewsPage() {
                     ) : null}
                 </>
             )}
-        </div>
+        </PageFrame>
     );
 }

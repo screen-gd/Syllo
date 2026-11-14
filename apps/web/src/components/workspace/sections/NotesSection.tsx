@@ -66,7 +66,7 @@ export default function Notes({ section, onUpdate }: Props) {
     const wordCount = activeNote?.content.trim().split(/\s+/).filter(Boolean).length || 0;
 
     return (
-        <div className="max-w-6xl mx-auto h-[max(calc(100vh-160px),600px)] flex flex-col lg:flex-row gap-6 relative z-10">
+        <div className="h-[max(calc(100vh-160px),600px)] flex flex-col lg:flex-row gap-6 relative z-10">
 
             {/* Sidebar List */}
             <div className="w-full lg:w-80 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border bg-surface">

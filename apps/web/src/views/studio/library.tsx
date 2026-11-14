@@ -7,6 +7,7 @@ import { personalEntries, usePersonalData } from "@/lib/personal/store";
 import { useCloudSync } from "@/components/sync/CloudSync";
 import type { LibraryBook } from "@/lib/personal/schema";
 import { topicStyle } from "@/lib/topic-color";
+import PageFrame from "@/components/layout/PageFrame";
 
 function spineStyle(
     book: LibraryBook,
@@ -73,40 +74,42 @@ export default function LibraryPage() {
         if (fileInput.current) fileInput.current.value = "";
     }
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <div>
-                    <h1>Library</h1>
-                    <p>
-                        <span className="sy-num">{books.length}</span> book
-                        {books.length === 1 ? "" : "s"} ·{" "}
-                        <span className="sy-num">
-                            {
-                                books.filter(
-                                    (book) => book.status === "reading",
-                                ).length
-                            }
-                        </span>{" "}
-                        currently reading
-                    </p>
-                </div>
-                <button
-                    className="sy-button primary"
-                    disabled={!!importing}
-                    onClick={() => fileInput.current?.click()}
-                >
-                    <Upload size={15} />
-                    {importing ? "Importing…" : "Import EPUB"}
-                </button>
-                <input
-                    ref={fileInput}
-                    type="file"
-                    accept=".epub,application/epub+zip"
-                    multiple
-                    hidden
-                    onChange={(event) => void onImport(event.target.files)}
-                />
-            </header>
+        <PageFrame
+            title="Library"
+            subtitle={
+                <>
+                    <span className="sy-num">{books.length}</span> book
+                    {books.length === 1 ? "" : "s"} ·{" "}
+                    <span className="sy-num">
+                        {
+                            books.filter((book) => book.status === "reading")
+                                .length
+                        }
+                    </span>{" "}
+                    currently reading
+                </>
+            }
+            actions={
+                <>
+                    <button
+                        className="sy-button primary"
+                        disabled={!!importing}
+                        onClick={() => fileInput.current?.click()}
+                    >
+                        <Upload size={15} />
+                        {importing ? "Importing…" : "Import EPUB"}
+                    </button>
+                    <input
+                        ref={fileInput}
+                        type="file"
+                        accept=".epub,application/epub+zip"
+                        multiple
+                        hidden
+                        onChange={(event) => void onImport(event.target.files)}
+                    />
+                </>
+            }
+        >
             {error && (
                 <p role="alert" className="sy-error">
                     {error}
@@ -280,6 +283,6 @@ export default function LibraryPage() {
                     ))}
                 </section>
             )}
-        </div>
+        </PageFrame>
     );
 }

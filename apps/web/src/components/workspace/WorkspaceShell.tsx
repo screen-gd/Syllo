@@ -921,7 +921,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                         {activeSectionId === "dashboard" ? (
                             // COURSE DASHBOARD
-                            <div className=" p-6 sm:p-10 lg:p-16 max-w-6xl mx-auto space-y-12">
+                            <div className="p-6 sm:p-8 lg:p-12 max-w-5xl mx-auto space-y-12">
                                 {/* Dashboard Header */}
                                 <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto relative">
                                     {/* Streak indicator right side */}

@@ -66,7 +66,7 @@ export default function SubmissionsSection({ section, onUpdate }: Props) {
     }
 
     return (
-        <div className="max-w-3xl">
+        <div>
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-text">📤 {section.title}</h2>
                 <button type="button" className="btn btn-primary text-xs" onClick={() => setShowSubmit(true)}>

@@ -490,7 +490,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
             <div className="flex-1 overflow-y-auto w-full relative">
                 {/* 1. Overview Tab */}
                 {activeTab === 'overview' && (
-                    <div className="p-8 max-w-4xl space-y-10">
+                    <div className="p-8 space-y-10">
                         {data.description && (
                             <section>
                                 <h3 className="font-display text-xs text-text-muted mb-4 border-b border-border pb-2">Description</h3>
@@ -531,7 +531,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                 {/* 2. Tasks Tab */}
                 {activeTab === 'tasks' && (
-                    <div className="p-8 max-w-3xl">
+                    <div className="p-8">
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="font-display text-xs text-text-muted">Action Items</h3>
                             <span className="font-display text-[0.75rem] text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
@@ -678,7 +678,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                 )}
 
                 {activeTab === 'quiz' && (
-                    <div className="p-8 max-w-4xl space-y-6">
+                    <div className="p-8 space-y-6">
                         <div className="flex flex-col gap-3 border-b border-border pb-6 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h3 className="font-display text-xs text-text-muted">Knowledge Check</h3>
@@ -809,7 +809,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         {/* Video Player */}
                         <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
                             {activeVideoId && (
-                                <div className="max-w-4xl mx-auto space-y-6">
+                                <div className="space-y-6">
                                     <div className="aspect-video w-full rounded-2xl overflow-hidden border border-border bg-page">
                                         <SmartEmbed
                                             url={videos.find(v => v.id === activeVideoId)?.url || ""}
@@ -857,7 +857,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                 {/* 5. Notes Tab */}
                 {activeTab === 'notes' && (
-                    <div className="p-8 max-w-4xl h-full flex flex-col">
+                    <div className="p-8 h-full flex flex-col">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="font-display text-xs text-text-muted">Module Notes</h3>
                             <span className="font-display text-[0.75rem] text-accent font-bold min-w-[80px] text-right">

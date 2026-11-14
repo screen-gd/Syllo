@@ -22,6 +22,7 @@ import {
 } from "@/lib/personal/store";
 import { formatTimestamp } from "@/lib/scout/format";
 import { topicStyle } from "@/lib/topic-color";
+import PageFrame from "@/components/layout/PageFrame";
 
 type Scope = "all" | "lessons" | "books";
 const SCOPES = [
@@ -145,17 +146,15 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
     }
 
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <div>
-                    <h1>Notes</h1>
-                    {loaded && (
-                        <p>
-                            {notes.length} note{notes.length === 1 ? "" : "s"}
-                        </p>
-                    )}
-                </div>
-                <div className="sy-head-actions">
+        <PageFrame
+            title="Notes"
+            subtitle={
+                loaded
+                    ? `${notes.length} note${notes.length === 1 ? "" : "s"}`
+                    : undefined
+            }
+            actions={
+                <>
                     <button
                         className="sy-button secondary"
                         disabled={visible.length === 0}
@@ -178,8 +177,9 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                         <Plus />
                         New note
                     </button>
-                </div>
-            </header>
+                </>
+            }
+        >
 
             {composing && (
                 <form
@@ -411,6 +411,6 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                     </section>
                 ))
             )}
-        </div>
+        </PageFrame>
     );
 }

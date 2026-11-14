@@ -22,6 +22,7 @@ import { getStorage } from "@/lib/storage";
 import { formatTimestamp } from "@/lib/scout/format";
 import { topicStyle } from "@/lib/topic-color";
 import BookCover from "@/components/learning/BookCover";
+import PageFrame from "@/components/layout/PageFrame";
 
 /** First things to do on an empty Home, in the order a new learner needs them. */
 const STARTERS = [
@@ -97,14 +98,15 @@ export default function HomePage() {
         .slice(0, 3);
     if (!loaded)
         return (
-            <div className="sy-page">
-                <header className="sy-page-head">
-                    <h1>Home</h1>
+            <PageFrame
+                title="Home"
+                actions={
                     <Link className="sy-button secondary" to="/scout">
                         <Telescope />
                         New learning goal
                     </Link>
-                </header>
+                }
+            >
                 <div className="sy-home-grid" role="status" aria-label="Loading">
                     <div className="sy-home-main">
                         <section className="sy-box">
@@ -172,7 +174,7 @@ export default function HomePage() {
                         </section>
                     </aside>
                 </div>
-            </div>
+            </PageFrame>
         );
 
     const record = normalizeLearningRecord(getStorage().getLearningRecord());
@@ -187,14 +189,15 @@ export default function HomePage() {
     const noteCount = collectNotes(records, roadmaps).length;
 
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <h1>Home</h1>
+        <PageFrame
+            title="Home"
+            actions={
                 <Link className="sy-button secondary" to="/scout">
                     <Telescope />
                     New learning goal
                 </Link>
-            </header>
+            }
+        >
             <div className="sy-home-grid">
                 <div className="sy-home-main">
                     <section className="sy-box">
@@ -551,6 +554,6 @@ export default function HomePage() {
                     </section>
                 </aside>
             </div>
-        </div>
+        </PageFrame>
     );
 }

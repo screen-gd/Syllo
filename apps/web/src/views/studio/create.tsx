@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import PageFrame from "@/components/layout/PageFrame";
 import { getStorage } from "@/lib/storage";
 import {
     getActiveApiKey,
@@ -170,20 +171,35 @@ function CreatePageContent() {
     };
 
     return (
-        <>
-            <div className="studio-page">
-                {creationStep !== "review" && (
-                    <header className="sy-page-head">
-                        <div>
-                            <h1>Create</h1>
-                            <p className="max-w-2xl text-sm text-text-muted">
-                                Paste a guide, notes or markdown. The steps and
-                                modules become a workspace.
-                            </p>
-                        </div>
-                    </header>
-                )}
-
+        <PageFrame
+            title={
+                creationStep === "review" && draftRoadmap
+                    ? draftRoadmap.title
+                    : "Create"
+            }
+            subtitle={
+                creationStep === "review"
+                    ? "Review the generated structure before creating your workspace."
+                    : "Paste a guide, notes or markdown. The steps and modules become a workspace."
+            }
+            actions={
+                creationStep === "review" ? (
+                    <>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setCreationStep("input")}
+                        >
+                            <ArrowLeft size={16} className="mr-2" /> Back
+                        </Button>
+                        <Button onClick={handleCreateFinal}>
+                            Create Workspace{" "}
+                            <ArrowRight size={16} className="ml-2" />
+                        </Button>
+                    </>
+                ) : undefined
+            }
+        >
+            <div className="sy-stack">
                 {creationStep === "input" && (
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-wrap items-end gap-4">
@@ -325,29 +341,6 @@ function CreatePageContent() {
 
                 {creationStep === "review" && draftRoadmap && (
                     <div>
-                        <header className="sy-page-head">
-                            <div>
-                                <h1>{draftRoadmap.title}</h1>
-                                <p className="text-sm text-text-muted">
-                                    Review the generated structure before
-                                    creating your workspace.
-                                </p>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-3">
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => setCreationStep("input")}
-                                >
-                                    <ArrowLeft size={16} className="mr-2" />{" "}
-                                    Back
-                                </Button>
-                                <Button onClick={handleCreateFinal}>
-                                    Create Workspace{" "}
-                                    <ArrowRight size={16} className="ml-2" />
-                                </Button>
-                            </div>
-                        </header>
-
                         <div className="sy-create-review-grid">
                             <div className="sy-create-pane">
                                 <div className="px-5 py-3 border-b border-border bg-[var(--color-page)] flex justify-between items-center">
@@ -417,7 +410,6 @@ function CreatePageContent() {
                     </div>
                 )}
             </div>
-
-        </>
+        </PageFrame>
     );
 }

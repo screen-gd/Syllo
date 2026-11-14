@@ -28,7 +28,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div>
             <div className="mb-10 text-center sm:text-left">
                 <h2 className="text-2xl font-semibold text-text mb-2">
                     🏁 {section.title}

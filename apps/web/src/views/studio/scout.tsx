@@ -7,6 +7,7 @@ import ScoutProgress from "@/components/scout/ScoutProgress";
 import PickList from "@/components/scout/PickList";
 import SourcesPanel from "@/components/scout/SourcesPanel";
 import ManualRoadmap from "@/components/scout/ManualRoadmap";
+import PageFrame from "@/components/layout/PageFrame";
 import { LEARNING_LEVELS, type LearningLevel, type ModuleSection, type Roadmap } from "@/types";
 import { LEVEL_LABEL } from "@/lib/ladder";
 import { scoutApi } from "@/lib/scout/api-client";
@@ -390,16 +391,10 @@ export default function ScoutPage() {
     }
 
     return (
-        <div className="studio-page sy-scout-page">
-            <header className="sy-page-head">
-                <div>
-                    <h1>Scout</h1>
-                    <p className="max-w-2xl text-sm text-text-muted">
-                        Describe a goal, review the resources, and approve an
-                        editable learning roadmap.
-                    </p>
-                </div>
-            </header>
+        <PageFrame
+            title="Scout"
+            subtitle="Describe a goal, review the resources, and approve an editable learning roadmap."
+        >
 
             <div className="sy-scout-grid">
                 <div className="sy-panel sy-box sy-scout-main">
@@ -931,6 +926,6 @@ export default function ScoutPage() {
                     onPause={pauseScout}
                 />
             </div>
-        </div>
+        </PageFrame>
     );
 }
