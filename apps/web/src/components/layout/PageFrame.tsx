@@ -25,7 +25,7 @@ export default function PageFrame({
         <div className="sy-page">
             <header className="sy-page-head">
                 <div className="sy-frame-title">
-                    <h1>{title}</h1>
+                    <h1 className="type-title">{title}</h1>
                     {subtitle && <p>{subtitle}</p>}
                 </div>
                 {actions && <div className="sy-head-actions">{actions}</div>}

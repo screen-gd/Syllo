@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_marketing")({
 
 function MarketingLayout() {
     return (
-        <div className="min-h-screen bg-page text-text">
+        <div className="min-h-dvh bg-page text-text-1">
             <Header />
             <main id="main-content">
                 <Outlet />

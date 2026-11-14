@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { usePathname } from "@/lib/router-nav";
-import { Menu, X } from "lucide-react";
+import { Button } from "@/components/glaze/ui/button";
+import { Close, Icon, Menu } from "@/components/glaze/icon";
 import { Logo } from "@/components/shared/Logo";
 import { cn } from "@/lib/utils";
 import { PUBLIC_NAV_ITEMS } from "@/lib/navigation";
@@ -18,11 +19,11 @@ export default function Header() {
     }, [pathname]);
 
     return (
-        <header className="sy-material sticky top-0 z-50">
+        <header className="sticky top-0 z-sticky border-b border-line-faint bg-paper">
             <div className="page-shell-wide flex h-14 items-center justify-between gap-4">
                 <Link to="/" className="flex min-w-0 items-center gap-2.5">
                     <Logo />
-                    <span className="truncate text-[0.9375rem] font-semibold tracking-tight text-text">Syllo</span>
+                    <span className="truncate type-label-lg text-text-1">Syllo</span>
                 </Link>
 
                 <nav aria-label="Main navigation" className="hidden items-center gap-1 lg:flex">
@@ -34,8 +35,8 @@ export default function Header() {
                                 to={item.href}
                                 aria-current={active ? "page" : undefined}
                                 className={cn(
-                                    "rounded-full px-3 py-1.5 text-sm transition-colors",
-                                    active ? "text-text" : "text-text-muted hover:text-text",
+                                    "type-label rounded-pill px-3 py-1.5 transition-colors",
+                                    active ? "text-text-1" : "text-text-2 hover:text-text-1",
                                 )}
                             >
                                 {item.label}
@@ -45,25 +46,26 @@ export default function Header() {
                 </nav>
 
                 <div className="hidden lg:block">
-                    <Link to="/dashboard" className="button-primary">
+                    <Button render={<Link to="/dashboard" />} nativeButton={false}>
                         Open studio
-                    </Link>
+                    </Button>
                 </div>
 
-                <button
-                    type="button"
+                <Button
+                    size="icon-sm"
+                    variant="ghost"
                     onClick={() => setMobileOpen((value) => !value)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-text-muted hover:text-text lg:hidden"
+                    className="lg:hidden"
                     aria-label={mobileOpen ? "Close menu" : "Open menu"}
                     aria-expanded={mobileOpen}
                     aria-controls="mobile-nav"
                 >
-                    {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-                </button>
+                    <Icon icon={mobileOpen ? Close : Menu} size={16} />
+                </Button>
             </div>
 
             {mobileOpen && (
-                <div id="mobile-nav" className="border-t border-border bg-page lg:hidden">
+                <div id="mobile-nav" className="border-t border-line-faint bg-page lg:hidden">
                     <nav aria-label="Mobile navigation" className="page-shell-wide flex flex-col gap-1 py-4">
                         {PUBLIC_NAV_ITEMS.map((item) => {
                             const active = pathname.startsWith(item.href);
@@ -72,15 +74,22 @@ export default function Header() {
                                     key={item.href}
                                     to={item.href}
                                     aria-current={active ? "page" : undefined}
-                                    className={cn("py-2 text-sm", active ? "text-text" : "text-text-muted hover:text-text")}
+                                    className={cn(
+                                        "py-2 type-label",
+                                        active ? "text-text-1" : "text-text-2 hover:text-text-1",
+                                    )}
                                 >
                                     {item.label}
                                 </Link>
                             );
                         })}
-                        <Link to="/dashboard" className="button-primary mt-3 self-start">
+                        <Button
+                            className="mt-3 self-start"
+                            render={<Link to="/dashboard" />}
+                            nativeButton={false}
+                        >
                             Open studio
-                        </Link>
+                        </Button>
                     </nav>
                 </div>
             )}

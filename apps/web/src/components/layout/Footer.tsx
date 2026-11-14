@@ -4,15 +4,13 @@ import { PUBLIC_NAV_ITEMS } from "@/lib/navigation";
 
 export default function Footer() {
     return (
-        <footer className="relative z-10 overflow-hidden border-t border-border bg-page">
-            <div className="page-shell-wide grid gap-8 py-10 lg:grid-cols-[minmax(220px,0.7fr)_minmax(0,1fr)_auto] lg:items-end">
+        <footer className="relative z-10 overflow-hidden border-t border-line-faint bg-page">
+            <div className="page-shell-wide flex flex-col gap-8 py-10 lg:flex-row lg:items-end lg:justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center border border-border">
-                        <Logo />
-                    </span>
+                    <Logo />
                     <div>
-                        <p className="font-display text-2xl tracking-[-0.04em] text-text">Syllo</p>
-                        <p className="text-xs text-text-soft">Personal learning and reading</p>
+                        <p className="type-heading-sm text-text-1">Syllo</p>
+                        <p className="type-caption text-text-2">Personal learning and reading</p>
                     </div>
                 </div>
 
@@ -21,14 +19,14 @@ export default function Footer() {
                         <Link
                             key={link.href}
                             to={link.href}
-                            className="border-b border-transparent pb-1 text-[0.75rem] font-semibold text-text-muted transition-colors hover:border-border hover:text-text"
+                            className="type-label-sm border-b border-transparent pb-1 text-text-2 transition-colors hover:border-line-faint hover:text-text-1"
                         >
                             {link.label}
                         </Link>
                     ))}
                 </nav>
 
-                <p className="text-xs text-text-soft">&copy; {new Date().getFullYear()}</p>
+                <p className="type-caption text-text-3">&copy; {new Date().getFullYear()}</p>
             </div>
         </footer>
     );
