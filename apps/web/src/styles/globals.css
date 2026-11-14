@@ -110,10 +110,10 @@
 
 /* Sans heading option, and the dark scheme's status hues. */
 /* Serif headings read like book titles: lighter weight, slightly tight. */
-.sy-app :is(h1, h2) {
+.sy-app :is(h1, h2):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-family: var(--font-display);
 }
-html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
+html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-weight: 560;
     letter-spacing: -0.01em;
 }
@@ -140,9 +140,9 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
 
 /* Element defaults sit in the base layer so utilities can override them. */
 @layer base {
-    *,
-    *::before,
-    *::after {
+    *, 
+    *:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::before, 
+    *:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::after {
         box-sizing: border-box;
     }
 
@@ -166,33 +166,33 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         -moz-osx-font-smoothing: grayscale;
     }
 
-    a {
+    a:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         color: inherit;
         text-decoration: none;
     }
 
-    button,
-    input,
-    textarea,
-    select {
+    button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         font: inherit;
     }
 
-    button {
+    button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         cursor: pointer;
     }
 
-    img {
+    img:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: block;
         max-width: 100%;
     }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
+    h1:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    h2:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    h3:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    h4:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    h5:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    h6:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         margin: 0;
         color: var(--color-text);
         font-weight: 600;
@@ -200,13 +200,13 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         text-wrap: balance;
     }
 
-    h1,
-    .font-display {
+    h1:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .font-display:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         font-family: var(--font-display);
         letter-spacing: var(--tracking-display);
     }
 
-    p {
+    p:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         margin: 0;
     }
 
@@ -216,26 +216,26 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
 
     /* Keyboard focus only: a plain accent outline, no ring or offset.
        Glaze-rendered controls (data-slot) take Glaze's own focus ring. */
-    :focus-visible:not([data-slot]) {
+    :focus-visible:not([data-slot]):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         outline: 2px solid var(--color-accent);
         outline-offset: 0;
     }
 
-    .tabular-nums,
-    .num {
+    .tabular-nums:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .num:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         font-variant-numeric: tabular-nums;
     }
 
-    ::-webkit-scrollbar {
+    ::-webkit-scrollbar:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         width: 10px;
         height: 10px;
     }
 
-    ::-webkit-scrollbar-track {
+    ::-webkit-scrollbar-track:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: transparent;
     }
 
-    ::-webkit-scrollbar-thumb {
+    ::-webkit-scrollbar-thumb:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-border-strong);
         border: 2px solid var(--color-page);
         border-radius: 999px;
@@ -250,48 +250,48 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
 @layer components {
     /* -- Layout ------------------------------------------------------------------ */
 
-    .page-shell {
+    .page-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         width: 100%;
         max-width: 104rem;
         margin-inline: auto;
         padding-inline: 1rem;
     }
 
-    .page-shell-wide,
-    .studio-layout-shell {
+    .page-shell-wide:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-layout-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         width: 100%;
         max-width: none;
         margin-inline: auto;
         padding-inline: 1rem;
     }
 
-    .section-space {
+    .section-space:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding-block: clamp(72px, 10vw, 132px);
     }
 
-    .section-space-compact {
+    .section-space-compact:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding-block: clamp(40px, 7vw, 72px);
     }
 
-    .app-header-block {
+    .app-header-block:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: flex;
         flex-direction: column;
         gap: 6px;
     }
 
-    .app-header-block h1 {
+    .app-header-block h1:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         font-size: 1.375rem;
         line-height: 1.25;
     }
 
-    .app-stack {
+    .app-stack:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: flex;
         flex-direction: column;
         gap: 14px;
     }
 
     /* KPIs: one surface split by hairlines, label over value. */
-    .app-stat-grid {
+    .app-stat-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: grid;
         gap: 1px;
         overflow: hidden;
@@ -299,7 +299,7 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         background: var(--color-border);
     }
 
-    .app-stat-card {
+    .app-stat-card:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: flex;
         flex-direction: column;
         gap: 6px;
@@ -307,19 +307,19 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         background: var(--color-surface);
     }
 
-    .settings-shell {
+    .settings-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: grid;
         gap: 24px;
         align-items: start;
     }
 
-    .settings-nav {
+    .settings-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: flex;
         flex-direction: column;
         gap: 2px;
     }
 
-    .settings-nav-link {
+    .settings-nav-link:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: flex;
         align-items: center;
         min-height: 34px;
@@ -331,39 +331,39 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     }
 
     @media (hover: hover) and (pointer: fine) {
-        .settings-nav-link:hover,
-        .settings-nav-link[data-active="true"] {
+        .settings-nav-link:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .settings-nav-link[data-active="true"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             color: var(--color-text);
         }
     }
 
-    .settings-nav-link[data-active="true"] {
+    .settings-nav-link[data-active="true"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-surface-muted);
     }
 
-    .settings-content {
+    .settings-content:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         width: 100%;
         max-width: 44rem;
     }
 
-    .settings-section {
+    .settings-section:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding: 22px;
         border: 1px solid var(--color-border);
         border-radius: var(--radius-2xl);
         background: var(--color-surface);
     }
 
-    .settings-field {
+    .settings-field:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding-block: 16px;
         border-top: 1px solid var(--color-border);
     }
 
-    .settings-field:first-child {
+    .settings-field:first-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border-top: 0;
         padding-top: 0;
     }
 
-    .settings-action-row {
+    .settings-action-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: flex;
         justify-content: flex-end;
         gap: 8px;
@@ -371,18 +371,18 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         border-top: 1px solid var(--color-border);
     }
 
-    .two-panel-shell {
+    .two-panel-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: grid;
         gap: 14px;
         align-items: start;
     }
 
-    .two-panel-sidebar {
+    .two-panel-sidebar:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         width: 100%;
         max-width: 340px;
     }
 
-    .filter-bar {
+    .filter-bar:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -393,11 +393,11 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     }
 
     @media (min-width: 768px) {
-        .app-stat-grid {
+        .app-stat-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .filter-bar {
+        .filter-bar:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
@@ -405,127 +405,127 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     }
 
     @media (min-width: 1024px) {
-        .two-panel-shell {
+        .two-panel-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             grid-template-columns: 340px minmax(0, 1fr);
         }
     }
 
     @media (min-width: 1280px) {
-        .app-stat-grid {
+        .app-stat-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
-        .settings-shell {
+        .settings-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             grid-template-columns: 180px minmax(0, 1fr);
             gap: 32px;
         }
 
-        .settings-nav {
+        .settings-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             position: sticky;
             top: 88px;
         }
     }
 
     /* Small grey label above a value. Sentence case, no tracking. */
-    .eyebrow,
-    .field-label {
+    .eyebrow:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .field-label:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: block;
         color: var(--color-text-soft);
         font-size: 0.75rem;
         font-weight: 500;
     }
 
-    .field-label {
+    .field-label:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         margin-bottom: 8px;
         color: var(--color-text-muted);
         font-size: 0.8125rem;
     }
 
-    .text-balance {
+    .text-balance:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         text-wrap: balance;
     }
 
-    .text-pretty {
+    .text-pretty:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         text-wrap: pretty;
     }
 
     /* -- Surfaces ---------------------------------------------------------------- */
 
-    .surface-panel,
-    .studio-panel,
-    .studio-table,
-    .studio-orbit-shell,
-    .studio-orbit-rail,
-    .studio-hero {
+    .surface-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-table:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-orbit-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-orbit-rail:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-hero:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border: 1px solid var(--color-border);
         border-radius: var(--radius-2xl);
         background: var(--color-surface);
     }
 
-    .surface-panel-subtle,
-    .studio-panel-muted,
-    .studio-panel-soft,
-    .studio-kpi,
-    .studio-data-tile,
-    .studio-micro-grid {
+    .surface-panel-subtle:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-panel-muted:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-panel-soft:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-kpi:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-data-tile:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .studio-micro-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border-radius: var(--radius-xl);
         background: var(--color-surface-muted);
     }
 
-    .studio-data-tile-accent {
+    .studio-data-tile-accent:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border: 1px solid var(--color-accent);
     }
 
-    .studio-data-tile-success {
+    .studio-data-tile-success:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border: 1px solid var(--color-success);
     }
 
-    .studio-danger {
+    .studio-danger:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border: 1px solid var(--color-danger);
     }
 
-    .studio-empty {
+    .studio-empty:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border: 1px dashed var(--color-border-strong);
         border-radius: var(--radius-xl);
         background: transparent;
     }
 
-    .studio-table table {
+    .studio-table table:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         width: 100%;
         border-collapse: collapse;
     }
 
-    .studio-table thead th {
+    .studio-table thead th:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         color: var(--color-text-soft);
         font-size: 0.75rem;
         font-weight: 400;
         text-align: left;
     }
 
-    .studio-table tbody tr + tr {
+    .studio-table tbody tr + tr:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border-top: 1px solid var(--color-border);
     }
 
-    .hairline-divider {
+    .hairline-divider:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border-color: var(--color-border);
     }
 
-    .mono-surface {
+    .mono-surface:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         font-family: var(--font-mono);
     }
 
-    .interactive-row {
+    .interactive-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         transition: background-color var(--dur-fast) var(--ease-out);
     }
 
     @media (hover: hover) and (pointer: fine) {
-        .interactive-row:hover {
+        .interactive-row:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             background: var(--color-surface-subtle);
         }
     }
 
     /* Neutral pill for a state or a count. */
-    .studio-badge {
+    .studio-badge:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: inline-flex;
         flex: none;
         align-items: center;
@@ -542,10 +542,10 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
 
     /* -- Controls ---------------------------------------------------------------- */
 
-    .studio-input,
-    .field-input,
-    .field-textarea,
-    .field-select {
+    .studio-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .field-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .field-textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .field-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         width: 100%;
         border: 0;
         border-radius: var(--radius-lg);
@@ -554,39 +554,39 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         transition: background-color var(--dur-fast) var(--ease-out);
     }
 
-    .studio-input,
-    .field-input,
-    .field-select {
+    .studio-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .field-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .field-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         min-height: 40px;
         padding: 0 12px;
     }
 
-    .field-textarea {
+    .field-textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         min-height: 320px;
         padding: 12px;
         resize: vertical;
     }
 
     @media (hover: hover) and (pointer: fine) {
-        .studio-input:hover,
-        .field-input:hover,
-        .field-textarea:hover,
-        .field-select:hover {
+        .studio-input:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .field-input:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .field-textarea:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .field-select:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             background: var(--color-surface-muted);
         }
     }
 
-    .studio-input::placeholder,
-    .field-input::placeholder,
-    .field-textarea::placeholder {
+    .studio-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::placeholder, 
+    .field-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::placeholder, 
+    .field-textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::placeholder {
         color: var(--color-text-soft);
     }
 
     /* Buttons are pills. Primary is inverted dark; there is one per screen. */
-    .button-primary,
-    .button-secondary,
-    .button-ghost,
-    .btn {
+    .button-primary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .button-secondary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .button-ghost:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .btn:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -604,63 +604,63 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
             opacity var(--dur-fast) var(--ease-out);
     }
 
-    .button-primary:disabled,
-    .button-secondary:disabled,
-    .button-ghost:disabled,
-    .btn:disabled {
+    .button-primary:disabled:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .button-secondary:disabled:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .button-ghost:disabled:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .btn:disabled:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         cursor: not-allowed;
         opacity: 0.45;
     }
 
-    .button-primary,
-    .btn-primary {
+    .button-primary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .btn-primary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-text);
         color: var(--color-on-primary);
     }
 
     @media (hover: hover) and (pointer: fine) {
-        .button-primary:hover,
-        .btn-primary:hover {
+        .button-primary:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .btn-primary:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             background: var(--color-primary-hover);
         }
     }
 
-    .button-secondary,
-    .btn-secondary {
+    .button-secondary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .btn-secondary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-surface-muted);
         color: var(--color-text);
     }
 
     @media (hover: hover) and (pointer: fine) {
-        .button-secondary:hover,
-        .btn-secondary:hover {
+        .button-secondary:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .btn-secondary:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             background: var(--color-raised);
         }
     }
 
-    .button-ghost {
+    .button-ghost:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: transparent;
         color: var(--color-text-muted);
     }
 
     @media (hover: hover) and (pointer: fine) {
-        .button-ghost:hover {
+        .button-ghost:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             color: var(--color-text);
         }
     }
 
     /* Extra contrast when the user asks for it: fields get a hairline. */
     @media (prefers-contrast: more) {
-        .studio-input,
-        .field-input,
-        .field-textarea,
-        .field-select {
+        .studio-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .field-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .field-textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .field-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             border: 1px solid var(--color-border-strong);
         }
     }
 
     /* Loading placeholder: a flat bar at the final size, no shimmer. */
-    .skeleton {
+    .skeleton:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border-radius: var(--radius-md);
         background: var(--color-surface-muted);
     }
@@ -668,53 +668,53 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     /* Reduced motion: gentler, not zero. Transforms stop; colour and opacity
        feedback stays responsive at the fast duration. */
     @media (prefers-reduced-motion: reduce) {
-        :is(button, a, [role="button"]):active {
+        :is(button, a, [role="button"]):active:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             transform: none !important;
             scale: none !important;
         }
-        [class*="transition-transform"] {
+        [class*="transition-transform"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             transition-property: none;
         }
-        .sy-pop {
+        .sy-pop:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             transition-property: opacity;
         }
-        [data-slot="alert-dialog-content"][data-state="open"] {
+        [data-slot="alert-dialog-content"][data-state="open"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             animation-name: sy-fade-in;
         }
-        [data-slot="alert-dialog-content"][data-state="closed"] {
+        [data-slot="alert-dialog-content"][data-state="closed"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             animation-name: sy-fade-out;
         }
-        *,
-        *::before,
-        *::after {
+        *, 
+        *:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::before, 
+        *:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::after {
             scroll-behavior: auto !important;
         }
     }
 
     @media (min-width: 640px) {
-        .page-shell,
-        .page-shell-wide,
-        .studio-layout-shell {
+        .page-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .page-shell-wide:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .studio-layout-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             padding-inline: 1.5rem;
         }
     }
 
     @media (min-width: 1024px) {
-        .page-shell,
-        .page-shell-wide,
-        .studio-layout-shell {
+        .page-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .page-shell-wide:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+        .studio-layout-shell:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
             padding-inline: 2rem;
         }
     }
 
     /* -- Visual density: compact ------------------------------------------------- */
-    html.density-compact .settings-field {
+    html.density-compact .settings-field:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding-block: 10px;
     }
-    html.density-compact .settings-action-row {
+    html.density-compact .settings-action-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding-top: 10px;
     }
-    html.density-compact .section-space {
+    html.density-compact .section-space:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding-block: clamp(40px, 6vw, 80px);
     }
 
@@ -729,14 +729,14 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
  */
 
 /* Menus and popovers scale in from their trigger corner. */
-.sy-pop {
+.sy-pop:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transform-origin: top right;
     transition:
         opacity var(--dur-fast) var(--ease-out),
         transform var(--dur-fast) var(--ease-out);
 }
 @starting-style {
-    .sy-pop {
+    .sy-pop:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         opacity: 0;
         transform: scale(0.96);
     }
@@ -772,24 +772,24 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         scale: 0.96;
     }
 }
-[data-slot="alert-dialog-overlay"][data-state="open"] {
+[data-slot="alert-dialog-overlay"][data-state="open"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     animation: sy-fade-in var(--dur-base) var(--ease-out) both;
 }
-[data-slot="alert-dialog-overlay"][data-state="closed"] {
+[data-slot="alert-dialog-overlay"][data-state="closed"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     animation: sy-fade-out var(--dur-fast) var(--ease-out) both;
 }
-[data-slot="alert-dialog-content"][data-state="open"] {
+[data-slot="alert-dialog-content"][data-state="open"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     animation: sy-dialog-in var(--dur-base) var(--ease-out) both;
 }
-[data-slot="alert-dialog-content"][data-state="closed"] {
+[data-slot="alert-dialog-content"][data-state="closed"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     animation: sy-dialog-out var(--dur-fast) var(--ease-out) both;
 }
 
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-    .sy-bg {
+    .sy-bg:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: none;
     }
-    html[data-bg] .sy-app {
+    html[data-bg] .sy-app:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-page);
     }
 }
@@ -799,22 +799,22 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
  * The desk tab strip sits directly under the desk top bar, so it stays solid -
  * never stack a translucent layer on a translucent layer.
  */
-.sy-mobile-nav,
-.sy-desk-top,
-.sy-material {
+.sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: color-mix(in srgb, var(--color-page) 72%, transparent);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
 }
-.sy-desk-top,
-.sy-material {
+.sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     border-bottom: 1px solid var(--color-border);
 }
 
 @media (prefers-reduced-transparency: reduce) {
-    .sy-mobile-nav,
-    .sy-desk-top,
-    .sy-material {
+    .sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-page);
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
@@ -822,18 +822,18 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
 }
 
 @media (prefers-contrast: more) {
-    .sy-mobile-nav,
-    .sy-desk-top,
-    .sy-material {
+    .sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-page);
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
     }
-    .sy-mobile-nav {
+    .sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border-top: 1px solid var(--color-border-strong);
     }
-    .sy-desk-top,
-    .sy-material {
+    .sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border-bottom: 1px solid var(--color-border-strong);
     }
 }
@@ -843,12 +843,12 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     :root {
         --sy-control-height: 2.75rem;
     }
-    .sy-nav a,
-    .sy-nav .sy-nav-item,
-    .sy-mobile-nav a,
-    .sy-desk-tabs button,
-    .sy-segmented button,
-    .sy-view-switch button {
+    .sy-nav a:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-nav .sy-nav-item:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-mobile-nav a:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-desk-tabs button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-segmented button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-view-switch button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         min-height: 2.75rem;
     }
 }
@@ -900,7 +900,7 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
 /*
  ---break---
  */
-.dark {
+.dark:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);

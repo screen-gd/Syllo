@@ -6,166 +6,166 @@
  */
 
 /* Raised surfaces: one border on the page colour, no shadow. */
-.sy-card,
-.sy-panel,
-.sy-resume,
-.sy-workspace-list,
-.sy-empty.bordered {
+.sy-card:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-resume:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-workspace-list:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-empty.bordered:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
 }
 
 /* Buttons: one dark primary; every other button is a flat grey. */
-.sy-button,
-.sy-app .sy-action,
-.sy-app .button-primary,
-.sy-app .button-secondary {
+.sy-button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .sy-action:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .button-primary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .button-secondary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition:
         background-color var(--dur-press) ease-out,
         color var(--dur-press) ease-out,
         opacity var(--dur-press) ease-out;
 }
-.sy-button.primary,
-.sy-app .sy-action[data-variant="default"],
-.sy-app .button-primary {
+.sy-button.primary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .sy-action[data-variant="default"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .button-primary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-text);
     color: var(--color-on-primary);
 }
 @media (hover: hover) and (pointer: fine) {
-    .sy-button.primary:hover:not(:disabled),
-    .sy-app .sy-action[data-variant="default"]:hover:not(:disabled),
-    .sy-app .button-primary:hover {
+    .sy-button.primary:hover:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-app .sy-action[data-variant="default"]:hover:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-app .button-primary:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-primary-hover);
     }
 }
-.sy-button.secondary,
-.sy-button.icon,
-.sy-app .sy-action[data-variant="secondary"],
-.sy-app .sy-action[data-variant="outline"],
-.sy-app .button-secondary {
+.sy-button.secondary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-button.icon:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .sy-action[data-variant="secondary"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .sy-action[data-variant="outline"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .button-secondary:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-muted);
     color: var(--color-text);
 }
 @media (hover: hover) and (pointer: fine) {
-    .sy-button.secondary:hover:not(:disabled),
-    .sy-button.icon:hover:not(:disabled),
-    .sy-app .sy-action[data-variant="secondary"]:hover:not(:disabled),
-    .sy-app .sy-action[data-variant="outline"]:hover:not(:disabled),
-    .sy-app .button-secondary:hover {
+    .sy-button.secondary:hover:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-button.icon:hover:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-app .sy-action[data-variant="secondary"]:hover:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-app .sy-action[data-variant="outline"]:hover:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-app .button-secondary:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-raised);
     }
 }
 
 /* Fields: a flat grey well; inside a tray they stay white so they read. */
-.sy-select,
-.sy-input,
-.sy-search,
-.sy-textarea,
-.sy-app .sy-control,
-.sy-timer-settings input {
+.sy-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-search:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .sy-control:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-timer-settings input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background-color: var(--color-surface-subtle);
     border: 0;
 }
 @media (hover: hover) and (pointer: fine) {
-    .sy-select:hover,
-    .sy-input:hover,
-    .sy-textarea:hover,
-    .sy-app .sy-control:hover {
+    .sy-select:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-input:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-textarea:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-app .sy-control:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background-color: var(--color-surface-muted);
     }
 }
-.sy-tray :is(.sy-input, .sy-select, .sy-textarea, .sy-control, input) {
+.sy-tray :is(.sy-input, .sy-select, .sy-textarea, .sy-control, input):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background-color: var(--color-surface);
 }
-.sy-search:focus-within {
+.sy-search:focus-within:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     outline: 2px solid var(--color-accent);
     outline-offset: 0;
 }
-.sy-search input:focus-visible {
+.sy-search input:focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     outline: none;
 }
-.sy-app :is(.sy-input, .sy-select, .sy-textarea, .sy-control):focus-visible,
-.sy-desk .sy-textarea:focus-visible,
-.sy-desk-note-form textarea:focus-visible {
+.sy-app :is(.sy-input, .sy-select, .sy-textarea, .sy-control):focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-desk .sy-textarea:focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-desk-note-form textarea:focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     outline: 2px solid var(--color-accent);
     outline-offset: 0;
 }
-.sy-progress {
+.sy-progress:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 5px;
     border-radius: 3px;
     background: var(--color-surface-subtle);
 }
-.sy-progress > span {
+.sy-progress > span:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     border-radius: 3px;
     background: var(--color-accent);
 }
-.sy-progress.topic > span {
+.sy-progress.topic > span:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--topic, var(--color-accent));
 }
 
 /* Switches sit on a grey track; the chosen option is a white chip. The
    chip radius is concentric: track radius minus the 3px padding. */
-.sy-view-switch,
-.sy-app .sy-segmented {
+.sy-view-switch:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-app .sy-segmented:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     padding: 3px;
     border-radius: var(--sy-radius);
     background: var(--color-surface-subtle);
 }
-.sy-view-switch button {
+.sy-view-switch button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     width: calc(var(--sy-control-height) - 6px);
     height: calc(var(--sy-control-height) - 6px);
 }
-.sy-view-switch button[aria-pressed="true"] {
+.sy-view-switch button[aria-pressed="true"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface);
     color: var(--color-text);
     border-radius: calc(var(--sy-radius) - 3px);
 }
-.sy-app .sy-segmented button {
+.sy-app .sy-segmented button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition: color var(--dur-press) ease-out;
 }
-.sy-app .sy-segmented button[aria-checked="true"] {
+.sy-app .sy-segmented button[aria-checked="true"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface);
     color: var(--color-text);
     border-radius: calc(var(--sy-radius) - 3px);
 }
-.sy-tabs button[aria-selected="true"] {
+.sy-tabs button[aria-selected="true"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     border-bottom-color: var(--color-text);
 }
 
 /* Quiet buttons are covered by the shared press rule; text links only tint. */
-.sy-row-actions > :is(button, a) {
+.sy-row-actions > :is(button, a):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition:
         color var(--dur-press) ease-out,
         transform var(--dur-press) ease-out;
 }
-.sy-time-link {
+.sy-time-link:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition: color var(--dur-press) ease-out;
 }
-.sy-row-actions > :is(button, a):active {
+.sy-row-actions > :is(button, a):active:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transform: scale(0.97);
 }
-.sy-app :is(button, a, summary) {
+.sy-app :is(button, a, summary):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
 }
 
 /* Progress: counters are flat cards, days are grey cells that tint. */
-.sy-stat {
+.sy-stat:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
 }
-.sy-week li {
+.sy-week li:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-subtle);
 }
 
 /* Mobile chrome: a solid bar with hairlines, no blur. */
 @media (max-width: 1024px) {
-    .sy-mobile-nav {
+    .sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-surface);
         border-top: 1px solid var(--color-border);
         border-bottom: 1px solid var(--color-border);
     }
-    .sy-mobile-nav nav a[aria-current="page"] {
+    .sy-mobile-nav nav a[aria-current="page"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-surface-muted);
         color: var(--color-text);
     }
@@ -173,19 +173,19 @@
 
 /* Extra contrast when the user asks for it: fields get a hairline. */
 @media (prefers-contrast: more) {
-    .sy-select,
-    .sy-input,
-    .sy-search,
-    .sy-textarea,
-    .sy-app .sy-control,
-    .sy-timer-settings input {
+    .sy-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-search:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-app .sy-control:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-timer-settings input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border: 1px solid var(--color-border-strong);
     }
 }
 /* Reduced-motion handling lives in globals.css. */
 
 /* A flat card that holds one section. */
-.sy-box {
+.sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     position: relative;
     min-width: 0;
     padding: 24px;
@@ -193,32 +193,32 @@
     border-radius: 14px;
     background: var(--color-surface);
 }
-.sy-box + .sy-box,
-.sy-box + .sy-section,
-.sy-section + .sy-box {
+.sy-box + .sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-box + .sy-section:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-section + .sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-top: var(--sy-space-field);
 }
-.sy-box > .sy-section-head {
+.sy-box > .sy-section-head:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin: -24px -24px 16px;
     padding: 13px 24px;
     border-bottom: 1px solid var(--color-border);
     border-radius: 14px 14px 0 0;
 }
-.sy-box > .sy-section-head h2 {
+.sy-box > .sy-section-head h2:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-size: 0.9375rem;
     font-weight: 600;
     letter-spacing: -0.006em;
     line-height: 1.35;
 }
-.sy-box > :last-child {
+.sy-box > :last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-bottom: 0;
 }
 /* A box whose rows run edge to edge. */
-.sy-box.flush {
+.sy-box.flush:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     padding-bottom: 6px;
 }
 /* A grey tray inside a box, for empty states and inner groups. */
-.sy-tray {
+.sy-tray:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     padding: 18px;
     border-radius: var(--sy-radius);
     background: var(--color-surface-subtle);
@@ -228,7 +228,7 @@
 }
 
 /* A single hairline between sections. */
-.sy-groove {
+.sy-groove:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 0;
     margin: var(--sy-space-field) 0;
     border: 0;
@@ -236,13 +236,13 @@
 }
 
 /* Numbers set in the text face with tabular figures. */
-.sy-num {
+.sy-num:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     letter-spacing: 0;
 }
 /* A flat readout pill for one figure. */
-.sy-readout {
+.sy-readout:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: inline-grid;
     place-items: center;
     min-width: 2.4em;
@@ -254,12 +254,12 @@
     font-size: 0.75rem;
     color: var(--color-text);
 }
-.sy-readout[data-live] {
+.sy-readout[data-live]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     color: var(--color-accent-strong);
 }
 
 /* The colour that stands for a topic; set --topic with topicStyle(id). */
-.sy-topic-dot {
+.sy-topic-dot:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: inline-block;
     flex-shrink: 0;
     width: 9px;
@@ -268,10 +268,10 @@
     background: var(--topic, var(--color-accent));
 }
 /* A coloured bar down the left edge of a row or card. */
-.sy-spined {
+.sy-spined:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     position: relative;
 }
-.sy-spined::before {
+.sy-spined:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::before {
     content: "";
     position: absolute;
     inset: 10px auto 10px 0;
@@ -281,7 +281,7 @@
 }
 
 /* A small indicator dot. Off by default; data-on lights it. */
-.sy-led {
+.sy-led:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: inline-block;
     flex-shrink: 0;
     width: 8px;
@@ -289,12 +289,12 @@
     border-radius: 50%;
     background: var(--color-border-strong);
 }
-.sy-led[data-on] {
+.sy-led[data-on]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-accent);
 }
 
 /* A small flat tag for a count or a state. */
-.sy-badge {
+.sy-badge:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -305,150 +305,150 @@
     line-height: 18px;
     color: var(--color-text-muted);
 }
-.sy-badge[data-tone="accent"] {
+.sy-badge[data-tone="accent"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-accent-soft);
     color: var(--color-accent-strong);
 }
 
 /* Home. */
-.sy-home-grid {
+.sy-home-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     gap: var(--sy-space-field);
 }
-.sy-home-grid .sy-box {
+.sy-home-grid .sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-top: 0;
 }
 @media (min-width: 761px) {
-    .sy-home-grid {
+    .sy-home-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         align-items: stretch;
     }
-    .sy-home-main,
-    .sy-home-aside {
+    .sy-home-main:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-home-aside:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: flex;
         flex-direction: column;
         gap: var(--sy-space-field);
     }
-    .sy-home-main > :last-child,
-    .sy-home-aside > :last-child {
+    .sy-home-main > :last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    .sy-home-aside > :last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         flex: 1;
     }
 }
 @media (max-width: 760px) {
-    .sy-home-grid {
+    .sy-home-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         gap: var(--sy-space-field);
     }
-    .sy-home-main > .sy-box:first-child {
+    .sy-home-main > .sy-box:first-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         order: 0;
     }
-    .sy-home-main > .sy-home-topics {
+    .sy-home-main > .sy-home-topics:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         order: 2;
     }
 }
 
 /* Loading placeholders: flat bars that sit where the data will appear. */
-.sy-skel {
+.sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: block;
     background: var(--color-surface-subtle);
     border-radius: 6px;
 }
-.sy-skel.line {
+.sy-skel.line:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 14px;
 }
-.sy-skel.line-sm {
+.sy-skel.line-sm:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 10px;
 }
-.sy-skel.title {
+.sy-skel.title:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 22px;
 }
-.sy-skel.block {
+.sy-skel.block:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 64px;
 }
-.sy-skel.hero {
+.sy-skel.hero:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 132px;
 }
-.sy-skel.deck {
+.sy-skel.deck:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     flex: none;
     width: 44px;
     height: 56px;
 }
-.sy-skel.video {
+.sy-skel.video:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     aspect-ratio: 16 / 9;
 }
-.sy-skel.action {
+.sy-skel.action:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 40px;
 }
-.sy-skel.dot {
+.sy-skel.dot:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     width: 8px;
     height: 8px;
     border-radius: 50%;
 }
-.sy-skel.reader {
+.sy-skel.reader:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: min(62vh, 620px);
 }
-.sy-skel-pair {
+.sy-skel-pair:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     gap: 8px;
 }
 /* A skeleton group that fills a card body where rows or copy will be. */
-.sy-skel-body {
+.sy-skel-body:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     gap: 8px;
     padding: 14px;
 }
 /* Skeleton rows inside a flush box run edge to edge like real rows. */
-.sy-box.flush .sy-skel-row {
+.sy-box.flush .sy-skel-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-inline: -24px;
     padding: 16px 24px;
     border-bottom: 1px solid var(--color-border);
 }
-.sy-box.flush .sy-skel-row:last-child {
+.sy-box.flush .sy-skel-row:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     border-bottom: 0;
 }
-.sy-skel-dots {
+.sy-skel-dots:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: flex;
     justify-content: space-between;
     margin-top: 14px;
 }
-.sy-skel-split {
+.sy-skel-split:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: flex;
     align-items: center;
     gap: 14px;
 }
-.sy-skel-split > div {
+.sy-skel-split > div:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     flex: 1;
     gap: 8px;
     min-width: 0;
 }
 /* Bars inside an already-subtle tray need one more shade to stay visible. */
-.sy-week .sy-skel,
-.sy-tray .sy-skel {
+.sy-week .sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-tray .sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-muted);
 }
 
 /* The lesson to resume sits in a grey tray inside its box. */
-.sy-box .sy-resume {
+.sy-box .sy-resume:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-subtle);
     border: 0;
 }
-.sy-resume-topic {
+.sy-resume-topic:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
 }
-.sy-box .sy-next-label {
+.sy-box .sy-next-label:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     padding-top: 14px;
 }
 
 /* First steps on an empty Home: three flat cards. */
-.sy-starters {
+.sy-starters:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
     list-style: none;
     padding: 0;
 }
-.sy-starter {
+.sy-starter:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     position: relative;
     display: grid;
     gap: 4px;
@@ -460,11 +460,11 @@
     transition: background-color var(--dur-press) ease-out;
 }
 @media (hover: hover) and (pointer: fine) {
-    .sy-starter:hover {
+    .sy-starter:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-surface-subtle);
     }
 }
-.sy-starter-knob {
+.sy-starter-knob:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     place-items: center;
     width: 38px;
@@ -474,7 +474,7 @@
     color: var(--color-accent-strong);
     background: var(--color-accent-soft);
 }
-.sy-starter-step {
+.sy-starter-step:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     position: absolute;
     top: 14px;
     right: 16px;
@@ -483,51 +483,51 @@
     font-size: 0.75rem;
     color: var(--color-text-soft);
 }
-.sy-starter b {
+.sy-starter b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-size: 0.875rem;
     font-weight: 550;
 }
-.sy-starter small {
+.sy-starter small:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-size: 0.75rem;
     line-height: 1.5;
     color: var(--color-text-muted);
 }
 
 /* Topic rows inside a box. */
-.sy-box .sy-topic {
+.sy-box .sy-topic:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin: 0 -24px;
     padding: 16px 24px;
 }
-.sy-box .sy-topic:first-of-type {
+.sy-box .sy-topic:first-of-type:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     padding-top: 6px;
 }
-.sy-box .sy-topic:last-child {
+.sy-box .sy-topic:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     border-bottom: 0;
 }
-.sy-box .sy-topic.sy-spined::before {
+.sy-box .sy-topic.sy-spined:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::before {
     inset: 14px auto 14px 0;
 }
-.sy-box .sy-topic:first-of-type.sy-spined::before {
+.sy-box .sy-topic:first-of-type.sy-spined:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::before {
     top: 4px;
 }
 
 /* This week: three counters over a row of day cells. */
-.sy-gauges {
+.sy-gauges:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     border-radius: var(--sy-radius);
     background: var(--color-surface-subtle);
 }
-.sy-gauges > * {
+.sy-gauges > *:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     gap: 2px;
     justify-items: center;
     padding: 14px 6px 12px;
 }
-.sy-gauges > * + * {
+.sy-gauges > * + *:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     border-left: 1px solid var(--color-border);
 }
-.sy-gauges b {
+.sy-gauges b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     font-size: 1.5rem;
@@ -535,18 +535,18 @@
     line-height: 1.1;
     color: var(--color-text);
 }
-.sy-gauges span {
+.sy-gauges span:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-size: 0.75rem;
     color: var(--color-text-soft);
 }
-.sy-week-leds {
+.sy-week-leds:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     list-style: none;
     padding: 0;
     margin-top: 16px;
 }
-.sy-week-leds li {
+.sy-week-leds li:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     gap: 6px;
     justify-items: center;
@@ -555,18 +555,18 @@
 }
 
 /* Reviews: a flat tile that shows the count due. */
-.sy-deck-row {
+.sy-deck-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 16px;
     align-items: center;
 }
-.sy-deck-row p {
+.sy-deck-row p:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-top: 3px;
     font-size: 0.75rem;
     color: var(--color-text-muted);
 }
-.sy-deck {
+.sy-deck:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     position: relative;
     display: grid;
     place-items: center;
@@ -576,40 +576,40 @@
     border-radius: 6px;
     background: var(--color-surface-muted);
 }
-.sy-deck b {
+.sy-deck b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
     font-size: 1.375rem;
     font-weight: 500;
     color: var(--color-text-soft);
 }
-.sy-deck[data-due] {
+.sy-deck[data-due]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-accent-soft);
 }
-.sy-deck[data-due] b {
+.sy-deck[data-due] b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     color: var(--color-accent-strong);
 }
-.sy-box .sy-current-book:last-child {
+.sy-box .sy-current-book:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-bottom: 0;
 }
 @media (max-width: 760px) {
-    .sy-starters {
+    .sy-starters:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         grid-template-columns: minmax(0, 1fr);
     }
-    .sy-starter {
+    .sy-starter:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         grid-template-columns: auto minmax(0, 1fr);
         column-gap: 14px;
         align-items: center;
     }
-    .sy-starter-knob {
+    .sy-starter-knob:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         grid-row: span 2;
         margin-bottom: 0;
     }
-    .sy-deck-row {
+    .sy-deck-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         margin-top: 0;
     }
 }
-.sy-box.flush > .sy-tray {
+.sy-box.flush > .sy-tray:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-bottom: 14px;
 }
 
@@ -628,7 +628,7 @@
     .button-secondary,
     .button-ghost,
     .btn
-) {
+):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition:
         transform var(--dur-press) ease-out,
         background-color var(--dur-fast) ease,
@@ -644,15 +644,15 @@
     .button-secondary,
     .button-ghost,
     .btn
-):active:not(:disabled) {
+):active:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transform: scale(0.97);
 }
-:is(.sy-starter, .sy-deck, .sy-topic, .sy-resume) {
+:is(.sy-starter, .sy-deck, .sy-topic, .sy-resume):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition:
         background-color var(--dur-fast) ease,
         color var(--dur-fast) ease;
 }
-a.sy-row:active,
-.sy-workspace-row.sy-row:active {
+a.sy-row:active:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+.sy-workspace-row.sy-row:active:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-subtle);
 }

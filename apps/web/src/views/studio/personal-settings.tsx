@@ -99,7 +99,7 @@ export default function PersonalSettingsPage() {
         }
     }
     return (
-        <PageFrame title="Settings" width="reading">
+        <PageFrame title="Settings" width="reading" glazed>
             <AppearanceSettings />
             <SettingsSection
                 title="Free AI"

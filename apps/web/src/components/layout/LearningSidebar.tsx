@@ -104,7 +104,10 @@ export default function LearningSidebar() {
     const dueCount = reviews.filter((item) => isDue(item)).length;
     return (
         <>
-            <aside className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col overflow-y-auto border-e border-line-faint px-3 pb-5 pt-6 lg:flex">
+            <aside
+                data-glaze
+                className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col overflow-y-auto border-e border-line-faint px-3 pb-5 pt-6 lg:flex"
+            >
                 <Link
                     to="/dashboard"
                     data-slot="nav-brand"
@@ -168,7 +171,10 @@ export default function LearningSidebar() {
                     />
                 </div>
             </aside>
-            <header className="sticky top-0 z-sticky border-b border-line-faint bg-paper px-5 py-2.5 lg:hidden">
+            <header
+                data-glaze
+                className="sticky top-0 z-sticky border-b border-line-faint bg-paper px-5 py-2.5 lg:hidden"
+            >
                 <div className="flex items-center justify-between">
                     <Link
                         to="/dashboard"

@@ -12,16 +12,20 @@ export default function PageFrame({
     subtitle,
     actions,
     width = "wide",
+    glazed = false,
     children,
 }: {
     title: ReactNode;
     subtitle?: ReactNode;
     actions?: ReactNode;
     width?: "wide" | "reading";
+    // glazed screens opt out of the data-legacy island so Glaze controls inside
+    // them stay shielded from the legacy stylesheets.
+    glazed?: boolean;
     children: ReactNode;
 }) {
     return (
-        <div className="mx-auto w-full min-w-0 max-w-256">
+        <div data-glaze className="mx-auto w-full min-w-0 max-w-256">
             <header className="relative mb-8 flex flex-wrap items-start justify-between gap-4 border-b border-line-faint pb-4">
                 <div className="min-w-0">
                     <h1 className="type-title">{title}</h1>
@@ -32,10 +36,18 @@ export default function PageFrame({
                     )}
                 </div>
                 {actions && (
-                    <div className="flex flex-wrap gap-2">{actions}</div>
+                    <div
+                        data-legacy={glazed ? undefined : ""}
+                        className="flex flex-wrap gap-2"
+                    >
+                        {actions}
+                    </div>
                 )}
             </header>
-            <div className={cn("min-w-0", width === "reading" && "max-w-3xl")}>
+            <div
+                data-legacy={glazed ? undefined : ""}
+                className={cn("min-w-0", width === "reading" && "max-w-3xl")}
+            >
                 {children}
             </div>
         </div>
