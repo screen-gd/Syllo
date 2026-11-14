@@ -1,95 +1,94 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, beforeEach } from "vitest";
 import {
-    appearanceSchema,
-    contrastRatio,
-    DEFAULT_APPEARANCE,
-    DEFAULT_THEME_ID,
-    getAppearance,
-    PRESET_THEMES,
+    applyTheme,
+    DEFAULT_PREFERENCE,
+    getThemePreference,
     resolveTheme,
-    saveAppearance,
-    schemeOf,
-    STORAGE_KEY,
-    themeSchema,
-    type AppearanceTheme,
+    saveThemePreference,
+    THEME_STORAGE_KEY,
 } from "@/lib/appearance";
 
-function customTheme(overrides: Partial<AppearanceTheme> = {}): AppearanceTheme {
-    return {
-        id: "custom:1",
-        name: "Mine",
-        page: "#FAFAFA",
-        surface: "#FFFFFF",
-        text: "#111111",
-        accent: "#226688",
-        headingFont: "sans",
-        ...overrides,
-    };
-}
+type MediaHandler = (event: { matches: boolean }) => void;
+let mediaState = { matches: false };
+// applyTheme registers its media listener once for the app's lifetime, so
+// handlers accumulate across tests the way they do in the browser.
+const mediaHandlers: MediaHandler[] = [];
 
 beforeEach(() => {
     localStorage.clear();
+    mediaState = { matches: false };
+    delete document.documentElement.dataset.theme;
+    window.matchMedia = ((query: string) => ({
+        get matches() {
+            return mediaState.matches;
+        },
+        media: query,
+        addEventListener: (_: string, handler: MediaHandler) => mediaHandlers.push(handler),
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+        onchange: null,
+    })) as unknown as typeof window.matchMedia;
 });
 
-describe("appearance schema", () => {
-    it("rejects bad hex colours", () => {
-        expect(themeSchema.safeParse(customTheme({ page: "cream" })).success).toBe(false);
-        expect(themeSchema.safeParse(customTheme({ accent: "#12345" })).success).toBe(false);
-        expect(themeSchema.safeParse(customTheme({ text: "#12345g" })).success).toBe(false);
+describe("getThemePreference", () => {
+    it("defaults to system when storage is missing or invalid", () => {
+        expect(getThemePreference()).toBe(DEFAULT_PREFERENCE);
+        localStorage.setItem(THEME_STORAGE_KEY, "not json");
+        expect(getThemePreference()).toBe("system");
+        localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify("sepia"));
+        expect(getThemePreference()).toBe("system");
     });
 
-    it("rejects more than 20 custom themes", () => {
-        const themes = Array.from({ length: 21 }, (_, i) => customTheme({ id: `custom:${i}` }));
-        expect(
-            appearanceSchema.safeParse({ ...DEFAULT_APPEARANCE, customThemes: themes }).success,
-        ).toBe(false);
-    });
-});
-
-describe("getAppearance", () => {
-    it("returns defaults when storage is missing or invalid", () => {
-        expect(getAppearance()).toEqual(DEFAULT_APPEARANCE);
-        localStorage.setItem(STORAGE_KEY, "not json");
-        expect(getAppearance()).toEqual(DEFAULT_APPEARANCE);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 2 }));
-        expect(getAppearance()).toEqual(DEFAULT_APPEARANCE);
-    });
-
-    it("falls back to Study Desk for an unknown active theme id", () => {
-        saveAppearance({ ...DEFAULT_APPEARANCE, activeThemeId: "custom:gone" });
-        expect(getAppearance().activeThemeId).toBe(DEFAULT_THEME_ID);
-    });
-
-    it("accepts a custom theme as active", () => {
-        const theme = customTheme();
-        saveAppearance({ ...DEFAULT_APPEARANCE, activeThemeId: theme.id, customThemes: [theme] });
-        expect(getAppearance().activeThemeId).toBe(theme.id);
+    it("reads a saved preference", () => {
+        saveThemePreference("dark");
+        expect(getThemePreference()).toBe("dark");
     });
 });
 
 describe("resolveTheme", () => {
-    it("finds presets and custom themes", () => {
-        expect(resolveTheme(DEFAULT_APPEARANCE).id).toBe("preset:study-desk");
-        const theme = customTheme();
-        const appearance = { ...DEFAULT_APPEARANCE, activeThemeId: theme.id, customThemes: [theme] };
-        expect(resolveTheme(appearance)).toEqual(theme);
-        expect(resolveTheme({ ...appearance, activeThemeId: "preset:night" }).name).toBe("Night");
+    it("passes explicit preferences through", () => {
+        expect(resolveTheme("light")).toBe("light");
+        expect(resolveTheme("dark")).toBe("dark");
+    });
+
+    it("resolves system from the media query", () => {
+        expect(resolveTheme("system")).toBe("light");
+        mediaState.matches = true;
+        expect(resolveTheme("system")).toBe("dark");
     });
 });
 
-describe("schemeOf", () => {
-    it("sees light and dark themes", () => {
-        expect(schemeOf(PRESET_THEMES[0])).toBe("light");
-        expect(schemeOf(PRESET_THEMES[3])).toBe("dark");
-        expect(schemeOf(PRESET_THEMES[1])).toBe("light");
+describe("applyTheme", () => {
+    it("sets data-theme and colorScheme on the root", () => {
+        applyTheme("dark");
+        expect(document.documentElement.dataset.theme).toBe("dark");
+        expect(document.documentElement.style.colorScheme).toBe("dark");
     });
-});
 
-describe("contrastRatio", () => {
-    it("computes WCAG ratios for known pairs", () => {
-        expect(contrastRatio("#FFFFFF", "#000000")).toBeCloseTo(21, 0);
-        expect(contrastRatio("#FFFFFF", "#FFFFFF")).toBeCloseTo(1, 5);
-        expect(contrastRatio("#F7F7F5", "#18191B")).toBeCloseTo(16.4, 1);
+    it("removes the retired appearance keys", () => {
+        localStorage.setItem("syllo_appearance_v1", "{}");
+        localStorage.setItem("syllo_appearance_boot", "{}");
+        applyTheme("light");
+        expect(localStorage.getItem("syllo_appearance_v1")).toBeNull();
+        expect(localStorage.getItem("syllo_appearance_boot")).toBeNull();
+    });
+
+    it("follows media changes while the preference is system", () => {
+        saveThemePreference("system");
+        applyTheme("system");
+        mediaState.matches = true;
+        for (const handler of mediaHandlers) handler({ matches: true });
+        expect(document.documentElement.dataset.theme).toBe("dark");
+    });
+
+    it("ignores media changes for an explicit preference", () => {
+        saveThemePreference("light");
+        applyTheme("light");
+        mediaState.matches = true;
+        for (const handler of mediaHandlers) handler({ matches: true });
+        expect(document.documentElement.dataset.theme).toBe("light");
     });
 });

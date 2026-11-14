@@ -6,15 +6,23 @@ import "@/styles/parts-pages.css";
 import "@/components/glaze/styles.css";
 import { Providers } from "@/components/shared/Providers";
 import { GlazePortalProvider } from "@/lib/glaze/portal";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
 import { getAppUrl } from "@/lib/app-url";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
 const appUrl = getAppUrl();
 const defaultTitle = `${APP_NAME} | Your learning and reading`;
 
-// Reapplies the saved theme before first paint so returning users never see
-// a flash of the default Study Desk colours. Written by applyAppearance.
-const BOOT_SCRIPT = `try{var b=JSON.parse(localStorage.getItem("syllo_appearance_boot")||"null"),h=/^#[0-9a-f]{6}$/i;if(b&&h.test(b.page)&&h.test(b.surface)&&h.test(b.text)&&h.test(b.accent)){var r=document.documentElement,s=r.style;s.setProperty("--color-page",b.page);s.setProperty("--color-surface",b.surface);s.setProperty("--color-text",b.text);s.setProperty("--color-accent",b.accent);if(b.scheme==="dark"||b.scheme==="light"){r.dataset.scheme=b.scheme;r.style.colorScheme=b.scheme}if(b.headingFont==="sans"||b.headingFont==="serif")r.dataset.headingFont=b.headingFont;if(b.bg&&typeof b.bg.tint==="number"&&typeof b.bg.blur==="number"){r.dataset.bg="on";s.setProperty("--sy-bg-tint",String(b.bg.tint));s.setProperty("--sy-bg-blur",b.bg.blur+"px")}}}catch(e){}`;
+// Sets data-theme before first paint so a saved or system dark theme never
+// flashes light. Mirrors resolveTheme in lib/appearance.ts.
+const BOOT_SCRIPT = `try{var v=JSON.parse(localStorage.getItem("syllo_theme")||"null"),d=v==="dark"||(v!=="light"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches),r=document.documentElement;r.dataset.theme=d?"dark":"light";r.style.colorScheme=r.dataset.theme}catch(e){}`;
 
 export const Route = createRootRoute({
     head: () => ({
@@ -26,7 +34,6 @@ export const Route = createRootRoute({
                 name: "description",
                 content: "Continue learning, read your books, and review the ideas you want to remember.",
             },
-            { name: "theme-color", content: "#F4EEE2" },
             { property: "og:title", content: defaultTitle },
             { property: "og:description", content: APP_TAGLINE },
             { property: "og:type", content: "website" },
@@ -61,10 +68,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <head>
                 <HeadContent />
             </head>
-            <body className="glaze min-h-screen bg-page text-text">
+            <body className="glaze min-h-dvh bg-page text-text-1">
                 <a
                     href="#main-content"
-                    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-md focus:border focus:border-[color:var(--color-accent)] focus:bg-[color:color-mix(in_srgb,var(--color-accent)_16%,var(--color-surface))] focus:px-4 focus:py-2 focus:text-[color:var(--color-text)]"
+                    className="sr-only focus-ring focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-pill focus:bg-paper focus:px-4 focus:py-2 focus:text-text-1"
                 >
                     Skip to main content
                 </a>
@@ -79,12 +86,18 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function NotFound() {
     return (
-        <main id="main-content" className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-            <p className="font-mono text-sm text-text-soft">404</p>
-            <h1 className="text-2xl font-medium tracking-tight">This page does not exist</h1>
-            <a href="/" className="button-primary px-4 py-2 text-sm">
-                Back to home
-            </a>
+        <main id="main-content" className="flex min-h-dvh items-center justify-center p-6">
+            <Empty reason="empty">
+                <EmptyHeader>
+                    <EmptyTitle>This page does not exist</EmptyTitle>
+                    <EmptyDescription>The link may be old or mistyped.</EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                    <Button size="sm" variant="secondary" render={<a href="/" />} nativeButton={false}>
+                        Back to home
+                    </Button>
+                </EmptyContent>
+            </Empty>
         </main>
     );
 }
@@ -93,12 +106,18 @@ function RootError({ error }: { error: unknown }) {
     const message = error instanceof Error ? error.message : "An unexpected error occurred.";
 
     return (
-        <main id="main-content" className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-            <h1 className="text-2xl font-medium tracking-tight">Something went wrong</h1>
-            <p className="max-w-md text-sm text-text-muted">{message}</p>
-            <a href="/" className="button-secondary px-4 py-2 text-sm">
-                Reload
-            </a>
+        <main id="main-content" className="flex min-h-dvh items-center justify-center p-6">
+            <Empty reason="error">
+                <EmptyHeader>
+                    <EmptyTitle>Something went wrong</EmptyTitle>
+                    <EmptyDescription>{message}</EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                    <Button size="sm" variant="secondary" render={<a href="/" />} nativeButton={false}>
+                        Reload
+                    </Button>
+                </EmptyContent>
+            </Empty>
         </main>
     );
 }

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import LearningLayout from "@/components/layout/LearningLayout";
 import { applyVisualDensity } from "@/lib/accent-theme";
-import { applyAppearance, getAppearance } from "@/lib/appearance";
+import { applyTheme, getThemePreference } from "@/lib/appearance";
 import { getUserConfig } from "@/lib/userConfig";
 
 export const Route = createFileRoute("/_studio")({
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_studio")({
 function StudioLayout() {
     // Theme and density live in local settings, so apply them once on the client.
     useEffect(() => {
-        applyAppearance(getAppearance());
+        applyTheme(getThemePreference());
         applyVisualDensity(getUserConfig().visualDensity);
     }, []);
 

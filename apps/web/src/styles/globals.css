@@ -1,6 +1,5 @@
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
-@import "@fontsource-variable/fraunces";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -110,15 +109,6 @@
 }
 
 /* Sans heading option, and the dark scheme's status hues. */
-html[data-heading-font="sans"] {
-    --font-display: var(--font-geist-sans), "Helvetica Neue", system-ui, sans-serif;
-}
-html[data-scheme="dark"] {
-    color-scheme: dark;
-    --color-success: #4db87e;
-    --color-warning: #d9a441;
-    --color-danger: #e0637a;
-}
 /* Serif headings read like book titles: lighter weight, slightly tight. */
 .sy-app :is(h1, h2) {
     font-family: var(--font-display);
@@ -804,32 +794,6 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     animation: sy-dialog-out var(--dur-fast) var(--ease-out) both;
 }
 
-/*
- * Optional photo behind the app: the image fills the viewport (inset so blur
- * edges do not show) and the app shell tints over it with the page colour.
- */
-.sy-bg {
-    position: fixed;
-    inset: -24px;
-    z-index: -1;
-    pointer-events: none;
-    background-size: cover;
-    background-position: center;
-    filter: blur(var(--sy-bg-blur, 0px));
-    opacity: 1;
-    transition: opacity var(--dur-base) ease;
-}
-@starting-style {
-    .sy-bg {
-        opacity: 0;
-    }
-}
-html[data-bg] body {
-    background: transparent;
-}
-html[data-bg] .sy-app {
-    background: color-mix(in srgb, var(--color-page) calc(var(--sy-bg-tint, 0.8) * 100%), transparent);
-}
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
     .sy-bg {
         display: none;
