@@ -5,51 +5,6 @@
  * learning.css so equal selectors win.
  */
 
-/* Sidebar: a quiet rail on the page background. */
-.sy-nav-item[aria-current="page"] {
-    background: var(--color-surface-muted);
-    color: var(--color-text);
-    font-weight: 550;
-}
-.sy-nav-item svg {
-    color: var(--color-text-soft);
-}
-.sy-nav-item[aria-current="page"] svg {
-    color: var(--color-accent-strong);
-}
-.sy-nav-item .sy-badge {
-    margin-left: auto;
-}
-.sy-nav-group {
-    display: grid;
-    gap: 3px;
-}
-.sy-nav-group + .sy-nav-group {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--color-border);
-}
-.sy-nav-topics {
-    padding-top: 16px;
-    border-top: 1px solid var(--color-border);
-    margin-top: 16px;
-}
-.sy-nav-topics > p {
-    font-size: 0.75rem;
-}
-.sy-nav-topics .sy-topic-dot {
-    margin-top: 5px;
-}
-.sy-nav-bottom {
-    padding-top: 12px;
-}
-.sy-brand svg {
-    color: var(--color-accent-strong);
-}
-.sy-page-head {
-    align-items: center;
-}
-
 /* Raised surfaces: one border on the page colour, no shadow. */
 .sy-card,
 .sy-panel,

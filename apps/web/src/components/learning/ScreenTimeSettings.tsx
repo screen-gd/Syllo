@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import SettingsSection from "@/components/layout/SettingsSection";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Field,
+    FieldContent,
+    FieldDescription,
+    FieldLabel,
+} from "@/components/glaze/ui/field";
+import { Switch } from "@/components/glaze/ui/switch";
 import { screenTimeApi, useScreenTimeLink } from "@/lib/screen-time/client";
 import {
     screenTimeMessage,
@@ -43,23 +50,25 @@ export default function ScreenTimeSettings() {
                 </>
             }
         >
-            <div className="flex items-start justify-between gap-4">
-                <p className="text-sm text-text">
-                    Start a Screen Time session with each focus period
-                </p>
+            <Field orientation="horizontal">
+                <FieldContent>
+                    <FieldLabel>
+                        Start a Screen Time session with each focus period
+                    </FieldLabel>
+                    <FieldDescription role="status">
+                        {screenTimeMessage(status)}
+                    </FieldDescription>
+                </FieldContent>
                 <Switch
                     aria-label="Link Screen Time to focus periods"
                     checked={linked}
                     onCheckedChange={setLinked}
                 />
-            </div>
-            <p className="sy-form-hint" role="status">
-                {screenTimeMessage(status)}
-            </p>
-            <div className="sy-card-actions">
-                <button className="sy-button quiet" onClick={check}>
+            </Field>
+            <div>
+                <Button variant="ghost" onClick={check}>
                     Check again
-                </button>
+                </Button>
             </div>
         </SettingsSection>
     );

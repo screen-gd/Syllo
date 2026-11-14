@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { Copy, Download } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "@/components/glaze/ui/toast";
 import { z } from "zod";
 import SyncSettings from "@/components/sync/SyncSettings";
@@ -7,6 +6,29 @@ import ScreenTimeSettings from "@/components/learning/ScreenTimeSettings";
 import SettingsSection from "@/components/layout/SettingsSection";
 import PageFrame from "@/components/layout/PageFrame";
 import AppearanceSettings from "@/components/settings/AppearanceSettings";
+import { Alert, AlertDescription } from "@/components/glaze/ui/alert";
+import {
+    AttachmentDrop,
+    AttachmentDropTrigger,
+} from "@/components/glaze/ui/attachment";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/glaze/ui/collapsible";
+import { CopyButton } from "@/components/glaze/ui/copy-button";
+import { Download } from "@/components/glaze/icon";
+import { Icon } from "@/components/glaze/icon";
+import { Field, FieldDescription, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import {
     getPersonalSnapshot,
     mergePersonalEntries,
@@ -22,17 +44,20 @@ import { FREE_GEMINI_MODELS } from "@/lib/ai-policy";
 import { scoutApi } from "@/lib/scout/api-client";
 import type { ScoutAgentConnection } from "@/lib/scout/types";
 
+const MODEL_ITEMS = FREE_GEMINI_MODELS.map((value) => ({
+    value,
+    label: value,
+}));
+
 export default function PersonalSettingsPage() {
     const [key, setKey] = useState("");
     const [model, setModel] = useState<string>(
         DEFAULT_CONFIG.modelByProvider.gemini,
     );
-    const [showKey, setShowKey] = useState(false);
     const [connections, setConnections] = useState<
         ScoutAgentConnection[] | null
     >(null);
     const [error, setError] = useState<string | null>(null);
-    const input = useRef<HTMLInputElement>(null);
     useEffect(() => {
         const value = getUserConfig().modelByProvider.gemini;
         if (FREE_GEMINI_MODELS.some((model) => model === value))
@@ -88,7 +113,7 @@ export default function PersonalSettingsPage() {
                 }
             >
                 <form
-                    className="sy-form"
+                    className="grid gap-4"
                     onSubmit={(event) => {
                         event.preventDefault();
                         const config = getUserConfig();
@@ -111,49 +136,49 @@ export default function PersonalSettingsPage() {
                         );
                     }}
                 >
-                    <label>
-                        Gemini API key
-                        <div style={{ display: "flex", gap: 10 }}>
-                            <input
-                                className="sy-input"
-                                type={showKey ? "text" : "password"}
-                                value={key}
-                                onChange={(event) => setKey(event.target.value)}
-                                placeholder="Leave blank to keep your saved key"
-                                autoComplete="off"
-                            />
-                            <button
-                                className="sy-button quiet"
-                                type="button"
-                                onClick={() => setShowKey((value) => !value)}
-                            >
-                                {showKey ? "Hide" : "Show"}
-                            </button>
-                        </div>
-                        <span className="sy-form-hint">
+                    <Field>
+                        <FieldLabel>Gemini API key</FieldLabel>
+                        <Input
+                            mode="password"
+                            value={key}
+                            onChange={(event) => setKey(event.target.value)}
+                            placeholder="Leave blank to keep your saved key"
+                            autoComplete="off"
+                        />
+                        <FieldDescription>
                             Saved in this browser only. Keys are excluded from
                             cloud sync and backups.
-                        </span>
-                    </label>
-                    <label>
-                        Model
-                        <select
-                            className="sy-select"
+                        </FieldDescription>
+                    </Field>
+                    <Field>
+                        <FieldLabel>Model</FieldLabel>
+                        <Select
+                            items={MODEL_ITEMS}
                             value={model}
-                            onChange={(event) => setModel(event.target.value)}
+                            onValueChange={(value) => {
+                                if (typeof value === "string") setModel(value);
+                            }}
                         >
-                            {FREE_GEMINI_MODELS.map((value) => (
-                                <option key={value}>{value}</option>
-                            ))}
-                        </select>
-                    </label>
-                    <div className="sy-card-actions">
-                        <button className="sy-button primary">
-                            Save AI settings
-                        </button>
-                        <button
-                            className="sy-button quiet"
+                            <SelectTrigger>
+                                <SelectValue placeholder="Pick a model" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {MODEL_ITEMS.map((item) => (
+                                    <SelectItem
+                                        key={item.value}
+                                        value={item.value}
+                                    >
+                                        {item.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </Field>
+                    <div className="flex flex-wrap gap-2">
+                        <Button type="submit">Save AI settings</Button>
+                        <Button
                             type="button"
+                            variant="secondary"
                             onClick={() => {
                                 const config = getUserConfig();
                                 saveUserConfig({
@@ -169,7 +194,7 @@ export default function PersonalSettingsPage() {
                             }}
                         >
                             Remove browser key
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </SettingsSection>
@@ -186,31 +211,21 @@ export default function PersonalSettingsPage() {
                     </>
                 }
             >
-                <div className="sy-card-actions">
-                    <button
-                        className="sy-button secondary"
-                        onClick={exportData}
-                    >
-                        <Download />
-                        Export backup
-                    </button>
-                    <button
-                        className="sy-button quiet"
-                        onClick={() => input.current?.click()}
-                    >
-                        Restore backup
-                    </button>
-                    <input
-                        hidden
-                        ref={input}
-                        type="file"
-                        accept=".json,application/json"
-                        onChange={(event) => {
-                            void restore(event.target.files?.[0]);
-                            event.target.value = "";
-                        }}
-                    />
-                </div>
+                <AttachmentDrop
+                    accept=".json,application/json"
+                    multiple={false}
+                    onFiles={(files) => void restore(files[0])}
+                >
+                    <div className="flex flex-wrap gap-2">
+                        <Button variant="secondary" onClick={exportData}>
+                            <Icon icon={Download} size={14} />
+                            Export backup
+                        </Button>
+                        <AttachmentDropTrigger variant="ghost">
+                            Restore backup
+                        </AttachmentDropTrigger>
+                    </div>
+                </AttachmentDrop>
             </SettingsSection>
             <SettingsSection
                 title="Coding agents"
@@ -222,60 +237,51 @@ export default function PersonalSettingsPage() {
                     </>
                 }
             >
-                <button
-                    className="sy-button quiet"
-                    onClick={async () => {
-                        try {
-                            setConnections(
-                                (await scoutApi.getAgents()).connections,
-                            );
-                            setError(null);
-                        } catch {
-                            setError(
-                                "Could not read local agent configurations. Start the local Syllo server and try again.",
-                            );
-                        }
-                    }}
-                >
-                    Show connection settings
-                </button>
-                {connections?.map((connection) => (
-                    <details
-                        key={connection.id}
-                        className="sy-agent-connection"
+                <div>
+                    <Button
+                        variant="secondary"
+                        onClick={async () => {
+                            try {
+                                setConnections(
+                                    (await scoutApi.getAgents()).connections,
+                                );
+                                setError(null);
+                            } catch {
+                                setError(
+                                    "Could not read local agent configurations. Start the local Syllo server and try again.",
+                                );
+                            }
+                        }}
                     >
-                        <summary>{connection.label}</summary>
-                        <p className="sy-form-hint" style={{ marginTop: 8 }}>
-                            {connection.note}
-                        </p>
-                        <pre className="sy-agent-snippet">
-                            {connection.snippet}
-                        </pre>
-                        <button
-                            className="sy-button quiet"
-                            onClick={() => {
-                                void navigator.clipboard
-                                    .writeText(connection.snippet)
-                                    .then(() =>
-                                        toast.success("Copied configuration."),
-                                    )
-                                    .catch(() =>
-                                        setError(
-                                            "Select and copy the configuration manually.",
-                                        ),
-                                    );
-                            }}
-                        >
-                            <Copy />
-                            Copy
-                        </button>
-                    </details>
+                        Show connection settings
+                    </Button>
+                </div>
+                {connections?.map((connection) => (
+                    <Collapsible key={connection.id}>
+                        <CollapsibleTrigger>
+                            {connection.label}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <p className="type-body-sm text-text-2">
+                                {connection.note}
+                            </p>
+                            <pre className="mt-3 overflow-x-auto rounded-tag bg-field p-3 type-code-sm">
+                                {connection.snippet}
+                            </pre>
+                            <CopyButton
+                                className="mt-3"
+                                value={connection.snippet}
+                                label="Copy snippet"
+                                showLabel
+                            />
+                        </CollapsibleContent>
+                    </Collapsible>
                 ))}
             </SettingsSection>
             {error && (
-                <p className="sy-error" role="alert" style={{ marginTop: 24 }}>
-                    {error}
-                </p>
+                <Alert status="fail" className="mt-6">
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
             )}
         </PageFrame>
     );

@@ -71,6 +71,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <body className="glaze min-h-dvh bg-page text-text-1">
                 <a
                     href="#main-content"
+                    data-slot="skip-link"
                     className="sr-only focus-ring focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-pill focus:bg-paper focus:px-4 focus:py-2 focus:text-text-1"
                 >
                     Skip to main content

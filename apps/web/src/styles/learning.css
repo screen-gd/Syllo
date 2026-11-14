@@ -12,17 +12,12 @@
     --sy-radius: 10px;
     --radius-2xl: var(--sy-radius);
     --radius-xl: var(--sy-radius);
-    display: grid;
-    grid-template-columns: 220px minmax(0, 1fr);
-    min-height: 100dvh;
-    background: var(--color-page);
+    /* The app accent: Glaze remaps --color-accent under .glaze; legacy rules in
+       this scope still read it for focus rings and marks. */
+    --color-accent: #b5532a;
     color: var(--color-text);
     font-size: 0.9375rem;
     line-height: 1.55;
-}
-.sy-main {
-    min-width: 0;
-    padding: 36px 44px 72px;
 }
 /* Every route fills the canvas beside the sidebar, with the same title origin. */
 .sy-page,
@@ -38,12 +33,6 @@
 }
 .sy-page > * {
     min-width: 0;
-}
-.sy-frame-body {
-    min-width: 0;
-}
-.sy-frame-reading {
-    max-width: 46rem;
 }
 .sy-stack {
     display: grid;
@@ -74,105 +63,10 @@
 .sy-small {
     font-size: 0.75rem;
 }
-.sy-page-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    position: relative;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--color-border);
-    margin-bottom: var(--sy-space-section);
-}
-.sy-frame-title {
-    min-width: 0;
-}
-.sy-page-head > div {
-    min-width: 0;
-}
-.sy-page-head h1 {
-    overflow-wrap: anywhere;
-}
-.sy-page-head .app-header-block {
-    gap: 0;
-}
-.sy-page-head p {
-    font-size: 0.8125rem;
-    color: var(--color-text-muted);
-    margin-top: 6px;
-}
-.sy-brand {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-size: 1.125rem;
-    font-weight: 600;
-    letter-spacing: -0.6px;
-}
-.sy-brand svg {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-}
-.sy-sidebar {
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-    padding: 25px 13px 20px;
-    border-right: 1px solid var(--color-border);
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    overflow-y: auto;
-}
-.sy-sidebar > .sy-brand {
-    padding: 0 10px 32px;
-}
-.sy-sidebar nav {
-    display: grid;
-    gap: 3px;
-}
-.sy-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 40px;
-    padding: 7px 10px;
-    color: var(--color-text-muted);
-    border-radius: var(--sy-radius);
-    font-size: 0.8125rem;
-    overflow-wrap: anywhere;
-}
 @media (hover: hover) and (pointer: fine) {
     .sy-nav-item:hover {
         color: var(--color-text);
     }
-}
-.sy-nav-topics {
-    margin-top: 30px;
-    padding: 0 10px;
-}
-.sy-nav-topics > p {
-    font-size: 0.75rem;
-    color: var(--color-text-soft);
-    margin-bottom: 10px;
-}
-.sy-nav-topics > a {
-    display: flex;
-    align-items: flex-start;
-    gap: 9px;
-    font-size: 0.75rem;
-    line-height: 1.6;
-    color: var(--color-text-muted);
-    padding: 8px 0;
-}
-.sy-nav-bottom {
-    margin-top: auto;
-    padding-top: 30px;
-}
-.sy-mobile-nav {
-    display: none;
 }
 .sy-button {
     display: inline-flex;
@@ -1021,7 +915,7 @@
     color: var(--color-text-soft);
     opacity: 1;
 }
-.sy-app :is(a, button, input, textarea, select, summary):focus-visible {
+.sy-app :is(a, button, input, textarea, select, summary):not([data-slot]):focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 0;
 }
@@ -1138,31 +1032,6 @@
     min-width: 0;
 }
 .sy-source-fields > button {
-    justify-self: start;
-}
-.sy-settings-section {
-    display: grid;
-    grid-template-columns: minmax(12rem, 20rem) minmax(0, 1fr);
-    gap: var(--sy-space-section);
-    align-items: start;
-}
-.sy-settings-section + .sy-settings-section {
-    border-top: 1px solid var(--color-border);
-    padding-top: var(--sy-space-section);
-    margin-top: var(--sy-space-section);
-}
-.sy-settings-label,
-.sy-settings-content {
-    min-width: 0;
-}
-.sy-settings-label p {
-    margin-top: 8px;
-}
-.sy-settings-content {
-    display: grid;
-    gap: 16px;
-}
-.sy-settings-content > button {
     justify-self: start;
 }
 .sy-settings-content > .sy-card-actions {
@@ -1311,12 +1180,6 @@
     text-align: right;
     font-variant-numeric: tabular-nums;
 }
-.sy-settings-content p {
-    font-size: 0.8125rem;
-    line-height: 1.7;
-    color: var(--color-text-muted);
-    overflow-wrap: anywhere;
-}
 .sy-create-review-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1371,15 +1234,6 @@
     padding: 4px 10px;
     font-size: 0.75rem;
 }
-.sy-agent-snippet {
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    padding: 16px;
-    background: var(--color-surface-subtle);
-    border-radius: var(--sy-radius);
-    font-size: 0.75rem;
-    margin: 12px 0;
-}
 .sy-manual-roadmap {
     border-top: 1px solid var(--color-border);
     padding-top: 20px;
@@ -1432,13 +1286,6 @@
 }
 .sy-sync-panel .sy-card-actions {
     gap: 12px;
-}
-
-/* Notes, Glossary, Reviews and Progress share these list pieces. */
-.sy-head-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
 }
 .sy-inline-form {
     max-width: 44rem;
@@ -1926,11 +1773,11 @@
 .sy-desk summary {
     cursor: pointer;
 }
-.sy-desk button:focus-visible,
-.sy-desk a:focus-visible,
-.sy-desk input:focus-visible,
-.sy-desk textarea:focus-visible,
-.sy-desk summary:focus-visible {
+.sy-desk button:not([data-slot]):focus-visible,
+.sy-desk a:not([data-slot]):focus-visible,
+.sy-desk input:not([data-slot]):focus-visible,
+.sy-desk textarea:not([data-slot]):focus-visible,
+.sy-desk summary:not([data-slot]):focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 0;
 }

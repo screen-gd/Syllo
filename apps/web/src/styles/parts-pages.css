@@ -186,26 +186,6 @@
     padding-top: 20px;
     border-top: 0;
 }
-.sy-settings-body {
-    display: grid;
-    grid-template-columns: minmax(12rem, 20rem) minmax(0, 1fr);
-    gap: var(--sy-space-block);
-    align-items: start;
-}
-.sy-settings-body > .sy-settings-content:only-child {
-    grid-column: 1 / -1;
-}
-.sy-settings-body .sy-settings-label p {
-    margin-top: 0;
-}
-.sy-agent-connection {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--color-border);
-}
-.sy-settings-content .sy-agent-snippet {
-    background: var(--color-surface-subtle);
-}
 
 @media (max-width: 760px) {
     .sy-settings-body {

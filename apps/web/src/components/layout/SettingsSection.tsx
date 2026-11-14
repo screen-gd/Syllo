@@ -18,13 +18,13 @@ export default function SettingsSection({
         <section className="shell">
             <div className="panel p-4">
                 <h2 className="type-heading-sm">{title}</h2>
-                <div className="sy-settings-body">
+                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:gap-6">
                     {description && (
-                        <div className="sy-settings-label">
-                            <p className="type-body-sm text-text-2">{description}</p>
-                        </div>
+                        <p className="type-body-sm text-text-2 sm:w-56 sm:shrink-0">
+                            {description}
+                        </p>
                     )}
-                    <div className="sy-settings-content">{children}</div>
+                    <div className="grid min-w-0 flex-1 gap-4">{children}</div>
                 </div>
             </div>
         </section>

@@ -117,16 +117,6 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     font-weight: 560;
     letter-spacing: -0.01em;
 }
-/* The title's hairline ends in a short accent rule, like a notebook tab. */
-.sy-page-head::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -1px;
-    width: 2.5rem;
-    height: 2px;
-    background: var(--color-accent);
-}
 
 :root {
     color-scheme: light;
@@ -224,8 +214,9 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         background: var(--color-accent-soft);
     }
 
-    /* Keyboard focus only: a plain accent outline, no ring or offset. */
-    :focus-visible {
+    /* Keyboard focus only: a plain accent outline, no ring or offset.
+       Glaze-rendered controls (data-slot) take Glaze's own focus ring. */
+    :focus-visible:not([data-slot]) {
         outline: 2px solid var(--color-accent);
         outline-offset: 0;
     }
@@ -814,9 +805,6 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     background: color-mix(in srgb, var(--color-page) 72%, transparent);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
-}
-.sy-mobile-nav {
-    border-top: 1px solid var(--color-border);
 }
 .sy-desk-top,
 .sy-material {

@@ -100,6 +100,7 @@ export const UserAvatar = UserIcon;
 export const Warning = WarningIcon;
 export const Waiting = HourglassSimpleMediumIcon;
 export const Wrap = ArrowUDownLeftIcon;
+// App navigation glyphs, named for the routes they mark.
 export const Home = HouseIcon;
 export const Learn = BookOpenIcon;
 export const Library = BooksIcon;
