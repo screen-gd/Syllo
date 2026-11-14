@@ -184,7 +184,6 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-    @apply bg-background text-foreground;
     }
 
     a {
