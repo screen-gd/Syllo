@@ -5,6 +5,7 @@ import { z } from "zod";
 import SyncSettings from "@/components/sync/SyncSettings";
 import ScreenTimeSettings from "@/components/learning/ScreenTimeSettings";
 import SettingsSection from "@/components/layout/SettingsSection";
+import AppearanceSettings from "@/components/settings/AppearanceSettings";
 import {
     getPersonalSnapshot,
     mergePersonalEntries,
@@ -76,6 +77,7 @@ export default function PersonalSettingsPage() {
             <header className="sy-page-head">
                 <h1>Settings</h1>
             </header>
+            <AppearanceSettings />
             <SettingsSection
                 title="Free AI"
                 description={
