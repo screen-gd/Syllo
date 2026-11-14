@@ -1,0 +1,327 @@
+// @vitest-environment happy-dom
+import { act } from "react";
+import { createRoot, type Root } from "react-dom/client";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import PomodoroProvider, {
+    Pomodoro,
+    useStudyFocus,
+} from "@/components/learning/Pomodoro";
+import {
+    useScreenTimeLink,
+    type StudyFocus,
+} from "@/lib/screen-time/client";
+
+Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+
+const LINK_KEY = "syllo:screen-time-link:v1";
+const SESSION_KEY = "syllo:pomodoro-session";
+const SYLLO_SESSION = {
+    id: "s1",
+    goal: "Study session",
+    source: "syllo",
+    mode: "block",
+    apps: [],
+    sites: [],
+    allowSites: [],
+    startedAt: "2026-01-01T00:00:00.000Z",
+    endsAt: "2026-01-01T00:25:00.000Z",
+};
+
+interface FetchCall {
+    method: string;
+    url: string;
+    body: unknown;
+}
+
+let calls: FetchCall[];
+let reply: unknown;
+let replies: unknown[];
+let container: HTMLDivElement;
+let root: Root;
+
+/** Subscribes to the link store so a storage event can reset its cache. */
+function LinkProbe() {
+    useScreenTimeLink();
+    return null;
+}
+
+/** Reports a lesson focus to the provider like the Learn page does. */
+function StudyProbe({ focus }: { focus: StudyFocus | null }) {
+    useStudyFocus(focus);
+    return null;
+}
+
+beforeEach(async () => {
+    localStorage.clear();
+    calls = [];
+    reply = { kind: "ready", session: null };
+    replies = [];
+    vi.stubGlobal(
+        "fetch",
+        vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+            let body: unknown;
+            try {
+                body =
+                    typeof init?.body === "string"
+                        ? JSON.parse(init.body)
+                        : undefined;
+            } catch {
+                body = undefined;
+            }
+            calls.push({
+                method: init?.method ?? "GET",
+                url: String(input),
+                body,
+            });
+            const answer = replies.length > 0 ? replies.shift() : reply;
+            return Promise.resolve(
+                new Response(JSON.stringify(answer), {
+                    status: 200,
+                    headers: { "Content-Type": "application/json" },
+                }),
+            );
+        }),
+    );
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    // The link flag is cached in the module; a storage event clears the cache
+    // while the probe keeps a subscription alive.
+    await act(async () => {
+        root.render(<LinkProbe />);
+    });
+    await act(async () => {
+        window.dispatchEvent(
+            new StorageEvent("storage", { key: LINK_KEY }),
+        );
+    });
+});
+
+afterEach(async () => {
+    await act(async () => {
+        root.unmount();
+    });
+    container.remove();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+});
+
+async function render() {
+    await act(async () => {
+        root.render(
+            <PomodoroProvider>
+                <Pomodoro />
+            </PomodoroProvider>,
+        );
+    });
+}
+
+/**
+ * Turn the link on the way another tab would: write the key, then notify
+ * listeners through a storage event so the module cache picks it up.
+ */
+async function linkOn() {
+    localStorage.setItem(LINK_KEY, "on");
+    await act(async () => {
+        window.dispatchEvent(
+            new StorageEvent("storage", { key: LINK_KEY }),
+        );
+    });
+}
+
+async function click(text: string) {
+    const button = Array.from(container.querySelectorAll("button")).find(
+        (el) => el.textContent === text,
+    );
+    if (!button) throw new Error(`no button labelled ${text}`);
+    await act(async () => {
+        button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+}
+
+function storeSession(session: Record<string, unknown>) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+}
+
+describe("pomodoro screen time link", () => {
+    it("posts a session for the full focus period on Start", async () => {
+        await linkOn();
+        await render();
+        await click("Start");
+        const post = calls.find((call) => call.method === "POST");
+        expect(post).toBeDefined();
+        expect(post?.url).toBe("/api/screen-time/session");
+        if (typeof post?.body !== "object" || post.body === null)
+            throw new Error("expected a JSON body");
+        expect(post.body).toMatchObject({
+            goal: "Study session",
+            durationSeconds: 1500,
+            resourceUrls: [],
+        });
+    });
+
+    it("deletes the session on Pause", async () => {
+        await linkOn();
+        await render();
+        await click("Start");
+        await click("Pause");
+        expect(calls[calls.length - 1].method).toBe("DELETE");
+        expect(calls[calls.length - 1].url).toBe("/api/screen-time/session");
+    });
+
+    it("reposts the remaining time for a stored running focus", async () => {
+        await linkOn();
+        storeSession({
+            mode: "focus",
+            remaining: 300,
+            endAt: Date.now() + 300_000,
+        });
+        await render();
+        const post = calls.find((call) => call.method === "POST");
+        expect(post).toBeDefined();
+        if (typeof post?.body !== "object" || post.body === null)
+            throw new Error("expected a JSON body");
+        expect(post.body).toMatchObject({ durationSeconds: 300 });
+    });
+
+    it("sends a stop for a stored idle timer so nothing keeps blocking", async () => {
+        await linkOn();
+        storeSession({ mode: "focus", remaining: 1500, endAt: null });
+        await render();
+        expect(calls).toHaveLength(1);
+        expect(calls[0].method).toBe("DELETE");
+    });
+
+    it("stays silent when the link is off", async () => {
+        await render();
+        await click("Start");
+        expect(calls).toHaveLength(0);
+    });
+
+    it("drops the label when the session is ended in screen time", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "ready", session: SYLLO_SESSION };
+        await act(async () => {
+            root.render(
+                <PomodoroProvider>
+                    <StudyProbe focus={{ goal: "One", resourceUrls: [] }} />
+                    <Pomodoro />
+                </PomodoroProvider>,
+            );
+        });
+        await click("Start");
+        expect(container.textContent).toContain("Screen Time");
+        reply = { kind: "ready", session: null };
+        await act(async () => {
+            vi.advanceTimersByTime(20_000);
+        });
+        expect(container.textContent).not.toContain("Screen Time");
+        expect(container.textContent).toContain("Pause");
+        await act(async () => {
+            vi.advanceTimersByTime(20_000);
+        });
+        await act(async () => {
+            root.render(
+                <PomodoroProvider>
+                    <StudyProbe focus={{ goal: "Two", resourceUrls: [] }} />
+                    <Pomodoro />
+                </PomodoroProvider>,
+            );
+        });
+        expect(calls.filter((call) => call.method === "POST")).toHaveLength(1);
+        expect(calls.filter((call) => call.method === "GET")).toHaveLength(1);
+    });
+
+    it("checks again when the tab becomes visible", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "ready", session: SYLLO_SESSION };
+        await render();
+        await click("Start");
+        const before = calls.filter(
+            (call) => call.method === "GET",
+        ).length;
+        await act(async () => {
+            document.dispatchEvent(new Event("visibilitychange"));
+        });
+        expect(
+            calls.filter((call) => call.method === "GET").length,
+        ).toBe(before + 1);
+    });
+
+    it("stays silent when the link is off, even as time passes", async () => {
+        vi.useFakeTimers();
+        await render();
+        await click("Start");
+        await act(async () => {
+            vi.advanceTimersByTime(60_000);
+        });
+        expect(calls).toHaveLength(0);
+    });
+
+    it("does not poll when the start was declined", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "busy", session: null };
+        await render();
+        await click("Start");
+        await act(async () => {
+            vi.advanceTimersByTime(60_000);
+        });
+        expect(
+            calls.filter((call) => call.method === "GET"),
+        ).toHaveLength(0);
+    });
+
+    it("does not poll when the start met an outdated screen time", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "outdated" };
+        await render();
+        await click("Start");
+        await act(async () => {
+            vi.advanceTimersByTime(60_000);
+        });
+        expect(
+            calls.filter((call) => call.method === "GET"),
+        ).toHaveLength(0);
+    });
+
+    it("retries the start once screen time is back", async () => {
+        vi.useFakeTimers();
+        await linkOn();
+        reply = { kind: "not-running" };
+        await render();
+        await click("Start");
+        expect(container.textContent).toContain(
+            "Open it to block distractions",
+        );
+        replies = [
+            { kind: "ready", session: null },
+            { kind: "ready", session: SYLLO_SESSION },
+        ];
+        await act(async () => {
+            vi.advanceTimersByTime(20_000);
+        });
+        expect(calls.filter((call) => call.method === "GET")).toHaveLength(
+            1,
+        );
+        expect(calls.filter((call) => call.method === "POST")).toHaveLength(
+            2,
+        );
+        expect(container.textContent).toContain("Screen Time");
+    });
+
+    it("warns when the stop could not reach screen time", async () => {
+        await linkOn();
+        reply = { kind: "ready", session: SYLLO_SESSION };
+        await render();
+        await click("Start");
+        reply = { kind: "unavailable" };
+        await click("Pause");
+        expect(container.textContent).toContain(
+            "Screen Time couldn't be reached. Your timer still works.",
+        );
+    });
+});

@@ -3,6 +3,7 @@ import { Copy, Download } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import SyncSettings from "@/components/sync/SyncSettings";
+import ScreenTimeSettings from "@/components/learning/ScreenTimeSettings";
 import SettingsSection from "@/components/layout/SettingsSection";
 import {
     getPersonalSnapshot,
@@ -173,6 +174,7 @@ export default function PersonalSettingsPage() {
                 </form>
             </SettingsSection>
             <SyncSettings />
+            <ScreenTimeSettings />
             <SettingsSection
                 title="Your data"
                 description={
