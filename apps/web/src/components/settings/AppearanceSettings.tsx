@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { z } from "zod";
 import SettingsSection from "@/components/layout/SettingsSection";
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
@@ -8,21 +7,19 @@ import {
 } from "@/components/glaze/ui/segmented-control";
 import {
     applyTheme,
-    getThemePreference,
     saveThemePreference,
-    type ThemePreference,
+    useThemePreference,
 } from "@/lib/appearance";
 
 const preferenceSchema = z.enum(["light", "dark", "system"]);
 
 /** Appearance section of Settings: the only choice left is light, dark or system. */
 export default function AppearanceSettings() {
-    const [preference, setPreference] = useState<ThemePreference>(getThemePreference);
+    const preference = useThemePreference();
 
     function choose(value: string | string[]) {
         const parsed = preferenceSchema.safeParse(value);
         if (!parsed.success) return;
-        setPreference(parsed.data);
         saveThemePreference(parsed.data);
         applyTheme(parsed.data);
     }

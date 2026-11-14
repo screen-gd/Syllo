@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from "react";
 import { z } from "zod";
 
 /**
@@ -43,6 +44,31 @@ export function saveThemePreference(preference: ThemePreference): void {
     localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(preference));
 }
 
+export const APPEARANCE_EVENT = "syllo:appearance";
+
+function subscribeAppearance(callback: () => void): () => void {
+    window.addEventListener(APPEARANCE_EVENT, callback);
+    window.addEventListener("storage", callback);
+    return () => {
+        window.removeEventListener(APPEARANCE_EVENT, callback);
+        window.removeEventListener("storage", callback);
+    };
+}
+
+/**
+ * The stored preference, safe under SSR hydration: the server snapshot is
+ * always "system" (localStorage does not exist there), so hydration matches
+ * and the real value settles right after mount. Re-reads on the
+ * `syllo:appearance` event applyTheme dispatches and on cross-tab `storage`.
+ */
+export function useThemePreference(): ThemePreference {
+    return useSyncExternalStore(
+        subscribeAppearance,
+        getThemePreference,
+        () => DEFAULT_PREFERENCE,
+    );
+}
+
 let listening = false;
 
 /**
@@ -72,7 +98,7 @@ export function applyTheme(preference: ThemePreference): void {
     } catch {
         /* Private mode can refuse storage; the keys are cosmetic. */
     }
-    window.dispatchEvent(new Event("syllo:appearance"));
+    window.dispatchEvent(new Event(APPEARANCE_EVENT));
     if (listening || !window.matchMedia) return;
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     media.addEventListener("change", () => {
