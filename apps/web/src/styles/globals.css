@@ -82,9 +82,22 @@ html[data-scheme="dark"] {
     --color-danger: #e0637a;
 }
 /* Serif headings read like book titles: lighter weight, slightly tight. */
+.sy-app :is(h1, h2) {
+    font-family: var(--font-display);
+}
 html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     font-weight: 560;
     letter-spacing: -0.01em;
+}
+/* The title's hairline ends in a short accent rule, like a notebook tab. */
+.sy-page-head::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 2.5rem;
+    height: 2px;
+    background: var(--color-accent);
 }
 
 :root {

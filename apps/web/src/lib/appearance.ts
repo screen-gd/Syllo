@@ -151,6 +151,7 @@ export function applyAppearance(appearance: Appearance): void {
     root.style.setProperty("--color-text", theme.text);
     root.style.setProperty("--color-accent", theme.accent);
     root.dataset.scheme = scheme;
+    root.style.colorScheme = scheme;
     root.dataset.headingFont = theme.headingFont;
     if (appearance.background.enabled) {
         root.dataset.bg = "on";
