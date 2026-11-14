@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { describe, expect, it, beforeEach } from "vitest";
 import {
     appearanceSchema,
@@ -89,6 +90,6 @@ describe("contrastRatio", () => {
     it("computes WCAG ratios for known pairs", () => {
         expect(contrastRatio("#FFFFFF", "#000000")).toBeCloseTo(21, 0);
         expect(contrastRatio("#FFFFFF", "#FFFFFF")).toBeCloseTo(1, 5);
-        expect(contrastRatio("#F7F7F5", "#18191B")).toBeCloseTo(17, 0);
+        expect(contrastRatio("#F7F7F5", "#18191B")).toBeCloseTo(16.4, 1);
     });
 });
