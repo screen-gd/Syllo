@@ -1,0 +1,29 @@
+{
+	"scan": [
+		"apps/web/src"
+	],
+	"ignore": [
+		"**/*.test.*",
+		"**/*.stories.*",
+		"**/__tests__/**",
+		"apps/web/src/components/glaze/**",
+		"apps/web/src/lib/glaze/**",
+		"apps/web/src/routeTree.gen.ts"
+	],
+	"tokenFiles": [
+		"apps/web/src/components/glaze/tokens.css"
+	],
+	"legacyImports": [
+		"^@/components/ui/",
+		"^lucide-react$",
+		"^sonner$",
+		"^@radix-ui/",
+		"^@/styles/",
+		"^@/components/shared/(Modal|EmptyState|ListSkeleton|StatusBadge|ProgressRing)$",
+		"^@fontsource-variable/fraunces"
+	],
+	"systemImports": [
+		"^@/components/glaze/",
+		"^@/lib/glaze/"
+	]
+}
