@@ -26,7 +26,7 @@
 }
 /* Every route fills the canvas beside the sidebar, with the same title origin. */
 .sy-page,
-.sy-app .studio-page {
+.sy-reader-page {
     width: 100%;
     min-width: 0;
     margin: 0;
@@ -36,17 +36,7 @@
     max-width: 76rem;
     margin-inline: auto;
 }
-.sy-reader-page {
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-}
-.sy-app .studio-page {
-    gap: var(--sy-space-block);
-}
-.sy-page > *,
-.sy-app .studio-page > * {
+.sy-page > * {
     min-width: 0;
 }
 .sy-frame-body {
@@ -97,9 +87,6 @@
 }
 .sy-frame-title {
     min-width: 0;
-}
-.studio-page > .sy-page-head {
-    margin-bottom: 0;
 }
 .sy-page-head > div {
     min-width: 0;

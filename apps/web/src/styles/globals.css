@@ -250,15 +250,6 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
         padding-block: clamp(40px, 7vw, 72px);
     }
 
-    /* A studio screen: title row, then blocks separated by one gap. */
-    .studio-page {
-        display: grid;
-        align-content: start;
-        gap: 24px;
-        width: 100%;
-        padding-block: 28px 64px;
-    }
-
     .app-header-block {
         display: flex;
         flex-direction: column;
@@ -695,10 +686,6 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
     }
 
     /* -- Visual density: compact ------------------------------------------------- */
-    html.density-compact .studio-page {
-        gap: 14px;
-        padding-block: 16px 40px;
-    }
     html.density-compact .settings-field {
         padding-block: 10px;
     }
