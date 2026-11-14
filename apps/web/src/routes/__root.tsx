@@ -10,6 +10,10 @@ import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 const appUrl = getAppUrl();
 const defaultTitle = `${APP_NAME} | Your learning and reading`;
 
+// Reapplies the saved theme before first paint so returning users never see
+// a flash of the default Study Desk colours. Written by applyAppearance.
+const BOOT_SCRIPT = `try{var b=JSON.parse(localStorage.getItem("syllo_appearance_boot")||"null"),h=/^#[0-9a-f]{6}$/i;if(b&&h.test(b.page)&&h.test(b.surface)&&h.test(b.text)&&h.test(b.accent)){var r=document.documentElement,s=r.style;s.setProperty("--color-page",b.page);s.setProperty("--color-surface",b.surface);s.setProperty("--color-text",b.text);s.setProperty("--color-accent",b.accent);if(b.scheme==="dark"||b.scheme==="light")r.dataset.scheme=b.scheme;if(b.headingFont==="sans"||b.headingFont==="serif")r.dataset.headingFont=b.headingFont;if(b.bg&&typeof b.bg.tint==="number"&&typeof b.bg.blur==="number"){r.dataset.bg="on";s.setProperty("--sy-bg-tint",String(b.bg.tint));s.setProperty("--sy-bg-blur",b.bg.blur+"px")}}}catch(e){}`;
+
 export const Route = createRootRoute({
     head: () => ({
         meta: [
@@ -20,7 +24,7 @@ export const Route = createRootRoute({
                 name: "description",
                 content: "Continue learning, read your books, and review the ideas you want to remember.",
             },
-            { name: "theme-color", content: "#f7f7f5" },
+            { name: "theme-color", content: "#F4EEE2" },
             { property: "og:title", content: defaultTitle },
             { property: "og:description", content: APP_TAGLINE },
             { property: "og:type", content: "website" },
@@ -35,6 +39,7 @@ export const Route = createRootRoute({
             { name: "twitter:description", content: APP_TAGLINE },
             { name: "twitter:image", content: `${appUrl}/og.png` },
         ],
+        scripts: [{ children: BOOT_SCRIPT }],
         links: [
             { rel: "manifest", href: "/manifest.json" },
             { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },

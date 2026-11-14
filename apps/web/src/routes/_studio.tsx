@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import LearningLayout from "@/components/layout/LearningLayout";
-import { applyAccentTheme, applyVisualDensity } from "@/lib/accent-theme";
+import { applyVisualDensity } from "@/lib/accent-theme";
+import { applyAppearance, getAppearance } from "@/lib/appearance";
 import { getUserConfig } from "@/lib/userConfig";
 
 export const Route = createFileRoute("/_studio")({
@@ -9,11 +10,10 @@ export const Route = createFileRoute("/_studio")({
 });
 
 function StudioLayout() {
-    // Accent and density live in local settings, so apply them once on the client.
+    // Theme and density live in local settings, so apply them once on the client.
     useEffect(() => {
-        const config = getUserConfig();
-        applyAccentTheme(config.accentColor);
-        applyVisualDensity(config.visualDensity);
+        applyAppearance(getAppearance());
+        applyVisualDensity(getUserConfig().visualDensity);
     }, []);
 
     return (
