@@ -64,7 +64,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
 "w-full flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-colors",
                         task.completed 
                             ? "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20" 
-                            : "bg-text border-accent text-page hover:bg-[#2c2d30]"
+                            : "bg-text border-accent text-page hover:bg-primary-hover"
                     )}
                 >
                     {task.completed ? <><CheckCircle2 size={16} /> Completed</> : "Mark as Complete"}

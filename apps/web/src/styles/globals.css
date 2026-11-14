@@ -1,5 +1,6 @@
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/fraunces";
 @import "tailwindcss";
 
 /*
@@ -12,38 +13,44 @@
 }
 
 /*
- * Theme: light, flat.
+ * Theme: flat, themeable.
  *
- * Elevation is a lightness step (page #f7f7f5, surface #fff, raised #e6e6e1)
- * plus a single hairline border; there are no shadows except on floating
- * layers. Near-black is the primary text and the primary button fill.
- * The accent is an indigo reserved for data and selection marks (progress,
- * due counts, the current item); it never fills buttons or nav.
+ * Every colour derives from four seeds - page, surface, text and accent - so
+ * a theme is only those four hex values. Elevation is a lightness step plus a
+ * hairline border; there are no shadows except on floating layers. Text
+ * colour fills primary buttons, the accent marks data and selection only.
+ * The defaults below are Study Desk; appearance.ts swaps the seeds at
+ * runtime and a small boot script in __root.tsx sets them before paint.
  *
  * Every component reads these tokens through Tailwind utilities such as
  * `bg-surface`, `text-text-muted` or `border-border`. Workspaces may override
  * `--color-accent` with their own branding colour.
  */
 @theme {
-    --color-page: #f7f7f5;
-    --color-surface: #ffffff;
-    --color-surface-subtle: #f2f2ef;
-    --color-surface-muted: #ebebe7;
-    --color-raised: #e6e6e1;
-    --color-border: #e5e5e0;
-    --color-border-strong: #cdcdc6;
-    --color-text: #18191b;
-    --color-text-muted: #4f5257;
-    --color-text-soft: #6b6e75;
-    --color-accent: #3f4cc4;
-    --color-accent-strong: #2f3aa8;
-    --color-accent-soft: #eef0fd;
+    /* Colour seeds; everything below mixes from them. */
+    --color-page: #f4eee2;
+    --color-surface: #fffcf5;
+    --color-text: #2b2622;
+    --color-accent: #b5532a;
+
+    --color-surface-subtle: color-mix(in oklab, var(--color-surface) 96%, var(--color-text));
+    --color-surface-muted: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
+    --color-raised: color-mix(in oklab, var(--color-surface) 88%, var(--color-text));
+    --color-border: color-mix(in oklab, var(--color-page) 90%, var(--color-text));
+    --color-border-strong: color-mix(in oklab, var(--color-page) 78%, var(--color-text));
+    --color-text-muted: color-mix(in oklab, var(--color-text) 74%, var(--color-page));
+    --color-text-soft: color-mix(in oklab, var(--color-text) 62%, var(--color-page));
+    --color-accent-strong: color-mix(in oklab, var(--color-accent) 75%, var(--color-text));
+    --color-accent-soft: color-mix(in oklab, var(--color-surface) 88%, var(--color-accent));
+    --color-on-primary: var(--color-page);
+    --color-primary-hover: color-mix(in oklab, var(--color-text) 88%, var(--color-page));
+
     --color-success: #1f8a4c;
-    --color-success-soft: #e6f4ea;
     --color-warning: #a8690a;
-    --color-warning-soft: #fbf1dc;
     --color-danger: #c4314b;
-    --color-danger-soft: #fbe9ec;
+    --color-success-soft: color-mix(in oklab, var(--color-surface) 88%, var(--color-success));
+    --color-warning-soft: color-mix(in oklab, var(--color-surface) 88%, var(--color-warning));
+    --color-danger-soft: color-mix(in oklab, var(--color-surface) 88%, var(--color-danger));
     --color-scrim: rgba(24, 25, 27, 0.32);
 
     --shadow-pop: 0 8px 30px rgba(24, 25, 27, 0.12);
@@ -51,7 +58,7 @@
 
     --font-sans: var(--font-geist-sans), "Helvetica Neue", system-ui, sans-serif;
     --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-    --font-display: var(--font-geist-sans), "Helvetica Neue", system-ui, sans-serif;
+    --font-display: "Fraunces Variable", Georgia, serif;
 
     /* Cards use 2xl, nested panels xl, controls are pills. */
     --radius-sm: 6px;
@@ -62,6 +69,22 @@
 
     --tracking-tight: -0.01em;
     --tracking-display: -0.02em;
+}
+
+/* Sans heading option, and the dark scheme's status hues. */
+html[data-heading-font="sans"] {
+    --font-display: var(--font-geist-sans), "Helvetica Neue", system-ui, sans-serif;
+}
+html[data-scheme="dark"] {
+    color-scheme: dark;
+    --color-success: #4db87e;
+    --color-warning: #d9a441;
+    --color-danger: #e0637a;
+}
+/* Serif headings read like book titles: lighter weight, slightly tight. */
+html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display) {
+    font-weight: 560;
+    letter-spacing: -0.01em;
 }
 
 :root {
@@ -565,13 +588,13 @@
     .button-primary,
     .btn-primary {
         background: var(--color-text);
-        color: #ffffff;
+        color: var(--color-on-primary);
     }
 
     @media (hover: hover) and (pointer: fine) {
         .button-primary:hover,
         .btn-primary:hover {
-            background: #2c2d30;
+            background: var(--color-primary-hover);
         }
     }
 
@@ -742,6 +765,38 @@
 }
 
 /*
+ * Optional photo behind the app: the image fills the viewport (inset so blur
+ * edges do not show) and the app shell tints over it with the page colour.
+ */
+.sy-bg {
+    position: fixed;
+    inset: -24px;
+    z-index: -1;
+    pointer-events: none;
+    background-size: cover;
+    background-position: center;
+    filter: blur(var(--sy-bg-blur, 0px));
+    opacity: 1;
+    transition: opacity var(--dur-base) ease;
+}
+@starting-style {
+    .sy-bg {
+        opacity: 0;
+    }
+}
+html[data-bg] .sy-app {
+    background: color-mix(in srgb, var(--color-page) calc(var(--sy-bg-tint, 0.8) * 100%), transparent);
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    .sy-bg {
+        display: none;
+    }
+    html[data-bg] .sy-app {
+        background: var(--color-page);
+    }
+}
+
+/*
  * Translucent chrome: only bars that content scrolls beneath get material.
  * The desk tab strip sits directly under the desk top bar, so it stays solid -
  * never stack a translucent layer on a translucent layer.
@@ -754,11 +809,11 @@
     backdrop-filter: blur(20px) saturate(180%);
 }
 .sy-mobile-nav {
-    border-top: 1px solid rgba(24, 25, 27, 0.06);
+    border-top: 1px solid var(--color-border);
 }
 .sy-desk-top,
 .sy-material {
-    border-bottom: 1px solid rgba(24, 25, 27, 0.06);
+    border-bottom: 1px solid var(--color-border);
 }
 
 @media (prefers-reduced-transparency: reduce) {

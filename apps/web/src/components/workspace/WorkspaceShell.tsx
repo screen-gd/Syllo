@@ -27,7 +27,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
+
 import { Link, useNavigate } from "@tanstack/react-router";
 import { SECTION_LABELS } from "@/lib/constants";
 import { Search, Settings, Home, ArrowRight, CheckCircle2, Circle, LayoutDashboard, SearchCode, BookOpen, Video, ListTodo, Trophy, Layers, Calendar, Clock, Lock, Target, Flame, Info, Plus, RefreshCw, HardDrive, BarChart2, HelpCircle, X, FileText, Braces, Printer, History, ChevronDown, Key } from "lucide-react";
@@ -526,8 +526,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
             className="h-screen flex flex-col overflow-hidden bg-page"
             style={
                 customAccent
-                    ? ({ "--color-accent": customAccent, "--color-accent-strong": customAccent, "--workspace-accent": customAccent } as React.CSSProperties)
-                    : ({ "--workspace-accent": "var(--color-accent)" } as React.CSSProperties)
+                    ? ({ "--color-accent": customAccent } as React.CSSProperties)
+                    : undefined
             }
         >
             {/* Gamification Toast */}
@@ -805,7 +805,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 {/* Potential breadcrumbs or workspace specific title override here */}
                             </div>
                             <div className="flex items-center gap-3">
-                                <ThemeToggle />
                                 <button
                                     onClick={() => setShowShortcuts(!showShortcuts)}
                                     className="flex items-center justify-center w-8 h-8 rounded-lg bg-surface text-text-muted hover:text-text hover:bg-surface transition-colors border border-border"
@@ -981,7 +980,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 <div className="flex flex-col gap-3 sm:flex-row">
                                                     <button
                                                         onClick={() => onNavigate(firstIncompleteModule.id)}
-                                                        className="px-8 py-4 bg-text hover:bg-[#2c2d30] text-page font-display text-xs font-medium rounded-full transition-colors flex items-center gap-3 group"
+                                                        className="px-8 py-4 bg-text hover:bg-primary-hover text-page font-display text-xs font-medium rounded-full transition-colors flex items-center gap-3 group"
                                                     >
                                                         Continue Learning
                                                         <ArrowRight size={16} />
@@ -1274,7 +1273,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                     </div>
                     <button
                         onClick={() => setQuickActionsOpen(!quickActionsOpen)}
-                        className="w-14 h-14 bg-text rounded-full flex items-center justify-center text-page shadow-[0_8px_30px_rgba(24,25,27,0.12)] hover:bg-[#2c2d30] transition-colors"
+                        className="w-14 h-14 bg-text rounded-full flex items-center justify-center text-page shadow-[0_8px_30px_rgba(24,25,27,0.12)] hover:bg-primary-hover transition-colors"
                     >
                         <Plus className={`transition-transform ${quickActionsOpen ? "rotate-45" : ""}`} size={24} />
                     </button>
@@ -1320,7 +1319,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             </p>
                             <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
                                 <button onClick={endTour} className="text-xs text-text-muted hover:text-text transition-colors">End Tour</button>
-                                <button onClick={handleNextTourStep} className="px-5 py-2 rounded-full bg-text hover:bg-[#2c2d30] text-page font-medium text-xs">
+                                <button onClick={handleNextTourStep} className="px-5 py-2 rounded-full bg-text hover:bg-primary-hover text-page font-medium text-xs">
                                     Next →
                                 </button>
                             </div>

@@ -441,7 +441,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                     <p className="text-sm text-text mb-3">Regenerate just this module? Your other modules will not change.</p>
                                     <div className="flex justify-end gap-2">
                                         <button onClick={() => setShowRegenConfirm(false)} className="px-3 py-1.5 text-xs text-text-muted hover:text-text transition-colors">Cancel</button>
-                                        <button onClick={handleRegenerate} className="px-3 py-1.5 text-xs bg-text hover:bg-[#2c2d30] text-page rounded-full font-medium transition-colors">Confirm</button>
+                                        <button onClick={handleRegenerate} className="px-3 py-1.5 text-xs bg-text hover:bg-primary-hover text-page rounded-full font-medium transition-colors">Confirm</button>
                                     </div>
                                 </div>
                             )}
@@ -793,7 +793,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                         type="button"
                                         onClick={handleQuizSubmit}
                                         disabled={quizData.questions.some((question) => selectedAnswers[question.id] === undefined)}
-                                        className="inline-flex items-center gap-2 rounded-full bg-text px-5 py-3 text-xs font-medium text-page transition-colors hover:bg-[#2c2d30] disabled:cursor-not-allowed disabled:opacity-60"
+                                        className="inline-flex items-center gap-2 rounded-full bg-text px-5 py-3 text-xs font-medium text-page transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                                     >
                                         Submit answers
                                     </button>

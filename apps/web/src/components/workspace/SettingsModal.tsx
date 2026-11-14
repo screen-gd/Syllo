@@ -147,7 +147,7 @@ export default function SettingsModal({ roadmap, isOpen, onClose, onUpdateBrandi
                     </button>
                     <button 
                         onClick={handleSave}
-                        className="px-6 py-2 bg-text hover:bg-[#2c2d30] text-page rounded-full text-sm font-medium transition-colors"
+                        className="px-6 py-2 bg-text hover:bg-primary-hover text-page rounded-full text-sm font-medium transition-colors"
                     >
                         Save Settings
                     </button>

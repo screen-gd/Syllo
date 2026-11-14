@@ -76,13 +76,13 @@
 .sy-app .sy-action[data-variant="default"],
 .sy-app .button-primary {
     background: var(--color-text);
-    color: #ffffff;
+    color: var(--color-on-primary);
 }
 @media (hover: hover) and (pointer: fine) {
     .sy-button.primary:hover:not(:disabled),
     .sy-app .sy-action[data-variant="default"]:hover:not(:disabled),
     .sy-app .button-primary:hover {
-        background: #2c2d30;
+        background: var(--color-primary-hover);
     }
 }
 .sy-button.secondary,

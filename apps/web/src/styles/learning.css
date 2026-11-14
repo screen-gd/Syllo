@@ -183,7 +183,7 @@
 }
 .sy-button.primary {
     background: var(--color-text);
-    color: #ffffff;
+    color: var(--color-on-primary);
     font-weight: 550;
 }
 .sy-button.secondary {
@@ -2096,7 +2096,7 @@
     flex: none;
     border-radius: 6px;
     background: var(--color-text);
-    color: #fff;
+    color: var(--color-on-primary);
 }
 .sy-desk-note-form button:disabled {
     opacity: 0.3;
@@ -2779,7 +2779,7 @@
 /* Shared controls take the same flat styles as the rest of the app. */
 @media (hover: hover) and (pointer: fine) {
     .sy-desk .sy-button.primary:hover:not(:disabled) {
-        background: #2c2d30;
+        background: var(--color-primary-hover);
     }
 }
 .sy-desk input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
