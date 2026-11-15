@@ -399,7 +399,7 @@ export default function ScoutPage() {
                     className="flex flex-col gap-4 lg:col-span-2"
                 >
                     <div className="shell">
-                        <div className="panel p-4">
+                        <div className="panel p-3">
                             <ScoutProgress
                                 step={step}
                                 detail={
@@ -505,7 +505,7 @@ export default function ScoutPage() {
                                             <h3 className="type-label text-text-2">
                                                 Past goals
                                             </h3>
-                                            <ItemGroup className="mt-2">
+                                            <ItemGroup variant="plain" aria-label="Past goals" className="mt-2">
                                                 {recentPacks
                                                     .slice(0, 6)
                                                     .map((item) => (
@@ -625,13 +625,13 @@ export default function ScoutPage() {
                                             <h3 className="type-label text-text-2">
                                                 Found so far
                                             </h3>
-                                            <ul className="mt-2 flex flex-col divide-y divide-line-faint">
+                                            <ul className="mt-2 flex flex-col">
                                                 {pack.resources
                                                     .slice(0, 8)
                                                     .map((resource) => (
                                                         <li
                                                             key={resource.id}
-                                                            className="flex items-baseline justify-between gap-4 py-2 type-body-sm"
+                                                            className="rule-row flex items-baseline justify-between gap-4 py-2 type-body-sm"
                                                         >
                                                             <span className="truncate text-text-2">
                                                                 {resource.title}
@@ -655,7 +655,7 @@ export default function ScoutPage() {
                                     className="shell"
                                     aria-labelledby="scout-review-heading"
                                 >
-                                    <div className="panel flex flex-col gap-5 p-4">
+                                    <div className="panel flex flex-col gap-5 p-3">
                                     <div className="flex flex-wrap items-end justify-between gap-3">
                                         <div>
                                             <h2
@@ -752,7 +752,7 @@ export default function ScoutPage() {
                                     className="shell"
                                     aria-labelledby="scout-ready-heading"
                                 >
-                                    <div className="panel flex flex-col gap-4 p-4">
+                                    <div className="panel flex flex-col gap-4 p-3">
                                     <h2
                                         id="scout-ready-heading"
                                         className="type-heading-sm"
@@ -891,7 +891,7 @@ export default function ScoutPage() {
                                     className="shell"
                                     aria-labelledby="scout-failed-heading"
                                 >
-                                    <div className="panel flex flex-col gap-4 p-4">
+                                    <div className="panel flex flex-col gap-4 p-3">
                                     <h2
                                         id="scout-failed-heading"
                                         className="type-heading-sm"

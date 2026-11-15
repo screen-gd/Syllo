@@ -7,6 +7,13 @@ import {
     Add,
 } from "@/components/glaze/icon";
 import { Badge } from "@/components/glaze/ui/badge";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/glaze/ui/card";
 import { Button } from "@/components/glaze/ui/button";
 import {
     Empty,
@@ -207,10 +214,10 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                 </>
             }
         >
-            <div className="flex flex-col gap-4">
+            <>
                 {composing && (
                     <section className="shell">
-                        <div className="panel p-4">
+                        <div className="panel p-3">
                             <form
                                 className="flex flex-col gap-3"
                                 onSubmit={(event) => {
@@ -235,7 +242,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                                     <Select
                                         native
                                         aria-label="Topic"
-                                        className="w-56"
+                                        className="w-full sm:w-56"
                                         value={draftTopic}
                                         onValueChange={(value) =>
                                             setDraftTopic(value ?? "")
@@ -267,7 +274,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                 {notes.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <Input
-                            className="w-56"
+                            className="w-full sm:w-56"
                             value={query}
                             onValueChange={setQuery}
                             placeholder="Search notes"
@@ -290,7 +297,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                         <Select
                             native
                             aria-label="Topic or book"
-                            className="w-56"
+                            className="w-full sm:w-56"
                             value={groupId}
                             onValueChange={(value) =>
                                 setGroupId(value ?? "all")
@@ -308,7 +315,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
 
                 {!loaded ? (
                     <section className="shell">
-                        <div className="panel p-4" role="status" aria-label="Loading">
+                        <div className="panel p-3" role="status" aria-label="Loading">
                             <span className="sr-only">Loading</span>
                             <SkeletonText type="heading-sm" last={0.3} />
                             {[0, 1, 2].map((row) => (
@@ -353,28 +360,28 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                     </Empty>
                 ) : (
                     groups.map((group) => (
-                        <section key={group.id} className="shell">
-                            <div className="panel">
-                                <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                        <Card key={group.id}>
+                            <CardHeader>
+                                <CardTitle>
                                     <h2 className="type-heading-sm">
                                         {group.title}
                                     </h2>
+                                </CardTitle>
+                                <CardAction>
                                     <Badge count={group.notes.length} />
-                                </header>
-                                {group.notes.map((note, index) => (
+                                </CardAction>
+                            </CardHeader>
+                            <CardContent flush>
+                                {group.notes.map((note) => (
                                     <article
                                         key={note.id}
-                                        className={
-                                            index === 0
-                                                ? "border-t border-line-faint px-4 py-3"
-                                                : "rule-row px-4 py-3"
-                                        }
+                                        className="rule-row p-3"
                                     >
                                         <div className="flex flex-wrap items-baseline gap-2">
                                             {note.sourceTitle && (
-                                                <b className="type-label">
+                                                <span className="type-label">
                                                     {note.sourceTitle}
-                                                </b>
+                                                </span>
                                             )}
                                             {note.kind !== "note" && (
                                                 <Badge>
@@ -386,7 +393,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                                             </span>
                                         </div>
                                         {note.quote && (
-                                            <blockquote className="mt-2 ps-4 type-body-sm text-text-2">
+                                            <blockquote className="well mt-2 rounded-tag px-3 py-2 type-body-sm text-text-2">
                                                 {note.quote}
                                             </blockquote>
                                         )}
@@ -470,11 +477,11 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                                         )}
                                     </article>
                                 ))}
-                            </div>
-                        </section>
+                            </CardContent>
+                        </Card>
                     ))
                 )}
-            </div>
+            </>
         </PageFrame>
     );
 }

@@ -66,7 +66,7 @@ export default function ScreenTimeSettings() {
                 />
             </Field>
             <div>
-                <Button variant="ghost" onClick={check}>
+                <Button variant="secondary" size="sm" className="self-start" onClick={check}>
                     Check again
                 </Button>
             </div>

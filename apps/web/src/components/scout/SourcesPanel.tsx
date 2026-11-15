@@ -1,14 +1,12 @@
 import { useState } from "react";
-import {
-    Add,
-    BookOpen,
-    ChevronDown,
-    Icon,
-    Link as LinkIcon,
-    TrashCan,
-} from "@/components/glaze/icon";
+import { Add, Icon, TrashCan } from "@/components/glaze/icon";
 import { Alert } from "@/components/glaze/ui/alert";
 import { Button } from "@/components/glaze/ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/glaze/ui/collapsible";
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
 import { Select } from "@/components/glaze/ui/select";
@@ -99,7 +97,7 @@ export default function SourcesPanel({
 
     return (
         <aside className="shell">
-            <div className="panel flex flex-col gap-5 p-4">
+            <div className="panel flex flex-col gap-5 p-3">
                 <div>
                     <h2 className="type-heading-sm">Sources & settings</h2>
                     <p className="mt-1 type-caption text-text-2">
@@ -210,12 +208,11 @@ export default function SourcesPanel({
                     </div>
                 </section>
 
-                <details>
-                    <summary className="flex cursor-pointer items-center gap-2 type-body-sm text-text-1">
-                        <Icon icon={BookOpen} />
+                <Collapsible>
+                    <CollapsibleTrigger>
                         Manual book task
-                        <Icon icon={ChevronDown} className="ms-auto text-text-3" />
-                    </summary>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
                     <div className="mt-3 flex flex-col gap-3">
                         {books.length > 0 ? (
                             <ul className="flex flex-col gap-1">
@@ -257,6 +254,7 @@ export default function SourcesPanel({
                             </FieldLabel>
                             <Textarea
                                 value={chapters}
+                                onValueChange={setChapters}
                                 placeholder={
                                     "Chapters, one per line (optional)\n1. Starting from scratch\n2. Hierarchy is everything"
                                 }
@@ -292,14 +290,14 @@ export default function SourcesPanel({
                             </Button>
                         </div>
                     </div>
-                </details>
+                    </CollapsibleContent>
+                </Collapsible>
 
-                <details>
-                    <summary className="flex cursor-pointer items-center gap-2 type-body-sm text-text-1">
-                        <Icon icon={LinkIcon} />
+                <Collapsible>
+                    <CollapsibleTrigger>
                         Add a URL
-                        <Icon icon={ChevronDown} className="ms-auto text-text-3" />
-                    </summary>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
                     <div className="mt-3 flex flex-col gap-3">
                         <Field>
                             <FieldLabel>Resource URL</FieldLabel>
@@ -340,7 +338,8 @@ export default function SourcesPanel({
                             </Button>
                         </div>
                     </div>
-                </details>
+                    </CollapsibleContent>
+                </Collapsible>
 
                 <section aria-labelledby="scout-settings-heading">
                     <h3

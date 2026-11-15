@@ -4,6 +4,15 @@ import { ArrowRight, Icon, Add } from "@/components/glaze/icon";
 import { Badge } from "@/components/glaze/ui/badge";
 import { Button } from "@/components/glaze/ui/button";
 import {
+    Card,
+    CardAction,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardMeta,
+    CardTitle,
+} from "@/components/glaze/ui/card";
+import {
     Empty,
     EmptyContent,
     EmptyHeader,
@@ -11,6 +20,7 @@ import {
 } from "@/components/glaze/ui/empty-state";
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
+import { Kbd } from "@/components/glaze/ui/kbd";
 import { Select } from "@/components/glaze/ui/select";
 import {
     SegmentedControl,
@@ -251,7 +261,7 @@ export default function ReviewsPage() {
                     <Select
                         native
                         aria-label="Topic"
-                        className="w-56"
+                        className="w-full sm:w-56"
                         value={draft.roadmapId}
                         onValueChange={(value) =>
                             setDraft({ ...draft, roadmapId: value ?? "" })
@@ -297,7 +307,7 @@ export default function ReviewsPage() {
                 </Button>
             }
         >
-            <div className="flex flex-col gap-4">
+            <>
                 <div className="flex flex-wrap items-center gap-2">
                     <SegmentedControl
                         aria-label="Review view"
@@ -313,7 +323,7 @@ export default function ReviewsPage() {
                     </SegmentedControl>
                     {view === "all" && reviews.length > 0 && (
                         <Input
-                            className="w-56"
+                            className="w-full sm:w-56"
                             value={query}
                             onValueChange={setQuery}
                             placeholder="Search cards"
@@ -325,7 +335,7 @@ export default function ReviewsPage() {
                 {!loaded ? (
                     <section className="shell">
                         <div
-                            className="panel p-4"
+                            className="panel p-3"
                             role="status"
                             aria-label="Loading"
                         >
@@ -338,18 +348,18 @@ export default function ReviewsPage() {
                                 <SkeletonText type="body-sm" last={0.82} />
                                 <SkeletonText type="body-sm" last={0.58} />
                             </div>
-                            <Skeleton className="mt-5 h-10 w-40 rounded-pill" />
+                            <Skeleton className="mt-4 h-(--control) w-32 rounded-pill" />
                         </div>
                     </section>
                 ) : view === "due" ? (
                     <>
                         {current ? (
-                            <section className="shell">
-                                <div className="panel p-4">
+                            <Card>
+                                <CardContent>
                                     <div className="flex flex-wrap items-baseline gap-2">
-                                        <b className="type-label">
+                                        <span className="type-label">
                                             {sourceTitle(current)}
-                                        </b>
+                                        </span>
                                         {due.length > 0 ? (
                                             <span className="type-caption text-text-2">
                                                 {due.length} left
@@ -360,15 +370,15 @@ export default function ReviewsPage() {
                                             </span>
                                         )}
                                     </div>
-                                    <h2 className="mt-2 type-heading">
+                                    <h2 className="type-heading">
                                         {current.prompt}
                                     </h2>
                                     {revealed === current.id ? (
                                         <>
-                                            <div className="mt-3 type-body">
+                                            <div className="type-body">
                                                 {current.answer}
                                             </div>
-                                            <div className="mt-5 flex flex-wrap gap-2">
+                                            <div className="mt-2 flex flex-wrap gap-2">
                                                 {reviewRatings.map(
                                                     (rating, index) => (
                                                         <Button
@@ -406,21 +416,16 @@ export default function ReviewsPage() {
                                                 )}
                                             </div>
                                         </>
-                                    ) : (
-                                        <Button
-                                            className="mt-4"
-                                            aria-keyshortcuts="Space"
-                                            onClick={() =>
-                                                setRevealed(current.id)
-                                            }
-                                        >
-                                            Show answer
-                                        </Button>
-                                    )}
-                                    <div className="mt-3 -ms-2 flex flex-wrap items-center gap-1">
+                                    ) : null}
+                                </CardContent>
+                                <CardFooter>
+                                    <CardMeta className="max-sm:hidden">
+                                        <Kbd>Space</Kbd> shows the answer,{" "}
+                                        <Kbd>1</Kbd> to <Kbd>4</Kbd> rate it
+                                    </CardMeta>
                                         {sourceLink(current)}
                                         <Button
-                                            variant="ghost"
+                                            variant="secondary"
                                             size="sm"
                                             onClick={() => {
                                                 setView("all");
@@ -435,13 +440,19 @@ export default function ReviewsPage() {
                                         >
                                             Edit
                                         </Button>
-                                        <span className="ms-auto type-caption text-text-3">
-                                            Space shows the answer, 1 to 4
-                                            rate it
-                                        </span>
-                                    </div>
-                                </div>
-                            </section>
+                                        {revealed !== current.id && (
+                                            <Button
+                                                size="sm"
+                                                aria-keyshortcuts="Space"
+                                                onClick={() =>
+                                                    setRevealed(current.id)
+                                                }
+                                            >
+                                                Show answer
+                                            </Button>
+                                        )}
+                                </CardFooter>
+                            </Card>
                         ) : (
                             <Empty reason="empty">
                                 <EmptyHeader>
@@ -481,22 +492,22 @@ export default function ReviewsPage() {
                             </Empty>
                         )}
                         {suggested.length > 0 && (
-                            <section className="shell">
-                                <div className="panel">
-                                    <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>
                                         <h2 className="type-heading-sm">
                                             Suggested cards
                                         </h2>
+                                    </CardTitle>
+                                    <CardAction>
                                         <Badge count={suggested.length} />
-                                    </header>
-                                    {suggested.map((item, index) => (
+                                    </CardAction>
+                                </CardHeader>
+                                <CardContent flush>
+                                    {suggested.map((item) => (
                                         <article
                                             key={item.id}
-                                            className={
-                                                index === 0
-                                                    ? "border-t border-line-faint px-4 py-3"
-                                                    : "rule-row px-4 py-3"
-                                            }
+                                            className="rule-row p-3"
                                         >
                                             <h3 className="type-heading-sm">
                                                 {item.prompt}
@@ -534,15 +545,15 @@ export default function ReviewsPage() {
                                             </div>
                                         </article>
                                     ))}
-                                </div>
-                            </section>
+                                </CardContent>
+                            </Card>
                         )}
                     </>
                 ) : (
                     <>
                         {draft && !draft.id && (
                             <section className="shell">
-                                <div className="panel p-4">{form}</div>
+                                <div className="panel p-3">{form}</div>
                             </section>
                         )}
                         {reviews.length === 0 && !draft ? (
@@ -567,39 +578,35 @@ export default function ReviewsPage() {
                                 </EmptyHeader>
                             </Empty>
                         ) : listed.length > 0 ? (
-                            <section className="shell">
-                                <div className="panel">
-                                    <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>
                                         <h2 className="type-heading-sm">
                                             All cards
                                         </h2>
+                                    </CardTitle>
+                                    <CardAction>
                                         <Badge count={listed.length} />
-                                    </header>
-                                    {listed.map((item, index) =>
+                                    </CardAction>
+                                </CardHeader>
+                                <CardContent flush>
+                                    {listed.map((item) =>
                                         draft?.id === item.id ? (
                                             <div
                                                 key={item.id}
-                                                className={
-                                                    index === 0
-                                                        ? "border-t border-line-faint px-4 py-3"
-                                                        : "rule-row px-4 py-3"
-                                                }
+                                                className="rule-row p-3"
                                             >
                                                 {form}
                                             </div>
                                         ) : (
                                             <article
                                                 key={item.id}
-                                                className={
-                                                    index === 0
-                                                        ? "border-t border-line-faint px-4 py-3"
-                                                        : "rule-row px-4 py-3"
-                                                }
+                                                className="rule-row p-3"
                                             >
                                                 <div className="flex flex-wrap items-baseline gap-2">
-                                                    <b className="type-label">
+                                                    <span className="type-label">
                                                         {sourceTitle(item)}
-                                                    </b>
+                                                    </span>
                                                     <Badge>
                                                         {status(item)}
                                                     </Badge>
@@ -655,12 +662,12 @@ export default function ReviewsPage() {
                                             </article>
                                         ),
                                     )}
-                                </div>
-                            </section>
+                                </CardContent>
+                            </Card>
                         ) : null}
                     </>
                 )}
-            </div>
+            </>
         </PageFrame>
     );
 }

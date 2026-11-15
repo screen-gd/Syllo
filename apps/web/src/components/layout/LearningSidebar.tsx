@@ -58,7 +58,10 @@ function SylloMark() {
     );
 }
 
-/** One destination row: the Item itself is the link, so the whole row navigates. */
+/**
+ * One destination row: the Item itself is the link, so the whole row navigates. A row with no icon is indented to
+ * the icon rows' text, so every label starts at the same x.
+ */
 function NavItem({
     to,
     label,
@@ -66,6 +69,7 @@ function NavItem({
     badge,
     pathname,
     search,
+    selected,
 }: {
     to: string;
     label: string;
@@ -73,8 +77,9 @@ function NavItem({
     badge?: React.ReactNode;
     pathname: string;
     search?: Record<string, string>;
+    selected?: boolean;
 }) {
-    const active = isActive(to, pathname);
+    const active = selected ?? isActive(to, pathname);
     return (
         <Item
             size="sm"
@@ -88,8 +93,10 @@ function NavItem({
             }
         >
             {icon && <Icon icon={icon} size={16} />}
-            <ItemContent>
-                <ItemTitle>{label}</ItemTitle>
+            <ItemContent className={icon ? undefined : "ps-6"}>
+                <ItemTitle>
+                    <span>{label}</span>
+                </ItemTitle>
             </ItemContent>
             {badge}
         </Item>
@@ -100,33 +107,34 @@ export default function LearningSidebar() {
     const pathname = useRouterState({
         select: (state) => state.location.pathname,
     });
+    const activeRoadmap = useRouterState({
+        select: (state) => {
+            if (!state.location.pathname.startsWith("/learn")) return undefined;
+            const search: Record<string, unknown> = state.location.search;
+            return typeof search.roadmap === "string" ? search.roadmap : undefined;
+        },
+    });
     const { reviews, roadmaps } = useReviews();
     const dueCount = reviews.filter((item) => isDue(item)).length;
     return (
         <>
-            <aside
-                className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col overflow-y-auto border-e border-line-faint px-3 pb-5 pt-6 lg:flex"
-            >
+            <aside className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col overflow-y-auto border-e border-line-faint px-3 pb-6 pt-6 lg:flex">
                 <Link
                     to="/dashboard"
                     data-slot="nav-brand"
-                    className="mb-8 flex items-center gap-2.5 px-2.5 text-text-1"
+                    className="mb-8 flex items-center gap-2 px-3 text-text-1"
                 >
                     <SylloMark />
                     <span className="type-label-lg">Syllo</span>
                 </Link>
-                <nav
-                    aria-label="Main navigation"
-                    className="flex flex-col gap-2.5"
-                >
+                <nav aria-label="Main navigation" className="flex flex-col gap-2">
                     {groups.map((group, index) => (
                         <div
                             key={index}
-                            className={
-                                index === 0
-                                    ? "contents"
-                                    : "border-t border-line-faint pt-2.5"
-                            }
+                            className={cn(
+                                "flex flex-col gap-0.5",
+                                index > 0 && "border-t border-line-faint pt-2",
+                            )}
                         >
                             {group.map(({ to, label, icon }) => (
                                 <NavItem
@@ -135,6 +143,11 @@ export default function LearningSidebar() {
                                     label={label}
                                     icon={icon}
                                     pathname={pathname}
+                                    selected={
+                                        to === "/workspaces" && activeRoadmap
+                                            ? false
+                                            : undefined
+                                    }
                                     badge={
                                         to === "/reviews" && dueCount > 0 ? (
                                             <Badge
@@ -149,7 +162,10 @@ export default function LearningSidebar() {
                     ))}
                 </nav>
                 {roadmaps.length > 0 && (
-                    <nav aria-label="Learning topics" className="mt-8">
+                    <nav
+                        aria-label="Learning topics"
+                        className="mt-6 flex flex-col gap-0.5 border-t border-line-faint pt-2"
+                    >
                         {roadmaps.slice(0, 4).map((roadmap) => (
                             <NavItem
                                 key={roadmap.id}
@@ -157,6 +173,7 @@ export default function LearningSidebar() {
                                 label={roadmap.title}
                                 pathname={pathname}
                                 search={{ roadmap: roadmap.id }}
+                                selected={activeRoadmap === roadmap.id}
                             />
                         ))}
                     </nav>
@@ -170,18 +187,14 @@ export default function LearningSidebar() {
                     />
                 </div>
             </aside>
-            <header
-                className="sticky top-0 z-sticky border-b border-line-faint bg-paper px-5 py-2.5 lg:hidden"
-            >
+            <header className="sticky top-0 z-(--z-sticky) border-b border-line-faint bg-paper px-4 pt-2 lg:hidden">
                 <div className="flex items-center justify-between">
                     <Link
                         to="/dashboard"
                         data-slot="nav-brand"
                         className="flex items-center gap-2 text-text-1"
                     >
-                        <span className="size-5.5">
-                            <SylloMark />
-                        </span>
+                        <SylloMark />
                         <span className="type-label-lg">Syllo</span>
                     </Link>
                     <Button
@@ -196,7 +209,7 @@ export default function LearningSidebar() {
                 </div>
                 <nav
                     aria-label="Mobile navigation"
-                    className="mt-1.5 flex gap-1 overflow-x-auto"
+                    className="-mx-4 mt-2 flex gap-1 overflow-x-auto px-4 pb-2"
                 >
                     {destinations.map(({ to, label }) => {
                         const active = isActive(to, pathname);
@@ -207,10 +220,10 @@ export default function LearningSidebar() {
                                 data-slot="nav-link"
                                 aria-current={active ? "page" : undefined}
                                 className={cn(
-                                    "flex min-h-11 flex-1 items-center justify-center whitespace-nowrap rounded-tag px-2.5 py-1.5 type-label-sm",
+                                    "flex h-(--control) shrink-0 items-center whitespace-nowrap rounded-pill px-3 type-label-sm",
                                     active
                                         ? "bg-pressed text-text-1"
-                                        : "text-text-2",
+                                        : "text-text-2 hover:bg-field hover:text-text-1",
                                 )}
                             >
                                 {label}

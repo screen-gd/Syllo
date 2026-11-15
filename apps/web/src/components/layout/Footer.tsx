@@ -4,8 +4,8 @@ import { PUBLIC_NAV_ITEMS } from "@/lib/navigation";
 
 export default function Footer() {
     return (
-        <footer className="relative z-10 overflow-hidden border-t border-line-faint bg-page">
-            <div className="page-shell-wide flex flex-col gap-8 py-10 lg:flex-row lg:items-end lg:justify-between">
+        <footer className="border-t border-line-faint bg-page">
+            <div className="mx-auto w-full max-w-256 px-4 sm:px-6 flex flex-col gap-8 py-10 lg:flex-row lg:items-end lg:justify-between">
                 <div className="flex items-center gap-3">
                     <Logo />
                     <div>

@@ -7,9 +7,18 @@ import {
     AttachmentDropTrigger,
 } from "@/components/glaze/ui/attachment";
 import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/glaze/ui/card";
 import {
     Empty,
     EmptyContent,
+    EmptyDescription,
     EmptyHeader,
     EmptyTitle,
 } from "@/components/glaze/ui/empty-state";
@@ -19,8 +28,10 @@ import {
     ItemContent,
     ItemDescription,
     ItemGroup,
+    ItemMeta,
     ItemTitle,
 } from "@/components/glaze/ui/item";
+import BookCover from "@/components/learning/BookCover";
 import {
     SegmentedControl,
     SegmentedControlItem,
@@ -84,24 +95,27 @@ export default function LibraryPage() {
         setImporting(null);
         if (failures.length) setError(failures.join(" "));
     }
+    const importButton = (
+        <AttachmentDrop
+            accept=".epub,application/epub+zip"
+            onFiles={(files) => void onImport(files)}
+        >
+            <AttachmentDropTrigger
+                pending={!!importing}
+                pendingLabel="Importing"
+            >
+                <Icon icon={Upload} />
+                Import EPUB
+            </AttachmentDropTrigger>
+        </AttachmentDrop>
+    );
+    const filtersOn =
+        query.trim() !== "" || category !== "all" || status !== "all";
     return (
         <PageFrame
             title="Library"
             subtitle={`${books.length} book${books.length === 1 ? "" : "s"} · ${books.filter((book) => book.status === "reading").length} currently reading`}
-            actions={
-                <AttachmentDrop
-                    accept=".epub,application/epub+zip"
-                    onFiles={(files) => void onImport(files)}
-                >
-                    <AttachmentDropTrigger
-                        pending={!!importing}
-                        pendingLabel="Importing"
-                    >
-                        <Icon icon={Upload} />
-                        Import EPUB
-                    </AttachmentDropTrigger>
-                </AttachmentDrop>
-            }
+            actions={importButton}
         >
             {error && <Alert status="fail">{error}</Alert>}
             {importing && (
@@ -109,16 +123,16 @@ export default function LibraryPage() {
                     Importing {importing}
                 </p>
             )}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="grid grid-cols-2 items-center gap-2 sm:flex sm:flex-wrap">
                 <Input
                     mode="search"
-                    className="w-56"
+                    className="col-span-2 sm:w-56"
                     value={query}
                     onValueChange={setQuery}
                     placeholder="Search books or authors"
                     aria-label="Search books"
                 />
-                <div className="w-48">
+                <div className="sm:w-48">
                     <Select
                         native
                         aria-label="Book category"
@@ -133,7 +147,7 @@ export default function LibraryPage() {
                         ]}
                     />
                 </div>
-                <div className="w-44">
+                <div className="sm:w-44">
                     <Select
                         native
                         aria-label="Reading status"
@@ -147,7 +161,7 @@ export default function LibraryPage() {
                         ]}
                     />
                 </div>
-                <div className="w-44">
+                <div className="sm:w-44">
                     <Select
                         native
                         aria-label="Group books by"
@@ -177,29 +191,38 @@ export default function LibraryPage() {
             {!books.length ? (
                 <Empty reason="empty">
                     <EmptyHeader>
-                        <EmptyTitle>Your books belong here.</EmptyTitle>
-                    </EmptyHeader>
-                    <EmptyContent>
-                        <p className="type-body-sm text-text-2">
-                            Import an EPUB to read, highlight, and save your
-                            place.
-                        </p>
-                        <p className="type-body-sm text-text-2">
-                            Books are cached on this device
+                        <EmptyTitle>No books yet</EmptyTitle>
+                        <EmptyDescription>
+                            Import an EPUB to read, highlight and save your
+                            place. Books are cached on this device
                             {sync.status === "connected"
                                 ? " and synced privately to your other devices"
                                 : "; cloud sync can be connected in Settings"}
                             .
-                        </p>
-                    </EmptyContent>
+                        </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>{importButton}</EmptyContent>
                 </Empty>
             ) : !filtered.length ? (
-                <Empty variant="plain" reason="empty">
+                <Empty variant="plain" reason="no-results">
                     <EmptyHeader>
-                        <EmptyTitle>
-                            No books match these filters.
-                        </EmptyTitle>
+                        <EmptyTitle>No books match these filters</EmptyTitle>
                     </EmptyHeader>
+                    {filtersOn && (
+                        <EmptyContent>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => {
+                                    setQuery("");
+                                    setCategory("all");
+                                    setStatus("all");
+                                }}
+                            >
+                                Clear filters
+                            </Button>
+                        </EmptyContent>
+                    )}
                 </Empty>
             ) : view === "spines" ? (
                 groups.map((group) => {
@@ -218,15 +241,17 @@ export default function LibraryPage() {
                             ? statusNames[group]
                             : group;
                     return (
-                        <section className="shell" key={group}>
-                            <div className="panel">
-                                <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                        <Card key={group}>
+                            <CardHeader>
+                                <CardTitle>
                                     <h2 className="type-heading-sm">{label}</h2>
-                                    <span className="type-caption text-text-2">
-                                        {items.length}
-                                    </span>
-                                </header>
-                                <div className="flex flex-wrap gap-3 px-4 pb-4">
+                                </CardTitle>
+                                <CardAction>
+                                    <Badge count={items.length} />
+                                </CardAction>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-3 gap-4 sm:grid-cols-5 lg:grid-cols-7">
                                     {items.map((book) => (
                                         <Link
                                             key={book.id}
@@ -234,48 +259,36 @@ export default function LibraryPage() {
                                             params={{ id: book.id }}
                                             title={`${book.title} · ${book.author}`}
                                             aria-label={`Open ${book.title}`}
-                                            className="flex h-48 w-32 flex-col rounded-panel border border-line-faint bg-field p-3 transition-colors hover:bg-hover"
+                                            className="group flex min-w-0 flex-col gap-1.5 rounded-tag"
                                         >
-                                            <span className="min-w-0 flex-1">
-                                                <b className="line-clamp-4 type-label text-text-1">
-                                                    {book.title}
-                                                </b>
-                                                <span className="mt-1 line-clamp-2 block type-caption text-text-2">
-                                                    {book.author}
-                                                </span>
+                                            <BookCover book={book} compact />
+                                            <span className="line-clamp-2 type-label text-text-1 group-hover:underline">
+                                                {book.title}
                                             </span>
-                                            <span className="flex items-center justify-between gap-1">
-                                                {book.status === "reading" ? (
-                                                    <Badge>Reading</Badge>
-                                                ) : (
-                                                    <span />
-                                                )}
-                                                {book.percent > 0 && (
-                                                    <span className="type-caption text-text-2">
-                                                        {Math.round(
-                                                            book.percent,
-                                                        )}
-                                                        %
-                                                    </span>
-                                                )}
+                                            <span className="line-clamp-1 type-caption text-text-2">
+                                                {book.author}
+                                                {book.percent > 0 &&
+                                                    ` · ${Math.round(book.percent)}%`}
                                             </span>
                                         </Link>
                                     ))}
                                 </div>
-                            </div>
-                        </section>
+                            </CardContent>
+                        </Card>
                     );
                 })
             ) : (
-                <section className="shell">
-                    <div className="panel">
-                        <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>
                             <h2 className="type-heading-sm">Books</h2>
-                            <span className="type-caption text-text-2">
-                                {filtered.length}
-                            </span>
-                        </header>
-                        <ItemGroup variant="plain" className="px-1 pb-1">
+                        </CardTitle>
+                        <CardAction>
+                            <Badge count={filtered.length} />
+                        </CardAction>
+                    </CardHeader>
+                    <CardContent flush>
+                        <ItemGroup variant="plain" aria-label="Books">
                             {filtered.map((book) => (
                                 <Item
                                     key={book.id}
@@ -292,19 +305,17 @@ export default function LibraryPage() {
                                             {book.author}
                                         </ItemDescription>
                                     </ItemContent>
-                                    <span className="type-caption text-text-2">
-                                        {book.category}
-                                    </span>
-                                    <span className="type-caption text-text-2">
+                                    <ItemMeta>
+                                        {book.category} ·{" "}
                                         {statusNames[book.status]}
                                         {book.percent > 0 &&
                                             ` · ${Math.round(book.percent)}%`}
-                                    </span>
+                                    </ItemMeta>
                                 </Item>
                             ))}
                         </ItemGroup>
-                    </div>
-                </section>
+                    </CardContent>
+                </Card>
             )}
         </PageFrame>
     );

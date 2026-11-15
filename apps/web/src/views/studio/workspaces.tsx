@@ -1,10 +1,19 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Add, Icon } from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
 import { Button } from "@/components/glaze/ui/button";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/glaze/ui/card";
 import {
     Empty,
     EmptyContent,
+    EmptyDescription,
     EmptyHeader,
     EmptyTitle,
 } from "@/components/glaze/ui/empty-state";
@@ -13,6 +22,7 @@ import {
     SegmentedControl,
     SegmentedControlItem,
 } from "@/components/glaze/ui/segmented-control";
+import { Select } from "@/components/glaze/ui/select";
 import { SkeletonText } from "@/components/glaze/ui/skeleton";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
 import PageFrame from "@/components/layout/PageFrame";
@@ -90,7 +100,7 @@ export default function WorkspacesPage() {
                 </Button>
             }
         >
-            <div className="flex flex-col gap-4">
+            <>
                 <div className="flex flex-wrap items-center gap-2">
                     <SegmentedControl
                         aria-label="Filter workspaces"
@@ -118,36 +128,36 @@ export default function WorkspacesPage() {
                             Completed
                         </SegmentedControlItem>
                     </SegmentedControl>
-                    <SegmentedControl
-                        aria-label="Sort workspaces"
-                        value={sortMode}
-                        onValueChange={(value) =>
-                            setSortMode(value as SortMode)
-                        }
-                    >
-                        <SegmentedControlItem value="recent">
-                            Recent
-                        </SegmentedControlItem>
-                        <SegmentedControlItem value="title">
-                            Title
-                        </SegmentedControlItem>
-                        <SegmentedControlItem value="completion">
-                            Progress
-                        </SegmentedControlItem>
-                    </SegmentedControl>
+                    <div className="w-full sm:ms-auto sm:w-44">
+                        <Select
+                            native
+                            aria-label="Sort"
+                            value={sortMode}
+                            onValueChange={(value) =>
+                                setSortMode((value ?? "recent") as SortMode)
+                            }
+                            items={[
+                                { value: "recent", label: "Recent first" },
+                                { value: "title", label: "By title" },
+                                { value: "completion", label: "By progress" },
+                            ]}
+                        />
+                    </div>
                 </div>
 
                 {mounted ? (
                     filteredRoadmaps.length > 0 ? (
-                        <section className="shell">
-                            <div className="panel">
-                                <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
                                     <h2 className="type-heading-sm">Topics</h2>
-                                    <span className="type-caption text-text-2">
-                                        {filteredRoadmaps.length}
-                                    </span>
-                                </header>
-                                <ItemGroup variant="plain" className="px-1 pb-1">
+                                </CardTitle>
+                                <CardAction>
+                                    <Badge count={filteredRoadmaps.length} />
+                                </CardAction>
+                            </CardHeader>
+                            <CardContent flush>
+                                <ItemGroup variant="plain" aria-label="Topics">
                                     {filteredRoadmaps.map((roadmap) => (
                                         <WorkspaceLibraryCard
                                             key={roadmap.id}
@@ -166,26 +176,30 @@ export default function WorkspacesPage() {
                                         />
                                     ))}
                                 </ItemGroup>
-                            </div>
-                        </section>
+                            </CardContent>
+                        </Card>
                     ) : (
-                        <Empty reason="empty">
+                        <Empty
+                            reason={roadmaps.length === 0 ? "empty" : "no-results"}
+                        >
                             <EmptyHeader>
                                 <EmptyTitle>
                                     {roadmaps.length === 0
                                         ? "No learning topics yet"
                                         : "No learning topic matches this filter"}
                                 </EmptyTitle>
+                                {roadmaps.length === 0 && (
+                                    <EmptyDescription>
+                                        Start with Scout or add your own
+                                        roadmap.
+                                    </EmptyDescription>
+                                )}
                             </EmptyHeader>
                             <EmptyContent>
                                 {roadmaps.length === 0 ? (
                                     <>
-                                        <p className="type-body-sm text-text-2">
-                                            Start with Scout or add your own
-                                            roadmap.
-                                        </p>
                                         <Button
-                                            className="mt-3"
+                                            size="sm"
                                             variant="secondary"
                                             render={<Link to="/scout" />}
                                             nativeButton={false}
@@ -195,6 +209,7 @@ export default function WorkspacesPage() {
                                     </>
                                 ) : (
                                     <Button
+                                        size="sm"
                                         variant="secondary"
                                         onClick={() => setFilter("all")}
                                     >
@@ -205,13 +220,14 @@ export default function WorkspacesPage() {
                         </Empty>
                     )
                 ) : (
-                    <section className="shell">
-                        <div className="panel">
-                            <header className="flex items-center justify-between gap-3 p-4 pb-3">
-                                <h2 className="type-heading-sm">Topics</h2>
-                            </header>
-                            <div
-                                className="flex flex-col gap-3 px-4 pb-4"
+                    <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <h2 className="type-heading-sm">Topics</h2>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent
+                                className="gap-3"
                                 role="status"
                                 aria-label="Loading"
                             >
@@ -223,11 +239,10 @@ export default function WorkspacesPage() {
                                         last={0.4}
                                     />
                                 ))}
-                            </div>
-                        </div>
-                    </section>
+                            </CardContent>
+                    </Card>
                 )}
-            </div>
+            </>
         </PageFrame>
     );
 }

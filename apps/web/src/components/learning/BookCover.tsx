@@ -8,9 +8,12 @@ import { cn } from "@/lib/utils";
 export default function BookCover({
     book,
     className = "",
+    compact = false,
 }: {
     book: LibraryBook;
     className?: string;
+    /** A small tile with no text, for rows where the title sits beside it. */
+    compact?: boolean;
 }) {
     const [url, setUrl] = useState<string | null>(null);
     const { downloadFile } = useCloudSync();
@@ -39,6 +42,7 @@ export default function BookCover({
         "aspect-3/4 w-full overflow-hidden rounded-tag bg-field",
         className,
     );
+    if (!url && compact) return <div className={frame} aria-hidden="true" />;
     return url ? (
         <img className={cn(frame, "object-cover")} src={url} alt="" />
     ) : (

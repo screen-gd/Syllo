@@ -8,7 +8,7 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
             <LearningSidebar />
             <main
                 id="main-content"
-                className="min-w-0 flex-1 px-4 pb-12 pt-6 sm:px-5 lg:px-11 lg:pb-18 lg:pt-9"
+                className="min-w-0 flex-1 px-4 pb-12 pt-6 sm:px-6 lg:px-10 lg:pb-16 lg:pt-10"
             >
                 {children}
             </main>

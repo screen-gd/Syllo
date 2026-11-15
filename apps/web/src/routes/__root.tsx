@@ -69,7 +69,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 <a
                     href="#main-content"
                     data-slot="skip-link"
-                    className="sr-only focus-ring focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-pill focus:bg-paper focus:px-4 focus:py-2 focus:text-text-1"
+                    className="sr-only focus-ring focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-(--z-overlay) focus:rounded-pill focus:bg-paper focus:px-4 focus:py-2 focus:text-text-1"
                 >
                     Skip to main content
                 </a>
@@ -85,7 +85,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 function NotFound() {
     return (
         <main id="main-content" className="flex min-h-dvh items-center justify-center p-6">
-            <Empty reason="empty">
+            <Empty reason="empty" className="w-full max-w-md">
                 <EmptyHeader>
                     <EmptyTitle>This page does not exist</EmptyTitle>
                     <EmptyDescription>The link may be old or mistyped.</EmptyDescription>
@@ -105,7 +105,7 @@ function RootError({ error }: { error: unknown }) {
 
     return (
         <main id="main-content" className="flex min-h-dvh items-center justify-center p-6">
-            <Empty reason="error">
+            <Empty reason="error" className="w-full max-w-md">
                 <EmptyHeader>
                     <EmptyTitle>Something went wrong</EmptyTitle>
                     <EmptyDescription>{message}</EmptyDescription>

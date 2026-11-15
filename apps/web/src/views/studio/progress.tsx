@@ -1,6 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Icon } from "@/components/glaze/icon";
 import { Button } from "@/components/glaze/ui/button";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/glaze/ui/card";
 import { Chart } from "@/components/glaze/ui/chart";
 import {
     DataList,
@@ -44,10 +51,10 @@ export default function ProgressPage() {
     if (!loaded)
         return (
             <PageFrame title="Progress">
-                <div className="flex flex-col gap-4">
+                <>
                     <section className="shell">
                         <div
-                            className="panel p-4"
+                            className="panel p-3"
                             role="status"
                             aria-label="Loading"
                         >
@@ -61,7 +68,7 @@ export default function ProgressPage() {
                         </div>
                     </section>
                     <section className="shell">
-                        <div className="panel p-4">
+                        <div className="panel p-3">
                             <SkeletonText type="heading-sm" last={0.14} />
                             {[0, 1, 2].map((row) => (
                                 <div key={row} className="mt-3">
@@ -71,7 +78,7 @@ export default function ProgressPage() {
                             ))}
                         </div>
                     </section>
-                </div>
+                </>
             </PageFrame>
         );
 
@@ -84,16 +91,14 @@ export default function ProgressPage() {
 
     return (
         <PageFrame title="Progress">
-            <div className="flex flex-col gap-4">
-                <section className="shell">
-                    <div className="panel">
-                        <header className="flex items-center justify-between gap-3 p-4 pb-3">
+            <>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>
                             <h2 className="type-heading-sm">Last 7 days</h2>
-                            <span className="type-caption text-text-2">
-                                {weekTotal} lesson{weekTotal === 1 ? "" : "s"}
-                            </span>
-                        </header>
-                        <div className="px-4 pb-4">
+                        </CardTitle>
+                    </CardHeader>
+                        <CardContent>
                             <DataList variant="plain">
                                 <DataListItem>
                                     <DataListLabel>Day streak</DataListLabel>
@@ -125,16 +130,17 @@ export default function ProgressPage() {
                                 label="Lessons finished on each of the last 7 days"
                                 data={week.map((day) => day.count)}
                                 unit="count"
-                                className="mt-4 w-full"
+                                className="mt-1 w-full"
                             />
-                        </div>
-                    </div>
-                </section>
+                        </CardContent>
+                </Card>
 
-                <section className="shell">
-                    <div className="panel">
-                        <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>
                             <h2 className="type-heading-sm">Topics</h2>
+                        </CardTitle>
+                        <CardAction>
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -143,9 +149,10 @@ export default function ProgressPage() {
                             >
                                 View all
                             </Button>
-                        </header>
+                        </CardAction>
+                    </CardHeader>
                         {roadmaps.length === 0 ? (
-                            <div className="px-4 pb-4">
+                            <CardContent>
                                 <Empty variant="plain" reason="empty">
                                     <EmptyHeader>
                                         <EmptyTitle>
@@ -165,9 +172,10 @@ export default function ProgressPage() {
                                         </Button>
                                     </EmptyContent>
                                 </Empty>
-                            </div>
+                            </CardContent>
                         ) : (
-                            <ItemGroup>
+                            <CardContent flush>
+                            <ItemGroup variant="plain" aria-label="Topics">
                                 {roadmaps.map((roadmap) => {
                                     const ladder = getLadder(roadmap);
                                     const stats = getRoadmapStats(roadmap);
@@ -208,6 +216,9 @@ export default function ProgressPage() {
                                                     {" · "}
                                                     {stats.completedTasks}/
                                                     {stats.totalTasks} lessons
+                                                    {" · "}
+                                                    {cardCount} card
+                                                    {cardCount === 1 ? "" : "s"}
                                                 </ItemDescription>
                                                 <Progress
                                                     mode="meter"
@@ -219,7 +230,11 @@ export default function ProgressPage() {
                                                     failAt={null}
                                                     aria-label={`${roadmap.title} progress`}
                                                 />
-                                                <div className="mt-2 -ms-2 flex flex-wrap items-center gap-1">
+                                            </ItemContent>
+                                            <ItemMeta>
+                                                {stats.percent}%
+                                            </ItemMeta>
+                                            <ItemActions className="max-sm:hidden">
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
@@ -255,17 +270,7 @@ export default function ProgressPage() {
                                                     >
                                                         Glossary
                                                     </Button>
-                                                    <span className="type-caption text-text-2">
-                                                        {cardCount} card
-                                                        {cardCount === 1
-                                                            ? ""
-                                                            : "s"}
-                                                    </span>
-                                                </div>
-                                            </ItemContent>
-                                            <ItemMeta>
-                                                {stats.percent}%
-                                            </ItemMeta>
+                                            </ItemActions>
                                             <ItemActions>
                                                 <Button
                                                     variant="ghost"
@@ -289,10 +294,10 @@ export default function ProgressPage() {
                                     );
                                 })}
                             </ItemGroup>
+                            </CardContent>
                         )}
-                    </div>
-                </section>
-            </div>
+                </Card>
+            </>
         </PageFrame>
     );
 }

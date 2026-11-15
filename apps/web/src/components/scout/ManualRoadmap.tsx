@@ -2,6 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Alert } from "@/components/glaze/ui/alert";
 import { Button } from "@/components/glaze/ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/glaze/ui/collapsible";
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
 import { Textarea } from "@/components/glaze/ui/textarea";
@@ -88,10 +93,9 @@ export default function ManualRoadmap() {
         }
     }
     return (
-        <details className="mt-4">
-            <summary className="cursor-pointer type-body-sm text-text-1">
-                Add resources yourself
-            </summary>
+        <Collapsible className="mt-4">
+            <CollapsibleTrigger>Add resources yourself</CollapsibleTrigger>
+            <CollapsibleContent>
             <p className="mt-2 type-caption text-text-2">
                 No key or AI calls needed. Your order is preserved.
             </p>
@@ -123,6 +127,7 @@ export default function ManualRoadmap() {
                 </div>
                 {error && <Alert status="fail">{error}</Alert>}
             </div>
-        </details>
+            </CollapsibleContent>
+        </Collapsible>
     );
 }

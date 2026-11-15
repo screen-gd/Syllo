@@ -19,8 +19,8 @@ export default function Header() {
     }, [pathname]);
 
     return (
-        <header className="sticky top-0 z-sticky border-b border-line-faint bg-paper">
-            <div className="page-shell-wide flex h-14 items-center justify-between gap-4">
+        <header className="sticky top-0 z-(--z-sticky) border-b border-line-faint bg-paper">
+            <div className="mx-auto w-full max-w-256 px-4 sm:px-6 flex h-14 items-center justify-between gap-4">
                 <Link to="/" className="flex min-w-0 items-center gap-2.5">
                     <Logo />
                     <span className="truncate type-label-lg text-text-1">Syllo</span>
@@ -66,7 +66,7 @@ export default function Header() {
 
             {mobileOpen && (
                 <div id="mobile-nav" className="border-t border-line-faint bg-page lg:hidden">
-                    <nav aria-label="Mobile navigation" className="page-shell-wide flex flex-col gap-1 py-4">
+                    <nav aria-label="Mobile navigation" className="mx-auto w-full max-w-256 px-4 sm:px-6 flex flex-col gap-1 py-4">
                         {PUBLIC_NAV_ITEMS.map((item) => {
                             const active = pathname.startsWith(item.href);
                             return (

@@ -106,7 +106,7 @@ export function RecallPrompt({
     }, [revealed]);
 
     return (
-        <div className="rounded-panel border border-line-faint bg-field p-4">
+        <div className="well rounded-panel p-3">
             <p className="type-caption text-text-2">{eyebrow}</p>
             <p className="mt-1 type-heading-sm" id={`${answerId}-question`}>
                 {check.question}
@@ -158,7 +158,7 @@ export function RecallPrompt({
                             ))}
                         </blockquote>
                         <p className="mt-2 type-body-sm">
-                            <b>In short:</b> {check.answer}
+                            <span className="text-text-1">In short:</span> {check.answer}
                         </p>
                     </div>
                     <p className="mt-3 type-caption text-text-3">Compare for yourself. If you missed it, replay that moment.</p>

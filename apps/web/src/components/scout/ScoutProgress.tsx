@@ -16,18 +16,18 @@ interface ScoutProgressProps {
 export default function ScoutProgress({ step, detail }: ScoutProgressProps) {
     return (
         <div className="border-b border-line-faint pb-4">
-            <ol className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <ol className="flex items-center gap-x-6 overflow-x-auto">
                 {STEPS.map((item) => {
                     const done = item.number < step;
                     const active = item.number === step;
 
                     return (
-                        <li key={item.number} className="flex items-center gap-2">
+                        <li key={item.number} className="flex shrink-0 items-center gap-2">
                             <span
                                 aria-hidden="true"
                                 className={cn(
-                                    "flex size-6 items-center justify-center rounded-full border type-caption",
-                                    done && "border-ink bg-ink text-page",
+                                    "flex size-6 items-center justify-center rounded-pill border type-caption",
+                                    done && "border-ink bg-ink text-text-inverse",
                                     active && "border-ink text-text-1",
                                     !done && !active && "border-line-faint text-text-2",
                                 )}
@@ -37,8 +37,8 @@ export default function ScoutProgress({ step, detail }: ScoutProgressProps) {
                             <span
                                 className={
                                     active
-                                        ? "type-body-sm text-text-1"
-                                        : "type-body-sm text-text-2"
+                                        ? "whitespace-nowrap type-body-sm text-text-1"
+                                        : "whitespace-nowrap type-body-sm text-text-2"
                                 }
                             >
                                 {item.label}
@@ -47,7 +47,7 @@ export default function ScoutProgress({ step, detail }: ScoutProgressProps) {
                     );
                 })}
             </ol>
-            {detail ? <p className="mt-2 type-caption text-text-3">{detail}</p> : null}
+            {detail ? <p className="mt-2 type-caption text-text-2">{detail}</p> : null}
         </div>
     );
 }

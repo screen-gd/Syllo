@@ -43,7 +43,7 @@ export default function CreatePage() {
     return (
         <Suspense
             fallback={
-                <div className="flex min-h-[60vh] items-center justify-center">
+                <div className="flex min-h-dvh items-center justify-center">
                     <SkeletonText lines={3} />
                 </div>
             }
@@ -182,6 +182,7 @@ function CreatePageContent() {
 
     return (
         <PageFrame
+            width={creationStep === "review" ? "wide" : "reading"}
             title={
                 creationStep === "review" && draftRoadmap
                     ? draftRoadmap.title
@@ -202,7 +203,7 @@ function CreatePageContent() {
                             <Icon icon={ArrowLeft} /> Back
                         </Button>
                         <Button onClick={handleCreateFinal}>
-                            Create Workspace <Icon icon={ArrowRight} />
+                            Create workspace <Icon icon={ArrowRight} />
                         </Button>
                     </>
                 ) : undefined
@@ -210,8 +211,8 @@ function CreatePageContent() {
         >
             {creationStep === "input" && (
                 <div className="flex flex-col gap-6">
-                    <div className="flex flex-wrap items-end gap-4">
-                        <Field className="min-w-0 basis-64 flex-1">
+                    <div className="flex flex-col gap-4">
+                        <Field>
                             <FieldLabel>Workspace title</FieldLabel>
                             <Input
                                 value={title}
@@ -298,7 +299,7 @@ function CreatePageContent() {
             {creationStep === "generating" && (
                 <section className="shell" aria-label="Generating roadmap">
                     <div
-                        className="panel flex flex-col items-center gap-4 p-10 text-center"
+                        className="panel flex flex-col items-center gap-3 p-6 text-center"
                         role="status"
                     >
                         <Icon
@@ -322,12 +323,12 @@ function CreatePageContent() {
                 <div className="grid gap-4 lg:grid-cols-2">
                     <section className="shell">
                         <div className="panel">
-                            <header className="border-b border-line-faint p-4 pb-3">
-                                <h2 className="type-label text-text-2">
+                            <header className="border-b border-line-faint p-3">
+                                <h2 className="type-heading-sm">
                                     Source text
                                 </h2>
                             </header>
-                            <div className="max-h-[70vh] overflow-y-auto p-4 whitespace-pre-wrap type-body-sm text-text-2">
+                            <div className="max-h-160 overflow-y-auto p-3 whitespace-pre-wrap type-body-sm text-text-2">
                                 {content}
                             </div>
                         </div>
@@ -335,15 +336,15 @@ function CreatePageContent() {
 
                     <section className="shell">
                         <div className="panel">
-                            <header className="flex items-center justify-between gap-3 border-b border-line-faint p-4 pb-3">
-                                <h2 className="type-label text-text-1">
+                            <header className="flex items-center justify-between gap-3 border-b border-line-faint p-3">
+                                <h2 className="type-heading-sm">
                                     Generated modules
                                 </h2>
                                 <p className="type-caption text-text-2">
                                     You can edit these later
                                 </p>
                             </header>
-                            <div className="flex max-h-[70vh] flex-col gap-5 overflow-y-auto p-4">
+                            <div className="flex max-h-160 flex-col gap-4 overflow-y-auto p-3">
                                 {draftRoadmap.sections
                                     .filter((s) => s.type === "module")
                                     .map((s, i) => {
@@ -355,7 +356,7 @@ function CreatePageContent() {
                                                     Module {i + 1}:{" "}
                                                     {mod.title || "Untitled"}
                                                 </h3>
-                                                <div className="mt-2 flex flex-col gap-2">
+                                                <div className="mt-1 flex flex-col">
                                                     {mod.data?.tasks &&
                                                         Array.isArray(
                                                             mod.data.tasks,
@@ -364,7 +365,7 @@ function CreatePageContent() {
                                                             (task, j) => (
                                                                 <p
                                                                     key={j}
-                                                                    className="break-words rounded-panel bg-field p-2 type-body-sm text-text-2"
+                                                                    className="rule-row break-words py-2 type-body-sm text-text-2"
                                                                 >
                                                                     {task.title}
                                                                 </p>

@@ -16,9 +16,9 @@ export default function SettingsSection({
 }) {
     return (
         <section className="shell">
-            <div className="panel p-4">
+            <div className="panel p-3">
                 <h2 className="type-heading-sm">{title}</h2>
-                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:gap-6">
+                <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:gap-6">
                     {description && (
                         <p className="type-body-sm text-text-2 sm:w-56 sm:shrink-0">
                             {description}

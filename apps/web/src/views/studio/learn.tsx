@@ -18,10 +18,24 @@ import {
 } from "@/components/glaze/icon";
 import { Alert } from "@/components/glaze/ui/alert";
 import { Badge } from "@/components/glaze/ui/badge";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/glaze/ui/breadcrumb";
 import { Button } from "@/components/glaze/ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/glaze/ui/collapsible";
 import {
     Empty,
     EmptyContent,
+    EmptyDescription,
     EmptyHeader,
     EmptyTitle,
 } from "@/components/glaze/ui/empty-state";
@@ -32,6 +46,8 @@ import {
     ItemContent,
     ItemDescription,
     ItemGroup,
+    ItemLink,
+    ItemMeta,
     ItemTitle,
 } from "@/components/glaze/ui/item";
 import {
@@ -41,6 +57,7 @@ import {
 import { Skeleton, SkeletonText } from "@/components/glaze/ui/skeleton";
 import { Switch } from "@/components/glaze/ui/switch";
 import { Textarea } from "@/components/glaze/ui/textarea";
+import { cn } from "@/lib/glaze/utils";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
 import {
     getLadder,
@@ -468,7 +485,7 @@ export default function LearnPage({
                 <div className="grid gap-4 lg:grid-cols-5">
                     <div className="flex flex-col gap-4 lg:col-span-2">
                         <section className="shell">
-                            <div className="panel p-4">
+                            <div className="panel p-3">
                                 <SkeletonText type="body-sm" last={0.34} />
                                 <Skeleton className="mt-3 h-44 w-full rounded-panel" />
                                 <div className="mt-3">
@@ -477,7 +494,7 @@ export default function LearnPage({
                             </div>
                         </section>
                         <section className="shell">
-                            <div className="panel p-4">
+                            <div className="panel p-3">
                                 <SkeletonText type="body-sm" last={0.24} />
                                 <div className="mt-3">
                                     <SkeletonText type="body" last={0.9} />
@@ -488,7 +505,7 @@ export default function LearnPage({
                     </div>
                     <div className="lg:col-span-3">
                         <section className="shell">
-                            <div className="panel p-4">
+                            <div className="panel p-3">
                                 <SkeletonText type="heading" last={0.45} />
                                 <div className="mt-4">
                                     <SkeletonText type="body" last={0.92} />
@@ -785,20 +802,20 @@ export default function LearnPage({
     return (
         <div className="flex flex-col gap-4">
             <header className="flex flex-wrap items-center justify-between gap-2">
-                <nav
-                    className="flex min-w-0 items-baseline gap-2 type-caption text-text-2"
-                    aria-label="Breadcrumb"
-                >
-                    <Link to="/workspaces" className="hover:text-text-1">
-                        Learning topics
-                    </Link>
-                    <span aria-hidden="true">/</span>
-                    <span className="truncate">{roadmap.title}</span>
-                    <span aria-hidden="true">/</span>
-                    <b className="truncate text-text-1">{title}</b>
-                </nav>
+                <Breadcrumb className="min-w-0">
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink render={<Link to="/workspaces" />}>
+                                Learn
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{roadmap.title}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
                 <div className="flex items-center gap-2">
-                    <span className="type-caption text-text-2">{metaLabel}</span>
                     <Button
                         variant="ghost"
                         size="sm"
@@ -826,19 +843,17 @@ export default function LearnPage({
                 >
                     <section className="shell">
                         <div className="panel">
-                            <header className="flex items-center justify-between gap-3 p-4 pb-3">
-                                <span className="type-caption text-text-2">
-                                    {videoResource
-                                        ? "Watch the walkthrough"
-                                        : "Lesson source"}
-                                </span>
+                            <header className="flex items-center justify-between gap-3 p-3">
+                                <h2 className="type-heading-sm">
+                                    {videoResource ? "Video" : "Source"}
+                                </h2>
                                 {video?.duration && (
                                     <span className="type-caption text-text-2">
                                         {video.duration}
                                     </span>
                                 )}
                             </header>
-                            <div className="px-4">
+                            <div className="px-3">
                                 {videoResource ? (
                                     <StudyVideo
                                         key={`${item.task.id}:${videoResource.url}`}
@@ -863,14 +878,16 @@ export default function LearnPage({
                                     <Empty variant="plain" reason="empty">
                                         <EmptyHeader>
                                             <EmptyTitle>
-                                                This lesson is reading only.
-                                                Open a source from the Read tab.
+                                                Reading only
                                             </EmptyTitle>
+                                            <EmptyDescription>
+                                                Open a source from the Read tab.
+                                            </EmptyDescription>
                                         </EmptyHeader>
                                     </Empty>
                                 )}
                             </div>
-                            <div className="flex items-center justify-between gap-3 p-4 pt-3">
+                            <div className="flex items-center justify-between gap-3 p-3">
                                 <div className="min-w-0">
                                     <p className="truncate type-body-sm text-text-1">
                                         {video?.title ||
@@ -902,7 +919,7 @@ export default function LearnPage({
                                 )}
                             </div>
                             {pausedCheck && (
-                                <div className="px-4 pb-4">
+                                <div className="px-3 pb-3">
                                     <RecallPrompt
                                         check={pausedCheck}
                                         eyebrow={`Quick check · ${pausedCheck.label}`}
@@ -924,7 +941,7 @@ export default function LearnPage({
                                 </div>
                             )}
                             {hasChapterChecks && (
-                                <div className="px-4 pb-4">
+                                <div className="px-3 pb-3">
                                     <Field orientation="horizontal">
                                         <FieldLabel className="flex-1">
                                             Pause for one question at the end
@@ -940,11 +957,12 @@ export default function LearnPage({
                                 </div>
                             )}
                             {videoResource && (
-                                <details className="px-4 pb-4">
-                                    <summary className="cursor-pointer type-caption text-text-2">
+                                <Collapsible className="px-3 pb-3">
+                                    <CollapsibleTrigger size="sm">
                                         Update position after listening
                                         elsewhere
-                                    </summary>
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
                                     <div className="mt-2 flex items-end gap-2">
                                         <Field className="w-32">
                                             <FieldLabel>Minutes</FieldLabel>
@@ -977,7 +995,8 @@ export default function LearnPage({
                                             Save
                                         </Button>
                                     </div>
-                                </details>
+                                    </CollapsibleContent>
+                                </Collapsible>
                             )}
                         </div>
                     </section>
@@ -985,7 +1004,7 @@ export default function LearnPage({
                     {chapters.length > 0 && (
                         <section className="shell">
                             <div className="panel">
-                                <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                <header className="flex items-center justify-between gap-3 p-3">
                                     <h2 className="type-heading-sm">
                                         Chapters
                                     </h2>
@@ -993,50 +1012,51 @@ export default function LearnPage({
                                         {chapters.length}
                                     </span>
                                 </header>
-                                <ItemGroup variant="plain" className="px-2 pb-2">
-                                    {chapters.map((chapter) => (
-                                        <Button
-                                            key={`${chapter.seconds}:${chapter.label}`}
-                                            variant="ghost"
-                                            size="sm"
-                                            aria-current={
-                                                activeChapter ===
-                                                chapter.seconds
-                                                    ? "true"
-                                                    : undefined
-                                            }
-                                            className="w-full justify-start"
-                                            onClick={() =>
-                                                seek(chapter.seconds)
-                                            }
-                                        >
-                                            <span className="type-caption text-text-3">
-                                                {chapter.time}
-                                            </span>
-                                            <span
-                                                className={
-                                                    activeChapter ===
-                                                    chapter.seconds
-                                                        ? "min-w-0 flex-1 truncate text-start"
-                                                        : "min-w-0 flex-1 truncate text-start text-text-2"
+                                <div className="flex flex-col gap-0.5 px-1.5 pb-1.5">
+                                    {chapters.map((chapter) => {
+                                        const active =
+                                            activeChapter === chapter.seconds;
+                                        return (
+                                            <Button
+                                                key={`${chapter.seconds}:${chapter.label}`}
+                                                variant="ghost"
+                                                size="sm"
+                                                aria-current={
+                                                    active ? "true" : undefined
+                                                }
+                                                className="w-full justify-start"
+                                                onClick={() =>
+                                                    seek(chapter.seconds)
                                                 }
                                             >
-                                                {chapter.label}
-                                            </span>
-                                        </Button>
-                                    ))}
-                                </ItemGroup>
+                                                <span className="w-10 shrink-0 text-start type-caption text-text-2">
+                                                    {chapter.time}
+                                                </span>
+                                                <span
+                                                    className={cn(
+                                                        "min-w-0 flex-1 truncate text-start",
+                                                        !active && "text-text-2",
+                                                    )}
+                                                >
+                                                    {chapter.label}
+                                                </span>
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </section>
                     )}
 
                     <section className="shell">
                         <div className="panel">
-                            <header className="flex items-center justify-between gap-3 p-4 pb-3">
-                                <h2 className="type-heading-sm">Notes</h2>
-                                <span className="type-caption text-text-2">
-                                    at {formatTimestamp(position)}
-                                </span>
+                            <header className="flex items-center justify-between gap-3 p-3">
+                                <div className="flex min-w-0 items-baseline gap-2">
+                                    <h2 className="type-heading-sm">Notes</h2>
+                                    <span className="type-caption text-text-2">
+                                        at {formatTimestamp(position)}
+                                    </span>
+                                </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -1052,7 +1072,7 @@ export default function LearnPage({
                                 </Button>
                             </header>
                             <form
-                                className="flex items-start gap-2 px-4 pb-3"
+                                className="flex items-end gap-2 px-3 pb-3"
                                 onSubmit={(event) => {
                                     event.preventDefault();
                                     saveNote();
@@ -1071,7 +1091,7 @@ export default function LearnPage({
                                 <Button
                                     type="submit"
                                     variant="secondary"
-                                    size="icon-sm"
+                                    size="icon"
                                     aria-label="Save note"
                                     disabled={!draft.trim()}
                                 >
@@ -1079,16 +1099,16 @@ export default function LearnPage({
                                 </Button>
                             </form>
                             {pausedCheck ? (
-                                <p className="px-4 pb-4 type-caption text-text-3">
+                                <p className="px-3 pb-3 type-caption text-text-2">
                                     Notes are hidden while you answer.
                                 </p>
                             ) : notes.length === 0 ? (
-                                <p className="px-4 pb-4 type-caption text-text-3">
+                                <p className="px-3 pb-3 type-caption text-text-2">
                                     No notes yet. They attach to{" "}
                                     {formatTimestamp(position)}.
                                 </p>
                             ) : (
-                                <ul className="px-4 pb-4">
+                                <ul className="px-3 pb-3">
                                     {notes.map((note) => (
                                         <li
                                             key={note.id}
@@ -1127,7 +1147,7 @@ export default function LearnPage({
 
                     <section className="shell">
                         <div className="panel">
-                            <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                            <header className="flex items-center justify-between gap-3 p-3">
                                 <h2 className="type-heading-sm">Ladder</h2>
                                 <span className="type-caption text-text-2">
                                     {ladder
@@ -1136,7 +1156,7 @@ export default function LearnPage({
                                 </span>
                             </header>
                             {ladderLevelUp && ladderLevelUpTarget ? (
-                                <div className="px-4 pb-3">
+                                <div className="px-3 pb-3">
                                     <Button
                                         variant="secondary"
                                         size="sm"
@@ -1158,7 +1178,7 @@ export default function LearnPage({
                                     </Button>
                                 </div>
                             ) : null}
-                            <div className="px-4 pb-4">
+                            <div className="px-3 pb-3">
                                 {ladder?.levels.map(levelSection)}
                                 {ladder && ladder.reading.length > 0 ? (
                                     <div>
@@ -1180,7 +1200,7 @@ export default function LearnPage({
                                                 }
                                                 className="text-text-3"
                                             />
-                                            <span className="min-w-0 flex-1">
+                                            <span className="min-w-0 flex-1 truncate text-start">
                                                 Reading track
                                             </span>
                                             <span className="type-caption text-text-2">
@@ -1210,34 +1230,22 @@ export default function LearnPage({
                     </section>
 
                     <section className="shell">
-                        <div className="panel p-4">
+                        <div className="panel p-3">
                             <Pomodoro />
                         </div>
                     </section>
                 </aside>
 
-                <div className="min-w-0 lg:col-span-3">
+                <div className="min-w-0 max-lg:order-first lg:col-span-3">
                     <section className="shell">
                         <div className="panel">
-                            <header className="p-4 pb-3">
-                                <div className="flex flex-wrap items-center justify-between gap-2">
-                                    <p className="type-caption text-text-2">
-                                        {item.sectionTitle}
-                                    </p>
-                                    <Field orientation="horizontal">
-                                        <FieldLabel>
-                                            {done
-                                                ? "Completed"
-                                                : "Mark complete"}
-                                        </FieldLabel>
-                                        <Switch
-                                            checked={done}
-                                            onCheckedChange={onMarkDone}
-                                        />
-                                    </Field>
-                                </div>
-                                <h1 className="mt-1 type-title">{title}</h1>
-                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 type-caption text-text-2">
+                            <header className="flex flex-wrap items-start justify-between gap-3 p-3">
+                                <div className="min-w-0">
+                                <h1 className="type-title">{title}</h1>
+                                <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 type-caption text-text-2">
+                                    {item.sectionTitle && (
+                                        <span>{item.sectionTitle}</span>
+                                    )}
                                     {item.task.estimatedTime && (
                                         <span>{item.task.estimatedTime}</span>
                                     )}
@@ -1249,10 +1257,22 @@ export default function LearnPage({
                                     )}
                                     <span>{metaLabel}</span>
                                 </div>
+                                </div>
+                                    <Field orientation="horizontal" className="w-auto shrink-0">
+                                        <FieldLabel>
+                                            {done
+                                                ? "Completed"
+                                                : "Mark complete"}
+                                        </FieldLabel>
+                                        <Switch
+                                            checked={done}
+                                            onCheckedChange={onMarkDone}
+                                        />
+                                    </Field>
                             </header>
 
                             {completionOpen && completion ? (
-                                <div className="mx-4 mb-4 rounded-panel border border-line-faint bg-field p-4">
+                                <div className="well mx-3 mb-3 rounded-panel p-3">
                                     {completion.core && !recallResolved ? (
                                         <>
                                             <p className="type-label">
@@ -1370,7 +1390,7 @@ export default function LearnPage({
                                 </div>
                             ) : null}
 
-                            <div className="border-t border-line-faint px-4 pt-4">
+                            <div className="border-t border-line-faint px-3 pt-3">
                                 <SegmentedControl
                                     aria-label="Lesson views"
                                     value={tab}
@@ -1393,7 +1413,7 @@ export default function LearnPage({
                                 </SegmentedControl>
                             </div>
 
-                            <div className="p-4">
+                            <div className="p-3">
                                 <section
                                     aria-label="Read"
                                     hidden={tab !== "read"}
@@ -1427,7 +1447,7 @@ export default function LearnPage({
                                                     )}
                                                     {concepts && (
                                                         <p>
-                                                            <b>Concepts · </b>
+                                                            <span className="text-text-1">Concepts · </span>
                                                             {concepts}
                                                         </p>
                                                     )}
@@ -1473,50 +1493,47 @@ export default function LearnPage({
                                                 Sources
                                             </h2>
                                             {sources.length > 0 ? (
-                                                <div className="mt-2 flex flex-col">
-                                                    {sources.map(
-                                                        (resource) => (
-                                                            <a
-                                                                key={
-                                                                    resource.id
-                                                                }
-                                                                className="flex items-center gap-3 rounded-tag px-2 py-2 hover:bg-field"
-                                                                href={
-                                                                    safeResourceUrl(
-                                                                        resource.url,
-                                                                    ) ?? "#"
-                                                                }
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                            >
-                                                                <span className="shrink-0 type-caption text-text-3">
-                                                                    {
-                                                                        resource.type
-                                                                    }
-                                                                </span>
-                                                                <span className="min-w-0 flex-1">
-                                                                    <b className="block truncate type-body-sm text-text-1">
+                                                <ItemGroup
+                                                    variant="plain"
+                                                    aria-label="Sources"
+                                                    className="mt-2"
+                                                >
+                                                    {sources.map((resource) => (
+                                                        <Item key={resource.id}>
+                                                            <ItemContent>
+                                                                <ItemTitle>
+                                                                    <ItemLink
+                                                                        href={
+                                                                            safeResourceUrl(
+                                                                                resource.url,
+                                                                            ) ??
+                                                                            "#"
+                                                                        }
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                    >
                                                                         {resource.title ||
                                                                             resource.url}
-                                                                    </b>
-                                                                    {resource.description && (
-                                                                        <small className="block truncate type-caption text-text-2">
-                                                                            {
-                                                                                resource.description
-                                                                            }
-                                                                        </small>
-                                                                    )}
-                                                                </span>
-                                                                <Icon
-                                                                    icon={
-                                                                        External
-                                                                    }
-                                                                    className="text-text-3"
-                                                                />
-                                                            </a>
-                                                        ),
-                                                    )}
-                                                </div>
+                                                                    </ItemLink>
+                                                                </ItemTitle>
+                                                                {resource.description && (
+                                                                    <ItemDescription>
+                                                                        {
+                                                                            resource.description
+                                                                        }
+                                                                    </ItemDescription>
+                                                                )}
+                                                            </ItemContent>
+                                                            <ItemMeta>
+                                                                {resource.type}
+                                                            </ItemMeta>
+                                                            <Icon
+                                                                icon={External}
+                                                                className="text-text-3"
+                                                            />
+                                                        </Item>
+                                                    ))}
+                                                </ItemGroup>
                                             ) : (
                                                 <p className="mt-2 type-body-sm text-text-2">
                                                     No source is attached to
@@ -1784,7 +1801,7 @@ export default function LearnPage({
                                             </div>
                                         </section>
 
-                                        <section className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-line-faint bg-field p-4">
+                                        <section className="well flex flex-wrap items-center justify-between gap-3 rounded-panel p-3">
                                             {next ? (
                                                 <>
                                                     <div className="min-w-0">

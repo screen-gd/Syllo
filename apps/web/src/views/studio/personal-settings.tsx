@@ -221,7 +221,7 @@ export default function PersonalSettingsPage() {
                             <Icon icon={Download} size={14} />
                             Export backup
                         </Button>
-                        <AttachmentDropTrigger variant="ghost">
+                        <AttachmentDropTrigger variant="secondary">
                             Restore backup
                         </AttachmentDropTrigger>
                     </div>
@@ -265,7 +265,7 @@ export default function PersonalSettingsPage() {
                             <p className="type-body-sm text-text-2">
                                 {connection.note}
                             </p>
-                            <pre className="mt-3 overflow-x-auto rounded-tag bg-field p-3 type-code-sm">
+                            <pre className="code-surface mt-3 overflow-x-auto rounded-panel p-3 type-code-block">
                                 {connection.snippet}
                             </pre>
                             <CopyButton
@@ -279,7 +279,7 @@ export default function PersonalSettingsPage() {
                 ))}
             </SettingsSection>
             {error && (
-                <Alert status="fail" className="mt-6">
+                <Alert status="fail">
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}

@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
     ArrowRight,
-    BookOpen,
     Create,
     Icon,
     Library,
@@ -10,6 +9,13 @@ import {
 } from "@/components/glaze/icon";
 import { Badge } from "@/components/glaze/ui/badge";
 import { Button } from "@/components/glaze/ui/button";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/glaze/ui/card";
 import { Chart } from "@/components/glaze/ui/chart";
 import {
     DataList,
@@ -89,22 +95,24 @@ function SectionHead({
     trailing?: React.ReactNode;
 }) {
     return (
-        <header className="flex items-center justify-between gap-3 p-4 pb-3">
-            <div className="flex min-w-0 items-center gap-2">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2">
                 <h2 className="type-heading-sm">{title}</h2>
                 {trailing}
-            </div>
+            </CardTitle>
             {link && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    render={<Link to={link.to} />}
-                    nativeButton={false}
-                >
-                    {link.label}
-                </Button>
+                <CardAction>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        render={<Link to={link.to} />}
+                        nativeButton={false}
+                    >
+                        {link.label}
+                    </Button>
+                </CardAction>
             )}
-        </header>
+        </CardHeader>
     );
 }
 
@@ -173,8 +181,7 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
     return (
         <div className="grid gap-4 lg:grid-cols-3">
             <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
-                <section className="shell">
-                    <div className="panel">
+                <Card>
                         <SectionHead
                             title="Continue learning"
                             trailing={
@@ -185,34 +192,25 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                 ) : undefined
                             }
                         />
-                        <div className="px-4 pb-4">
+                        <CardContent>
                             {resumeTask && resumeRoadmap ? (
                                 <>
                                     <div className="flex flex-col gap-4 sm:flex-row">
-                                        <Link
-                                            className="relative block h-28 w-full shrink-0 overflow-hidden rounded-panel bg-field sm:h-auto sm:w-48"
-                                            to="/learn"
-                                            search={{
-                                                roadmap: resumeRoadmap.id,
-                                                task: resumeTask.task.id,
-                                            }}
-                                            aria-label={`Continue ${resumeTask.task.title}`}
-                                        >
-                                            {youtubeId ? (
+                                        {youtubeId && (
+                                            <Link
+                                                className="relative block aspect-16/9 w-full shrink-0 overflow-hidden rounded-panel bg-field sm:w-48"
+                                                to="/learn"
+                                                search={{
+                                                    roadmap: resumeRoadmap.id,
+                                                    task: resumeTask.task.id,
+                                                }}
+                                                aria-label={`Continue ${resumeTask.task.title}`}
+                                            >
                                                 <img
                                                     src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
                                                     alt=""
                                                     className="size-full object-cover"
                                                 />
-                                            ) : (
-                                                <span className="grid size-full place-items-center text-text-2">
-                                                    <Icon
-                                                        icon={BookOpen}
-                                                        size={24}
-                                                    />
-                                                </span>
-                                            )}
-                                            {video && (
                                                 <span className="absolute inset-0 grid place-items-center">
                                                     <span className="grid size-8 place-items-center rounded-pill bg-ink text-text-inverse">
                                                         <Icon
@@ -221,8 +219,8 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                                         />
                                                     </span>
                                                 </span>
-                                            )}
-                                        </Link>
+                                            </Link>
+                                        )}
                                         <div className="flex min-w-0 flex-1 flex-col">
                                             <p className="flex flex-wrap items-center gap-2 type-body-sm text-text-2">
                                                 {resumeRoadmap.title}
@@ -343,16 +341,15 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                     )}
                                 </ItemGroup>
                             )}
-                        </div>
-                    </div>
-                </section>
-                <section className="shell">
-                    <div className="panel">
+                        </CardContent>
+                    </Card>
+                <Card>
                         <SectionHead
                             title="Your learning topics"
                             link={{ to: "/workspaces", label: "View all" }}
                         />
                         {roadmaps.length ? (
+                            <CardContent flush>
                             <ItemGroup
                                 variant="plain"
                                 aria-label="Your learning topics"
@@ -438,8 +435,9 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                     );
                                 })}
                             </ItemGroup>
+                            </CardContent>
                         ) : (
-                            <div className="px-4 pb-4">
+                            <CardContent>
                                 <Empty variant="plain" reason="empty">
                                     <EmptyHeader>
                                         <EmptyTitle>
@@ -447,19 +445,17 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                         </EmptyTitle>
                                     </EmptyHeader>
                                 </Empty>
-                            </div>
+                            </CardContent>
                         )}
-                    </div>
-                </section>
+                    </Card>
             </div>
             <aside className="flex min-w-0 flex-col gap-4">
-                <section className="shell">
-                    <div className="panel">
+                <Card>
                         <SectionHead
                             title="This week"
                             link={{ to: "/progress", label: "Progress" }}
                         />
-                        <div className="px-4 pb-4">
+                        <CardContent>
                             <DataList variant="plain">
                                 <DataListItem>
                                     <DataListLabel>Day streak</DataListLabel>
@@ -485,16 +481,14 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                 unit="count"
                                 className="mt-4 w-full"
                             />
-                        </div>
-                    </div>
-                </section>
-                <section className="shell">
-                    <div className="panel">
+                        </CardContent>
+                    </Card>
+                <Card>
                         <SectionHead
                             title="Reviews"
                             link={{ to: "/glossary", label: "Glossary" }}
                         />
-                        <div className="px-4 pb-4">
+                        <CardContent>
                             <p className="type-heading-sm">
                                 {dueCount}{" "}
                                 {dueCount === 1 ? "card ready" : "cards ready"}
@@ -509,7 +503,9 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                             <div className="mt-3">
                                 <Button
                                     variant={
-                                        dueCount > 0 ? "primary" : "secondary"
+                                        dueCount > 0 && !resumeTask
+                                            ? "primary"
+                                            : "secondary"
                                     }
                                     render={<Link to="/reviews" />}
                                     nativeButton={false}
@@ -518,16 +514,15 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                     Review
                                 </Button>
                             </div>
-                        </div>
-                    </div>
-                </section>
-                <section className="shell">
-                    <div className="panel">
+                        </CardContent>
+                    </Card>
+                <Card>
                         <SectionHead
                             title="Currently reading"
                             link={{ to: "/library", label: "Library" }}
                         />
                         {books.length ? (
+                            <CardContent flush>
                             <ItemGroup
                                 variant="plain"
                                 aria-label="Currently reading"
@@ -538,6 +533,7 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                             <BookCover
                                                 book={book}
                                                 className="w-full"
+                                                compact
                                             />
                                         </ItemMedia>
                                         <ItemContent>
@@ -587,8 +583,9 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                     </Item>
                                 ))}
                             </ItemGroup>
+                            </CardContent>
                         ) : (
-                            <div className="px-4 pb-4">
+                            <CardContent>
                                 <Empty variant="plain" reason="empty">
                                     <EmptyHeader>
                                         <EmptyTitle>No book open</EmptyTitle>
@@ -604,10 +601,9 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                         </Button>
                                     </EmptyContent>
                                 </Empty>
-                            </div>
+                            </CardContent>
                         )}
-                    </div>
-                </section>
+                    </Card>
             </aside>
         </div>
     );
@@ -618,17 +614,15 @@ function HomeSkeleton() {
     return (
         <div className="grid gap-4 lg:grid-cols-3">
             <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
-                <section className="shell">
-                    <div className="panel">
+                <Card>
                         <SectionHead title="Continue learning" />
-                        <div className="px-4 pb-4">
+                        <CardContent>
                             <Skeleton className="h-24" />
-                        </div>
-                    </div>
-                </section>
-                <section className="shell">
-                    <div className="panel">
+                        </CardContent>
+                    </Card>
+                <Card>
                         <SectionHead title="Your learning topics" />
+                        <CardContent flush>
                         <ItemGroup
                             variant="plain"
                             aria-label="Your learning topics"
@@ -649,34 +643,28 @@ function HomeSkeleton() {
                                 </Item>
                             ))}
                         </ItemGroup>
-                    </div>
-                </section>
+                        </CardContent>
+                    </Card>
             </div>
             <aside className="flex min-w-0 flex-col gap-4">
-                <section className="shell">
-                    <div className="panel">
+                <Card>
                         <SectionHead title="This week" />
-                        <div className="px-4 pb-4">
+                        <CardContent>
                             <Skeleton className="h-24" />
-                        </div>
-                    </div>
-                </section>
-                <section className="shell">
-                    <div className="panel">
+                        </CardContent>
+                    </Card>
+                <Card>
                         <SectionHead title="Reviews" />
-                        <div className="px-4 pb-4">
+                        <CardContent>
                             <Skeleton className="h-16" />
-                        </div>
-                    </div>
-                </section>
-                <section className="shell">
-                    <div className="panel">
+                        </CardContent>
+                    </Card>
+                <Card>
                         <SectionHead title="Currently reading" />
-                        <div className="px-4 pb-4">
+                        <CardContent>
                             <Skeleton className="h-16" />
-                        </div>
-                    </div>
-                </section>
+                        </CardContent>
+                    </Card>
             </aside>
         </div>
     );

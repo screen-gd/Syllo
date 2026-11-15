@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Icon, Add } from "@/components/glaze/icon";
 import { Badge } from "@/components/glaze/ui/badge";
+import { Card, CardContent } from "@/components/glaze/ui/card";
 import { Button } from "@/components/glaze/ui/button";
 import {
     Empty,
@@ -175,7 +176,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                     <Select
                         native
                         aria-label="Topic"
-                        className="w-56"
+                        className="w-full sm:w-56"
                         value={draft.roadmapId}
                         onValueChange={(value) =>
                             setDraft({
@@ -239,17 +240,17 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                 </>
             }
         >
-            <div className="flex flex-col gap-4">
+            <>
                 {draft && !draft.id && (
                     <section className="shell">
-                        <div className="panel p-4">{form}</div>
+                        <div className="panel p-3">{form}</div>
                     </section>
                 )}
 
                 {entries.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
                         <Input
-                            className="w-56"
+                            className="w-full sm:w-56"
                             value={query}
                             onValueChange={setQuery}
                             placeholder="Search terms"
@@ -259,7 +260,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                             <Select
                                 native
                                 aria-label="Topic"
-                                className="w-56"
+                                className="w-full sm:w-56"
                                 value={topic}
                                 onValueChange={(value) =>
                                     setTopic(value ?? "all")
@@ -278,7 +279,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
 
                 {!loaded ? (
                     <section className="shell">
-                        <div className="panel p-4" role="status" aria-label="Loading">
+                        <div className="panel p-3" role="status" aria-label="Loading">
                             <span className="sr-only">Loading</span>
                             <SkeletonText type="heading-sm" last={0.2} />
                             {[0, 1, 2].map((row) => (
@@ -329,17 +330,15 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                         </EmptyHeader>
                     </Empty>
                 ) : (
-                    [...letters].map(([letter, group]) => (
-                        <section key={letter} className="shell">
-                            <div className="panel">
-                                <header className="flex items-center justify-between gap-3 p-4 pb-3">
-                                    <h2 className="type-heading-sm">
-                                        {letter}
-                                    </h2>
-                                    <Badge count={group.length} />
-                                </header>
+                    <Card>
+                        <CardContent flush>
+                    {[...letters].map(([letter, group]) => (
+                        <section key={letter} className="rule-row" aria-label={letter}>
+                                <h2 className="px-3 pb-1 pt-3 type-label-sm text-text-2">
+                                    {letter}
+                                </h2>
                                 <dl>
-                                    {group.map((entry, index) => {
+                                    {group.map((entry) => {
                                         const hasCard = carded.has(
                                             glossaryReviewId(
                                                 entry.roadmapId,
@@ -349,11 +348,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                                         return (
                                             <div
                                                 key={entry.term.id}
-                                                className={
-                                                    index === 0
-                                                        ? "border-t border-line-faint px-4 py-3"
-                                                        : "rule-row px-4 py-3"
-                                                }
+                                                className="rule-row p-3"
                                             >
                                                 {draft?.id ===
                                                 entry.term.id ? (
@@ -370,30 +365,18 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                                                                         .definition
                                                                 }
                                                             </p>
+                                                            {roadmaps.length > 1 && (
+                                                                <Link
+                                                                    className="mt-1 inline-block type-caption text-text-2 hover:text-text-1"
+                                                                    to="/learn"
+                                                                    search={{
+                                                                        roadmap: entry.roadmapId,
+                                                                    }}
+                                                                >
+                                                                    {entry.roadmapTitle}
+                                                                </Link>
+                                                            )}
                                                             <div className="mt-2 -ms-2 flex flex-wrap items-center gap-1">
-                                                                {roadmaps.length >
-                                                                    1 && (
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        render={
-                                                                            <Link
-                                                                                to="/learn"
-                                                                                search={{
-                                                                                    roadmap:
-                                                                                        entry.roadmapId,
-                                                                                }}
-                                                                            />
-                                                                        }
-                                                                        nativeButton={
-                                                                            false
-                                                                        }
-                                                                    >
-                                                                        {
-                                                                            entry.roadmapTitle
-                                                                        }
-                                                                    </Button>
-                                                                )}
                                                                 {hasCard ? (
                                                                     <Badge>
                                                                         In
@@ -458,11 +441,12 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                                         );
                                     })}
                                 </dl>
-                            </div>
                         </section>
-                    ))
+                    ))}
+                        </CardContent>
+                    </Card>
                 )}
-            </div>
+            </>
         </PageFrame>
     );
 }

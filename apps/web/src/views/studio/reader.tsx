@@ -291,7 +291,11 @@ export default function ReaderPage({
     }, [ready, size, night]);
     useEffect(() => {
         const rendition = renditionRef.current;
-        if (!rendition || !ready) return;
+        if (!rendition || !ready || !host.current) return;
+        // Highlights take the ink of the reading surface at a low opacity, so they read on a light or a dark page.
+        const ink = getComputedStyle(host.current)
+            .getPropertyValue("--text-1")
+            .trim();
         for (const item of annotations) {
             const anchor = item.data.anchor;
             if (anchor.kind !== "book" || highlighted.current.has(anchor.cfi))
@@ -302,11 +306,7 @@ export default function ReaderPage({
                     {},
                     undefined,
                     "syllo-highlight",
-                    {
-                        fill: item.data.color,
-                        "fill-opacity": "0.3",
-                        "mix-blend-mode": "multiply",
-                    },
+                    { fill: ink, "fill-opacity": "0.16" },
                 );
                 highlighted.current.add(anchor.cfi);
             } catch {
@@ -341,8 +341,8 @@ export default function ReaderPage({
     }
     if (!book)
         return (
-            <PageFrame title="Book not found">
-                <Empty reason="no-results">
+            <PageFrame title="Library">
+                <Empty reason="no-results" className="w-full max-w-md self-center">
                     <EmptyHeader>
                         <EmptyTitle>Book not found</EmptyTitle>
                         <EmptyDescription>
@@ -363,7 +363,7 @@ export default function ReaderPage({
             </PageFrame>
         );
     return (
-        <div className="mx-auto flex w-full max-w-256 flex-col gap-4 p-4 sm:p-6">
+        <div className="mx-auto flex w-full max-w-256 flex-col gap-4">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -375,22 +375,11 @@ export default function ReaderPage({
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <header className="flex flex-wrap items-start justify-between gap-4">
-                <div className="min-w-0">
-                    <h1 className="type-title">{book.title}</h1>
-                    <p className="mt-1 type-body-sm text-text-2">
-                        {book.author} · {book.chapter}
-                    </p>
-                </div>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    nativeButton={false}
-                    render={<Link to="/library" />}
-                >
-                    <Icon icon={ArrowLeft} />
-                    Back to library
-                </Button>
+            <header className="min-w-0">
+                <h1 className="type-title">{book.title}</h1>
+                <p className="mt-1 type-body-sm text-text-2">
+                    {book.author} · {book.chapter}
+                </p>
             </header>
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line-faint pb-4">
                 <div className="flex items-center gap-2">
@@ -536,7 +525,7 @@ export default function ReaderPage({
                 <h2 className="type-heading">Passage notes and highlights</h2>
                 {selection ? (
                     <div className="shell">
-                        <div className="panel flex flex-col gap-3 p-4">
+                        <div className="panel flex flex-col gap-3 p-3">
                             <blockquote className="type-body text-text-2">
                                 {selection.quote}
                             </blockquote>

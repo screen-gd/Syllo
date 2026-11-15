@@ -28,7 +28,7 @@ export default function PickList({
                     <h3 className="type-label text-text-2">
                         {PICK_GROUP_LABEL[group.level]}
                     </h3>
-                    <ul className="mt-2 flex flex-col divide-y divide-line-faint">
+                    <ul className="mt-2 flex flex-col">
                         {group.items.map(({ resource, role }) => (
                             <PickRow
                                 key={resource.id}
@@ -60,7 +60,7 @@ function PickRow({
     const chapters = resource.chapters.slice(0, 4);
 
     return (
-        <li className="py-5">
+        <li className="rule-row py-4">
             <div className="flex items-start gap-4">
                 <Switch
                     className="mt-1"
