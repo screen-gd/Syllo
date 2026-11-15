@@ -1,13 +1,13 @@
-/** Hues a topic can take. Muted enough to sit on the dark theme, distinct enough to tell apart. */
+/** Hues a topic can take. Dark enough to read as a dot or bar on the light theme, distinct enough to tell apart. */
 const TOPIC_COLORS = [
-    "#7aa7f0",
-    "#e0a458",
-    "#7fc8a0",
-    "#d98a9c",
-    "#a995e6",
-    "#5fc2c9",
-    "#d9c15a",
-    "#e08a5f",
+    "#4f74c9",
+    "#a5691f",
+    "#3d8f66",
+    "#b04a63",
+    "#7a5cc9",
+    "#2d8a93",
+    "#9a7d1a",
+    "#b4562a",
 ] as const;
 
 /**

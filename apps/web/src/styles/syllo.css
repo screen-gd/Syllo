@@ -1,0 +1,77 @@
+/*
+ * Syllo's layer over Glaze: motion curves, the theme crossfade, Apple-style materials for the floating bars, and the
+ * skeleton-to-content fade. It loads after components/glaze/styles.css, so a token set here wins over Glaze's.
+ *
+ * Two deliberate departures from Glaze, chosen for Syllo:
+ * - Floating bars are translucent materials with a backdrop blur (Glaze forbids blur). Only bars content scrolls under
+ *   get one, and every material turns solid under prefers-reduced-transparency or without backdrop-filter support.
+ * - Sidebars, sheets and page entrances use springs (Glaze's motion has none). See components/syllo.
+ */
+
+.glaze {
+  /* Stronger curves than Glaze's defaults: UI arrives fast and settles. Exits use the same curve, never ease-in. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Materials: the paper tone, part see-through. Heavier for surfaces that cover content, lighter for thin bars. */
+  --material-bar: color-mix(in srgb, var(--paper) 72%, transparent);
+  --material-heavy: color-mix(in srgb, var(--paper) 86%, transparent);
+  --material-blur: 20px;
+}
+
+/* A thin floating bar (top bars, the workspace toolbar). Its hairline shows only once content scrolls under it. */
+.glaze .material-bar {
+  background-color: var(--material-bar);
+  backdrop-filter: blur(var(--material-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--material-blur)) saturate(180%);
+  border-bottom: var(--line-width) solid transparent;
+  transition: border-color var(--dur-state) var(--ease-out), background-color var(--dur-state) var(--ease-out);
+  &[data-scrolled] { border-bottom-color: var(--line-faint); }
+}
+
+/* A surface that covers content (the phone workspace sidebar). */
+.glaze .material-heavy {
+  background-color: var(--material-heavy);
+  backdrop-filter: blur(var(--material-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--material-blur)) saturate(180%);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glaze { --material-bar: var(--paper); --material-heavy: var(--paper); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glaze { --material-bar: var(--paper); --material-heavy: var(--paper); }
+  .glaze .material-bar, .glaze .material-heavy { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  .glaze { --material-bar: var(--paper); --material-heavy: var(--paper); }
+  .glaze .material-bar, .glaze .material-heavy { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .glaze .material-bar, .glaze .material-bar[data-scrolled] { border-bottom-color: var(--line-control); }
+}
+
+/* A row hosting a SlidingHighlight keeps it behind the row content. */
+.glaze [data-highlight-host] { position: relative; isolation: isolate; }
+.glaze [data-slot="sliding-highlight"] { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+
+/* Content that replaces a skeleton fades in once, when the swap reaches done. The animation starts when the
+   attribute changes, so rows inserted later (a filter, a new note) appear at once. */
+.glaze [data-slot="skeleton-swap"][data-phase="done"] { animation: syllo-page-fade var(--dur-overlay) cubic-bezier(0.23, 1, 0.32, 1); }
+
+/* Switching light and dark crossfades the whole page (applyTheme starts a view transition). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* 9. A page arriving after navigation: 200ms on the compositor, a fade only under reduced motion. */
+@keyframes syllo-page-enter { from { opacity: 0; translate: 0 4px; } }
+@keyframes syllo-page-fade { from { opacity: 0; } }
+.glaze .page-enter { animation: syllo-page-enter 200ms cubic-bezier(0.23, 1, 0.32, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .glaze .page-enter { animation-name: syllo-page-fade; }
+  .glaze [data-slot="skeleton-swap"][data-phase="done"] { animation: none; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
+}

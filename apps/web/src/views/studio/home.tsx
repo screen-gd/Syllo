@@ -1,12 +1,50 @@
 import { Link } from "@tanstack/react-router";
 import {
     ArrowRight,
-    BookOpen,
+    Create,
+    Icon,
     Library,
-    ListPlus,
     Play,
-    Telescope,
-} from "lucide-react";
+    Scout,
+} from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/glaze/ui/card";
+import { Chart } from "@/components/glaze/ui/chart";
+import {
+    DataList,
+    DataListItem,
+    DataListLabel,
+    DataListValue,
+} from "@/components/glaze/ui/data-list";
+import {
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import {
+    Item,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemLink,
+    ItemMedia,
+    ItemMeta,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import { Progress } from "@/components/glaze/ui/progress";
+import {
+    Skeleton,
+    SkeletonSwap,
+    SkeletonText,
+} from "@/components/glaze/ui/skeleton";
 import { useReviews } from "@/hooks/useReviews";
 import { taskVideo } from "@/lib/learning";
 import { getLadder, levelUpReady, LEVEL_LABEL, nextCoreItem } from "@/lib/ladder";
@@ -20,20 +58,20 @@ import { collectNotes } from "@/lib/notes";
 import { formatInterval, isDue, isScheduled } from "@/lib/reviews";
 import { getStorage } from "@/lib/storage";
 import { formatTimestamp } from "@/lib/scout/format";
-import { topicStyle } from "@/lib/topic-color";
 import BookCover from "@/components/learning/BookCover";
+import PageFrame from "@/components/layout/PageFrame";
 
 /** First things to do on an empty Home, in the order a new learner needs them. */
 const STARTERS = [
     {
         to: "/scout",
-        icon: Telescope,
+        icon: Scout,
         title: "Pick a goal",
         body: "Scout finds the videos and reading for it.",
     },
     {
         to: "/create",
-        icon: ListPlus,
+        icon: Create,
         title: "Bring a roadmap",
         body: "Paste notes or links you already have.",
     },
@@ -45,9 +83,42 @@ const STARTERS = [
     },
 ] as const;
 
-/** Home: what to resume, the week so far, cards waiting and current books. */
-export default function HomePage() {
-    const { reviews, roadmaps, records, loaded } = useReviews();
+/** Section heading row shared by each home panel: title, then a quiet link on the right. */
+function SectionHead({
+    title,
+    link,
+    trailing,
+}: {
+    title: string;
+    link?: { to: string; label: string };
+    trailing?: React.ReactNode;
+}) {
+    return (
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+                <h2 className="type-heading-sm">{title}</h2>
+                {trailing}
+            </CardTitle>
+            {link && (
+                <CardAction>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        render={<Link to={link.to} />}
+                        nativeButton={false}
+                    >
+                        {link.label}
+                    </Button>
+                </CardAction>
+            )}
+        </CardHeader>
+    );
+}
+
+type ReviewsData = ReturnType<typeof useReviews>;
+
+/** Home once local records load: what to resume, the week so far, cards waiting and current books. */
+function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
     const positions = personalEntries(records, "study")
         .map((item) => item.data)
         .sort((a, b) => b.lastOpenedAt.localeCompare(a.lastOpenedAt));
@@ -95,25 +166,6 @@ export default function HomePage() {
             ),
         )
         .slice(0, 3);
-    if (!loaded)
-        return (
-            <div className="sy-page">
-                <header className="sy-page-head">
-                    <h1>Home</h1>
-                </header>
-                <div className="sy-home-grid" role="status" aria-label="Loading">
-                    <div className="sy-home-main">
-                        <div className="sy-box sy-box-skeleton" />
-                        <div className="sy-box sy-box-skeleton" />
-                    </div>
-                    <div className="sy-home-aside">
-                        <div className="sy-box sy-box-skeleton short" />
-                        <div className="sy-box sy-box-skeleton short" />
-                    </div>
-                </div>
-            </div>
-        );
-
     const record = normalizeLearningRecord(getStorage().getLearningRecord());
     const week = recentActivity(record);
     const weekTotal = week.reduce((total, day) => total + day.count, 0);
@@ -126,370 +178,500 @@ export default function HomePage() {
     const noteCount = collectNotes(records, roadmaps).length;
 
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <h1>Home</h1>
-                <Link className="sy-button secondary" to="/scout">
-                    <Telescope />
-                    New learning goal
-                </Link>
-            </header>
-            <div className="sy-home-grid">
-                <div className="sy-home-main">
-                    <section className="sy-box">
-                        <div className="sy-section-head">
-                            <h2>Continue learning</h2>
-                            {recentRoadmap && <span>Last studied</span>}
-                        </div>
-                        {resumeTask && resumeRoadmap ? (
-                            <>
-                                <article
-                                    className="sy-resume"
-                                    style={topicStyle(resumeRoadmap.id)}
-                                >
-                                    <Link
-                                        className="sy-resume-media"
-                                        to="/learn"
-                                        search={{
-                                            roadmap: resumeRoadmap.id,
-                                            task: resumeTask.task.id,
-                                        }}
-                                        aria-label={`Continue ${resumeTask.task.title}`}
-                                    >
-                                        {youtubeId ? (
-                                            <img
-                                                src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
-                                                alt=""
-                                            />
-                                        ) : (
-                                            <BookOpen size={32} />
-                                        )}
-                                        {video && (
-                                            <span className="sy-play">
-                                                <Play />
-                                            </span>
-                                        )}
-                                    </Link>
-                                    <div className="sy-resume-copy">
-                                        <p className="sy-resume-topic">
-                                            <span className="sy-topic-dot" />
-                                            {resumeRoadmap.title}
-                                            {levelUp && (
-                                                <span
-                                                    className="sy-badge"
-                                                    data-tone="accent"
-                                                >
-                                                    Level up:{" "}
-                                                    {LEVEL_LABEL[levelUp.to]}
+        <div className="grid gap-4 lg:grid-cols-3">
+            <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
+                <Card>
+                        <SectionHead
+                            title="Continue learning"
+                            trailing={
+                                recentRoadmap ? (
+                                    <span className="type-caption text-text-2">
+                                        Last studied
+                                    </span>
+                                ) : undefined
+                            }
+                        />
+                        <CardContent>
+                            {resumeTask && resumeRoadmap ? (
+                                <>
+                                    <div className="flex flex-col gap-4 sm:flex-row">
+                                        {youtubeId && (
+                                            <Link
+                                                className="group relative isolate block aspect-16/9 w-full shrink-0 overflow-hidden rounded-panel bg-field transition-[scale] duration-(--dur-press) ease-out active:scale-(--scale-press) sm:w-48"
+                                                to="/learn"
+                                                search={{
+                                                    roadmap: resumeRoadmap.id,
+                                                    task: resumeTask.task.id,
+                                                }}
+                                                aria-label={`Continue ${resumeTask.task.title}`}
+                                            >
+                                                <img
+                                                    src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+                                                    alt=""
+                                                    className="size-full object-cover transition-[scale] duration-(--dur-overlay) ease-out motion-safe:group-hover:scale-103"
+                                                />
+                                                <span className="absolute inset-0 grid place-items-center">
+                                                    <span className="grid size-8 place-items-center rounded-pill bg-ink text-text-inverse">
+                                                        <Icon
+                                                            icon={Play}
+                                                            size={16}
+                                                        />
+                                                    </span>
                                                 </span>
-                                            )}
-                                        </p>
-                                        <h2>
-                                            {resumeTask.task.title ||
-                                                resumeTask.task.text}
-                                        </h2>
-                                        <p>
-                                            {resumeLevel
-                                                ? `${LEVEL_LABEL[resumeLevel.level]} · core ${resumeLevel.coreDone + 1} of ${resumeLevel.coreTotal}`
-                                                : resumeTask.sectionTitle}
-                                            {video && seconds > 0 && (
-                                                <>
-                                                    {" · resume at "}
-                                                    <span className="sy-num">
+                                            </Link>
+                                        )}
+                                        <div className="flex min-w-0 flex-1 flex-col">
+                                            <p className="flex flex-wrap items-center gap-2 type-body-sm text-text-2">
+                                                {resumeRoadmap.title}
+                                                {levelUp && (
+                                                    <Badge>
+                                                        Level up:{" "}
+                                                        {LEVEL_LABEL[levelUp.to]}
+                                                    </Badge>
+                                                )}
+                                            </p>
+                                            <h3 className="mt-1 type-heading-sm">
+                                                {resumeTask.task.title ||
+                                                    resumeTask.task.text}
+                                            </h3>
+                                            <p className="mt-1 type-body-sm text-text-2">
+                                                {resumeLevel
+                                                    ? `${LEVEL_LABEL[resumeLevel.level]} · core ${resumeLevel.coreDone + 1} of ${resumeLevel.coreTotal}`
+                                                    : resumeTask.sectionTitle}
+                                                {video && seconds > 0 && (
+                                                    <>
+                                                        {" · resume at "}
                                                         {formatTimestamp(
                                                             seconds,
                                                         )}
-                                                    </span>
-                                                </>
-                                            )}
-                                        </p>
-                                        <Link
-                                            className="sy-button primary"
-                                            to="/learn"
-                                            search={{
-                                                roadmap: resumeRoadmap.id,
-                                                task: resumeTask.task.id,
-                                            }}
-                                        >
-                                            Resume{" "}
-                                            {video ? "lesson" : "learning"}
-                                            <ArrowRight />
-                                        </Link>
-                                    </div>
-                                </article>
-                                {(resumeTask.task.description ||
-                                    resumeTask.task.estimatedTime) && (
-                                    <p className="sy-next-label">
-                                        {resumeTask.task.description ||
-                                            resumeTask.task.estimatedTime}
-                                    </p>
-                                )}
-                            </>
-                        ) : roadmaps.length > 0 ? (
-                            <div className="sy-tray sy-empty-row">
-                                <p>Every core video is watched.</p>
-                                {lastRoadmap && (
-                                    <Link
-                                        className="sy-button secondary"
-                                        to="/learn"
-                                        search={{ roadmap: lastRoadmap.id }}
-                                    >
-                                        Go deeper
-                                        <ArrowRight />
-                                    </Link>
-                                )}
-                            </div>
-                        ) : (
-                            <ol className="sy-starters">
-                                {STARTERS.map(
-                                    ({ to, icon: Icon, title, body }, index) => (
-                                        <li key={to}>
-                                            <Link to={to} className="sy-starter">
-                                                <span className="sy-starter-knob">
-                                                    <Icon size={18} />
-                                                </span>
-                                                <span className="sy-starter-step sy-num">
-                                                    {index + 1}
-                                                </span>
-                                                <b>{title}</b>
-                                                <small>{body}</small>
-                                            </Link>
-                                        </li>
-                                    ),
-                                )}
-                            </ol>
-                        )}
-                    </section>
-                    <section className="sy-box flush sy-home-topics">
-                        <div className="sy-section-head">
-                            <h2>Your learning topics</h2>
-                            <Link to="/workspaces">
-                                View all
-                                <ArrowRight size={13} />
-                            </Link>
-                        </div>
-                        {roadmaps.length ? (
-                            roadmaps.slice(0, 5).map((roadmap) => {
-                                const topicLadder = getLadder(roadmap);
-                                const currentLevel = topicLadder.levels.find(
-                                    (level) => level.level === topicLadder.current,
-                                );
-                                const done = currentLevel
-                                    ? currentLevel.coreDone
-                                    : topicLadder.levels.reduce(
-                                          (total, level) => total + level.coreDone,
-                                          0,
-                                      );
-                                const total = currentLevel
-                                    ? currentLevel.coreTotal
-                                    : topicLadder.levels.reduce(
-                                          (total, level) => total + level.coreTotal,
-                                          0,
-                                      );
-                                return (
-                                    <article
-                                        className="sy-topic sy-spined"
-                                        key={roadmap.id}
-                                        style={topicStyle(roadmap.id)}
-                                    >
-                                        <div>
-                                            <h3>
-                                                <Link
-                                                    to="/learn"
-                                                    search={{
-                                                        roadmap: roadmap.id,
-                                                    }}
-                                                >
-                                                    {roadmap.title}
-                                                </Link>
-                                            </h3>
-                                            <p>
-                                                {currentLevel
-                                                    ? `${LEVEL_LABEL[currentLevel.level]} · ${currentLevel.coreDone}/${currentLevel.coreTotal} core`
-                                                    : topicLadder.levels.length
-                                                      ? "Ladder complete"
-                                                      : "Ready to explore"}
-                                            </p>
-                                            <div
-                                                className="sy-progress topic"
-                                                role="progressbar"
-                                                aria-label={`${roadmap.title} progress`}
-                                                aria-valuenow={done}
-                                                aria-valuemin={0}
-                                                aria-valuemax={Math.max(
-                                                    1,
-                                                    total,
+                                                    </>
                                                 )}
-                                            >
-                                                <span
-                                                    style={{
-                                                        width: `${total ? (done / total) * 100 : 0}%`,
-                                                    }}
-                                                />
+                                            </p>
+                                            <div className="mt-3">
+                                                <Button
+                                                    render={
+                                                        <Link
+                                                            to="/learn"
+                                                            search={{
+                                                                roadmap: resumeRoadmap.id,
+                                                                task: resumeTask
+                                                                    .task.id,
+                                                            }}
+                                                        />
+                                                    }
+                                                    nativeButton={false}
+                                                >
+                                                    Resume{" "}
+                                                    {video
+                                                        ? "lesson"
+                                                        : "learning"}
+                                                    <Icon icon={ArrowRight} />
+                                                </Button>
                                             </div>
                                         </div>
-                                        <div>
-                                            <span className="sy-readout">
-                                                {done}/{total}
-                                            </span>
-                                            <Link
-                                                className="sy-button icon"
-                                                to="/learn"
-                                                search={{ roadmap: roadmap.id }}
-                                                aria-label={`Open ${roadmap.title}`}
+                                    </div>
+                                    {(resumeTask.task.description ||
+                                        resumeTask.task.estimatedTime) && (
+                                        <p className="mt-3 type-body-sm text-text-2">
+                                            {resumeTask.task.description ||
+                                                resumeTask.task.estimatedTime}
+                                        </p>
+                                    )}
+                                </>
+                            ) : roadmaps.length > 0 ? (
+                                <Empty variant="plain" reason="empty">
+                                    <EmptyHeader>
+                                        <EmptyTitle>
+                                            Every core video is watched
+                                        </EmptyTitle>
+                                    </EmptyHeader>
+                                    {lastRoadmap && (
+                                        <EmptyContent>
+                                            <Button
+                                                variant="secondary"
+                                                size="sm"
+                                                render={
+                                                    <Link
+                                                        to="/learn"
+                                                        search={{
+                                                            roadmap: lastRoadmap.id,
+                                                        }}
+                                                    />
+                                                }
+                                                nativeButton={false}
                                             >
-                                                <ArrowRight />
-                                            </Link>
-                                        </div>
-                                    </article>
-                                );
-                            })
-                        ) : (
-                            <p className="sy-tray">
-                                Topics you start appear here, each with its own
-                                colour.
-                            </p>
-                        )}
-                    </section>
-                </div>
-                <aside className="sy-home-aside">
-                    <section className="sy-box">
-                        <div className="sy-section-head">
-                            <h2>This week</h2>
-                            <Link to="/progress">
-                                Progress
-                                <ArrowRight size={13} />
-                            </Link>
-                        </div>
-                        <div className="sy-gauges">
-                            <div>
-                                <b className="sy-num">{record.currentStreak}</b>
-                                <span>Day streak</span>
-                            </div>
-                            <div>
-                                <b className="sy-num">{weekTotal}</b>
-                                <span>Lessons</span>
-                            </div>
-                            <Link to="/notes">
-                                <b className="sy-num">{noteCount}</b>
-                                <span>Notes</span>
-                            </Link>
-                        </div>
-                        <ol
-                            className="sy-week-leds"
-                            aria-label="Lessons finished on each of the last 7 days"
-                        >
-                            {week.map((day) => (
-                                <li
-                                    key={day.date}
-                                    title={`${day.weekday}: ${day.count}`}
-                                >
-                                    <span
-                                        className="sy-led"
-                                        data-on={day.count > 0 || undefined}
-                                    />
-                                    <span>{day.weekday.charAt(0)}</span>
-                                </li>
-                            ))}
-                        </ol>
-                    </section>
-                    <section className="sy-box">
-                        <div className="sy-section-head">
-                            <h2>Reviews</h2>
-                            <Link to="/glossary">
-                                Glossary
-                                <ArrowRight size={13} />
-                            </Link>
-                        </div>
-                        <div className="sy-deck-row">
-                            <Link
-                                className="sy-deck"
-                                to="/reviews"
-                                data-due={dueCount > 0 || undefined}
-                                aria-label={`${dueCount} review cards ready`}
-                            >
-                                <b className="sy-num">{dueCount}</b>
-                            </Link>
-                            <div>
-                                <h3>
-                                    {dueCount === 1
-                                        ? "card ready"
-                                        : "cards ready"}
-                                </h3>
-                                <p>
-                                    {dueCount > 0
-                                        ? `${scheduled.length} in your deck`
-                                        : nextDue
-                                          ? `Next in ${formatInterval(nextDue.dueAt)}`
-                                          : "Keep a concept to start a deck"}
-                                </p>
-                            </div>
-                            <Link
-                                className={`sy-button ${dueCount > 0 ? "primary" : "secondary"}`}
-                                to="/reviews"
-                            >
-                                Review
-                            </Link>
-                        </div>
-                    </section>
-                    <section className="sy-box">
-                        <div className="sy-section-head">
-                            <h2>Currently reading</h2>
-                            <Link to="/library">
-                                Library
-                                <ArrowRight size={13} />
-                            </Link>
-                        </div>
-                        <div className="sy-current-books">
-                            {books.length ? (
-                                books.map((book) => (
-                                    <article
-                                        key={book.id}
-                                        className="sy-current-book"
-                                    >
-                                        <Link
-                                            to="/read/$id"
-                                            params={{ id: book.id }}
-                                            aria-label={`Read ${book.title}`}
-                                        >
-                                            <BookCover book={book} />
-                                        </Link>
-                                        <div>
-                                            <h3>{book.title}</h3>
-                                            <p>{book.chapter}</p>
-                                            <div className="sy-progress">
-                                                <span
-                                                    style={{
-                                                        width: `${book.percent}%`,
-                                                    }}
-                                                />
-                                            </div>
-                                            <Link
-                                                className="sy-button quiet"
-                                                to="/read/$id"
-                                                params={{ id: book.id }}
-                                            >
-                                                Continue reading
-                                                <ArrowRight />
-                                            </Link>
-                                        </div>
-                                    </article>
-                                ))
+                                                Go deeper
+                                                <Icon icon={ArrowRight} />
+                                            </Button>
+                                        </EmptyContent>
+                                    )}
+                                </Empty>
                             ) : (
-                                <div className="sy-tray sy-empty-row">
-                                    <p>No book open.</p>
-                                    <Link
-                                        className="sy-button secondary"
-                                        to="/library"
-                                    >
-                                        Open Library
-                                    </Link>
-                                </div>
+                                <ItemGroup
+                                    variant="plain"
+                                    aria-label="Get started"
+                                >
+                                    {STARTERS.map(
+                                        (
+                                            { to, icon: glyph, title, body },
+                                            index,
+                                        ) => (
+                                            <Item key={to}>
+                                                <ItemMedia variant="icon">
+                                                    <Icon icon={glyph} />
+                                                </ItemMedia>
+                                                <ItemContent>
+                                                    <ItemTitle>
+                                                        <ItemLink
+                                                            render={
+                                                                <Link to={to} />
+                                                            }
+                                                        >
+                                                            {title}
+                                                        </ItemLink>
+                                                    </ItemTitle>
+                                                    <ItemDescription>
+                                                        {body}
+                                                    </ItemDescription>
+                                                </ItemContent>
+                                                <ItemMeta>{index + 1}</ItemMeta>
+                                            </Item>
+                                        ),
+                                    )}
+                                </ItemGroup>
                             )}
-                        </div>
-                    </section>
-                </aside>
+                        </CardContent>
+                    </Card>
+                <Card>
+                        <SectionHead
+                            title="Your learning topics"
+                            link={{ to: "/workspaces", label: "View all" }}
+                        />
+                        {roadmaps.length ? (
+                            <CardContent flush>
+                            <ItemGroup
+                                variant="plain"
+                                aria-label="Your learning topics"
+                            >
+                                {roadmaps.slice(0, 5).map((roadmap) => {
+                                    const topicLadder = getLadder(roadmap);
+                                    const currentLevel = topicLadder.levels.find(
+                                        (level) =>
+                                            level.level === topicLadder.current,
+                                    );
+                                    const done = currentLevel
+                                        ? currentLevel.coreDone
+                                        : topicLadder.levels.reduce(
+                                              (total, level) =>
+                                                  total + level.coreDone,
+                                              0,
+                                          );
+                                    const total = currentLevel
+                                        ? currentLevel.coreTotal
+                                        : topicLadder.levels.reduce(
+                                              (total, level) =>
+                                                  total + level.coreTotal,
+                                              0,
+                                          );
+                                    return (
+                                        <Item key={roadmap.id}>
+                                            <ItemContent>
+                                                <ItemTitle>
+                                                    <ItemLink
+                                                        render={
+                                                            <Link
+                                                                to="/learn"
+                                                                search={{
+                                                                    roadmap: roadmap.id,
+                                                                }}
+                                                            />
+                                                        }
+                                                    >
+                                                        {roadmap.title}
+                                                    </ItemLink>
+                                                </ItemTitle>
+                                                <ItemDescription>
+                                                    {currentLevel
+                                                        ? `${LEVEL_LABEL[currentLevel.level]} · ${currentLevel.coreDone}/${currentLevel.coreTotal} core`
+                                                        : topicLadder.levels
+                                                              .length
+                                                          ? "Ladder complete"
+                                                          : "Ready to explore"}
+                                                </ItemDescription>
+                                                <Progress
+                                                    mode="meter"
+                                                    size="sm"
+                                                    className="mt-1.5 max-w-56"
+                                                    value={done}
+                                                    max={Math.max(1, total)}
+                                                    warnAt={null}
+                                                    failAt={null}
+                                                    aria-label={`${roadmap.title} progress`}
+                                                />
+                                            </ItemContent>
+                                            <ItemMeta>
+                                                {done}/{total}
+                                            </ItemMeta>
+                                        </Item>
+                                    );
+                                })}
+                            </ItemGroup>
+                            </CardContent>
+                        ) : (
+                            <CardContent>
+                                <Empty variant="plain" reason="empty">
+                                    <EmptyHeader>
+                                        <EmptyTitle>
+                                            Topics you start appear here
+                                        </EmptyTitle>
+                                    </EmptyHeader>
+                                </Empty>
+                            </CardContent>
+                        )}
+                    </Card>
             </div>
+            <aside className="flex min-w-0 flex-col gap-4">
+                <Card>
+                        <SectionHead
+                            title="This week"
+                            link={{ to: "/progress", label: "Progress" }}
+                        />
+                        <CardContent>
+                            <DataList variant="plain">
+                                <DataListItem>
+                                    <DataListLabel>Day streak</DataListLabel>
+                                    <DataListValue>
+                                        {record.currentStreak}
+                                    </DataListValue>
+                                </DataListItem>
+                                <DataListItem>
+                                    <DataListLabel>Lessons</DataListLabel>
+                                    <DataListValue>{weekTotal}</DataListValue>
+                                </DataListItem>
+                                <DataListItem>
+                                    <DataListLabel>Notes</DataListLabel>
+                                    <DataListValue>
+                                        <Link to="/notes">{noteCount}</Link>
+                                    </DataListValue>
+                                </DataListItem>
+                            </DataList>
+                            <Chart
+                                type="sparkline"
+                                label="Lessons finished on each of the last 7 days"
+                                data={week.map((day) => day.count)}
+                                unit="count"
+                                className="mt-4 w-full"
+                            />
+                        </CardContent>
+                    </Card>
+                <Card>
+                        <SectionHead
+                            title="Reviews"
+                            link={{ to: "/glossary", label: "Glossary" }}
+                        />
+                        <CardContent>
+                            <p className="type-heading-sm">
+                                {dueCount}{" "}
+                                {dueCount === 1 ? "card ready" : "cards ready"}
+                            </p>
+                            <p className="mt-1 type-body-sm text-text-2">
+                                {dueCount > 0
+                                    ? `${scheduled.length} in your deck`
+                                    : nextDue
+                                      ? `Next in ${formatInterval(nextDue.dueAt)}`
+                                      : "Keep a concept to start a deck"}
+                            </p>
+                            <div className="mt-3">
+                                <Button
+                                    variant={
+                                        dueCount > 0 && !resumeTask
+                                            ? "primary"
+                                            : "secondary"
+                                    }
+                                    render={<Link to="/reviews" />}
+                                    nativeButton={false}
+                                    aria-label={`${dueCount} review cards ready`}
+                                >
+                                    Review
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                <Card>
+                        <SectionHead
+                            title="Currently reading"
+                            link={{ to: "/library", label: "Library" }}
+                        />
+                        {books.length ? (
+                            <CardContent flush>
+                            <ItemGroup
+                                variant="plain"
+                                aria-label="Currently reading"
+                            >
+                                {books.map((book) => (
+                                    <Item key={book.id}>
+                                        <ItemMedia className="w-10">
+                                            <BookCover
+                                                book={book}
+                                                className="w-full"
+                                                compact
+                                            />
+                                        </ItemMedia>
+                                        <ItemContent>
+                                            <ItemTitle>
+                                                <ItemLink
+                                                    render={
+                                                        <Link
+                                                            to="/read/$id"
+                                                            params={{
+                                                                id: book.id,
+                                                            }}
+                                                        />
+                                                    }
+                                                >
+                                                    {book.title}
+                                                </ItemLink>
+                                            </ItemTitle>
+                                            <ItemDescription>
+                                                {book.chapter}
+                                            </ItemDescription>
+                                            <Progress
+                                                mode="meter"
+                                                size="sm"
+                                                className="mt-1.5 max-w-40"
+                                                value={book.percent}
+                                                max={100}
+                                                warnAt={null}
+                                                failAt={null}
+                                                aria-label={`${book.title} progress`}
+                                            />
+                                        </ItemContent>
+                                    </Item>
+                                ))}
+                            </ItemGroup>
+                            </CardContent>
+                        ) : (
+                            <CardContent>
+                                <Empty variant="plain" reason="empty">
+                                    <EmptyHeader>
+                                        <EmptyTitle>No book open</EmptyTitle>
+                                    </EmptyHeader>
+                                    <EmptyContent>
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            render={<Link to="/library" />}
+                                            nativeButton={false}
+                                        >
+                                            Open Library
+                                        </Button>
+                                    </EmptyContent>
+                                </Empty>
+                            </CardContent>
+                        )}
+                    </Card>
+            </aside>
         </div>
+    );
+}
+
+/** The loading shape: the same panels in skeleton, so the page does not jump when data lands. */
+function HomeSkeleton() {
+    return (
+        <div className="grid gap-4 lg:grid-cols-3">
+            <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
+                <Card>
+                        <SectionHead title="Continue learning" />
+                        <CardContent>
+                            <div className="flex flex-col gap-4 sm:flex-row">
+                                <Skeleton className="aspect-16/9 w-full rounded-panel sm:w-48" />
+                                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                    <SkeletonText type="body-sm" last={0.4} />
+                                    <SkeletonText type="heading-sm" last={0.8} />
+                                    <SkeletonText type="body-sm" last={0.3} />
+                                    <Skeleton className="mt-2 h-(--control) w-40 rounded-pill" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                <Card>
+                        <SectionHead title="Your learning topics" />
+                        <CardContent flush>
+                        <ItemGroup
+                            variant="plain"
+                            aria-label="Your learning topics"
+                        >
+                            {/* Plain rows: ItemDescription is a <p>, and the skeleton lines are divs. */}
+                            {[0, 1, 2].map((row) => (
+                                <div key={row} role="listitem" className="rule-row px-3 py-2">
+                                    <SkeletonText type="label" />
+                                    <SkeletonText type="body-sm" last={0.7} />
+                                </div>
+                            ))}
+                        </ItemGroup>
+                        </CardContent>
+                    </Card>
+            </div>
+            <aside className="flex min-w-0 flex-col gap-4">
+                <Card>
+                        <SectionHead title="This week" />
+                        <CardContent>
+                            {[0, 1, 2].map((row) => (
+                                <div key={row}>
+                                    <SkeletonText type="body-sm" last={0.3} />
+                                    <SkeletonText type="body-sm" last={0.15} />
+                                </div>
+                            ))}
+                            <Skeleton className="mt-1 h-10 w-full" />
+                        </CardContent>
+                    </Card>
+                <Card>
+                        <SectionHead title="Reviews" />
+                        <CardContent>
+                            <SkeletonText type="heading-sm" last={0.5} />
+                            <SkeletonText type="body-sm" last={0.4} />
+                            <Skeleton className="h-(--control) w-20 rounded-pill" />
+                        </CardContent>
+                    </Card>
+                <Card>
+                        <SectionHead title="Currently reading" />
+                        <CardContent className="flex-row items-center">
+                            <Skeleton className="aspect-3/4 w-10 shrink-0" />
+                            <div className="min-w-0 flex-1">
+                                <SkeletonText type="label" last={0.7} />
+                                <SkeletonText type="body-sm" last={0.5} />
+                            </div>
+                        </CardContent>
+                    </Card>
+            </aside>
+        </div>
+    );
+}
+
+/** Home: the new-goal action up top, then the loaded panels or their skeleton shapes. */
+export default function HomePage() {
+    const data = useReviews();
+    return (
+        <PageFrame
+            title="Home"
+            actions={
+                <Button
+                    variant="secondary"
+                    render={<Link to="/scout" />}
+                    nativeButton={false}
+                >
+                    <Icon icon={Scout} />
+                    New learning goal
+                </Button>
+            }
+        >
+            <SkeletonSwap
+                loading={!data.loaded}
+                fallback={<HomeSkeleton />}
+                label="Loading home"
+            >
+                {data.loaded ? <HomeContent {...data} /> : null}
+            </SkeletonSwap>
+        </PageFrame>
     );
 }

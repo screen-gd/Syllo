@@ -1,5 +1,6 @@
-import { Check, FileText, Video } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Document, FileVideo, Icon } from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Switch } from "@/components/glaze/ui/switch";
 import { formatTimestamp, humanDuration } from "@/lib/scout/format";
 import {
     groupPicks,
@@ -24,10 +25,10 @@ export default function PickList({
         <div>
             {groupPicks(resources).map((group) => (
                 <section key={group.level} className="mt-6 first:mt-0">
-                    <h3 className="text-[13px] font-medium text-text-soft">
+                    <h3 className="type-label text-text-2">
                         {PICK_GROUP_LABEL[group.level]}
                     </h3>
-                    <ul className="mt-2 divide-y divide-border">
+                    <ul className="mt-2 flex flex-col">
                         {group.items.map(({ resource, role }) => (
                             <PickRow
                                 key={resource.id}
@@ -55,52 +56,41 @@ function PickRow({
     checked: boolean;
     onToggle: (id: string) => void;
 }) {
-    const Icon = resource.kind === "video" ? Video : FileText;
     const quote = resource.keyPoints.find((point) => point.quote)?.quote;
     const chapters = resource.chapters.slice(0, 4);
 
     return (
-        <li className="py-5">
+        <li className="rule-row py-4">
             <div className="flex items-start gap-4">
-                <button
-                    type="button"
-                    role="checkbox"
-                    aria-checked={checked}
+                <Switch
+                    className="mt-1"
                     aria-label={`Keep ${resource.title}`}
-                    onClick={() => onToggle(resource.id)}
-                    className={cn(
-                        "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border transition-colors",
-                        checked
-                            ? "border-text bg-text text-page"
-                            : "border-border-strong hover:border-text-soft",
-                    )}
-                >
-                    {checked ? <Check size={13} strokeWidth={3} /> : null}
-                </button>
+                    checked={checked}
+                    onCheckedChange={() => onToggle(resource.id)}
+                />
 
                 <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-soft">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 type-caption text-text-2">
                         <span className="inline-flex items-center gap-1.5">
-                            <Icon size={11} /> {resource.kind}
+                            <Icon
+                                icon={
+                                    resource.kind === "video"
+                                        ? FileVideo
+                                        : Document
+                                }
+                            />{" "}
+                            {resource.kind}
                         </span>
-                        <span className="studio-badge text-text-muted">
-                            {PICK_ROLE_LABEL[role]}
-                        </span>
+                        <Badge>{PICK_ROLE_LABEL[role]}</Badge>
                         {resource.creator ? (
-                            <span className="normal-case tracking-normal text-[var(--color-text-muted)]">
-                                {resource.creator}
-                            </span>
+                            <span>{resource.creator}</span>
                         ) : null}
                         {resource.durationSeconds ? (
-                            <span className="tabular-nums">
-                                {humanDuration(resource.durationSeconds)}
-                            </span>
+                            <span>{humanDuration(resource.durationSeconds)}</span>
                         ) : null}
                         {resource.transcriptStatus === "unavailable" ||
                         resource.transcriptStatus === "skipped" ? (
-                            <span className="normal-case tracking-normal text-warning/80">
-                                description only
-                            </span>
+                            <span>description only</span>
                         ) : null}
                     </div>
 
@@ -108,19 +98,19 @@ function PickRow({
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-1.5 block break-words text-[15px] font-medium leading-snug text-[var(--color-text)] underline-offset-4 hover:underline"
+                        className="mt-1.5 block break-words type-label text-text-1 underline-offset-4 hover:underline"
                     >
                         {resource.title}
                     </a>
 
                     {resource.summary ? (
-                        <p className="mt-1.5 break-words text-sm leading-6 text-[var(--color-text-muted)]">
+                        <p className="mt-1.5 break-words type-body-sm text-text-2">
                             {resource.summary}
                         </p>
                     ) : null}
 
                     {quote ? (
-                        <p className="mt-2 border-l-2 border-border-strong pl-3 text-sm italic leading-6 text-[var(--color-text-muted)]">
+                        <p className="mt-2 type-body-sm italic text-text-2">
                             “{quote}”
                         </p>
                     ) : null}
@@ -133,9 +123,9 @@ function PickRow({
                                         href={chapter.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-baseline gap-1.5 text-xs text-[var(--color-text-soft)] underline-offset-4 hover:text-[var(--color-text)] hover:underline"
+                                        className="inline-flex items-baseline gap-1.5 type-caption text-text-2 underline-offset-4 transition-colors duration-(--dur-state) ease-out hover:text-text-1 hover:underline"
                                     >
-                                        <span className="tabular-nums text-[var(--color-accent)]">
+                                        <span>
                                             {formatTimestamp(
                                                 chapter.startSeconds,
                                             )}
@@ -148,14 +138,9 @@ function PickRow({
                     ) : null}
 
                     {resource.skillTags.length > 0 ? (
-                        <div className="mt-3 flex flex-wrap gap-2">
+                        <div className="mt-3 flex flex-wrap gap-1.5">
                             {resource.skillTags.slice(0, 4).map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="studio-badge text-text-muted"
-                                >
-                                    {tag}
-                                </span>
+                                <Badge key={tag}>{tag}</Badge>
                             ))}
                         </div>
                     ) : null}

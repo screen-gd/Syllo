@@ -1,25 +1,67 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
+    "build-design-system": {
+      "source": "arla6ka/design.how",
+      "sourceType": "github",
+      "skillPath": "skills/build-design-system/SKILL.md",
+      "computedHash": "b0fca5c25fbf7640c82ba5a289861e289c09fa4bfc7708c3a465c136266cbd3f"
+    },
+    "component-docs": {
+      "source": "arla6ka/design.how",
+      "sourceType": "github",
+      "skillPath": "skills/component-docs/SKILL.md",
+      "computedHash": "e769b686e6a8e1955ae06085cee773ef70e2cbd502c0bf906a12e8483d66ab58"
+    },
+    "design-system-boss": {
+      "source": "arla6ka/design.how",
+      "sourceType": "github",
+      "skillPath": "skills/design-system-boss/SKILL.md",
+      "computedHash": "1b06e362de47f4b8eb54d2a9f84e89f5d2856f417f7190b07a6be96da1202752"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",
-      "computedHash": "25872a21881a950edc3db1f3329664d60405d539660ce05b3265db2de06a7dfd"
+      "computedHash": "bad9884f0a4a7e827bf677c4b63e04053b2290c6671954fcb5a6cae692c5a13f"
     },
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
-      "computedHash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84"
+      "computedHash": "a7c81a25c7ea1972f7049cd0282545c72ae92237c1b45ba7b1370fab498f5f9b"
+    },
+    "make-font": {
+      "source": "arla6ka/design.how",
+      "sourceType": "github",
+      "skillPath": "skills/make-font/SKILL.md",
+      "computedHash": "9ecc8c909b172fe528e5ce9ce5258bd97a599a69035db1532bdbaa90ce334b26"
+    },
+    "migrate-design-system": {
+      "source": "arla6ka/design.how",
+      "sourceType": "github",
+      "skillPath": "skills/migrate-design-system/SKILL.md",
+      "computedHash": "b8d87e04df10fed46d0079a253799cf10bef82261099661df89b9c3a47cbf96a"
+    },
+    "token-mapping": {
+      "source": "arla6ka/design.how",
+      "sourceType": "github",
+      "skillPath": "skills/token-mapping/SKILL.md",
+      "computedHash": "5b4efbdc1aa8e7ec903afbf8da4fb4db0e7c9bfa9db6b417c153ee46cf8d5ed7"
+    },
+    "ui-review": {
+      "source": "arla6ka/design.how",
+      "sourceType": "github",
+      "skillPath": "skills/ui-review/SKILL.md",
+      "computedHash": "16106d08018859dade85074982e831a11807352dfff74af72edeb6fe8df2f339"
     },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
-      "computedHash": "3ff06f0712886f7c2660d6746856c22d3127bd6568ddde29ddad8b72dbaaa226"
+      "computedHash": ""
     },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
-      "computedHash": "d8e7d3afe37dcc8a97b99ffb5afdb4d0919ae0092ea8b68f44eb201f035e33ac"
+      "computedHash": "4f68ae07187fb0d1fb78c88b503d089da4cf5a9d9625d1f2e425b1590bf96d92"
     }
   }
 }

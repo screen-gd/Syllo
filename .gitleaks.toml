@@ -16,3 +16,11 @@ keywords = ["comfyui-"]
 [[allowlists]]
 description = "Vendored agent skill docs; their examples use sample tokens"
 paths = ['''^\.agents/''']
+
+# The generic-api-key rule reads a localStorage key name (syllo_appearance_v1) as a secret. Only names of this exact
+# shape are allowed, and only for that rule.
+[[allowlists]]
+description = "Browser storage key names, such as STORAGE_KEY = \"syllo_appearance_v1\""
+targetRules = ["generic-api-key"]
+regexTarget = "match"
+regexes = ['''STORAGE_KEY\s*=\s*"syllo[_:][a-z0-9_:.-]+"''']

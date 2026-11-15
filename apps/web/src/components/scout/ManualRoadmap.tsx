@@ -1,5 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Alert } from "@/components/glaze/ui/alert";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/glaze/ui/collapsible";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import { getStorage } from "@/lib/storage";
 import { getYouTubeId } from "@/lib/video-utils";
 import { safeResourceUrl } from "@/lib/learning";
@@ -83,42 +93,41 @@ export default function ManualRoadmap() {
         }
     }
     return (
-        <details className="sy-manual-roadmap">
-            <summary>Add resources yourself</summary>
-            <p className="sy-form-hint" style={{ marginTop: 10 }}>
+        <Collapsible className="mt-4">
+            <CollapsibleTrigger className="-ms-2.5">Add resources yourself</CollapsibleTrigger>
+            <CollapsibleContent>
+            <p className="mt-2 type-caption text-text-2">
                 No key or AI calls needed. Your order is preserved.
             </p>
-            <div className="sy-form" style={{ marginTop: 16 }}>
-                <label>
-                    Learning topic
-                    <input
-                        className="sy-input"
+            <div className="mt-4 flex flex-col gap-3">
+                <Field>
+                    <FieldLabel>Learning topic</FieldLabel>
+                    <Input
                         value={title}
-                        onChange={(event) => setTitle(event.target.value)}
+                        onValueChange={setTitle}
                         placeholder="Build AI features"
                         maxLength={200}
                     />
-                </label>
-                <label>
-                    Resource URLs, one per line
-                    <textarea
-                        className="sy-textarea"
+                </Field>
+                <Field>
+                    <FieldLabel>Resource URLs, one per line</FieldLabel>
+                    <Textarea
                         value={links}
-                        onChange={(event) => setLinks(event.target.value)}
+                        onValueChange={setLinks}
                         placeholder="https://…"
+                        autoGrow
+                        minRows={3}
+                        maxRows={10}
                     />
-                </label>
+                </Field>
                 <div>
-                    <button className="sy-button secondary" onClick={create}>
+                    <Button variant="secondary" onClick={create}>
                         Create roadmap
-                    </button>
+                    </Button>
                 </div>
-                {error && (
-                    <p className="sy-error" role="alert">
-                        {error}
-                    </p>
-                )}
+                {error && <Alert status="fail">{error}</Alert>}
             </div>
-        </details>
+            </CollapsibleContent>
+        </Collapsible>
     );
 }

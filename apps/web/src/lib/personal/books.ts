@@ -8,12 +8,12 @@ import type { LibraryBook } from "./schema";
 
 export const MAX_BOOK_BYTES = 50 * 1024 * 1024;
 const colors = [
-    "#c6d2c0",
-    "#b9cbd8",
-    "#c6b1b3",
+    "#8ba184",
+    "#87a3b6",
+    "#a08a8d",
     "#69746c",
     "#9d7e68",
-    "#b8b4a8",
+    "#98917f",
 ];
 
 export function saveBook(book: LibraryBook) {

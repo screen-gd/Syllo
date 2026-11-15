@@ -2,22 +2,32 @@
 
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PencilLine, Trash2 } from "lucide-react";
+import { Edit, Icon, TrashCan } from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+    Dialog,
+    DialogAction,
+    DialogBody,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/glaze/ui/dialog";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import {
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemDescription,
+    ItemLink,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import { Progress } from "@/components/glaze/ui/progress";
 import type { Roadmap } from "@/types";
-import { topicStyle } from "@/lib/topic-color";
 import {
     getRelativeTimeLabel,
     getRoadmapDisplayTitle,
@@ -40,6 +50,7 @@ export default function WorkspaceLibraryCard({
     const displayTitle = getRoadmapDisplayTitle(roadmap);
     const [isRenaming, setIsRenaming] = useState(false);
     const [nextTitle, setNextTitle] = useState(displayTitle);
+    const [confirming, setConfirming] = useState(false);
 
     const handleRename = () => {
         if (!onRename) return;
@@ -65,133 +76,129 @@ export default function WorkspaceLibraryCard({
 
     if (isRenaming) {
         return (
-            <article className="sy-row sy-spined py-4" style={topicStyle(roadmap.id)}>
-                <label htmlFor={`rename-${roadmap.id}`} className="field-label">
-                    Rename workspace
-                </label>
-                <div className="flex flex-col gap-2 sm:flex-row">
-                    <Input
-                        id={`rename-${roadmap.id}`}
-                        value={nextTitle}
-                        autoFocus
-                        onChange={(event) => setNextTitle(event.target.value)}
-                        onKeyDown={(event) => {
-                            if (event.key === "Enter") handleRename();
-                        }}
-                    />
-                    <div className="flex gap-2">
-                        <Button
-                            type="button"
-                            size="sm"
-                            className="h-10"
-                            onClick={handleRename}
-                        >
-                            Save
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            size="sm"
-                            className="h-10"
-                            onClick={() => {
-                                setNextTitle(displayTitle);
-                                setIsRenaming(false);
+            <Item>
+                <ItemContent>
+                    <Field>
+                        <FieldLabel htmlFor={`rename-${roadmap.id}`}>
+                            Rename workspace
+                        </FieldLabel>
+                        <Input
+                            id={`rename-${roadmap.id}`}
+                            value={nextTitle}
+                            autoFocus
+                            onValueChange={setNextTitle}
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter") handleRename();
                             }}
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                </div>
-            </article>
+                        />
+                    </Field>
+                </ItemContent>
+                <ItemActions>
+                    <Button size="sm" onClick={handleRename}>
+                        Save
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                            setNextTitle(displayTitle);
+                            setIsRenaming(false);
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                </ItemActions>
+            </Item>
         );
     }
 
-    /** The progress moves below the title when the shared canvas narrows. */
     return (
-        <article
-            className="sy-workspace-row sy-row sy-spined"
-            style={topicStyle(roadmap.id)}
-        >
-            <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                    <Link
-                        to="/learn"
-                        search={{ roadmap: roadmap.id }}
-                        className="min-w-0 break-words text-[15px] font-medium text-text after:absolute after:inset-0 hover:underline hover:underline-offset-4"
+        <>
+        <Item>
+            <ItemContent>
+                <ItemTitle>
+                    <ItemLink
+                        render={
+                            <Link
+                                to="/learn"
+                                search={{ roadmap: roadmap.id }}
+                            />
+                        }
                     >
                         {displayTitle}
-                    </Link>
+                    </ItemLink>
                     {roadmap.packVersion ? (
-                        <span className="sy-badge">Built by Scout</span>
+                        <Badge>Built by Scout</Badge>
                     ) : null}
-                </div>
-                <p className="mt-1 text-[13px] text-text-soft">
-                    <span className="sy-num">{stats.moduleCount}</span> module
+                </ItemTitle>
+                <ItemDescription>
+                    {stats.moduleCount} module
                     {stats.moduleCount === 1 ? "" : "s"} ·{" "}
-                    {getRoadmapStateLabel(stats.progressState)} · {updated}
-                </p>
-            </div>
-
-            <div className="sy-workspace-progress">
-                <div className="flex items-baseline justify-between text-[13px]">
-                    <span className="sy-num text-text">{stats.percent}%</span>
-                    <span className="text-text-soft">
-                        <span className="sy-num">{stats.completedTasks}</span>{" "}
-                        of <span className="sy-num">{stats.totalTasks}</span>
-                    </span>
-                </div>
-                <div className="sy-progress topic">
-                    <span style={{ width: `${stats.percent}%` }} />
-                </div>
-            </div>
-
-            <div className="relative z-10 flex items-center gap-1">
+                    {getRoadmapStateLabel(stats.progressState)} · {updated} ·{" "}
+                    {stats.percent}% ({stats.completedTasks} of{" "}
+                    {stats.totalTasks})
+                </ItemDescription>
+                <Progress
+                    className="mt-1 max-w-64"
+                    size="sm"
+                    value={stats.percent}
+                    aria-label={`${displayTitle} progress`}
+                />
+            </ItemContent>
+            <ItemActions>
                 {onRename ? (
                     <Button
-                        type="button"
                         variant="ghost"
-                        size="icon"
+                        size="icon-sm"
                         aria-label={`Rename ${displayTitle}`}
                         onClick={() => {
                             setNextTitle(displayTitle);
                             setIsRenaming(true);
                         }}
                     >
-                        <PencilLine size={15} />
+                        <Icon icon={Edit} />
                     </Button>
                 ) : null}
                 {onDelete ? (
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                aria-label={`Delete ${displayTitle}`}
-                            >
-                                <Trash2 size={15} />
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    Delete {displayTitle}?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This removes the workspace and its progress
-                                    from this browser. It cannot be undone.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDelete}>
-                                    Delete workspace
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`Delete ${displayTitle}`}
+                        onClick={() => setConfirming(true)}
+                    >
+                        <Icon icon={TrashCan} />
+                    </Button>
                 ) : null}
-            </div>
-        </article>
+            </ItemActions>
+        </Item>
+        <Dialog
+            role="alertdialog"
+            open={confirming}
+            onOpenChange={setConfirming}
+        >
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        Delete {displayTitle}?
+                    </DialogTitle>
+                </DialogHeader>
+                <DialogBody>
+                    <DialogDescription>
+                        This removes the workspace and its progress
+                        from this browser. It cannot be undone.
+                    </DialogDescription>
+                </DialogBody>
+                <DialogFooter>
+                    <DialogClose>Cancel</DialogClose>
+                    <DialogAction
+                        variant="destructive"
+                        onAction={handleDelete}
+                    >
+                        Delete workspace
+                    </DialogAction>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        </>
     );
 }

@@ -3,9 +3,41 @@
 import { useState } from "react";
 import type { Roadmap, ModuleSection, Task } from "@/types";
 import type { SelectedNode } from "./WorkspaceSplitView";
-import { CheckCircle2, X, BookOpen, Video, FileText, Code2, Link2, Wrench, GraduationCap, Paperclip } from "lucide-react";
+import {
+    Attachment,
+    BookOpen,
+    Check,
+    Close,
+    Code,
+    Document,
+    FileVideo,
+    Icon,
+    Link as LinkIcon,
+    Tool,
+    Trophy,
+} from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import {
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemMedia,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/glaze/ui/tabs";
+import { Switch } from "@/components/glaze/ui/switch";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import SmartEmbed from "@/components/shared/SmartEmbed";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/glaze/utils";
 
 interface Props {
     selectedNode: SelectedNode;
@@ -16,93 +48,109 @@ interface Props {
     onClose: () => void;
 }
 
+const RESOURCE_ICONS: Record<string, typeof Document> = {
+    video: FileVideo,
+    doc: Document,
+    pdf: BookOpen,
+    link: LinkIcon,
+    code: Code,
+    tool: Tool,
+    course: Trophy,
+};
+
 export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTask, onUpdateModule, onClose }: Props) {
     const [activeTab, setActiveTab] = useState<"content" | "notes">("content");
 
     if (!selectedNode) return null;
 
-    const resourceTypeIcon = (type: string) => {
-        switch (type) {
-            case "video": return <Video size={16} />;
-            case "doc": return <FileText size={16} />;
-            case "pdf": return <BookOpen size={16} />;
-            case "link": return <Link2 size={16} />;
-            case "code": return <Code2 size={16} />;
-            case "tool": return <Wrench size={16} />;
-            case "course": return <GraduationCap size={16} />;
-            default: return <Paperclip size={16} />;
-        }
-    };
+    const resourceTypeIcon = (type: string) => RESOURCE_ICONS[type] ?? Attachment;
 
     const renderTaskContent = () => {
         if (selectedNode.type !== "task") return null;
         const task = selectedNode.data as Task;
         const moduleId = selectedNode.moduleId;
-        
+
         return (
-            <div className="space-y-8 animate-in fade-in duration-300">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs font-bold">Task</span>
-                            {task.priority && (
-                                <span className={cn(
-"px-2 py-0.5 rounded text-xs   font-bold",
-                                    task.priority === 'core' ? 'bg-accent/10 text-accent' : 'bg-[var(--color-surface-muted)] text-text-muted'
-                                )}>{task.priority}</span>
-                            )}
-                        </div>
-                        <h2 className={cn("text-2xl font-display text-text leading-tight", task.completed && "line-through text-text-muted")}>
-                            {task.title}
-                        </h2>
+            <div className="flex flex-col gap-5">
+                <div>
+                    <h2
+                        className={cn(
+                            "type-heading transition-colors duration-(--dur-state) ease-out",
+                            task.completed && "line-through text-text-2",
+                        )}
+                    >
+                        {task.title}
+                    </h2>
+                    <div className="mt-2 flex items-center gap-2">
+                        <Badge>Task</Badge>
+                        {task.priority ? <Badge>{task.priority}</Badge> : null}
                     </div>
                 </div>
 
-                <button 
-                    onClick={() => onUpdateTask(moduleId, task.id)}
-                    className={cn(
-"w-full flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
-                        task.completed 
-                            ? "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20" 
-                            : "bg-text border-accent text-page hover:bg-[#e6e6e6]"
-                    )}
-                >
-                    {task.completed ? <><CheckCircle2 size={16} /> Completed</> : "Mark as Complete"}
-                </button>
-
-                {task.description && (
-                    <div className="p-5 rounded-xl border border-border bg-[var(--color-surface)]">
-                        <h4 className="text-xs font-semibold text-text-muted mb-3">Description</h4>
-                        <p className="text-sm text-text whitespace-pre-wrap leading-relaxed">{task.description}</p>
-                    </div>
+                {task.completed ? (
+                    <Button
+                        variant="secondary"
+                        onClick={() => onUpdateTask(moduleId, task.id)}
+                    >
+                        <Icon icon={Check} /> Completed
+                    </Button>
+                ) : (
+                    <Button onClick={() => onUpdateTask(moduleId, task.id)}>
+                        Mark as complete
+                    </Button>
                 )}
 
-                {(task.subtasks || []).length > 0 && (
+                {task.description ? (
+                    <div className="well rounded-panel p-3">
+                        <h4 className="type-caption text-text-2">Description</h4>
+                        <p className="mt-2 whitespace-pre-wrap type-body-sm text-text-1">
+                            {task.description}
+                        </p>
+                    </div>
+                ) : null}
+
+                {(task.subtasks || []).length > 0 ? (
                     <div>
-                        <h4 className="text-xs font-semibold text-text-muted mb-4">Checklist ({task.subtasks!.filter(s=>s.completed).length}/{task.subtasks!.length})</h4>
-                        <div className="space-y-2">
-                            {task.subtasks!.map(sub => (
-                                <button
+                        <h4 className="type-caption text-text-2">
+                            Checklist (
+                            {task.subtasks!.filter((s) => s.completed).length}/
+                            {task.subtasks!.length})
+                        </h4>
+                        <ul className="mt-1 flex flex-col">
+                            {task.subtasks!.map((sub) => (
+                                <li
                                     key={sub.id}
-                                    onClick={() => onUpdateSubtask(moduleId, task.id, sub.id)}
-                                    className="w-full flex items-start gap-3 p-3 rounded-lg border border-border bg-[var(--color-surface)] hover:border-text-soft transition-colors text-left group"
+                                    className="rule-row flex items-center gap-3 py-2"
                                 >
-                                    <div className={cn(
-"mt-0.5 shrink-0 w-4 h-4 rounded-sm border flex items-center justify-center transition-colors",
-                                        sub.completed ? "bg-accent border-accent text-page" : "border-text-muted group-hover:border-accent/50"
-                                    )}>
-                                        {sub.completed && <CheckCircle2 size={12} />}
-                                    </div>
-                                    <span className={cn("text-sm", sub.completed ? "text-text-muted line-through" : "text-text")}>
+                                    <Switch
+                                        size="sm"
+                                        aria-label={sub.title}
+                                        checked={sub.completed}
+                                        onCheckedChange={() =>
+                                            onUpdateSubtask(
+                                                moduleId,
+                                                task.id,
+                                                sub.id,
+                                            )
+                                        }
+                                    />
+                                    <span
+                                        className={cn(
+                                            "type-body-sm",
+                                            sub.completed
+                                                ? "text-text-2 line-through"
+                                                : "text-text-1",
+                                        )}
+                                    >
                                         {sub.title}
                                     </span>
-                                </button>
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     </div>
-                )}
+                ) : null}
             </div>
-        )
+        );
     };
 
     const renderModuleContent = () => {
@@ -111,124 +159,144 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
         const data = mod.data;
 
         return (
-            <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="flex flex-col gap-5">
                 <div>
-                     <div className="flex items-center gap-2 mb-3">
-                        <span className="px-2 py-0.5 rounded bg-accent/10 text-accent text-xs font-bold">Module</span>
+                    <h2 className="type-heading">{mod.title}</h2>
+                    <div className="mt-2">
+                        <Badge>Module</Badge>
                     </div>
-                    <h2 className="text-3xl font-display text-text leading-tight">{mod.title}</h2>
                 </div>
 
-                <div className="flex gap-2">
-                    <button 
+                {data.completed ? (
+                    <Button
+                        variant="secondary"
                         onClick={() => onUpdateModule(mod.id)}
-                        className={cn(
-"flex-1 flex justify-center items-center gap-2 py-3 rounded-lg border font-semibold text-sm transition-all",
-                            data.completed 
-                                ? "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20" 
-                                : "bg-surface border-border text-text hover:border-text-soft"
-                        )}
                     >
-                        {data.completed ? <><CheckCircle2 size={16} /> Completed</> : "Mark Module Complete"}
-                    </button>
-                </div>
-
-                {data.description && (
-                    <div>
-                        <h4 className="text-xs font-semibold text-text-muted mb-3">Overview</h4>
-                        <p className="text-base text-text-muted leading-relaxed">{data.description}</p>
-                    </div>
+                        <Icon icon={Check} /> Completed
+                    </Button>
+                ) : (
+                    <Button onClick={() => onUpdateModule(mod.id)}>
+                        Mark module complete
+                    </Button>
                 )}
 
-                {data.videos && data.videos.length > 0 && (
+                {data.description ? (
                     <div>
-                        <h4 className="text-xs font-semibold text-text-muted mb-4">Video Resources ({data.videos.length})</h4>
-                        <div className="space-y-4">
-                            {data.videos.map(video => (
-                                <div key={video.id} className="rounded-xl overflow-hidden border border-border">
+                        <h4 className="type-caption text-text-2">Overview</h4>
+                        <p className="mt-2 type-body-sm text-text-2">
+                            {data.description}
+                        </p>
+                    </div>
+                ) : null}
+
+                {data.videos && data.videos.length > 0 ? (
+                    <div>
+                        <h4 className="type-caption text-text-2">
+                            Video resources ({data.videos.length})
+                        </h4>
+                        <div className="mt-2 flex flex-col gap-3">
+                            {data.videos.map((video) => (
+                                <div
+                                    key={video.id}
+                                    className="overflow-hidden rounded-panel border border-line-faint"
+                                >
                                     <SmartEmbed url={video.url} title={video.title} />
-                                    <div className="p-3 bg-[var(--color-surface)] border-t border-border">
-                                        <p className="text-sm font-medium text-text truncate">{video.title}</p>
+                                    <div className="border-t border-line-faint bg-paper p-3">
+                                        <p className="truncate type-body-sm text-text-1">
+                                            {video.title}
+                                        </p>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
-                )}
+                ) : null}
 
-                {data.resources && data.resources.length > 0 && (
+                {data.resources && data.resources.length > 0 ? (
                     <div>
-                        <h4 className="text-xs font-semibold text-text-muted mb-4">Learning Materials ({data.resources.length})</h4>
-                        <div className="grid gap-3">
-                            {data.resources.map(res => (
-                                <a 
-                                    key={res.id} 
-                                    href={res.url} 
-                                    target="_blank" 
-                                    rel="noreferrer"
-                                    className="flex items-start gap-4 p-4 rounded-xl border border-border bg-[var(--color-surface)] hover:border-text-soft hover:shadow-md transition-all group"
+                        <h4 className="type-caption text-text-2">
+                            Learning materials ({data.resources.length})
+                        </h4>
+                        <ItemGroup variant="plain" aria-label="Learning materials" className="mt-1">
+                            {data.resources.map((res) => (
+                                <Item
+                                    key={res.id}
+                                    render={
+                                        <a
+                                            href={res.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        />
+                                    }
                                 >
-                                    <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-muted)] flex items-center justify-center text-text-muted shrink-0 group-hover:text-accent transition-colors">
-                                        {resourceTypeIcon(res.type)}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h5 className="font-medium text-sm text-text truncate">{res.title}</h5>
-                                        {res.description && <p className="text-xs text-text-muted line-clamp-1 mt-1">{res.description}</p>}
-                                    </div>
-                                </a>
+                                    <ItemMedia>
+                                        <Icon
+                                            icon={resourceTypeIcon(res.type)}
+                                        />
+                                    </ItemMedia>
+                                    <ItemContent>
+                                        <ItemTitle>{res.title}</ItemTitle>
+                                        {res.description ? (
+                                            <ItemDescription>
+                                                {res.description}
+                                            </ItemDescription>
+                                        ) : null}
+                                    </ItemContent>
+                                    <ItemActions />
+                                </Item>
                             ))}
-                        </div>
+                        </ItemGroup>
                     </div>
-                )}
+                ) : null}
             </div>
         );
-    }
+    };
 
     return (
-        <>
+        <Tabs
+            value={activeTab}
+            onValueChange={(value) =>
+                setActiveTab(value === "notes" ? "notes" : "content")
+            }
+            className="min-h-0 flex-1 gap-0"
+        >
             {/* Header & Tabs */}
-            <div className="shrink-0 flex items-center justify-between px-6 pt-6 pb-0 border-b border-border">
-                <div className="flex gap-6">
-                    <button 
-                        onClick={() => setActiveTab("content")}
-                        className={cn(
-"pb-4 text-sm font-semibold transition-colors border-b-2",
-                            activeTab === "content" ? "border-accent text-text" : "border-transparent text-text-muted hover:text-text"
-                        )}
-                    >
-                        Content
-                    </button>
-                    <button 
-                        onClick={() => setActiveTab("notes")}
-                        className={cn(
-"pb-4 text-sm font-semibold transition-colors border-b-2",
-                            activeTab === "notes" ? "border-accent text-text" : "border-transparent text-text-muted hover:text-text"
-                        )}
-                    >
-                        My Notes
-                    </button>
-                </div>
-                <button 
-                    onClick={onClose} 
-                    className="mb-4 p-2 rounded-lg text-text-muted hover:bg-[var(--color-surface-muted)] hover:text-text transition-colors"
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line-faint p-3">
+                <TabsList aria-label="Panel view">
+                    <TabsTrigger value="content">Content</TabsTrigger>
+                    <TabsTrigger value="notes">My notes</TabsTrigger>
+                </TabsList>
+                <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="Close panel"
+                    onClick={onClose}
                 >
-                    <X size={20} />
-                </button>
+                    <Icon icon={Close} />
+                </Button>
             </div>
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                {activeTab === "content" ? (
-                    selectedNode.type === "module" ? renderModuleContent() : renderTaskContent()
-                ) : (
-                    <div className="h-full flex flex-col">
-                        <textarea 
-                            className="flex-1 w-full p-4 bg-transparent border border-border rounded-xl resize-none focus:outline-none focus:border-accent text-sm leading-relaxed"
-                            placeholder={"Type your notes for this " + selectedNode.type + " here..."}
+            <TabsContent value="content" className="overflow-y-auto p-3">
+                {selectedNode.type === "module"
+                    ? renderModuleContent()
+                    : renderTaskContent()}
+            </TabsContent>
+            <TabsContent value="notes" keepMounted className="flex flex-col overflow-y-auto p-3">
+                    <Field className="flex h-full flex-col">
+                        <FieldLabel className="sr-only">
+                            {`Notes for this ${selectedNode.type}`}
+                        </FieldLabel>
+                        <Textarea
+                            className="flex-1"
+                            placeholder={
+                                "Type your notes for this " +
+                                selectedNode.type +
+                                " here..."
+                            }
                         />
-                    </div>
-                )}
-            </div>
-        </>
+                    </Field>
+            </TabsContent>
+        </Tabs>
     );
 }

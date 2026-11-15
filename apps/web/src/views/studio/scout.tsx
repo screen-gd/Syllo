@@ -1,12 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Loader2, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ArrowRight, Icon, Pending, Sparkle } from "@/components/glaze/icon";
+import { Alert } from "@/components/glaze/ui/alert";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import {
+    Item,
+    ItemContent,
+    ItemGroup,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import { Progress } from "@/components/glaze/ui/progress";
 import ScoutProgress from "@/components/scout/ScoutProgress";
 import PickList from "@/components/scout/PickList";
 import SourcesPanel from "@/components/scout/SourcesPanel";
 import ManualRoadmap from "@/components/scout/ManualRoadmap";
+import PageFrame from "@/components/layout/PageFrame";
 import { LEARNING_LEVELS, type LearningLevel, type ModuleSection, type Roadmap } from "@/types";
 import { LEVEL_LABEL } from "@/lib/ladder";
 import { scoutApi } from "@/lib/scout/api-client";
@@ -50,26 +61,14 @@ function errorMessage(error: unknown) {
 }
 
 /** How a past goal reads in the list: one pale pill per state. */
-const PACK_STATUS: Record<
-    ScoutPack["status"],
-    { label: string; className: string }
-> = {
-    discovering: { label: "Finding", className: "studio-badge" },
-    processing: { label: "Reading", className: "studio-badge" },
-    review: {
-        label: "Needs review",
-        className: "studio-badge bg-warning-soft text-warning",
-    },
-    building: { label: "Building", className: "studio-badge" },
-    ready: {
-        label: "Built",
-        className: "studio-badge bg-success-soft text-success",
-    },
-    failed: {
-        label: "Stopped",
-        className: "studio-badge bg-danger-soft text-danger",
-    },
-};
+const PACK_STATUS: Record<ScoutPack["status"], string> = {
+    discovering: "Finding",
+    processing: "Reading",
+    review: "Needs review",
+    building: "Building",
+    ready: "Built",
+    failed: "Stopped",
+}
 
 export default function ScoutPage() {
     const navigate = useNavigate();
@@ -390,531 +389,543 @@ export default function ScoutPage() {
     }
 
     return (
-        <div className="studio-page sy-scout-page">
-            <header className="sy-page-head">
-                <div>
-                    <h1>Scout</h1>
-                    <p className="max-w-2xl text-sm text-text-muted">
-                        Describe a goal, review the resources, and approve an
-                        editable learning roadmap.
-                    </p>
-                </div>
-            </header>
+        <PageFrame
+            title="Scout"
+            subtitle="Describe a goal, review the resources, and approve an editable learning roadmap."
+        >
+            <div className="grid gap-4 lg:grid-cols-3">
+                <div
+                    aria-live="polite"
+                    className="flex flex-col gap-4 lg:col-span-2"
+                >
+                    <div className="shell">
+                        <div className="panel p-3">
+                            <ScoutProgress
+                                step={step}
+                                detail={
+                                    pack && RUNNING_STAGE[pack.status]
+                                        ? pack.stage
+                                        : undefined
+                                }
+                            />
 
-            <div className="sy-scout-grid">
-                <div className="sy-panel sy-box sy-scout-main">
-                    <ScoutProgress
-                        step={step}
-                        detail={
-                            pack && RUNNING_STAGE[pack.status]
-                                ? pack.stage
-                                : undefined
-                        }
-                    />
-
-                    <div aria-live="polite" className="mt-6">
-                        {!pack ? (
-                            <section
-                                aria-labelledby="scout-goal-heading"
-                                className="space-y-5"
-                            >
-                                <div>
-                                    <h2
-                                        id="scout-goal-heading"
-                                        className="text-base text-text"
-                                    >
-                                        What do you want to learn?
-                                    </h2>
-                                    <p className="mt-1 text-sm leading-6 text-text-muted">
-                                        One sentence is enough. Scout will find
-                                        a mix of videos, articles and docs.
-                                    </p>
-                                </div>
-
-                                <Input
-                                    aria-label="Learning goal"
-                                    value={goal}
-                                    onChange={(event) =>
-                                        setGoal(event.target.value)
-                                    }
-                                    onKeyDown={(event) => {
-                                        if (event.key === "Enter" && !starting)
-                                            void start();
-                                    }}
-                                    placeholder="UI design for developers"
-                                    className="h-11 text-[15px]"
-                                    maxLength={400}
-                                />
-
-                                <div className="flex flex-wrap gap-2">
-                                    {EXAMPLES.map((example) => (
-                                        <button
-                                            key={example}
-                                            type="button"
-                                            onClick={() => setGoal(example)}
-                                            className="sy-button secondary sy-example"
-                                        >
-                                            {example}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                <label className="sy-form">
-                                    What do you already know?
-                                    <Input
-                                        value={startingPoint}
-                                        onChange={(event) =>
-                                            setStartingPoint(event.target.value)
-                                        }
-                                        maxLength={300}
-                                        placeholder="Your starting point, in a sentence"
-                                    />
-                                </label>
-                                <label className="sy-form">
-                                    What would you like to be able to do?
-                                    <Input
-                                        value={outcome}
-                                        onChange={(event) =>
-                                            setOutcome(event.target.value)
-                                        }
-                                        maxLength={300}
-                                        placeholder="A practical outcome"
-                                    />
-                                </label>
-
-                                <div className="flex flex-wrap items-center gap-4">
-                                    <Button
-                                        type="button"
-                                        onClick={() => void start()}
-                                        disabled={starting}
-                                    >
-                                        {starting ? (
-                                            <Loader2 size={15} />
-                                        ) : (
-                                            <Sparkles size={15} />
-                                        )}
-                                        {starting ? "Starting" : "Start Scout"}
-                                    </Button>
-                                    <p className="text-xs text-text-soft">
-                                        Uses free Gemini allowances. No paid
-                                        fallback.
-                                    </p>
-                                </div>
-
-                                {recentPacks.length > 0 ? (
-                                    <div className="sy-cut pt-5">
-                                        <h3 className="text-[13px] text-text-soft">
-                                            Past goals
-                                        </h3>
-                                        <ul className="sy-grooved mt-1">
-                                            {recentPacks
-                                                .slice(0, 6)
-                                                .map((item) => (
-                                                    <li
-                                                        key={item.id}
-                                                        className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 py-2.5"
-                                                    >
-                                                        {item.roadmapId &&
-                                                        item.status ===
-                                                            "ready" ? (
-                                                            <Link
-                                                                to="/workspace/$id"
-                                                                params={{
-                                                                    id: item.roadmapId,
-                                                                }}
-                                                                className="truncate text-sm text-text hover:underline hover:underline-offset-4"
-                                                            >
-                                                                {item.goal}
-                                                            </Link>
-                                                        ) : (
-                                                            <span className="truncate text-sm text-text-muted">
-                                                                {item.goal}
-                                                            </span>
-                                                        )}
-                                                        <span
-                                                            className={
-                                                                PACK_STATUS[
-                                                                    item.status
-                                                                ].className
-                                                            }
-                                                        >
-                                                            {
-                                                                PACK_STATUS[
-                                                                    item.status
-                                                                ].label
-                                                            }
-                                                        </span>
-                                                        <time
-                                                            dateTime={
-                                                                item.createdAt
-                                                            }
-                                                            className="sy-num text-xs text-text-soft"
-                                                        >
-                                                            {new Date(
-                                                                item.createdAt,
-                                                            ).toLocaleDateString(
-                                                                "en-US",
-                                                                {
-                                                                    month: "short",
-                                                                    day: "numeric",
-                                                                },
-                                                            )}
-                                                        </time>
-                                                    </li>
-                                                ))}
-                                        </ul>
-                                    </div>
-                                ) : lastPackHref ? (
-                                    <div className="sy-cut pt-5">
-                                        <p className="text-[13px] text-text-soft">
-                                            Last Scout workspace
-                                        </p>
-                                        <Link
-                                            to="/workspace/$id"
-                                            params={{ id: lastPackHref }}
-                                            className="mt-2 inline-flex items-center gap-2 text-sm text-text hover:underline hover:underline-offset-4"
-                                        >
-                                            {lastPackTitle ?? "Open workspace"}{" "}
-                                            <ArrowRight
-                                                size={14}
-                                                className="text-text-soft"
-                                            />
-                                        </Link>
-                                    </div>
-                                ) : null}
-                            </section>
-                        ) : null}
-                        {!pack && <ManualRoadmap />}
-
-                        {pack &&
-                        ["discovering", "processing", "building"].includes(
-                            pack.status,
-                        ) ? (
-                            <section
-                                aria-labelledby="scout-running-heading"
-                                className="space-y-6"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <Loader2
-                                        size={16}
-                                        className="text-text-soft"
-                                    />
-                                    <h2
-                                        id="scout-running-heading"
-                                        className="text-lg text-text"
-                                    >
-                                        {pack.status === "building"
-                                            ? "Building your roadmap"
-                                            : "Finding your resources"}
-                                    </h2>
-                                </div>
-                                <p className="text-sm leading-6 text-text-muted">
-                                    {pack.stage}
-                                </p>
-
-                                <div className="h-1.5 overflow-hidden rounded-full bg-raised">
-                                    <div
-                                        className="h-full rounded-full bg-accent transition-[width] duration-700"
-                                        style={{
-                                            width: `${Math.max(4, Math.min(100, pack.progress))}%`,
-                                        }}
-                                    />
-                                </div>
-
-                                <p className="text-xs leading-5 text-text-soft">
-                                    You can close this tab. Scout keeps working
-                                    on the server; come back to approve the
-                                    picks.
-                                </p>
-
-                                {pack.resources.length > 0 ? (
-                                    <div>
-                                        <p className="text-xs text-text-soft">
-                                            Found so far
-                                        </p>
-                                        <ul className="sy-grooved mt-2">
-                                            {pack.resources
-                                                .slice(0, 8)
-                                                .map((resource) => (
-                                                    <li
-                                                        key={resource.id}
-                                                        className="flex items-baseline justify-between gap-4 py-2 text-sm"
-                                                    >
-                                                        <span className="truncate text-text-muted">
-                                                            {resource.title}
-                                                        </span>
-                                                        <span className="shrink-0 text-xs text-text-soft">
-                                                            {resource.kind}
-                                                        </span>
-                                                    </li>
-                                                ))}
-                                        </ul>
-                                    </div>
-                                ) : null}
-                            </section>
-                        ) : null}
-
-                        {pack?.status === "review" ? (
-                            <section
-                                aria-labelledby="scout-review-heading"
-                                className="space-y-5"
-                            >
-                                <div className="flex flex-wrap items-end justify-between gap-3">
+                            <div className="mt-6">
+                            {!pack ? (
+                                <section
+                                    aria-labelledby="scout-goal-heading"
+                                    className="flex flex-col gap-5"
+                                >
                                     <div>
                                         <h2
-                                            id="scout-review-heading"
-                                            className="text-lg text-text"
+                                            id="scout-goal-heading"
+                                            className="type-heading-sm"
                                         >
-                                            Keep the picks worth your time
+                                            What do you want to learn?
                                         </h2>
-                                        <p className="mt-1 text-sm leading-6 text-text-muted">
-                                            <span className="sy-num">
-                                                {picks.length}
-                                            </span>{" "}
-                                            found ·{" "}
-                                            <span className="sy-num">
-                                                {selected.size}
-                                            </span>{" "}
-                                            kept
-                                            {selectedMinutes > 0
-                                                ? ` · ~${humanDuration(selectedMinutes * 60)} of video`
-                                                : ""}
+                                        <p className="mt-1 type-body-sm text-text-2">
+                                            One sentence is enough. Scout will
+                                            find a mix of videos, articles and
+                                            docs.
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() =>
-                                                setSelected(
-                                                    new Set(
-                                                        picks.map(
-                                                            (resource) =>
-                                                                resource.id,
-                                                        ),
-                                                    ),
-                                                )
-                                            }
-                                        >
-                                            Select all
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() =>
-                                                setSelected(new Set())
-                                            }
-                                        >
-                                            Clear
-                                        </Button>
-                                    </div>
-                                </div>
 
-                                {failedResources > 0 ? (
-                                    <p className="rounded-xl bg-warning-soft px-3 py-2 text-[13px] text-warning">
-                                        {failedResources} resource
-                                        {failedResources === 1 ? "" : "s"} could
-                                        not be read and will be skipped.
-                                    </p>
-                                ) : null}
+                                    <Input
+                                        aria-label="Learning goal"
+                                        size="lg"
+                                        value={goal}
+                                        onValueChange={setGoal}
+                                        onKeyDown={(event) => {
+                                            if (
+                                                event.key === "Enter" &&
+                                                !starting
+                                            )
+                                                void start();
+                                        }}
+                                        placeholder="UI design for developers"
+                                        maxLength={400}
+                                    />
 
-                                <PickList
-                                    resources={picks}
-                                    selected={selected}
-                                    onToggle={togglePick}
-                                />
-
-                                <div className="sy-cut flex flex-wrap items-center justify-between gap-4 pt-5">
-                                    <p className="text-xs text-text-soft">
-                                        Roadmap and review cards are built only
-                                        from the picks you keep.
-                                    </p>
-                                    <Button
-                                        type="button"
-                                        onClick={() => void approve()}
-                                        disabled={
-                                            approving || selected.size === 0
-                                        }
-                                    >
-                                        {approving ? (
-                                            <Loader2 size={15} />
-                                        ) : null}
-                                        {approving
-                                            ? "Building"
-                                            : `Keep ${selected.size} and build`}
-                                    </Button>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={reset}
-                                    className="text-xs text-text-soft underline-offset-4 hover:text-text hover:underline"
-                                >
-                                    Start over with a different goal
-                                </button>
-                            </section>
-                        ) : null}
-
-                        {pack?.status === "ready" ? (
-                            <section
-                                aria-labelledby="scout-ready-heading"
-                                className="space-y-4"
-                            >
-                                <h2
-                                    id="scout-ready-heading"
-                                    className="text-lg text-text"
-                                >
-                                    Review your roadmap draft
-                                </h2>
-                                <p className="text-sm leading-6 text-text-muted">
-                                    Change the title or task wording before
-                                    keeping this plan. You can edit its full
-                                    structure afterward.
-                                </p>
-                                {draftRoadmap && (
-                                    <div className="sy-form">
-                                        <label>
-                                            Roadmap title
-                                            <Input
-                                                value={draftRoadmap.title}
-                                                onChange={(event) =>
-                                                    setDraftRoadmap({
-                                                        ...draftRoadmap,
-                                                        title: event.target
-                                                            .value,
-                                                    })
-                                                }
-                                            />
-                                        </label>
-                                        <p className="sy-form-hint">
-                                            {draftRoadmap.summary}
-                                        </p>
-                                        {draftGroups.map((group) => (
-                                            <section key={group.key}>
-                                                <h3>{group.heading}</h3>
-                                                {group.sections.map((section) => (
-                                                    <div
-                                                        className="sy-form"
-                                                        style={{ marginTop: 10 }}
-                                                        key={section.id}
-                                                    >
-                                                        <p className="sy-form-hint">
-                                                            {section.title}
-                                                        </p>
-                                                        {section.data.tasks.map(
-                                                            (task) => (
-                                                                <label key={task.id}>
-                                                                    <span className="flex items-center gap-2">
-                                                                        Task
-                                                                        <span className="studio-badge text-text-muted">
-                                                                            {group.key === "reading"
-                                                                                ? "Reading"
-                                                                                : task.core
-                                                                                  ? "Core"
-                                                                                  : "Go deeper"}
-                                                                        </span>
-                                                                    </span>
-                                                                    <Input
-                                                                        value={task.title}
-                                                                        onChange={(event) =>
-                                                                            renameDraftTask(
-                                                                                section.id,
-                                                                                task.id,
-                                                                                event.target.value,
-                                                                            )
-                                                                        }
-                                                                    />
-                                                                    {task.core && task.coreReason ? (
-                                                                        <p className="sy-form-hint">
-                                                                            {task.coreReason}
-                                                                        </p>
-                                                                    ) : null}
-                                                                </label>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </section>
-                                        ))}
-                                        <div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {EXAMPLES.map((example) => (
                                             <Button
-                                                disabled={
-                                                    !draftRoadmap.title.trim()
-                                                }
-                                                onClick={() => {
-                                                    if (!pack || !draftRoadmap)
-                                                        return;
-                                                    const id = publishScoutPack(
-                                                        {
-                                                            ...pack,
-                                                            roadmap:
-                                                                draftRoadmap,
-                                                        },
-                                                    );
-                                                    if (id)
-                                                        void navigate({
-                                                            to: "/learn",
-                                                            search: {
-                                                                roadmap: id,
-                                                            },
-                                                        });
-                                                }}
+                                                key={example}
+                                                variant="secondary"
+                                                size="sm"
+                                                onClick={() => setGoal(example)}
                                             >
-                                                Keep roadmap and start learning
-                                                <ArrowRight size={15} />
+                                                {example}
+                                            </Button>
+                                        ))}
+                                    </div>
+
+                                    <Field>
+                                        <FieldLabel>
+                                            What do you already know?
+                                        </FieldLabel>
+                                        <Input
+                                            value={startingPoint}
+                                            onValueChange={setStartingPoint}
+                                            maxLength={300}
+                                            placeholder="Your starting point, in a sentence"
+                                        />
+                                    </Field>
+                                    <Field>
+                                        <FieldLabel>
+                                            What would you like to be able to
+                                            do?
+                                        </FieldLabel>
+                                        <Input
+                                            value={outcome}
+                                            onValueChange={setOutcome}
+                                            maxLength={300}
+                                            placeholder="A practical outcome"
+                                        />
+                                    </Field>
+
+                                    <div className="flex flex-wrap items-center gap-4">
+                                        <Button
+                                            pending={starting}
+                                            onClick={() => void start()}
+                                        >
+                                            {!starting ? (
+                                                <Icon icon={Sparkle} />
+                                            ) : null}
+                                            {starting
+                                                ? "Starting"
+                                                : "Start Scout"}
+                                        </Button>
+                                        <p className="type-caption text-text-2">
+                                            Uses free Gemini allowances. No
+                                            paid fallback.
+                                        </p>
+                                    </div>
+
+                                    {recentPacks.length > 0 ? (
+                                        <div className="border-t border-line-faint pt-5">
+                                            <h3 className="type-label text-text-2">
+                                                Past goals
+                                            </h3>
+                                            <ItemGroup variant="plain" aria-label="Past goals" className="mt-2">
+                                                {recentPacks
+                                                    .slice(0, 6)
+                                                    .map((item) => (
+                                                        <Item
+                                                            key={item.id}
+                                                            render={
+                                                                item.roadmapId &&
+                                                                item.status ===
+                                                                    "ready" ? (
+                                                                    <Link
+                                                                        to="/workspace/$id"
+                                                                        params={{
+                                                                            id: item.roadmapId,
+                                                                        }}
+                                                                    />
+                                                                ) : undefined
+                                                            }
+                                                        >
+                                                            <ItemContent>
+                                                                <ItemTitle>
+                                                                    {item.goal}
+                                                                </ItemTitle>
+                                                            </ItemContent>
+                                                            <Badge>
+                                                                {
+                                                                    PACK_STATUS[
+                                                                        item
+                                                                            .status
+                                                                    ]
+                                                                }
+                                                            </Badge>
+                                                            <time
+                                                                dateTime={
+                                                                    item.createdAt
+                                                                }
+                                                                className="type-caption text-text-2"
+                                                            >
+                                                                {new Date(
+                                                                    item.createdAt,
+                                                                ).toLocaleDateString(
+                                                                    "en-US",
+                                                                    {
+                                                                        month: "short",
+                                                                        day: "numeric",
+                                                                    },
+                                                                )}
+                                                            </time>
+                                                        </Item>
+                                                    ))}
+                                            </ItemGroup>
+                                        </div>
+                                    ) : lastPackHref ? (
+                                        <div className="border-t border-line-faint pt-5">
+                                            <h3 className="type-label text-text-2">
+                                                Last Scout workspace
+                                            </h3>
+                                            <Link
+                                                to="/workspace/$id"
+                                                params={{ id: lastPackHref }}
+                                                className="mt-2 inline-flex items-center gap-2 type-body-sm text-text-1 underline-offset-4 hover:underline"
+                                            >
+                                                {lastPackTitle ??
+                                                    "Open workspace"}{" "}
+                                                <Icon
+                                                    icon={ArrowRight}
+                                                    className="text-text-3"
+                                                />
+                                            </Link>
+                                        </div>
+                                    ) : null}
+                                </section>
+                            ) : null}
+                            {!pack && <ManualRoadmap />}
+
+                            {pack &&
+                            ["discovering", "processing", "building"].includes(
+                                pack.status,
+                            ) ? (
+                                <section
+                                    aria-labelledby="scout-running-heading"
+                                    className="flex flex-col gap-5"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <Icon
+                                            icon={Pending}
+                                            className="animate-spin text-text-2"
+                                        />
+                                        <h2
+                                            id="scout-running-heading"
+                                            className="type-heading-sm"
+                                        >
+                                            {pack.status === "building"
+                                                ? "Building your roadmap"
+                                                : "Finding your resources"}
+                                        </h2>
+                                    </div>
+                                    <p className="type-body-sm text-text-2">
+                                        {pack.stage}
+                                    </p>
+
+                                    <Progress
+                                        value={Math.max(
+                                            4,
+                                            Math.min(100, pack.progress),
+                                        )}
+                                        aria-label="Scout progress"
+                                    />
+
+                                    <p className="type-caption text-text-2">
+                                        You can close this tab. Scout keeps
+                                        working on the server; come back to
+                                        approve the picks.
+                                    </p>
+
+                                    {pack.resources.length > 0 ? (
+                                        <div>
+                                            <h3 className="type-label text-text-2">
+                                                Found so far
+                                            </h3>
+                                            <ul className="mt-2 flex flex-col">
+                                                {pack.resources
+                                                    .slice(0, 8)
+                                                    .map((resource) => (
+                                                        <li
+                                                            key={resource.id}
+                                                            className="rule-row flex items-baseline justify-between gap-4 py-2 type-body-sm"
+                                                        >
+                                                            <span className="truncate text-text-2">
+                                                                {resource.title}
+                                                            </span>
+                                                            <span className="shrink-0 type-caption text-text-2">
+                                                                {resource.kind}
+                                                            </span>
+                                                        </li>
+                                                    ))}
+                                            </ul>
+                                        </div>
+                                    ) : null}
+                                </section>
+                            ) : null}
+                            </div>
+                        </div>
+                    </div>
+
+                            {pack?.status === "review" ? (
+                                <section
+                                    className="shell"
+                                    aria-labelledby="scout-review-heading"
+                                >
+                                    <div className="panel flex flex-col gap-5 p-3">
+                                    <div className="flex flex-wrap items-end justify-between gap-3">
+                                        <div>
+                                            <h2
+                                                id="scout-review-heading"
+                                                className="type-heading-sm"
+                                            >
+                                                Keep the picks worth your time
+                                            </h2>
+                                            <p className="mt-1 type-body-sm text-text-2">
+                                                {picks.length} found ·{" "}
+                                                {selected.size} kept
+                                                {selectedMinutes > 0
+                                                    ? ` · ~${humanDuration(selectedMinutes * 60)} of video`
+                                                    : ""}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() =>
+                                                    setSelected(
+                                                        new Set(
+                                                            picks.map(
+                                                                (resource) =>
+                                                                    resource.id,
+                                                            ),
+                                                        ),
+                                                    )
+                                                }
+                                            >
+                                                Select all
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() =>
+                                                    setSelected(new Set())
+                                                }
+                                            >
+                                                Clear
                                             </Button>
                                         </div>
                                     </div>
-                                )}
-                            </section>
-                        ) : null}
 
-                        {pack?.status === "failed" ? (
-                            <section
-                                aria-labelledby="scout-failed-heading"
-                                className="space-y-4"
-                            >
-                                <h2
-                                    id="scout-failed-heading"
-                                    className="text-lg text-text"
+                                    {failedResources > 0 ? (
+                                        <Alert status="warn">
+                                            {failedResources} resource
+                                            {failedResources === 1 ? "" : "s"}{" "}
+                                            could not be read and will be
+                                            skipped.
+                                        </Alert>
+                                    ) : null}
+
+                                    <PickList
+                                        resources={picks}
+                                        selected={selected}
+                                        onToggle={togglePick}
+                                    />
+
+                                    <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line-faint pt-5">
+                                        <p className="type-caption text-text-2">
+                                            Roadmap and review cards are built
+                                            only from the picks you keep.
+                                        </p>
+                                        <Button
+                                            pending={approving}
+                                            pendingLabel="Building"
+                                            onClick={() => void approve()}
+                                            disabled={
+                                                approving ||
+                                                selected.size === 0
+                                            }
+                                        >
+                                            {`Keep ${selected.size} and build`}
+                                        </Button>
+                                    </div>
+
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="self-start"
+                                        onClick={reset}
+                                    >
+                                        Start over with a different goal
+                                    </Button>
+                                    </div>
+                                </section>
+                            ) : null}
+
+                            {pack?.status === "ready" ? (
+                                <section
+                                    className="shell"
+                                    aria-labelledby="scout-ready-heading"
                                 >
-                                    Scout could not finish that pack
-                                </h2>
-                                <p className="text-sm leading-6 text-text-muted">
-                                    {pack.error ??
-                                        "The run stopped early. Your library and settings are unchanged."}
+                                    <div className="panel flex flex-col gap-4 p-3">
+                                    <h2
+                                        id="scout-ready-heading"
+                                        className="type-heading-sm"
+                                    >
+                                        Review your roadmap draft
+                                    </h2>
+                                    <p className="type-body-sm text-text-2">
+                                        Change the title or task wording before
+                                        keeping this plan. You can edit its
+                                        full structure afterward.
+                                    </p>
+                                    {draftRoadmap && (
+                                        <div className="flex flex-col gap-4">
+                                            <Field>
+                                                <FieldLabel>
+                                                    Roadmap title
+                                                </FieldLabel>
+                                                <Input
+                                                    value={draftRoadmap.title}
+                                                    onValueChange={(title) =>
+                                                        setDraftRoadmap({
+                                                            ...draftRoadmap,
+                                                            title,
+                                                        })
+                                                    }
+                                                />
+                                            </Field>
+                                            <p className="type-caption text-text-2">
+                                                {draftRoadmap.summary}
+                                            </p>
+                                            {draftGroups.map((group) => (
+                                                <section key={group.key}>
+                                                    <h3 className="type-label text-text-2">
+                                                        {group.heading}
+                                                    </h3>
+                                                    {group.sections.map(
+                                                        (section) => (
+                                                            <div
+                                                                className="mt-2 flex flex-col gap-3"
+                                                                key={section.id}
+                                                            >
+                                                                <p className="type-caption text-text-2">
+                                                                    {
+                                                                        section.title
+                                                                    }
+                                                                </p>
+                                                                {section.data.tasks.map(
+                                                                    (task) => (
+                                                                        <Field
+                                                                            key={
+                                                                                task.id
+                                                                            }
+                                                                        >
+                                                                            <FieldLabel>
+                                                                                <span className="flex items-center gap-2">
+                                                                                    Task
+                                                                                    <Badge>
+                                                                                        {group.key ===
+                                                                                        "reading"
+                                                                                            ? "Reading"
+                                                                                            : task.core
+                                                                                              ? "Core"
+                                                                                              : "Go deeper"}
+                                                                                    </Badge>
+                                                                                </span>
+                                                                            </FieldLabel>
+                                                                            <Input
+                                                                                value={
+                                                                                    task.title
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    title,
+                                                                                ) =>
+                                                                                    renameDraftTask(
+                                                                                        section.id,
+                                                                                        task.id,
+                                                                                        title,
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                            {task.core &&
+                                                                            task.coreReason ? (
+                                                                                <p className="type-caption text-text-2">
+                                                                                    {
+                                                                                        task.coreReason
+                                                                                    }
+                                                                                </p>
+                                                                            ) : null}
+                                                                        </Field>
+                                                                    ),
+                                                                )}
+                                                            </div>
+                                                        ),
+                                                    )}
+                                                </section>
+                                            ))}
+                                            <div>
+                                                <Button
+                                                    disabled={
+                                                        !draftRoadmap.title.trim()
+                                                    }
+                                                    onClick={() => {
+                                                        if (
+                                                            !pack ||
+                                                            !draftRoadmap
+                                                        )
+                                                            return;
+                                                        const id =
+                                                            publishScoutPack({
+                                                                ...pack,
+                                                                roadmap:
+                                                                    draftRoadmap,
+                                                            });
+                                                        if (id)
+                                                            void navigate({
+                                                                to: "/learn",
+                                                                search: {
+                                                                    roadmap: id,
+                                                                },
+                                                            });
+                                                    }}
+                                                >
+                                                    Keep roadmap and start
+                                                    learning
+                                                    <Icon icon={ArrowRight} />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                    </div>
+                                </section>
+                            ) : null}
+
+                            {pack?.status === "failed" ? (
+                                <section
+                                    className="shell"
+                                    aria-labelledby="scout-failed-heading"
+                                >
+                                    <div className="panel flex flex-col gap-4 p-3">
+                                    <h2
+                                        id="scout-failed-heading"
+                                        className="type-heading-sm"
+                                    >
+                                        Scout could not finish that pack
+                                    </h2>
+                                    <p className="type-body-sm text-text-2">
+                                        {pack.error ??
+                                            "The run stopped early. Your library and settings are unchanged."}
+                                    </p>
+                                    <div>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={reset}
+                                        >
+                                            Try another goal
+                                        </Button>
+                                    </div>
+                                    </div>
+                                </section>
+                            ) : null}
+
+                            {error ? (
+                                <Alert status="fail">{error}</Alert>
+                            ) : null}
+
+                            {pack && pack.costCents > 0 ? (
+                                <p className="type-caption text-text-2">
+                                    This pack has used an estimated{" "}
+                                    <span className="text-text-1">
+                                        ${(pack.costCents / 100).toFixed(4)}
+                                    </span>{" "}
+                                    so far.
                                 </p>
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={reset}
-                                >
-                                    Try another goal
-                                </Button>
-                            </section>
-                        ) : null}
-
-                        {error ? (
-                            <p
-                                role="alert"
-                                className="mt-5 rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger"
-                            >
-                                {error}
-                            </p>
-                        ) : null}
-
-                        {pack && pack.costCents > 0 ? (
-                            <p className="mt-6 text-xs text-text-soft">
-                                This pack has used an estimated{" "}
-                                <span className="sy-num">
-                                    ${(pack.costCents / 100).toFixed(4)}
-                                </span>{" "}
-                                so far.
-                            </p>
-                        ) : null}
-                    </div>
+                            ) : null}
                 </div>
 
                 <SourcesPanel
@@ -931,6 +942,6 @@ export default function ScoutPage() {
                     onPause={pauseScout}
                 />
             </div>
-        </div>
+        </PageFrame>
     );
 }

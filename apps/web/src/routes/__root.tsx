@@ -1,14 +1,26 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import "@/styles/globals.css";
-import "@/styles/learning.css";
-import "@/styles/tactile.css";
-import "@/styles/tactile-pages.css";
+import "@/components/glaze/styles.css";
+import "@/styles/syllo.css";
 import { Providers } from "@/components/shared/Providers";
+import { GlazePortalProvider } from "@/lib/glaze/portal";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
 import { getAppUrl } from "@/lib/app-url";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
 const appUrl = getAppUrl();
 const defaultTitle = `${APP_NAME} | Your learning and reading`;
+
+// Sets data-theme before first paint so a saved or system dark theme never
+// flashes light. Mirrors resolveTheme in lib/appearance.ts.
+const BOOT_SCRIPT = `try{var v=JSON.parse(localStorage.getItem("syllo_theme")||"null"),d=v==="dark"||(v!=="light"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches),r=document.documentElement;r.dataset.theme=d?"dark":"light";r.style.colorScheme=r.dataset.theme}catch(e){}`;
 
 export const Route = createRootRoute({
     head: () => ({
@@ -20,7 +32,6 @@ export const Route = createRootRoute({
                 name: "description",
                 content: "Continue learning, read your books, and review the ideas you want to remember.",
             },
-            { name: "theme-color", content: "#0b0a09" },
             { property: "og:title", content: defaultTitle },
             { property: "og:description", content: APP_TAGLINE },
             { property: "og:type", content: "website" },
@@ -35,6 +46,7 @@ export const Route = createRootRoute({
             { name: "twitter:description", content: APP_TAGLINE },
             { name: "twitter:image", content: `${appUrl}/og.png` },
         ],
+        scripts: [{ children: BOOT_SCRIPT }],
         links: [
             { rel: "manifest", href: "/manifest.json" },
             { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
@@ -50,18 +62,21 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className="dark">
+        <html lang="en" suppressHydrationWarning>
             <head>
                 <HeadContent />
             </head>
-            <body className="min-h-screen bg-page text-text">
+            <body className="glaze min-h-dvh bg-page text-text-1">
                 <a
                     href="#main-content"
-                    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-md focus:border focus:border-[color:var(--color-accent)] focus:bg-[color:color-mix(in_srgb,var(--color-accent)_16%,var(--color-surface))] focus:px-4 focus:py-2 focus:text-[color:var(--color-text)]"
+                    data-slot="skip-link"
+                    className="sr-only focus-ring focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-(--z-overlay) focus:rounded-pill focus:bg-paper focus:px-4 focus:py-2 focus:text-text-1"
                 >
                     Skip to main content
                 </a>
-                <Providers>{children}</Providers>
+                <GlazePortalProvider>
+                    <Providers>{children}</Providers>
+                </GlazePortalProvider>
                 <Scripts />
             </body>
         </html>
@@ -70,12 +85,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function NotFound() {
     return (
-        <main id="main-content" className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-            <p className="font-mono text-sm text-text-soft">404</p>
-            <h1 className="text-2xl font-medium tracking-tight">This page does not exist</h1>
-            <a href="/" className="button-primary px-4 py-2 text-sm">
-                Back to home
-            </a>
+        <main id="main-content" className="flex min-h-dvh items-center justify-center p-6">
+            <h1 className="sr-only">This page does not exist</h1>
+            <Empty reason="empty" className="w-full max-w-md">
+                <EmptyHeader>
+                    <EmptyTitle>This page does not exist</EmptyTitle>
+                    <EmptyDescription>The link may be old or mistyped.</EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                    <Button size="sm" variant="secondary" render={<a href="/" />} nativeButton={false}>
+                        Back to home
+                    </Button>
+                </EmptyContent>
+            </Empty>
         </main>
     );
 }
@@ -84,12 +106,19 @@ function RootError({ error }: { error: unknown }) {
     const message = error instanceof Error ? error.message : "An unexpected error occurred.";
 
     return (
-        <main id="main-content" className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-            <h1 className="text-2xl font-medium tracking-tight">Something went wrong</h1>
-            <p className="max-w-md text-sm text-text-muted">{message}</p>
-            <a href="/" className="button-secondary px-4 py-2 text-sm">
-                Reload
-            </a>
+        <main id="main-content" className="flex min-h-dvh items-center justify-center p-6">
+            <h1 className="sr-only">Something went wrong</h1>
+            <Empty reason="error" className="w-full max-w-md">
+                <EmptyHeader>
+                    <EmptyTitle>Something went wrong</EmptyTitle>
+                    <EmptyDescription>{message}</EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                    <Button size="sm" variant="secondary" render={<a href="/" />} nativeButton={false}>
+                        Reload
+                    </Button>
+                </EmptyContent>
+            </Empty>
         </main>
     );
 }

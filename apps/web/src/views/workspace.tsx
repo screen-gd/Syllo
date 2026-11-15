@@ -1,38 +1,77 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { AlertCircle, Search, Settings, X } from "lucide-react";
+import { Close, Icon } from "@/components/glaze/icon";
+import {
+    Alert,
+    AlertAction,
+    AlertDescription,
+} from "@/components/glaze/ui/alert";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { SkeletonText } from "@/components/glaze/ui/skeleton";
 import Header from "@/components/layout/Header";
 import WorkspaceShell from "@/components/workspace/WorkspaceShell";
 import { useRoadmap } from "@/hooks/useRoadmap";
 
 export function WorkspaceView({ id }: { id: string }) {
-    const { roadmap, updateSection, saveRoadmap } = useRoadmap(id);
+    const { loaded, roadmap, updateSection, saveRoadmap } = useRoadmap(id);
     const [apiError, setApiError] = useState<{ message: string } | null>(null);
 
     const handleApiError = (error: { message: string }) => {
         setApiError(error);
     };
 
+    if (!loaded) {
+        return (
+            <div
+                className="flex min-h-dvh bg-page"
+                role="status"
+                aria-label="Loading workspace"
+            >
+                <div className="hidden w-72 shrink-0 border-e border-line-faint bg-paper sm:block" />
+                <div className="mx-auto flex w-full max-w-256 flex-col gap-3 px-4 pt-16 sm:px-6 lg:px-10">
+                    <SkeletonText type="heading" last={0.6} />
+                    <SkeletonText type="body" lines={2} last={0.5} />
+                </div>
+            </div>
+        );
+    }
+
     if (!roadmap) {
         return (
-            <div className="min-h-full bg-[var(--color-page)]">
+            <div className="flex min-h-dvh flex-col bg-page">
                 <Header />
-                <div className="page-shell flex min-h-[calc(100vh-4rem)] items-center justify-center pt-14">
-                    <div className="max-w-md text-center">
-                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-md border border-border bg-[var(--color-surface)] text-text-muted">
-                            <Search size={20} />
-                        </div>
-                        <h2 className="mt-6 text-3xl font-display tracking-[-0.03em] text-text">Workspace not found</h2>
-                        <p className="mt-3 text-sm leading-7 text-text-muted">
-                            This workspace does not exist anymore, or the link no longer points to saved content.
-                        </p>
-                        <div className="mt-6 flex justify-center">
-                            <Link to="/workspaces" className="button-primary">
-                                Back to library
-                            </Link>
-                        </div>
-                    </div>
-                </div>
+                <main
+                    id="main-content"
+                    className="flex flex-1 items-center justify-center px-4 py-10"
+                >
+                    <h1 className="sr-only">Workspace not found</h1>
+                    <Empty reason="no-results" className="w-full max-w-md">
+                        <EmptyHeader>
+                            <EmptyTitle>Workspace not found</EmptyTitle>
+                            <EmptyDescription>
+                                This workspace does not exist anymore, or the
+                                link no longer points to saved content.
+                            </EmptyDescription>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                render={<Link to="/workspaces" />}
+                                nativeButton={false}
+                            >
+                                Back to learning topics
+                            </Button>
+                        </EmptyContent>
+                    </Empty>
+                </main>
             </div>
         );
     }
@@ -40,18 +79,28 @@ export function WorkspaceView({ id }: { id: string }) {
     return (
         <div>
             {apiError ? (
-                <div className="fixed left-0 right-0 top-0 z-[100] border-b border-[var(--color-danger)]/25 bg-[var(--color-danger)]/5 px-4 py-3">
-                    <div className="mx-auto flex max-w-4xl items-center justify-center gap-3 text-sm text-[var(--color-danger)]">
-                        <AlertCircle size={18} />
-                        <span>{apiError.message}</span>
-                        <Link to="/settings" className="button-secondary !min-h-9">
-                            <Settings size={12} />
-                            Open settings
-                        </Link>
-                        <button type="button" onClick={() => setApiError(null)} className="text-[var(--color-danger)] transition-colors hover:opacity-80">
-                            <X size={16} />
-                        </button>
-                    </div>
+                <div className="fixed inset-x-0 top-0 z-(--z-overlay) mx-auto max-w-224 p-3">
+                    <Alert status="fail">
+                        <AlertDescription>{apiError.message}</AlertDescription>
+                        <AlertAction>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                render={<Link to="/settings" />}
+                                nativeButton={false}
+                            >
+                                Open settings
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label="Dismiss error"
+                                onClick={() => setApiError(null)}
+                            >
+                                <Icon icon={Close} />
+                            </Button>
+                        </AlertAction>
+                    </Alert>
                 </div>
             ) : null}
 

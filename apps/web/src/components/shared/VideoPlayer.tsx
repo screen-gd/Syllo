@@ -1,6 +1,15 @@
 "use client";
 
+import { External, Icon } from "@/components/glaze/icon";
+import { Button } from "@/components/glaze/ui/button";
+import { Empty, EmptyContent, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
 import { getEmbedUrl, detectPlatform } from "@/lib/video-utils";
+
+const PLATFORM_NAMES: Record<string, string> = {
+    youtube: "YouTube",
+    vimeo: "Vimeo",
+    loom: "Loom",
+};
 
 interface VideoPlayerProps {
     url: string;
@@ -14,41 +23,46 @@ export default function VideoPlayer({ url, title, description }: VideoPlayerProp
 
     if (!embedUrl) {
         return (
-            <div className="surface rounded-lg p-4 text-center">
-                <p className="text-text-muted text-sm">Unable to embed this video</p>
-                <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-accent text-sm hover:underline mt-1 inline-block"
-                >
-                    Open externally ↗
-                </a>
-            </div>
+            <Empty variant="plain" reason="error">
+                <EmptyHeader>
+                    <EmptyTitle>Unable to embed this video</EmptyTitle>
+                </EmptyHeader>
+                <EmptyContent>
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        nativeButton={false}
+                        render={<a href={url} target="_blank" rel="noopener noreferrer" />}
+                    >
+                        Open externally
+                        <Icon icon={External} />
+                    </Button>
+                </EmptyContent>
+            </Empty>
         );
     }
 
     return (
-        <div className="space-y-2">
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-surface">
+        <div className="flex flex-col gap-2">
+            <div className="relative aspect-16/9 w-full overflow-hidden rounded-panel bg-field">
                 <iframe
                     src={embedUrl}
                     title={title || "Video player"}
-                    className="absolute inset-0 w-full h-full"
+                    className="absolute inset-0 size-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                     loading="lazy"
                 />
             </div>
             {(title || description) ? (
-                <div className="px-1">
-                    {title ? (
-                        <h4 className="font-display font-semibold text-base text-text text-text">{title}</h4>
-                    ) : null}
+                <div>
+                    {title ? <h4 className="type-label">{title}</h4> : null}
                     {description ? (
-                        <p className="text-text-muted text-sm mt-0.5 line-clamp-2">{description}</p>
+                        <p className="mt-0.5 line-clamp-2 type-body-sm text-text-2">{description}</p>
                     ) : null}
-                    <span className="text-text-muted text-[12px] capitalize">{platform}</span>
+                    <span className="type-caption text-text-2">
+                        {PLATFORM_NAMES[platform] ?? platform}
+                    </span>
                 </div>
             ) : null}
         </div>

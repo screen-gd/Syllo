@@ -1,9 +1,40 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Download, Plus, Search } from "lucide-react";
-import { toast } from "sonner";
-import ListSkeleton from "@/components/shared/ListSkeleton";
-import { Segmented } from "@/components/ui/segmented";
+import {
+    ArrowRight,
+    Download,
+    Icon,
+    Add,
+} from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/glaze/ui/card";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import { Select } from "@/components/glaze/ui/select";
+import {
+    SegmentedControl,
+    SegmentedControlItem,
+} from "@/components/glaze/ui/segmented-control";
+import {
+    Skeleton,
+    SkeletonSwap,
+    SkeletonText,
+} from "@/components/glaze/ui/skeleton";
+import { Textarea } from "@/components/glaze/ui/textarea";
+import { toast } from "@/components/glaze/ui/toast";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
 import { downloadBlob } from "@/lib/export";
 import {
@@ -22,7 +53,7 @@ import {
     usePersonalData,
 } from "@/lib/personal/store";
 import { formatTimestamp } from "@/lib/scout/format";
-import { topicStyle } from "@/lib/topic-color";
+import PageFrame from "@/components/layout/PageFrame";
 
 type Scope = "all" | "lessons" | "books";
 const SCOPES = [
@@ -75,7 +106,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
             setDraft("");
             setComposing(false);
         } catch {
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
         }
     }
 
@@ -88,7 +119,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                 updateNoteText(entry, editing.text);
             setEditing(null);
         } catch {
-            toast.error(STORAGE_ERROR);
+            toast.fail(STORAGE_ERROR);
         }
     }
 
@@ -107,58 +138,63 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
     function sourceLink(note: LearnerNote) {
         if (note.source.kind === "book")
             return note.groupTitle === "Removed book" ? null : (
-                <Link
-                    className="sy-time-link"
-                    to="/read/$id"
-                    params={{ id: note.source.bookId }}
-                    search={{ cfi: note.source.cfi }}
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    render={
+                        <Link
+                            to="/read/$id"
+                            params={{ id: note.source.bookId }}
+                            search={{ cfi: note.source.cfi }}
+                        />
+                    }
+                    nativeButton={false}
                 >
                     Open passage
-                    <ArrowRight size={13} />
-                </Link>
+                    <Icon icon={ArrowRight} />
+                </Button>
             );
         if (!topicIds.has(note.source.roadmapId)) return null;
         return (
-            <Link
-                className="sy-time-link"
-                to="/learn"
-                search={{
-                    roadmap: note.source.roadmapId,
-                    task: note.source.taskId || undefined,
-                    seconds: note.source.timed
-                        ? note.source.seconds
-                        : undefined,
-                }}
+            <Button
+                variant="ghost"
+                size="sm"
+                render={
+                    <Link
+                        to="/learn"
+                        search={{
+                            roadmap: note.source.roadmapId,
+                            task: note.source.taskId || undefined,
+                            seconds: note.source.timed
+                                ? note.source.seconds
+                                : undefined,
+                        }}
+                    />
+                }
+                nativeButton={false}
             >
-                {note.source.timed ? (
-                    <>
-                        Open at{" "}
-                        <span className="sy-num">
-                            {formatTimestamp(note.source.seconds)}
-                        </span>
-                    </>
-                ) : note.source.taskId
+                {note.source.timed
+                    ? `Open at ${formatTimestamp(note.source.seconds)}`
+                    : note.source.taskId
                       ? "Open lesson"
                       : "Open topic"}
-                <ArrowRight size={13} />
-            </Link>
+                <Icon icon={ArrowRight} />
+            </Button>
         );
     }
 
     return (
-        <div className="sy-page">
-            <header className="sy-page-head">
-                <div>
-                    <h1>Notes</h1>
-                    {loaded && (
-                        <p>
-                            {notes.length} note{notes.length === 1 ? "" : "s"}
-                        </p>
-                    )}
-                </div>
-                <div className="sy-head-actions">
-                    <button
-                        className="sy-button secondary"
+        <PageFrame
+            title="Notes"
+            subtitle={
+                loaded
+                    ? `${notes.length} note${notes.length === 1 ? "" : "s"}`
+                    : undefined
+            }
+            actions={
+                <>
+                    <Button
+                        variant="secondary"
                         disabled={visible.length === 0}
                         onClick={() =>
                             downloadBlob(
@@ -169,222 +205,292 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                             )
                         }
                     >
-                        <Download />
+                        <Icon icon={Download} />
                         Export
-                    </button>
-                    <button
-                        className="sy-button primary"
-                        onClick={() => setComposing(true)}
-                    >
-                        <Plus />
+                    </Button>
+                    <Button onClick={() => setComposing(true)}>
+                        <Icon icon={Add} />
                         New note
-                    </button>
-                </div>
-            </header>
+                    </Button>
+                </>
+            }
+        >
+            <>
+                {composing && (
+                    <section className="shell">
+                        <div className="panel p-3">
+                            <form
+                                className="flex flex-col gap-3"
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    saveDraft();
+                                }}
+                            >
+                                <Field>
+                                    <FieldLabel>Note</FieldLabel>
+                                    <Textarea
+                                        value={draft}
+                                        onValueChange={setDraft}
+                                        placeholder="Write a note"
+                                        limit={6000}
+                                        autoGrow
+                                        minRows={3}
+                                        maxRows={12}
+                                        autoFocus
+                                    />
+                                </Field>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <Select
+                                        native
+                                        aria-label="Topic"
+                                        className="w-full sm:w-56"
+                                        value={draftTopic}
+                                        onValueChange={(value) =>
+                                            setDraftTopic(value ?? "")
+                                        }
+                                        items={[
+                                            { value: "", label: "No topic" },
+                                            ...roadmaps.map((roadmap) => ({
+                                                value: roadmap.id,
+                                                label: roadmap.title,
+                                            })),
+                                        ]}
+                                    />
+                                    <Button disabled={!draft.trim()}>
+                                        Save note
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => setComposing(false)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+                )}
 
-            {composing && (
-                <form
-                    className="sy-form sy-inline-form"
-                    onSubmit={(event) => {
-                        event.preventDefault();
-                        saveDraft();
-                    }}
-                >
-                    <textarea
-                        className="sy-textarea"
-                        value={draft}
-                        onChange={(event) => setDraft(event.target.value)}
-                        aria-label="Note"
-                        placeholder="Write a note"
-                        maxLength={6000}
-                        autoFocus
-                    />
-                    <div className="sy-inline-form-row">
-                        <select
-                            className="sy-select"
-                            value={draftTopic}
-                            onChange={(event) =>
-                                setDraftTopic(event.target.value)
-                            }
-                            aria-label="Topic"
-                        >
-                            <option value="">No topic</option>
-                            {roadmaps.map((roadmap) => (
-                                <option key={roadmap.id} value={roadmap.id}>
-                                    {roadmap.title}
-                                </option>
-                            ))}
-                        </select>
-                        <button
-                            className="sy-button primary"
-                            disabled={!draft.trim()}
-                        >
-                            Save note
-                        </button>
-                        <button
-                            type="button"
-                            className="sy-button quiet"
-                            onClick={() => setComposing(false)}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            )}
-
-            {notes.length > 0 && (
-                <div className="sy-library-tools sy-toolstrip">
-                    <label className="sy-search">
-                        <Search />
-                        <input
+                {notes.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Input
+                            className="w-full sm:w-56"
                             value={query}
-                            onChange={(event) => setQuery(event.target.value)}
+                            onValueChange={setQuery}
                             placeholder="Search notes"
                             aria-label="Search notes"
                         />
-                    </label>
-                    <div className="sy-filters">
-                        <Segmented
-                            label="Note source"
+                        <SegmentedControl
+                            aria-label="Note source"
                             value={scope}
-                            options={SCOPES}
-                            onChange={setScope}
-                        />
-                        <select
-                            className="sy-select"
-                            value={groupId}
-                            onChange={(event) => setGroupId(event.target.value)}
-                            aria-label="Topic or book"
+                            onValueChange={(value) => setScope(value as Scope)}
                         >
-                            <option value="all">Everything</option>
-                            {allGroups.map((group) => (
-                                <option key={group.id} value={group.id}>
-                                    {group.title}
-                                </option>
+                            {SCOPES.map((item) => (
+                                <SegmentedControlItem
+                                    key={item.key}
+                                    value={item.key}
+                                >
+                                    {item.label}
+                                </SegmentedControlItem>
                             ))}
-                        </select>
+                        </SegmentedControl>
+                        <Select
+                            native
+                            aria-label="Topic or book"
+                            className="w-full sm:w-56"
+                            value={groupId}
+                            onValueChange={(value) =>
+                                setGroupId(value ?? "all")
+                            }
+                            items={[
+                                { value: "all", label: "Everything" },
+                                ...allGroups.map((group) => ({
+                                    value: group.id,
+                                    label: group.title,
+                                })),
+                            ]}
+                        />
                     </div>
-                </div>
-            )}
+                )}
 
-            {!loaded ? (
-                <ListSkeleton />
-            ) : notes.length === 0 ? (
-                <div className="sy-tray">
-                    <p>
-                        Notes you take in a lesson or highlight in a book are
-                        collected here.
-                    </p>
-                    <Link className="sy-button secondary" to="/workspaces">
-                        Open a lesson
-                        <ArrowRight />
-                    </Link>
-                </div>
-            ) : groups.length === 0 ? (
-                <p className="sy-tray">No note matches this search.</p>
-            ) : (
-                groups.map((group) => (
-                    <section
-                        key={group.id}
-                        className="sy-box flush sy-note-group"
-                        style={
-                            group.kind === "general"
-                                ? undefined
-                                : topicStyle(group.id)
-                        }
-                    >
-                        <div className="sy-section-head">
-                            <h2 className="sy-box-title">
-                                <span className="sy-topic-dot" />
-                                {group.title}
-                            </h2>
-                            <span className="sy-readout">
-                                {group.notes.length}
-                            </span>
-                        </div>
-                        {group.notes.map((note) => (
-                            <article
-                                key={note.id}
-                                className="sy-saved-note sy-row"
-                            >
-                                <div className="sy-note-meta">
-                                    {note.sourceTitle && (
-                                        <b>{note.sourceTitle}</b>
-                                    )}
-                                    {note.kind !== "note" && (
-                                        <span className="sy-badge">
-                                            {NOTE_KIND_LABEL[note.kind]}
-                                        </span>
-                                    )}
-                                    <span className="sy-num">
-                                        {noteDate(note)}
-                                    </span>
+                <SkeletonSwap
+                    className="flex flex-col gap-4"
+                    loading={!loaded}
+                    label="Loading notes"
+                    fallback={
+                        <>
+                            <section className="shell">
+                                <div className="panel p-3">
+                                    <SkeletonText type="heading-sm" last={0.3} />
+                                    {[0, 1, 2].map((row) => (
+                                        <div key={row} className="mt-3">
+                                            <SkeletonText type="body" last={0.36} />
+                                            <SkeletonText type="body-sm" last={0.74} />
+                                        </div>
+                                    ))}
+                                    <Skeleton className="mt-3 h-4 w-24" />
                                 </div>
-                                {note.quote && (
-                                    <blockquote>{note.quote}</blockquote>
-                                )}
-                                {editing?.id === note.id ? (
-                                    <form
-                                        className="sy-form sy-inline-form"
-                                        onSubmit={(event) => {
-                                            event.preventDefault();
-                                            saveEdit();
-                                        }}
-                                    >
-                                        <textarea
-                                            className="sy-textarea"
-                                            value={editing.text}
-                                            onChange={(event) =>
-                                                setEditing({
-                                                    id: note.id,
-                                                    text: event.target.value,
-                                                })
-                                            }
-                                            aria-label="Edit note"
-                                            maxLength={6000}
-                                            autoFocus
-                                        />
-                                        <div className="sy-inline-form-row">
-                                            <button className="sy-button primary">
-                                                Save
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="sy-button quiet"
-                                                onClick={() => setEditing(null)}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </form>
-                                ) : (
+                            </section>
+                        </>
+                    }
+                >
+                    {!loaded ? null : notes.length === 0 ? (
+                    <Empty reason="empty">
+                        <EmptyHeader>
+                            <EmptyTitle>No notes yet</EmptyTitle>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                render={<Link to="/workspaces" />}
+                                nativeButton={false}
+                            >
+                                Open a lesson
+                                <Icon icon={ArrowRight} />
+                            </Button>
+                        </EmptyContent>
+                    </Empty>
+                ) : groups.length === 0 ? (
+                    <Empty variant="plain" reason="no-results">
+                        <EmptyHeader>
+                            <EmptyTitle>
+                                {query ? (
                                     <>
-                                        {note.text && <p>{note.text}</p>}
-                                        <div className="sy-row-actions">
-                                            {sourceLink(note)}
-                                            <button
-                                                onClick={() =>
-                                                    setEditing({
-                                                        id: note.id,
-                                                        text: note.text,
-                                                    })
-                                                }
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => remove(note)}
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
+                                        No notes match <code>{query}</code>
                                     </>
+                                ) : (
+                                    "No notes match these filters"
                                 )}
-                            </article>
-                        ))}
-                    </section>
-                ))
-            )}
-        </div>
+                            </EmptyTitle>
+                        </EmptyHeader>
+                    </Empty>
+                ) : (
+                    groups.map((group) => (
+                        <Card key={group.id}>
+                            <CardHeader>
+                                <CardTitle>
+                                    <h2 className="type-heading-sm">
+                                        {group.title}
+                                    </h2>
+                                </CardTitle>
+                                <CardAction>
+                                    <Badge count={group.notes.length} />
+                                </CardAction>
+                            </CardHeader>
+                            <CardContent flush>
+                                {group.notes.map((note) => (
+                                    <article
+                                        key={note.id}
+                                        className="rule-row p-3"
+                                    >
+                                        <div className="flex flex-wrap items-baseline gap-2">
+                                            {note.sourceTitle && (
+                                                <span className="type-label">
+                                                    {note.sourceTitle}
+                                                </span>
+                                            )}
+                                            {note.kind !== "note" && (
+                                                <Badge>
+                                                    {NOTE_KIND_LABEL[note.kind]}
+                                                </Badge>
+                                            )}
+                                            <span className="type-caption text-text-2">
+                                                {noteDate(note)}
+                                            </span>
+                                        </div>
+                                        {note.quote && (
+                                            <blockquote className="well mt-2 rounded-tag px-3 py-2 type-body-sm text-text-2">
+                                                {note.quote}
+                                            </blockquote>
+                                        )}
+                                        {editing?.id === note.id ? (
+                                            <form
+                                                className="mt-2 flex flex-col gap-3"
+                                                onSubmit={(event) => {
+                                                    event.preventDefault();
+                                                    saveEdit();
+                                                }}
+                                            >
+                                                <Field>
+                                                    <FieldLabel>
+                                                        Edit note
+                                                    </FieldLabel>
+                                                    <Textarea
+                                                        value={editing.text}
+                                                        onValueChange={(
+                                                            value,
+                                                        ) =>
+                                                            setEditing({
+                                                                id: note.id,
+                                                                text: value,
+                                                            })
+                                                        }
+                                                        limit={6000}
+                                                        autoGrow
+                                                        minRows={3}
+                                                        maxRows={12}
+                                                        autoFocus
+                                                    />
+                                                </Field>
+                                                <div className="flex gap-2">
+                                                    <Button size="sm">
+                                                        Save
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={() =>
+                                                            setEditing(null)
+                                                        }
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                </div>
+                                            </form>
+                                        ) : (
+                                            <>
+                                                {note.text && (
+                                                    <p className="mt-2 type-body-sm">
+                                                        {note.text}
+                                                    </p>
+                                                )}
+                                                <div className="mt-2 -ms-2 flex gap-1">
+                                                    {sourceLink(note)}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            setEditing({
+                                                                id: note.id,
+                                                                text: note.text,
+                                                            })
+                                                        }
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            remove(note)
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </article>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    ))
+                )}
+                </SkeletonSwap>
+            </>
+        </PageFrame>
     );
 }

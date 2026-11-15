@@ -1,0 +1,16 @@
+{
+	"apps/web/src/components/shared/EmptyState.tsx": {"import":2},
+	"apps/web/src/components/shared/Modal.tsx": {"import":3},
+	"apps/web/src/components/ui/alert-dialog.tsx": {"import":2},
+	"apps/web/src/components/ui/button.tsx": {"import":1},
+	"apps/web/src/components/ui/switch.tsx": {"import":1},
+	"apps/web/src/lib/notes.ts": {"raw":1},
+	"apps/web/src/lib/personal/books.ts": {"raw":6},
+	"apps/web/src/lib/topic-color.ts": {"raw":8},
+	"apps/web/src/lib/userConfig.ts": {"raw":5},
+	"apps/web/src/routes/__root.tsx": {"import":4},
+	"apps/web/src/styles/globals.css": {"raw":72},
+	"apps/web/src/styles/learning.css": {"raw":2},
+	"apps/web/src/views/studio/learn.tsx": {"raw":3},
+	"apps/web/src/views/studio/reader.tsx": {"raw":1}
+}

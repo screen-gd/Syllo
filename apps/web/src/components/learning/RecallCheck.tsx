@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Play } from "lucide-react";
+import { Icon, Play } from "@/components/glaze/icon";
+import { Button } from "@/components/glaze/ui/button";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import { scoutApi } from "@/lib/scout/api-client";
 import { formatTimestamp } from "@/lib/scout/format";
 import type { VideoChapterInput, VideoCheck } from "@/lib/scout/types";
@@ -74,7 +76,7 @@ export function useVideoChecks(input: {
  */
 export function RecallPrompt({
     check,
-    eyebrow,
+    meta,
     autoFocus = false,
     onReplay,
     onDone,
@@ -82,7 +84,7 @@ export function RecallPrompt({
     onSkip,
 }: {
     check: VideoCheck;
-    eyebrow: string;
+    meta: string;
     autoFocus?: boolean;
     onReplay: (seconds: number) => void;
     onDone: (answer: string) => void;
@@ -104,65 +106,74 @@ export function RecallPrompt({
     }, [revealed]);
 
     return (
-        <div className="sy-desk-card sy-desk-recall sy-recall-check">
-            <p className="sy-desk-eyebrow">{eyebrow}</p>
-            <p className="sy-recall-question" id={`${answerId}-question`}>
+        <div className="well rounded-panel p-3">
+            <p className="type-heading-sm" id={`${answerId}-question`}>
                 {check.question}
             </p>
+            <p className="mt-1 type-caption text-text-2">{meta}</p>
             {!revealed ? (
                 <>
-                    <textarea
-                        className="sy-textarea"
-                        rows={2}
-                        maxLength={600}
-                        value={answer}
-                        autoFocus={autoFocus}
-                        placeholder="Answer from memory, in a sentence or two."
-                        aria-labelledby={`${answerId}-question`}
-                        onChange={(event) => setAnswer(event.target.value)}
-                        onKeyDown={(event) => {
-                            if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) setRevealed(true);
-                        }}
-                    />
-                    <div className="sy-desk-actions">
-                        <button type="button" className="sy-button primary" onClick={() => setRevealed(true)}>
+                    <div className="mt-3">
+                        <Textarea
+                            value={answer}
+                            onValueChange={setAnswer}
+                            autoFocus={autoFocus}
+                            placeholder="Answer from memory, in a sentence or two."
+                            aria-labelledby={`${answerId}-question`}
+                            limit={600}
+                            autoGrow
+                            minRows={2}
+                            maxRows={6}
+                            onKeyDown={(event) => {
+                                if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) setRevealed(true);
+                            }}
+                        />
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                        <Button size="sm" onClick={() => setRevealed(true)}>
                             {answer.trim() ? "Check my answer" : "I don't know, show me"}
-                        </button>
+                        </Button>
                         {onSkip && (
-                            <button type="button" className="sy-button quiet" onClick={onSkip}>
+                            <Button size="sm" variant="ghost" onClick={onSkip}>
                                 Skip
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </>
             ) : (
-                <div className="sy-recall-reveal" ref={revealRef} tabIndex={-1}>
+                <div ref={revealRef} tabIndex={-1}>
                     {answer.trim() && (
-                        <div className="sy-recall-yours">
-                            <span>You said</span>
-                            <p>{answer.trim()}</p>
+                        <div className="mt-3">
+                            <span className="type-caption text-text-2">You said</span>
+                            <p className="type-body-sm">{answer.trim()}</p>
                         </div>
                     )}
-                    <div className="sy-recall-source">
-                        <span>From the video at {formatTimestamp(check.sourceStart)}</span>
-                        <blockquote>
+                    <div className="mt-3">
+                        <span className="type-caption text-text-2">
+                            From the video at {formatTimestamp(check.sourceStart)}
+                        </span>
+                        <blockquote className="mt-1 flex flex-col gap-1 ps-4 type-body-sm text-text-2">
                             {check.sourceLines.map((line, index) => (
                                 <p key={index}>{line}</p>
                             ))}
                         </blockquote>
-                        <p className="sy-recall-gist">
-                            <b>In short:</b> {check.answer}
+                        <p className="mt-2 type-body-sm">
+                            <span className="text-text-1">In short:</span> {check.answer}
                         </p>
                     </div>
-                    <p className="sy-desk-recall-hint">Compare for yourself. If you missed it, replay that moment.</p>
-                    <div className="sy-desk-actions">
-                        <button type="button" className="sy-button primary" onClick={() => onDone(answer.trim())}>
+                    <p className="mt-3 type-caption text-text-2">Compare for yourself. If you missed it, replay that moment.</p>
+                    <div className="mt-2 flex gap-2">
+                        <Button size="sm" onClick={() => onDone(answer.trim())}>
                             {doneLabel}
-                        </button>
-                        <button type="button" className="sy-button secondary" onClick={() => onReplay(check.sourceStart)}>
-                            <Play size={13} />
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => onReplay(check.sourceStart)}
+                        >
+                            <Icon icon={Play} />
                             Replay {formatTimestamp(check.sourceStart)}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}
@@ -177,19 +188,23 @@ export function VideoChecksStatus({ state, onRetry }: { state: VideoChecksState;
         case "ready":
             return null;
         case "loading":
-            return <p className="sy-desk-empty">Writing questions from the video&apos;s transcript…</p>;
+            return <p className="type-body-sm text-text-2">Writing questions from the video&apos;s transcript…</p>;
         case "no_transcript":
             return (
-                <p className="sy-desk-empty">
+                <p className="type-body-sm text-text-2">
                     This video has no readable captions, so there are no questions for it. Before you tick anything,
                     say the main idea out loud without looking.
                 </p>
             );
         case "no_key":
             return (
-                <p className="sy-desk-empty">
+                <p className="type-body-sm text-text-2">
                     Recall questions need a free Gemini key.{" "}
-                    <Link to="/settings" search={{ tab: "ai" }}>
+                    <Link
+                        to="/settings"
+                        search={{ tab: "ai" }}
+                        className="underline underline-offset-2"
+                    >
                         Add one in Settings
                     </Link>
                     .
@@ -197,11 +212,16 @@ export function VideoChecksStatus({ state, onRetry }: { state: VideoChecksState;
             );
         case "error":
             return (
-                <div className="sy-desk-empty">
-                    <p>{state.message}</p>
-                    <button type="button" className="sy-button secondary" onClick={onRetry}>
+                <div>
+                    <p className="type-body-sm text-text-2">{state.message}</p>
+                    <Button
+                        className="mt-2"
+                        variant="secondary"
+                        size="sm"
+                        onClick={onRetry}
+                    >
                         Try again
-                    </button>
+                    </Button>
                 </div>
             );
         default: {

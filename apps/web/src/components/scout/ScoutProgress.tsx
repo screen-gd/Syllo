@@ -1,5 +1,5 @@
-import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check, Icon } from "@/components/glaze/icon";
+import { cn } from "@/lib/glaze/utils";
 
 const STEPS = [
     { number: 1, label: "Set a goal" },
@@ -15,30 +15,31 @@ interface ScoutProgressProps {
 
 export default function ScoutProgress({ step, detail }: ScoutProgressProps) {
     return (
-        <div className="border-b border-border pb-5">
-            <ol className="flex flex-wrap items-center gap-x-8 gap-y-3">
+        <div className="border-b border-line-faint pb-4">
+            <ol className="flex items-center gap-x-6 overflow-x-auto">
                 {STEPS.map((item) => {
                     const done = item.number < step;
                     const active = item.number === step;
 
                     return (
-                        <li key={item.number} className="flex items-center gap-2.5">
+                        <li key={item.number} className="flex shrink-0 items-center gap-2">
                             <span
                                 aria-hidden="true"
                                 className={cn(
-"flex h-6 w-6 items-center justify-center rounded-full border text-xs font-medium tabular-nums transition-colors",
-                                    done && "border-text bg-text text-page",
-                                    active && "border-text text-text",
-                                    !done && !active && "border-border-strong text-text-soft",
+                                    "flex size-6 items-center justify-center rounded-pill border type-caption",
+                                    done && "border-ink bg-ink text-text-inverse",
+                                    active && "border-ink text-text-1",
+                                    !done && !active && "border-line-faint text-text-2",
                                 )}
                             >
-                                {done ? <Check size={13} strokeWidth={3} /> : item.number}
+                                {done ? <Icon icon={Check} size={12} /> : item.number}
                             </span>
                             <span
-                                className={cn(
-"text-[13px]",
-                                    active ? "text-[var(--color-text)]" : "text-[var(--color-text-soft)]",
-                                )}
+                                className={
+                                    active
+                                        ? "whitespace-nowrap type-body-sm text-text-1"
+                                        : "whitespace-nowrap type-body-sm text-text-2"
+                                }
                             >
                                 {item.label}
                             </span>
@@ -46,7 +47,7 @@ export default function ScoutProgress({ step, detail }: ScoutProgressProps) {
                     );
                 })}
             </ol>
-            {detail ? <p className="mt-3 text-xs text-[var(--color-text-muted)]">{detail}</p> : null}
+            {detail ? <p className="mt-2 type-caption text-text-2">{detail}</p> : null}
         </div>
     );
 }

@@ -7,7 +7,7 @@ export interface UserConfig {
     modelByProvider: ProviderMap;
     provider: AIProvider;
     useCustomKey: boolean;
-    theme: "dark";
+    theme: "light";
     accentColor: string;
     showProgressNotice: boolean;
     measurementStyle: "tasks" | "time" | "both";
@@ -24,15 +24,15 @@ function createProviderMap(defaultValue: string): ProviderMap {
     }, {} as ProviderMap);
 }
 
-const LEGACY_DEFAULT_ACCENT = "#4F7CFF";
+const LEGACY_DEFAULT_ACCENTS = new Set(["#4F7CFF", "#4CB3F0"]);
 
 export const DEFAULT_CONFIG: UserConfig = {
     apiKeys: createProviderMap(""),
     modelByProvider: { ...DEFAULT_PROVIDER_MODELS },
     provider: "gemini",
     useCustomKey: false,
-    theme: "dark",
-    accentColor: "#4CB3F0",
+    theme: "light",
+    accentColor: "#3F4CC4",
     showProgressNotice: true,
     measurementStyle: "tasks",
     visualDensity: "default",
@@ -78,11 +78,11 @@ export function getUserConfig(): UserConfig {
             modelByProvider,
             provider,
             useCustomKey: Boolean(parsed.useCustomKey && apiKeys[provider]),
-            theme: "dark",
-            // "#4F7CFF" was the previous theme's default, saved by anyone who opened
-            // Settings; treat it as unset so they get the current default.
+            theme: "light",
+            // "#4F7CFF" and "#4CB3F0" were earlier themes' defaults, saved by anyone
+            // who opened Settings; treat them as unset so they get the current default.
             accentColor:
-                typeof parsed.accentColor === "string" && parsed.accentColor.toUpperCase() !== LEGACY_DEFAULT_ACCENT
+                typeof parsed.accentColor === "string" && !LEGACY_DEFAULT_ACCENTS.has(parsed.accentColor.toUpperCase())
                     ? parsed.accentColor
                     : DEFAULT_CONFIG.accentColor,
             showProgressNotice: parsed.showProgressNotice ?? DEFAULT_CONFIG.showProgressNotice,

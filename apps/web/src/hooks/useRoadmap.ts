@@ -7,16 +7,11 @@ import { getStorage } from "@/lib/storage";
 export function useRoadmap(id?: string, isSession: boolean = false) {
     const storage = getStorage();
 
-    // Lazy state initialization (vercel best practice: 5.10)
-    const [roadmap, setRoadmap] = useState<Roadmap | null>(() => {
-        if (typeof window === "undefined" || !id) return null;
-        return storage.getWorkspace(id, isSession);
-    });
-
-    const [roadmaps, setRoadmaps] = useState<Roadmap[]>(() => {
-        if (typeof window === "undefined") return [];
-        return storage.getRoadmaps();
-    });
+    // Storage lives in the browser, so both renders start empty and the mount effect reads it. Reading it in the
+    // initializer served "not found" from the server and mismatched on hydration.
+    const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
+    const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
+    const [loaded, setLoaded] = useState(false);
 
     // Refresh roadmaps list from storage
     const refreshList = useCallback(() => {
@@ -69,14 +64,15 @@ export function useRoadmap(id?: string, isSession: boolean = false) {
         [id, isSession, storage]
     );
 
-    // Sync on mount if id changes
+    // Read storage on mount and whenever the id changes
     useEffect(() => {
-        if (id) {
-            setRoadmap(storage.getWorkspace(id, isSession));
-        }
+        setRoadmap(id ? storage.getWorkspace(id, isSession) : null);
+        setRoadmaps(storage.getRoadmaps());
+        setLoaded(true);
     }, [id, isSession, storage]);
 
     return {
+        loaded,
         roadmap,
         roadmaps,
         refreshList,

@@ -198,7 +198,7 @@ export function createTopicNote(roadmapId: string, text: string) {
         data: {
             text: text.trim(),
             quote: "",
-            color: "#b7c9e8",
+            color: "#8fb0e6",
             createdAt: new Date().toISOString(),
             anchor: {
                 kind: "lesson",

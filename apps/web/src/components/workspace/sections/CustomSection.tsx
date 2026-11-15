@@ -1,7 +1,17 @@
 "use client";
 
 import type { CustomSection as CustomSectionType, Section, CustomItem } from "@/types";
-import EmptyState from "@/components/shared/EmptyState";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Checkbox } from "@/components/glaze/ui/checkbox";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
+import {
+    Item,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import { cn } from "@/lib/glaze/utils";
 
 interface Props {
     section: CustomSectionType;
@@ -27,36 +37,61 @@ export default function CustomSection({ section, onUpdate }: Props) {
     };
 
     if (data.items.length === 0) {
-        return <EmptyState icon="🔧" title={section.title} description={data.description || "Custom section content will appear here."} />;
+        return (
+            <Empty reason="empty">
+                <EmptyHeader>
+                    <EmptyTitle>{section.title}</EmptyTitle>
+                    <EmptyDescription>
+                        {data.description || "Custom section content will appear here."}
+                    </EmptyDescription>
+                </EmptyHeader>
+            </Empty>
+        );
     }
+
+    const header = (
+        <div>
+            <h2 className="type-heading">{section.title}</h2>
+            {data.description ? (
+                <p className="mt-1 type-body-sm text-text-2">{data.description}</p>
+            ) : null}
+        </div>
+    );
 
     // Render based on layout
     if (data.layout === "checklist") {
         return (
-            <div className="max-w-3xl">
-                <h2 className="text-xl font-semibold text-text mb-2 animate-fade-in">
-                    🔧 {section.title}
-                </h2>
-                {data.description ? <p className="text-text-muted text-sm mb-6">{data.description}</p> : null}
-                <div className="surface rounded-xl divide-y divide-border overflow-hidden">
-                    {data.items.map((item) => (
-                        <label key={item.id} className="flex items-center gap-3 p-3.5 hover:bg-surface-subtle cursor-pointer content-auto">
-                            <input
-                                type="checkbox"
-                                checked={item.completed || false}
-                                onChange={() => toggleItem(item.id)}
-                                className="w-4 h-4 rounded accent-indigo-accent"
-                            />
-                            <div className="min-w-0 flex-1">
-                                <span className={`text-sm ${item.completed ? "text-text-muted line-through" : "text-text"}`}>
-                                    {item.title}
-                                </span>
-                                {item.description ? (
-                                    <p className="text-text-muted text-sm mt-0.5">{item.description}</p>
-                                ) : null}
-                            </div>
-                        </label>
-                    ))}
+            <div className="flex flex-col gap-6">
+                {header}
+                <div className="shell">
+                    <ul className="panel flex flex-col">
+                        {data.items.map((item) => (
+                            <li key={item.id} className="rule-row">
+                                <label className="flex cursor-pointer items-start gap-3 p-3">
+                                    <Checkbox
+                                        className="mt-0.5"
+                                        checked={item.completed || false}
+                                        onCheckedChange={() => toggleItem(item.id)}
+                                    />
+                                    <span className="min-w-0 flex-1">
+                                        <span
+                                            className={cn(
+                                                "type-body-sm",
+                                                item.completed ? "text-text-2 line-through" : "text-text-1",
+                                            )}
+                                        >
+                                            {item.title}
+                                        </span>
+                                        {item.description ? (
+                                            <span className="mt-0.5 block type-body-sm text-text-2">
+                                                {item.description}
+                                            </span>
+                                        ) : null}
+                                    </span>
+                                </label>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
         );
@@ -64,29 +99,26 @@ export default function CustomSection({ section, onUpdate }: Props) {
 
     if (data.layout === "cards") {
         return (
-            <div className="max-w-4xl">
-                <h2 className="text-xl font-semibold text-text mb-2 animate-fade-in">
-                    🔧 {section.title}
-                </h2>
-                {data.description ? <p className="text-text-muted text-sm mb-6">{data.description}</p> : null}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {data.items.map((item, i) => (
-                        <div
-                            key={item.id}
-                            className="surface rounded-xl p-4 card-hover animate-slide-up"
-                            style={{ animationDelay: `${i * 0.03}s` }}
-                        >
-                            <h4 className="font-display font-semibold text-base text-text mb-1">{item.title}</h4>
-                            {item.description ? <p className="text-text-muted text-sm">{item.description}</p> : null}
-                            {item.metadata ? (
-                                <div className="mt-2 flex flex-wrap gap-1.5">
-                                    {Object.entries(item.metadata).map(([k, v]) => (
-                                        <span key={k} className="text-xs px-2 py-0.5 rounded-full bg-surface-muted text-text-muted">
-                                            {k}: {v}
-                                        </span>
-                                    ))}
-                                </div>
-                            ) : null}
+            <div className="flex flex-col gap-6">
+                {header}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {data.items.map((item) => (
+                        <div key={item.id} className="shell">
+                            <div className="panel h-full p-3">
+                                <h4 className="type-heading-sm">{item.title}</h4>
+                                {item.description ? (
+                                    <p className="mt-1 type-body-sm text-text-2">{item.description}</p>
+                                ) : null}
+                                {item.metadata ? (
+                                    <div className="mt-2 flex flex-wrap gap-1.5">
+                                        {Object.entries(item.metadata).map(([k, v]) => (
+                                            <Badge key={k}>
+                                                {k}: {v}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                ) : null}
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -96,22 +128,21 @@ export default function CustomSection({ section, onUpdate }: Props) {
 
     // Default: list layout
     return (
-        <div className="max-w-3xl">
-            <h2 className="text-xl font-semibold text-text mb-2 animate-fade-in">
-                🔧 {section.title}
-            </h2>
-            {data.description ? <p className="text-text-muted text-sm mb-6">{data.description}</p> : null}
-            <div className="space-y-2">
-                {data.items.map((item, i) => (
-                    <div
-                        key={item.id}
-                        className="surface rounded-lg p-4 animate-slide-up content-auto"
-                        style={{ animationDelay: `${i * 0.03}s` }}
-                    >
-                        <h4 className="font-display font-semibold text-base text-text">{item.title}</h4>
-                        {item.description ? <p className="text-text-muted text-sm mt-1">{item.description}</p> : null}
-                    </div>
-                ))}
+        <div className="flex flex-col gap-6">
+            {header}
+            <div className="shell">
+                <ItemGroup className="panel">
+                    {data.items.map((item) => (
+                        <Item key={item.id}>
+                            <ItemContent>
+                                <ItemTitle>{item.title}</ItemTitle>
+                                {item.description ? (
+                                    <ItemDescription>{item.description}</ItemDescription>
+                                ) : null}
+                            </ItemContent>
+                        </Item>
+                    ))}
+                </ItemGroup>
             </div>
         </div>
     );

@@ -1,10 +1,31 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
-import ListSkeleton from "@/components/shared/ListSkeleton";
+import { Add, Icon } from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Card,
+    CardAction,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/glaze/ui/card";
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { ItemGroup } from "@/components/glaze/ui/item";
+import {
+    SegmentedControl,
+    SegmentedControlItem,
+} from "@/components/glaze/ui/segmented-control";
+import { Select } from "@/components/glaze/ui/select";
+import { SkeletonSwap, SkeletonText } from "@/components/glaze/ui/skeleton";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
-import { Button } from "@/components/ui/button";
-import { Segmented } from "@/components/ui/segmented";
+import PageFrame from "@/components/layout/PageFrame";
 import { getStorage } from "@/lib/storage";
 import { getRoadmapStats } from "@/lib/workspace-stats";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
@@ -65,106 +86,164 @@ export default function WorkspacesPage() {
         } satisfies Record<LibraryFilter, number>;
     }, [roadmaps]);
 
-    const filterOptions = (
-        [
-            { key: "all", label: "All" },
-            { key: "in-progress", label: "In progress" },
-            { key: "completed", label: "Completed" },
-        ] as const
-    ).map((option) => ({
-        key: option.key,
-        label: mounted ? `${option.label} ${counts[option.key]}` : option.label,
-    }));
-
-    const sortOptions = [
-        { key: "recent", label: "Recent" },
-        { key: "title", label: "Title" },
-        { key: "completion", label: "Progress" },
-    ] as const satisfies readonly { key: SortMode; label: string }[];
-
     return (
-        <div className="studio-page">
-            <header className="sy-page-head">
-                <div className="app-header-block">
-                    <h1>Learning topics</h1>
-                    <p className="text-sm text-text-muted">
-                        Choose a topic to continue learning.
-                    </p>
+        <PageFrame
+            title="Learning topics"
+            subtitle="Choose a topic to continue learning."
+            actions={
+                <Button
+                    render={<Link to="/create" />}
+                    nativeButton={false}
+                >
+                    <Icon icon={Add} />
+                    Add roadmap
+                </Button>
+            }
+        >
+            <>
+                <div className="flex flex-wrap items-center gap-2">
+                    <SegmentedControl
+                        aria-label="Filter workspaces"
+                        value={filter}
+                        onValueChange={(value) =>
+                            setFilter(value as LibraryFilter)
+                        }
+                    >
+                        <SegmentedControlItem
+                            value="all"
+                            count={mounted ? counts.all : undefined}
+                        >
+                            All
+                        </SegmentedControlItem>
+                        <SegmentedControlItem
+                            value="in-progress"
+                            count={mounted ? counts["in-progress"] : undefined}
+                        >
+                            In progress
+                        </SegmentedControlItem>
+                        <SegmentedControlItem
+                            value="completed"
+                            count={mounted ? counts.completed : undefined}
+                        >
+                            Completed
+                        </SegmentedControlItem>
+                    </SegmentedControl>
+                    <div className="w-full sm:ms-auto sm:w-44">
+                        <Select
+                            native
+                            aria-label="Sort"
+                            value={sortMode}
+                            onValueChange={(value) =>
+                                setSortMode((value ?? "recent") as SortMode)
+                            }
+                            items={[
+                                { value: "recent", label: "Recent first" },
+                                { value: "title", label: "By title" },
+                                { value: "completion", label: "By progress" },
+                            ]}
+                        />
+                    </div>
                 </div>
 
-                <Link to="/create" className="button-primary shrink-0">
-                    <Plus size={16} />
-                    Add roadmap
-                </Link>
-            </header>
-
-            <div className="sy-toolbar sy-toolstrip">
-                <Segmented
-                    label="Filter workspaces"
-                    value={filter}
-                    options={filterOptions}
-                    onChange={setFilter}
-                />
-                <Segmented
-                    label="Sort workspaces"
-                    value={sortMode}
-                    options={sortOptions}
-                    onChange={setSortMode}
-                />
-            </div>
-
-            {mounted ? (
-                filteredRoadmaps.length > 0 ? (
-                    <section className="sy-box flush sy-workspace-list">
-                        <div className="sy-section-head">
-                            <h2>Topics</h2>
-                            <span className="sy-readout">
-                                {filteredRoadmaps.length}
-                            </span>
-                        </div>
-                        {filteredRoadmaps.map((roadmap) => (
-                            <WorkspaceLibraryCard
-                                key={roadmap.id}
-                                roadmap={roadmap}
-                                onDelete={(id) => {
-                                    getStorage().deleteRoadmap(id);
-                                }}
-                                onRename={(id, nextTitle) => {
-                                    getStorage().updateRoadmap(id, {
-                                        title: nextTitle,
-                                    });
-                                }}
-                            />
-                        ))}
-                    </section>
-                ) : (
-                    <div className="sy-tray sy-empty-row">
-                        <p className="text-sm text-text-muted">
-                            {roadmaps.length === 0
-                                ? "No learning topics yet. Start with Scout or add your own roadmap."
-                                : "No learning topic matches this filter."}
-                        </p>
-                        <div className="flex gap-2">
-                            {roadmaps.length > 0 ? (
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => setFilter("all")}
-                                >
-                                    Show all
-                                </Button>
-                            ) : (
-                                <Button asChild variant="secondary" size="sm">
-                                    <Link to="/scout">Open Scout</Link>
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-                )
-            ) : (
-                <ListSkeleton />
-            )}
-        </div>
+                <SkeletonSwap
+                    className="flex flex-col gap-4"
+                    loading={!mounted}
+                    label="Loading learning topics"
+                    fallback={
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <h2 className="type-heading-sm">Topics</h2>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent flush>
+                                {[0, 1, 2].map((row) => (
+                                    <div key={row} className="rule-row p-3">
+                                        <SkeletonText type="label" last={0.4} />
+                                        <SkeletonText type="body-sm" last={0.7} />
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    }
+                >
+                    {!mounted ? null : (
+                    filteredRoadmaps.length > 0 ? (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <h2 className="type-heading-sm">Topics</h2>
+                                </CardTitle>
+                                <CardAction>
+                                    <Badge count={filteredRoadmaps.length} />
+                                </CardAction>
+                            </CardHeader>
+                            <CardContent flush>
+                                <ItemGroup variant="plain" aria-label="Topics">
+                                    {filteredRoadmaps.map((roadmap) => (
+                                        <WorkspaceLibraryCard
+                                            key={roadmap.id}
+                                            roadmap={roadmap}
+                                            onDelete={(id) => {
+                                                getStorage().deleteRoadmap(id);
+                                            }}
+                                            onRename={(id, nextTitle) => {
+                                                getStorage().updateRoadmap(
+                                                    id,
+                                                    {
+                                                        title: nextTitle,
+                                                    },
+                                                );
+                                            }}
+                                        />
+                                    ))}
+                                </ItemGroup>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Empty
+                            reason={roadmaps.length === 0 ? "empty" : "no-results"}
+                        >
+                            <EmptyHeader>
+                                <EmptyTitle>
+                                    {roadmaps.length === 0
+                                        ? "No learning topics yet"
+                                        : "No learning topic matches this filter"}
+                                </EmptyTitle>
+                                {roadmaps.length === 0 && (
+                                    <EmptyDescription>
+                                        Start with Scout or add your own
+                                        roadmap.
+                                    </EmptyDescription>
+                                )}
+                            </EmptyHeader>
+                            <EmptyContent>
+                                {roadmaps.length === 0 ? (
+                                    <>
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            render={<Link to="/scout" />}
+                                            nativeButton={false}
+                                        >
+                                            Open Scout
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        onClick={() => setFilter("all")}
+                                    >
+                                        Show all
+                                    </Button>
+                                )}
+                            </EmptyContent>
+                        </Empty>
+                    )
+                    )}
+                </SkeletonSwap>
+            </>
+        </PageFrame>
     );
 }

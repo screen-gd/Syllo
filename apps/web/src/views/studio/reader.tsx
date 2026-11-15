@@ -3,8 +3,38 @@ import { Link } from "@tanstack/react-router";
 import type { Book, Contents, Rendition } from "epubjs";
 import type { Location } from "epubjs/types/rendition";
 import type { NavItem } from "epubjs/types/navigation";
-import { ArrowLeft, ArrowRight, Highlighter, Moon, Sun } from "lucide-react";
 import { z } from "zod";
+import { ArrowLeft, ArrowRight, Dark, Icon, Light } from "@/components/glaze/icon";
+import { Alert, AlertDescription } from "@/components/glaze/ui/alert";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/glaze/ui/breadcrumb";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import {
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import { Select } from "@/components/glaze/ui/select";
+import { Skeleton } from "@/components/glaze/ui/skeleton";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import {
     usePersonalData,
     personalEntries,
@@ -14,6 +44,7 @@ import { getBookFile, updateBook } from "@/lib/personal/books";
 import { getLocalFile, saveLocalFile } from "@/lib/personal/files";
 import { useCloudSync } from "@/components/sync/CloudSync";
 import ReviewComposer from "@/components/learning/ReviewComposer";
+import PageFrame from "@/components/layout/PageFrame";
 
 const preferencesSchema = z.object({
     size: z.number().min(14).max(30),
@@ -23,14 +54,19 @@ function flattenToc(items: NavItem[]): NavItem[] {
     return items.flatMap((item) => [item, ...flattenToc(item.subitems ?? [])]);
 }
 
-function applyReaderAppearance(rendition: Rendition, size: number, night: boolean) {
-    const foreground = night ? "#e1dfd9" : "#2a2925";
-    const background = night ? "#191a1d" : "#f0eee7";
+/**
+ * Styles the book's pages from the Glaze tokens on the element that holds them, so the page follows the
+ * light or dark reading surface around it. Call again after the surface's theme or the text size changes.
+ */
+function applyReaderAppearance(rendition: Rendition, size: number, surface: HTMLElement) {
+    const tokens = getComputedStyle(surface);
+    const foreground = tokens.getPropertyValue("--text-1").trim();
+    const background = tokens.getPropertyValue("--paper").trim();
     rendition.themes.default({
         body: {
             color: `${foreground} !important`,
             background: `${background} !important`,
-            "font-family": "Georgia, serif !important",
+            "font-family": `${tokens.getPropertyValue("--font-sans").trim()} !important`,
             "line-height": "1.85 !important",
             padding: "20px 26px !important",
         },
@@ -144,7 +180,7 @@ export default function ReaderPage({
             applyReaderAppearance(
                 rendition,
                 appearanceRef.current.size,
-                appearanceRef.current.night,
+                host.current,
             );
             rendition.on("selected", (cfi: string, contents: Contents) => {
                 const quote = contents.window.getSelection()?.toString().trim();
@@ -247,7 +283,7 @@ export default function ReaderPage({
     useEffect(() => {
         const rendition = renditionRef.current;
         if (!rendition || !ready) return;
-        applyReaderAppearance(rendition, size, night);
+        if (host.current) applyReaderAppearance(rendition, size, host.current);
         localStorage.setItem(
             "syllo:reader-preferences",
             JSON.stringify({ size, night }),
@@ -255,7 +291,14 @@ export default function ReaderPage({
     }, [ready, size, night]);
     useEffect(() => {
         const rendition = renditionRef.current;
-        if (!rendition || !ready) return;
+        if (!rendition || !ready || !host.current) return;
+        // Highlights take the ink of the reading surface at a low opacity, so they read on a light or a dark page.
+        const ink = getComputedStyle(host.current)
+            .getPropertyValue("--text-1")
+            .trim();
+        for (const cfi of highlighted.current)
+            rendition.annotations.remove(cfi, "highlight");
+        highlighted.current.clear();
         for (const item of annotations) {
             const anchor = item.data.anchor;
             if (anchor.kind !== "book" || highlighted.current.has(anchor.cfi))
@@ -266,18 +309,14 @@ export default function ReaderPage({
                     {},
                     undefined,
                     "syllo-highlight",
-                    {
-                        fill: item.data.color,
-                        "fill-opacity": "0.3",
-                        "mix-blend-mode": "multiply",
-                    },
+                    { fill: ink, "fill-opacity": "0.16" },
                 );
                 highlighted.current.add(anchor.cfi);
             } catch {
                 /* Keep a note even when a revised EPUB invalidates its highlight. */
             }
         }
-    }, [annotations, ready]);
+    }, [annotations, ready, night]);
     function saveAnnotation(text: string) {
         if (!selection) return;
         putPersonalEntry({
@@ -288,7 +327,7 @@ export default function ReaderPage({
             data: {
                 text: text.trim(),
                 quote: selection.quote,
-                color: "#c5ce7b",
+                color: "#a5ad4a",
                 anchor: { kind: "book", bookId: id, cfi: selection.cfi },
                 createdAt: new Date().toISOString(),
             },
@@ -305,102 +344,116 @@ export default function ReaderPage({
     }
     if (!book)
         return (
-            <div className="sy-page">
-                <h1>Book not found</h1>
-                <div className="sy-empty">
-                    <p>
-                        Import the book on this device, or connect your synced
-                        library.
-                    </p>
-                    <Link className="sy-button secondary" to="/library">
-                        Back to Library
-                    </Link>
-                </div>
-            </div>
+            <PageFrame title="Library">
+                <Empty reason="no-results" className="w-full max-w-md self-center">
+                    <EmptyHeader>
+                        <EmptyTitle>Book not found</EmptyTitle>
+                        <EmptyDescription>
+                            Import the book on this device, or connect your synced
+                            library.
+                        </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                        <Button
+                            variant="secondary"
+                            nativeButton={false}
+                            render={<Link to="/library" />}
+                        >
+                            Back to library
+                        </Button>
+                    </EmptyContent>
+                </Empty>
+            </PageFrame>
         );
     return (
-        <div className="sy-page">
-            <div className="sy-breadcrumb">
-                <Link to="/library">Library</Link>
-                <span>/</span>
-                <span>{book.title}</span>
-            </div>
-            <header className="sy-reader-head">
-                <div>
-                    <h1>{book.title}</h1>
-                    <p>
-                        {book.author} · {book.chapter}
-                    </p>
-                </div>
-                <Link className="sy-button quiet" to="/library">
-                    Back to Library
-                </Link>
+        <div className="mx-auto flex w-full max-w-256 flex-col gap-4">
+            <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink render={<Link to="/library" />}>Library</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>{book.title}</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            <header className="min-w-0">
+                <h1 className="type-title">{book.title}</h1>
+                <p className="mt-1 type-body-sm text-text-2">
+                    {book.author} · {book.chapter}
+                </p>
             </header>
-            <div className="sy-reader-tools">
-                <div className="sy-reader-controls">
-                    <button
-                        className="sy-button secondary"
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line-faint pb-4">
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="secondary"
+                        size="sm"
                         aria-label="Smaller text"
                         onClick={() =>
                             setSize((value) => Math.max(14, value - 1))
                         }
                     >
                         A−
-                    </button>
-                    <button
-                        className="sy-button secondary"
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        size="sm"
                         aria-label="Larger text"
                         onClick={() =>
                             setSize((value) => Math.min(30, value + 1))
                         }
                     >
                         A+
-                    </button>
-                    <button
-                        className="sy-button quiet"
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon-sm"
                         onClick={() => setNight((value) => !value)}
                         aria-label={
                             night ? "Light reading page" : "Dark reading page"
                         }
                     >
-                        {night ? <Sun /> : <Moon />}
-                    </button>
+                        <Icon icon={night ? Light : Dark} />
+                    </Button>
                 </div>
-                <select
-                    className="sy-select"
-                    aria-label="Table of contents"
-                    defaultValue=""
-                    onChange={(event) => {
-                        if (event.target.value)
-                            void display(event.target.value);
-                    }}
-                >
-                    <option value="" disabled>
-                        Contents
-                    </option>
-                    {toc.map((item, index) => (
-                        <option key={`${item.id}:${index}`} value={item.href}>
-                            {item.label}
-                        </option>
-                    ))}
-                </select>
+                <div className="w-full sm:w-64">
+                    <Select
+                        native
+                        aria-label="Table of contents"
+                        placeholder="Contents"
+                        value={null}
+                        onValueChange={(value) => {
+                            if (value) void display(value);
+                        }}
+                        items={toc.map((item) => ({
+                            value: item.href,
+                            label: item.label,
+                        }))}
+                    />
+                </div>
             </div>
             {error && (
-                <p className="sy-error" role="alert">
-                    {error}
-                </p>
+                <Alert status="fail">
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
             )}
-            {!ready && !error && (
-                <p role="status" className="sy-loading">
-                    Opening your book…
-                </p>
-            )}
-            <div className={`sy-reader${night ? " night" : ""}`}>
-                <div className="sy-reader-mount" ref={host} />
+            <div
+                data-theme={night ? "dark" : undefined}
+                className="glaze relative overflow-hidden rounded-panel border border-line-faint bg-paper"
+            >
+                {!ready && !error && (
+                    <Skeleton
+                        className="absolute inset-0 rounded-panel"
+                        aria-label="Loading"
+                    />
+                )}
+                <div className="h-120 w-full md:h-160" ref={host} />
             </div>
-            <div className="sy-reader-pagination">
-                <button
-                    className="sy-button quiet"
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <Button
+                    variant="ghost"
+                    size="sm"
                     disabled={!ready}
                     onClick={() =>
                         void renditionRef.current
@@ -410,12 +463,13 @@ export default function ReaderPage({
                             )
                     }
                 >
-                    <ArrowLeft />
+                    <Icon icon={ArrowLeft} />
                     Previous
-                </button>
-                <span>{Math.round(book.percent)}% read</span>
-                <button
-                    className="sy-button quiet"
+                </Button>
+                <span className="type-caption tabular-nums text-text-2">{Math.round(book.percent)}% read</span>
+                <Button
+                    variant="ghost"
+                    size="sm"
                     disabled={!ready}
                     onClick={() =>
                         void renditionRef.current
@@ -426,14 +480,13 @@ export default function ReaderPage({
                     }
                 >
                     Next
-                    <ArrowRight />
-                </button>
+                    <Icon icon={ArrowRight} />
+                </Button>
             </div>
-            <div className="sy-reader-fields">
-                <label>
-                    Category
-                    <input
-                        className="sy-input"
+            <div className="grid gap-3 sm:grid-cols-2">
+                <Field>
+                    <FieldLabel>Category</FieldLabel>
+                    <Input
                         aria-label="Book category"
                         key={book.id}
                         defaultValue={book.category}
@@ -445,16 +498,16 @@ export default function ReaderPage({
                             })
                         }
                     />
-                </label>
-                <label>
-                    Reading status
-                    <select
-                        className="sy-select"
+                </Field>
+                <Field>
+                    <FieldLabel>Reading status</FieldLabel>
+                    <Select
+                        native
                         value={book.status}
-                        onChange={(event) => {
+                        onValueChange={(value) => {
                             const result = z
                                 .enum(["to-read", "reading", "finished"])
-                                .safeParse(event.target.value);
+                                .safeParse(value);
                             if (result.success)
                                 updateBook(id, {
                                     status: result.data,
@@ -463,76 +516,91 @@ export default function ReaderPage({
                                         : {}),
                                 });
                         }}
-                    >
-                        <option value="to-read">To read</option>
-                        <option value="reading">Reading</option>
-                        <option value="finished">Finished</option>
-                    </select>
-                </label>
+                        items={[
+                            { value: "to-read", label: "To read" },
+                            { value: "reading", label: "Reading" },
+                            { value: "finished", label: "Finished" },
+                        ]}
+                    />
+                </Field>
             </div>
-            <section className="sy-reader-notes">
-                <div className="sy-section-head">
-                    <h2>Passage notes and highlights</h2>
-                </div>
+            <section className="mt-4 flex flex-col gap-3">
+                <h2 className="type-heading">Passage notes and highlights</h2>
                 {selection ? (
-                    <>
-                        <blockquote className="sy-passage">
-                            {selection.quote}
-                        </blockquote>
-                        <textarea
-                            className="sy-textarea"
-                            value={draft}
-                            onChange={(event) => setDraft(event.target.value)}
-                            placeholder="What do you want to remember about this passage?"
-                            aria-label="Note on selected passage"
-                        />
-                        <div className="sy-note-controls">
-                            <button
-                                className="sy-button quiet"
-                                onClick={() => saveAnnotation("")}
-                            >
-                                <Highlighter />
-                                Keep highlight
-                            </button>
-                            <button
-                                className="sy-button secondary"
-                                onClick={() => saveAnnotation(draft)}
-                            >
-                                Save passage note
-                            </button>
+                    <div className="shell">
+                        <div className="panel flex flex-col gap-3 p-3">
+                            <blockquote className="type-body text-text-2">
+                                {selection.quote}
+                            </blockquote>
+                            <Field>
+                                <FieldLabel>Note on selected passage</FieldLabel>
+                                <Textarea
+                                    value={draft}
+                                    onValueChange={setDraft}
+                                    placeholder="What do you want to remember about this passage?"
+                                />
+                            </Field>
+                            <div className="flex flex-wrap justify-end gap-2">
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => saveAnnotation("")}
+                                >
+                                    Keep highlight
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    onClick={() => saveAnnotation(draft)}
+                                >
+                                    Save passage note
+                                </Button>
+                            </div>
+                            <ReviewComposer
+                                roadmapId={`book:${id}`}
+                                source={{
+                                    bookId: id,
+                                    cfi: selection.cfi,
+                                    quote: selection.quote,
+                                }}
+                                initialAnswer={selection.quote}
+                            />
                         </div>
-                        <ReviewComposer
-                            roadmapId={`book:${id}`}
-                            source={{
-                                bookId: id,
-                                cfi: selection.cfi,
-                                quote: selection.quote,
-                            }}
-                            initialAnswer={selection.quote}
-                        />
-                    </>
+                    </div>
                 ) : (
-                    <p className="sy-muted sy-small">
+                    <p className="type-body-sm text-text-2">
                         Select text in the book to highlight it, attach a note,
                         or make a review card.
                     </p>
                 )}
-                {annotations.map((item) => (
-                    <article className="sy-saved-note" key={item.id}>
-                        <button
-                            className="sy-time-link"
-                            onClick={() => {
-                                if (item.data.anchor.kind === "book")
-                                    void display(item.data.anchor.cfi);
-                            }}
-                        >
-                            Return to passage
-                            <ArrowRight size={13} />
-                        </button>
-                        <blockquote>{item.data.quote}</blockquote>
-                        {item.data.text && <p>{item.data.text}</p>}
-                    </article>
-                ))}
+                {annotations.length > 0 && (
+                    <ItemGroup aria-label="Saved passages">
+                        {annotations.map((item) => (
+                            <Item key={item.id}>
+                                <ItemContent>
+                                    <ItemTitle>
+                                        <span>{item.data.quote}</span>
+                                    </ItemTitle>
+                                    {item.data.text && (
+                                        <ItemDescription>{item.data.text}</ItemDescription>
+                                    )}
+                                </ItemContent>
+                                <ItemActions>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                            if (item.data.anchor.kind === "book")
+                                                void display(item.data.anchor.cfi);
+                                        }}
+                                    >
+                                        Return to passage
+                                        <Icon icon={ArrowRight} />
+                                    </Button>
+                                </ItemActions>
+                            </Item>
+                        ))}
+                    </ItemGroup>
+                )}
             </section>
         </div>
     );

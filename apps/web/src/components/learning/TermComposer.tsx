@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { Alert } from "@/components/glaze/ui/alert";
+import { Button } from "@/components/glaze/ui/button";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import { upsertGlossaryTerm } from "@/lib/glossary";
 import { getStorage } from "@/lib/storage";
 
@@ -13,8 +18,9 @@ export default function TermComposer({ roadmapId }: { roadmapId: string }) {
     if (!open)
         return (
             <>
-                <button
-                    className="sy-button quiet"
+                <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                         setOpen(true);
                         setSaved(false);
@@ -22,11 +28,15 @@ export default function TermComposer({ roadmapId }: { roadmapId: string }) {
                     }}
                 >
                     Add a glossary term
-                </button>
+                </Button>
                 {saved && (
-                    <p className="sy-form-hint" role="status">
+                    <p className="type-caption text-text-2" role="status">
                         Term added.{" "}
-                        <Link to="/glossary" search={{ roadmap: roadmapId }}>
+                        <Link
+                            to="/glossary"
+                            search={{ roadmap: roadmapId }}
+                            className="underline underline-offset-2"
+                        >
                             Open Glossary
                         </Link>
                     </p>
@@ -35,8 +45,7 @@ export default function TermComposer({ roadmapId }: { roadmapId: string }) {
         );
     return (
         <form
-            className="sy-form"
-            style={{ marginTop: 18 }}
+            className="mt-4 flex flex-col gap-3"
             onSubmit={(event) => {
                 event.preventDefault();
                 if (!term.trim() || !definition.trim()) return;
@@ -58,41 +67,38 @@ export default function TermComposer({ roadmapId }: { roadmapId: string }) {
                 }
             }}
         >
-            <label>
-                Term
-                <input
-                    className="sy-input"
+            <Field>
+                <FieldLabel>Term</FieldLabel>
+                <Input
                     value={term}
-                    onChange={(event) => setTerm(event.target.value)}
+                    onValueChange={setTerm}
                     required
                     maxLength={200}
                 />
-            </label>
-            <label>
-                Definition
-                <textarea
-                    className="sy-textarea"
+            </Field>
+            <Field>
+                <FieldLabel>Definition</FieldLabel>
+                <Textarea
                     value={definition}
-                    onChange={(event) => setDefinition(event.target.value)}
-                    required
-                    maxLength={4000}
+                    onValueChange={setDefinition}
+                    limit={4000}
+                    autoGrow
+                    minRows={2}
+                    maxRows={10}
                 />
-            </label>
-            <div className="sy-card-actions">
-                <button className="sy-button primary">Add term</button>
-                <button
-                    className="sy-button quiet"
+            </Field>
+            <div className="flex gap-2">
+                <Button size="sm">Add term</Button>
+                <Button
+                    size="sm"
+                    variant="ghost"
                     type="button"
                     onClick={() => setOpen(false)}
                 >
                     Cancel
-                </button>
+                </Button>
             </div>
-            {error && (
-                <p className="sy-error" role="alert">
-                    {error}
-                </p>
-            )}
+            {error && <Alert status="fail">{error}</Alert>}
         </form>
     );
 }

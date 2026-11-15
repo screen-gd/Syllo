@@ -1,17 +1,29 @@
 import { fetchPrivateApi } from "@/lib/private-api-fetch";
-import { Suspense, useCallback, useRef, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
-    FileUp,
-    Loader2,
-    Wand2,
-    ArrowRight,
     ArrowLeft,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Segmented } from "@/components/ui/segmented";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+    ArrowRight,
+    Icon,
+    Pending,
+    Sparkle,
+    Upload,
+} from "@/components/glaze/icon";
+import { Alert } from "@/components/glaze/ui/alert";
+import {
+    AttachmentDrop,
+    AttachmentDropTrigger,
+} from "@/components/glaze/ui/attachment";
+import { Button } from "@/components/glaze/ui/button";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import {
+    SegmentedControl,
+    SegmentedControlItem,
+} from "@/components/glaze/ui/segmented-control";
+import { SkeletonText } from "@/components/glaze/ui/skeleton";
+import { Textarea } from "@/components/glaze/ui/textarea";
+import PageFrame from "@/components/layout/PageFrame";
 import { getStorage } from "@/lib/storage";
 import {
     getActiveApiKey,
@@ -19,7 +31,6 @@ import {
     getUserConfig,
 } from "@/lib/userConfig";
 import type { Roadmap } from "@/types";
-import { cn } from "@/lib/utils";
 
 const LOADING_MESSAGES = [
     "Reading your material...",
@@ -32,7 +43,9 @@ export default function CreatePage() {
     return (
         <Suspense
             fallback={
-                <div className="page-shell-wide flex min-h-[60vh] items-center justify-center" />
+                <div className="flex min-h-dvh items-center justify-center">
+                    <SkeletonText lines={3} />
+                </div>
             }
         >
             <CreatePageContent />
@@ -42,7 +55,6 @@ export default function CreatePage() {
 
 function CreatePageContent() {
     const navigate = useNavigate();
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [creationStep, setCreationStep] = useState<
         "input" | "generating" | "review"
@@ -54,7 +66,6 @@ function CreatePageContent() {
     const [mode, setMode] = useState<"general" | "intern">("general");
 
     // UI state
-    const [isDragging, setIsDragging] = useState(false);
     const [loadingStep, setLoadingStep] = useState(0);
     const [error, setError] = useState("");
 
@@ -170,254 +181,205 @@ function CreatePageContent() {
     };
 
     return (
-        <>
-            <div className="studio-page">
-                {creationStep !== "review" && (
-                    <header className="sy-page-head">
-                        <div>
-                            <h1>Create</h1>
-                            <p className="max-w-2xl text-sm text-text-muted">
-                                Paste a guide, notes or markdown. The steps and
-                                modules become a workspace.
-                            </p>
-                        </div>
-                    </header>
-                )}
-
-                {creationStep === "input" && (
-                    <div className="flex flex-col gap-6">
-                        <div className="flex flex-wrap items-end gap-4">
-                            <div className="min-w-0 basis-64 flex-1">
-                                <label
-                                    htmlFor="create-title"
-                                    className="field-label"
-                                >
-                                    Workspace title
-                                </label>
-                                <Input
-                                    id="create-title"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Optional. Taken from the content if empty."
-                                />
-                            </div>
-                            <div>
-                                <p className="field-label">Parsing</p>
-                                <Segmented
-                                    label="Parsing mode"
-                                    value={mode}
-                                    onChange={setMode}
-                                    className="h-10"
-                                    options={[
-                                        { key: "general", label: "Standard" },
-                                        { key: "intern", label: "Structured" },
-                                    ]}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="relative">
-                            <Textarea
-                                aria-label="Guide or notes"
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                onDragOver={(e) => {
-                                    e.preventDefault();
-                                    setIsDragging(true);
-                                }}
-                                onDragLeave={(e) => {
-                                    e.preventDefault();
-                                    setIsDragging(false);
-                                }}
-                                onDrop={(e) => {
-                                    e.preventDefault();
-                                    setIsDragging(false);
-                                    if (e.dataTransfer.files[0])
-                                        processFile(e.dataTransfer.files[0]);
-                                }}
-                                placeholder="Paste a guide, course outline or notes"
-                                className={cn(
-                                    "sy-create-input resize-y p-5 text-[15px] leading-relaxed",
-                                    isDragging
-                                        ? "border-text-soft bg-surface-subtle"
-                                        : "border-border-strong",
-                                )}
+        <PageFrame
+            width={creationStep === "review" ? "wide" : "reading"}
+            title={
+                creationStep === "review" && draftRoadmap
+                    ? draftRoadmap.title
+                    : "Create"
+            }
+            subtitle={
+                creationStep === "review"
+                    ? "Review the generated structure before creating your workspace."
+                    : "Paste a guide, notes or markdown. The steps and modules become a workspace."
+            }
+            actions={
+                creationStep === "review" ? (
+                    <>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setCreationStep("input")}
+                        >
+                            <Icon icon={ArrowLeft} /> Back
+                        </Button>
+                        <Button onClick={handleCreateFinal}>
+                            Create workspace <Icon icon={ArrowRight} />
+                        </Button>
+                    </>
+                ) : undefined
+            }
+        >
+            {creationStep === "input" && (
+                <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-4">
+                        <Field>
+                            <FieldLabel>Workspace title</FieldLabel>
+                            <Input
+                                value={title}
+                                onValueChange={setTitle}
+                                placeholder="Optional. Taken from the content if empty."
                             />
-
-                            {!content && (
-                                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3 text-text-soft">
-                                    <FileUp size={28} strokeWidth={1.5} />
-                                    <p className="text-[13px]">
-                                        or drop a .md or .txt file
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        {error && (
-                            <p
-                                role="alert"
-                                className="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger"
+                        </Field>
+                        <Field>
+                            <FieldLabel>Parsing</FieldLabel>
+                            <SegmentedControl
+                                aria-label="Parsing mode"
+                                value={mode}
+                                onValueChange={(value) =>
+                                    setMode(value as "general" | "intern")
+                                }
                             >
-                                {error}
-                            </p>
-                        )}
+                                <SegmentedControlItem value="general">
+                                    Standard
+                                </SegmentedControlItem>
+                                <SegmentedControlItem value="intern">
+                                    Structured
+                                </SegmentedControlItem>
+                            </SegmentedControl>
+                        </Field>
+                    </div>
 
-                        <div className="flex flex-wrap items-center justify-between gap-3">
+                    <AttachmentDrop
+                        accept=".md,.markdown,.txt"
+                        multiple={false}
+                        onFiles={(files) => {
+                            if (files[0]) processFile(files[0]);
+                        }}
+                        onReject={() =>
+                            setError(
+                                "Only .md, .txt, and .markdown files are supported.",
+                            )
+                        }
+                    >
+                        <Field>
+                            <FieldLabel>Guide or notes</FieldLabel>
+                            <Textarea
+                                value={content}
+                                onValueChange={setContent}
+                                placeholder="Paste a guide, course outline or notes, or drop a .md or .txt file"
+                                autoGrow
+                                minRows={12}
+                                maxRows={40}
+                            />
+                        </Field>
+
+                        {error ? (
+                            <Alert status="fail" className="mt-4">
+                                {error}
+                            </Alert>
+                        ) : null}
+
+                        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={() =>
-                                        fileInputRef.current?.click()
-                                    }
-                                >
-                                    <FileUp size={15} /> Upload file
-                                </Button>
+                                <AttachmentDropTrigger variant="secondary" size="default">
+                                    <Icon icon={Upload} /> Upload file
+                                </AttachmentDropTrigger>
                                 {hasContent ? (
-                                    <span className="text-[13px] tabular-nums text-text-soft">
+                                    <span className="type-caption text-text-2">
                                         {content
                                             .trim()
-                                            .split(/s+/)
+                                            .split(/\s+/)
                                             .length.toLocaleString()}{" "}
                                         words
                                     </span>
                                 ) : null}
                             </div>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept=".md,.markdown,.txt"
-                                className="hidden"
-                                onChange={(e) =>
-                                    e.target.files?.[0] &&
-                                    processFile(e.target.files[0])
-                                }
-                            />
 
                             <Button
-                                type="button"
                                 onClick={handleGenerate}
                                 disabled={!hasContent}
                             >
-                                <Wand2 size={15} /> Generate roadmap
+                                <Icon icon={Sparkle} /> Generate roadmap
                             </Button>
                         </div>
-                    </div>
-                )}
+                    </AttachmentDrop>
+                </div>
+            )}
 
-                {creationStep === "generating" && (
-                    <div className="sy-empty bordered" role="status">
-                        <div className="relative">
-                            <Loader2 size={24} className="text-text-soft" />
-                        </div>
-                        <div className="mt-4">
-                            <h2 className="text-lg text-text">
+            {creationStep === "generating" && (
+                <section className="shell" aria-label="Generating roadmap">
+                    <div
+                        className="panel flex flex-col items-center gap-3 p-5 text-center"
+                        role="status"
+                    >
+                        <Icon
+                            icon={Pending}
+                            className="animate-spin text-text-2"
+                        />
+                        <div>
+                            <h2 className="type-heading-sm">
                                 {LOADING_MESSAGES[loadingStep]}
                             </h2>
-                            <p className="mt-2 text-text-muted text-sm">
+                            <p className="mt-2 type-body-sm text-text-2">
                                 Please wait while the AI breaks down your
                                 content.
                             </p>
                         </div>
                     </div>
-                )}
+                </section>
+            )}
 
-                {creationStep === "review" && draftRoadmap && (
-                    <div>
-                        <header className="sy-page-head">
-                            <div>
-                                <h1>{draftRoadmap.title}</h1>
-                                <p className="text-sm text-text-muted">
-                                    Review the generated structure before
-                                    creating your workspace.
-                                </p>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-3">
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => setCreationStep("input")}
-                                >
-                                    <ArrowLeft size={16} className="mr-2" />{" "}
-                                    Back
-                                </Button>
-                                <Button onClick={handleCreateFinal}>
-                                    Create Workspace{" "}
-                                    <ArrowRight size={16} className="ml-2" />
-                                </Button>
-                            </div>
-                        </header>
-
-                        <div className="sy-create-review-grid">
-                            <div className="sy-create-pane">
-                                <div className="px-5 py-3 border-b border-border bg-[var(--color-page)] flex justify-between items-center">
-                                    <span className="text-xs font-semibold text-text-muted">
-                                        Source Text
-                                    </span>
-                                </div>
-                                <div className="sy-create-pane-body mono-surface text-sm leading-relaxed text-text-muted whitespace-pre-wrap">
-                                    {content}
-                                </div>
-                            </div>
-
-                            <div className="sy-create-pane">
-                                <div className="px-5 py-3 border-b border-border bg-[var(--color-page)] flex justify-between items-center">
-                                    <span className="text-xs font-semibold text-text">
-                                        Generated Modules
-                                    </span>
-                                    <span className="text-xs text-text-muted">
-                                        You can edit these later
-                                    </span>
-                                </div>
-                                <div className="sy-create-pane-body space-y-6">
-                                    {draftRoadmap.sections
-                                        .filter((s) => s.type === "module")
-                                        .map((s, i) => {
-                                            const mod =
-                                                s as import("@/types").ModuleSection;
-                                            return (
-                                                <div
-                                                    key={i}
-                                                    className="group border-l-2 border-border pl-4 ml-2 hover:border-text-primary transition-colors"
-                                                >
-                                                    <h3 className="font-display text-lg text-text mb-2">
-                                                        Module {i + 1}:{" "}
-                                                        {mod.title ||
-                                                            "Untitled"}
-                                                    </h3>
-                                                    <div className="space-y-2">
-                                                        {mod.data?.tasks &&
-                                                            Array.isArray(
-                                                                mod.data.tasks,
-                                                            ) &&
-                                                            mod.data.tasks.map(
-                                                                (task, j) => (
-                                                                    <div
-                                                                        key={j}
-                                                                        className="text-sm text-text-muted flex items-start gap-2 bg-[var(--color-surface)] p-2 rounded border border-border/50 group-hover:border-border transition-colors"
-                                                                    >
-                                                                        <span className="text-text-muted mt-[2px] text-xs">
-                                                                            ■
-                                                                        </span>
-                                                                        <span className="min-w-0 break-words">
-                                                                            {
-                                                                                task.title
-                                                                            }
-                                                                        </span>
-                                                                    </div>
-                                                                ),
-                                                            )}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                </div>
+            {creationStep === "review" && draftRoadmap && (
+                <div className="flex flex-col gap-4">
+                    <section className="shell">
+                        <div className="panel">
+                            <header className="border-b border-line-faint p-3">
+                                <h2 className="type-heading-sm">
+                                    Source text
+                                </h2>
+                            </header>
+                            <div className="max-h-160 overflow-y-auto p-3 whitespace-pre-wrap type-body-sm text-text-2">
+                                {content}
                             </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    </section>
 
-        </>
+                    <section className="shell">
+                        <div className="panel">
+                            <header className="flex items-center justify-between gap-3 border-b border-line-faint p-3">
+                                <h2 className="type-heading-sm">
+                                    Generated modules
+                                </h2>
+                                <p className="type-caption text-text-2">
+                                    You can edit these later
+                                </p>
+                            </header>
+                            <div className="flex max-h-160 flex-col gap-4 overflow-y-auto p-3">
+                                {draftRoadmap.sections
+                                    .filter((s) => s.type === "module")
+                                    .map((s, i) => {
+                                        const mod =
+                                            s as import("@/types").ModuleSection;
+                                        return (
+                                            <div key={i}>
+                                                <h3 className="type-heading-sm">
+                                                    Module {i + 1}:{" "}
+                                                    {mod.title || "Untitled"}
+                                                </h3>
+                                                <div className="mt-1 flex flex-col">
+                                                    {mod.data?.tasks &&
+                                                        Array.isArray(
+                                                            mod.data.tasks,
+                                                        ) &&
+                                                        mod.data.tasks.map(
+                                                            (task, j) => (
+                                                                <p
+                                                                    key={j}
+                                                                    className="rule-row break-words py-2 type-body-sm text-text-2"
+                                                                >
+                                                                    {task.title}
+                                                                </p>
+                                                            ),
+                                                        )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            )}
+        </PageFrame>
     );
 }

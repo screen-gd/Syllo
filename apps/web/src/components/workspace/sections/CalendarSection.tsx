@@ -1,7 +1,15 @@
 "use client";
 
 import type { CalendarSection as CalendarSectionType, Section, CalendarEvent } from "@/types";
-import EmptyState from "@/components/shared/EmptyState";
+import { Calendar } from "@/components/glaze/icon";
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { Switch } from "@/components/glaze/ui/switch";
+import { cn } from "@/lib/glaze/utils";
 
 interface Props {
     section: CalendarSectionType;
@@ -26,45 +34,56 @@ export default function CalendarSection({ section, onUpdate }: Props) {
     );
 
     if (sorted.length === 0) {
-        return <EmptyState icon="📅" title="No events" description="Calendar events mentioned in your roadmap will appear here as a timeline." />;
+        return (
+            <Empty className="w-full max-w-md">
+                <EmptyHeader>
+                    <EmptyTitle icon={Calendar}>No events</EmptyTitle>
+                    <EmptyDescription>
+                        Calendar events mentioned in your roadmap will appear
+                        here as a timeline.
+                    </EmptyDescription>
+                </EmptyHeader>
+            </Empty>
+        );
     }
 
     return (
-        <div className="max-w-3xl">
-            <h2 className="text-xl font-semibold text-text mb-6 animate-fade-in">
-                📅 {section.title}
-            </h2>
+        <div>
+            <h2 className="type-heading">{section.title}</h2>
 
-            <div className="space-y-3">
-                {sorted.map((event, i) => (
-                    <div
+            <div className="shell mt-4">
+            <ul className="panel flex flex-col">
+                {sorted.map((event) => (
+                    <li
                         key={event.id}
-                        className="surface rounded-xl p-4 card-hover animate-slide-up content-auto"
-                        style={{ animationDelay: `${i * 0.05}s` }}
+                        className="rule-row flex items-start gap-3 p-3"
                     >
-                        <div className="flex items-start gap-3">
-                            <input
-                                type="checkbox"
-                                checked={event.completed}
-                                onChange={() => toggleEvent(event.id)}
-                                className="w-4 h-4 rounded accent-indigo-accent mt-0.5 shrink-0"
-                                aria-label={`Mark "${event.title}" as done`}
-                            />
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <h3 className={`font-display font-bold text-sm ${event.completed ? "text-text-muted line-through" : "text-text"
-                                        }`}>
-                                        {event.title}
-                                    </h3>
-                                </div>
-                                <p className="text-text-muted text-sm">{event.description}</p>
-                                <p className="text-text-muted text-sm mt-1 tabular-nums">
-                                    {new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(event.date))}
-                                </p>
-                            </div>
+                        <Switch
+                            className="mt-0.5"
+                            aria-label={`Mark "${event.title}" as done`}
+                            checked={event.completed}
+                            onCheckedChange={() => toggleEvent(event.id)}
+                        />
+                        <div className="min-w-0 flex-1">
+                            <h3
+                                className={cn(
+                                    "type-label",
+                                    event.completed &&
+                                        "text-text-2 line-through",
+                                )}
+                            >
+                                {event.title}
+                            </h3>
+                            <p className="type-body-sm text-text-2">
+                                {event.description}
+                            </p>
+                            <p className="mt-1 type-caption text-text-2">
+                                {new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(event.date))}
+                            </p>
                         </div>
-                    </div>
+                    </li>
                 ))}
+            </ul>
             </div>
         </div>
     );

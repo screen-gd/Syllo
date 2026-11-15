@@ -5,8 +5,8 @@
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#101113",
-  "theme_color": "#101113",
+  "background_color": "#f7f7f5",
+  "theme_color": "#f7f7f5",
   "description": "Your books, learning topics, and next steps.",
   "icons": [
     {

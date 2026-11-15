@@ -1,5 +1,14 @@
 /// <reference types="youtube" />
 import { useEffect, useRef, useState } from "react";
+import { External, Icon } from "@/components/glaze/icon";
+import { Alert } from "@/components/glaze/ui/alert";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
 import { detectPlatform, getEmbedUrl, getYouTubeId } from "@/lib/video-utils";
 import { safeResourceUrl } from "@/lib/learning";
 
@@ -163,18 +172,15 @@ export default function StudyVideo({
     const external = safeResourceUrl(url);
     return (
         <>
-            {error && (
-                <p className="sy-error" role="alert">
-                    {error}
-                </p>
-            )}
+            {error && <Alert status="fail">{error}</Alert>}
             {youtubeId ? (
-                <div className="sy-embed">
+                <div className="aspect-16/9 w-full overflow-hidden rounded-panel [&_iframe]:size-full [&>div]:size-full">
                     <div ref={mount} />
                 </div>
             ) : embed && detectPlatform(url) === "vimeo" ? (
-                <div className="sy-embed">
+                <div className="aspect-16/9 w-full">
                     <iframe
+                        className="size-full rounded-panel"
                         title={title}
                         src={`${embed}#t=${Math.floor(startSeconds)}s`}
                         allow="autoplay; fullscreen; picture-in-picture"
@@ -182,20 +188,32 @@ export default function StudyVideo({
                     />
                 </div>
             ) : (
-                <div className="sy-empty bordered">
-                    This source opens in its own player.
+                <Empty variant="plain" reason="empty">
+                    <EmptyHeader>
+                        <EmptyTitle>
+                            This source opens in its own player
+                        </EmptyTitle>
+                    </EmptyHeader>
                     {external && (
-                        <p>
-                            <a
-                                href={external}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                        <EmptyContent>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                render={
+                                    <a
+                                        href={external}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    />
+                                }
+                                nativeButton={false}
                             >
-                                Open source ↗
-                            </a>
-                        </p>
+                                Open source
+                                <Icon icon={External} />
+                            </Button>
+                        </EmptyContent>
                     )}
-                </div>
+                </Empty>
             )}
         </>
     );

@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/glaze/ui/button";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/glaze/ui/item";
+import { Skeleton } from "@/components/glaze/ui/skeleton";
 
 interface SmartEmbedProps {
     url: string;
@@ -92,11 +95,11 @@ export default function SmartEmbed({ url, title, description }: SmartEmbedProps)
     // Known embeds: always render iframe
     if (isKnownEmbed) {
         return (
-            <div className="w-full aspect-video bg-page rounded-lg overflow-hidden border border-border">
+            <div className="aspect-16/9 w-full overflow-hidden rounded-panel bg-field">
                 <iframe
                     src={embedUrl}
                     title={title}
-                    className="w-full h-full"
+                    className="size-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                 />
@@ -107,49 +110,46 @@ export default function SmartEmbed({ url, title, description }: SmartEmbedProps)
     // Blocked or unknown: show fallback card
     if (iframeBlocked) {
         return (
-            <div className="w-full border border-border bg-surface-muted/60 p-6 flex items-center gap-5 transition-all hover:border-accent/30 hover:bg-surface-muted/80 group">
-                {/* next/image is not practical here because favicon domains are fully dynamic. */}
-                <img
-                    src={getFaviconUrl(url)}
-                    alt=""
-                    className="w-10 h-10 rounded-lg bg-surface p-1 shrink-0"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                />
-                <div className="flex-1 min-w-0">
-                    <h4 className="font-display text-sm font-bold text-text truncate">{title}</h4>
-                    {description && (
-                        <p className="text-text-muted text-sm mt-0.5 line-clamp-2">{description}</p>
-                    )}
-                    <p className="text-text-muted/50 text-sm mt-1">{getDomain(url)}</p>
-                </div>
-                <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="button-secondary shrink-0"
-                >
-                    Open Resource
-                </a>
+            <div className="overflow-hidden rounded-panel border border-line-faint">
+            <Item>
+                <ItemMedia variant="image">
+                    {/* next/image is not practical here because favicon domains are fully dynamic. */}
+                    <img
+                        src={getFaviconUrl(url)}
+                        alt=""
+                        onError={(e) => { (e.target as HTMLImageElement).hidden = true; }}
+                    />
+                </ItemMedia>
+                <ItemContent>
+                    <ItemTitle>{title}</ItemTitle>
+                    <ItemDescription>{description || getDomain(url)}</ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        nativeButton={false}
+                        render={<a href={url} target="_blank" rel="noopener noreferrer" />}
+                    >
+                        Open resource
+                    </Button>
+                </ItemActions>
+            </Item>
             </div>
         );
     }
 
     // Attempting iframe load
     return (
-        <div className="w-full relative">
+        <div className="relative w-full">
             {loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-surface-muted/80 z-10 border border-border">
-                    <div className="flex flex-col items-center gap-3">
-                        <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-                        <span className="text-text-muted text-[12px]">Loading resource...</span>
-                    </div>
-                </div>
+                <Skeleton className="absolute inset-0 z-(--z-raised) rounded-panel" aria-label="Loading resource" />
             )}
             <iframe
                 ref={iframeRef}
                 src={url}
                 title={title}
-                className="w-full h-[500px] border border-border rounded-lg"
+                className="h-125 w-full rounded-panel border border-line-faint"
                 onLoad={handleIframeLoad}
                 onError={handleIframeError}
                 sandbox="allow-scripts allow-same-origin allow-popups"

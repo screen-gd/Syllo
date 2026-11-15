@@ -1,5 +1,6 @@
+import { Progress } from "@/components/glaze/ui/progress";
 import { formatCents } from "@/lib/scout/api-client";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/glaze/utils";
 
 interface CostMeterProps {
     monthCents: number;
@@ -15,26 +16,24 @@ export default function CostMeter({ monthCents, budgetCents, packCents = 0, clas
     const nearLimit = hasBudget && percent >= 80;
 
     return (
-        <div className={cn("space-y-2", className)}>
+        <div className={cn("flex flex-col gap-2", className)}>
             <div className="flex items-baseline justify-between gap-3">
-                <span className="text-xs text-text-soft">Monthly cost</span>
-                <span className="text-xs tabular-nums text-[var(--color-text-muted)]">
-                    <span className="text-[var(--color-text)]">{formatCents(monthCents)}</span>
+                <span className="type-caption text-text-2">Monthly cost</span>
+                <span className="type-caption text-text-3">
+                    <span className="text-text-1">{formatCents(monthCents)}</span>
                     {hasBudget ? ` / ${formatCents(budgetCents)}` : " / no cap"}
                 </span>
             </div>
 
-            <div className="h-1.5 overflow-hidden rounded-full bg-raised">
-                <div
-                    className={cn(
-"h-full rounded-full transition-[width] duration-700",
-                        nearLimit ? "bg-warning" : "bg-[var(--color-accent)]",
-                    )}
-                    style={{ width: hasBudget ? `${Math.max(percent, monthCents > 0 ? 2 : 0)}%` : "0%" }}
-                />
-            </div>
+            <Progress
+                mode="meter"
+                size="sm"
+                value={percent}
+                status={nearLimit ? "warn" : undefined}
+                aria-label="Monthly cost"
+            />
 
-            <p className="text-xs leading-5 text-[var(--color-text-soft)]">
+            <p className="type-caption text-text-2">
                 {packCents > 0 ? `This pack: ${formatCents(packCents)}. ` : ""}
                 Estimated from published token prices, not a bill.
             </p>
