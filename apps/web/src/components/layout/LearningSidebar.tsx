@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Badge } from "@/components/glaze/ui/badge";
 import { Button } from "@/components/glaze/ui/button";
-import { Item, ItemContent, ItemTitle } from "@/components/glaze/ui/item";
 import {
     Glossary,
     Home,
@@ -86,7 +85,7 @@ function NavSection({
     );
 }
 
-/** One destination row: the Item itself is the link, so the whole row navigates. */
+/** One destination row: a pill link, washed under the pointer and a paper pill with a hairline when current, the way Glaze marks a selected tab. */
 function NavItem({
     to,
     label,
@@ -106,25 +105,22 @@ function NavItem({
 }) {
     const active = selected ?? isActive(to, pathname);
     return (
-        <Item
-            size="sm"
-            selected={active}
-            render={
-                <Link
-                    to={to}
-                    search={search}
-                    aria-current={active ? "page" : undefined}
-                />
-            }
+        <Link
+            to={to}
+            search={search}
+            aria-current={active ? "page" : undefined}
+            data-slot="nav-row"
+            className={cn(
+                "flex h-(--control) min-w-0 items-center gap-2 rounded-pill border px-3 type-label transition-[background-color,border-color,color,scale] duration-(--dur-press) ease-out active:scale-(--scale-press-flat) focus-visible:focus-ring",
+                active
+                    ? "border-line-faint bg-paper text-text-1"
+                    : "border-transparent text-text-2 hover:bg-hover hover:text-text-1",
+            )}
         >
             {icon && <Icon icon={icon} size={16} />}
-            <ItemContent>
-                <ItemTitle>
-                    <span>{label}</span>
-                </ItemTitle>
-            </ItemContent>
+            <span className="min-w-0 flex-1 truncate">{label}</span>
             {trailing}
-        </Item>
+        </Link>
     );
 }
 
@@ -147,20 +143,19 @@ export default function LearningSidebar() {
     }, [pathname]);
     return (
         <>
-            <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 py-3 ps-3 lg:block">
-                <div className="shell flex h-full flex-col">
-                    <div className="panel flex min-h-0 flex-1 flex-col">
+            <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-e border-line-faint bg-shell lg:flex">
+                    <div className="flex min-h-0 flex-1 flex-col">
                         <Link
                             to="/dashboard"
                             data-slot="nav-brand"
-                            className="flex items-center gap-2 border-b border-line-faint p-3 text-text-1"
+                            className="flex h-16 shrink-0 items-center gap-2 px-5 text-text-1"
                         >
                             <SylloMark />
                             <span className="type-label-lg">Syllo</span>
                         </Link>
                         <nav
                             aria-label="Main navigation"
-                            className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-1.5 pb-3"
+                            className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 pb-4"
                         >
                             {groups.map((group) => (
                                 <NavSection key={group.label} label={group.label}>
@@ -212,25 +207,14 @@ export default function LearningSidebar() {
                             )}
                         </nav>
                     </div>
-                    <div className="shell-foot">
-                        <Button
-                            variant={pathname.startsWith("/settings") ? "secondary" : "ghost"}
-                            size="sm"
-                            render={
-                                <Link
-                                    to="/settings"
-                                    aria-current={
-                                        pathname.startsWith("/settings") ? "page" : undefined
-                                    }
-                                />
-                            }
-                            nativeButton={false}
-                        >
-                            <Icon icon={Settings} />
-                            Settings
-                        </Button>
+                    <div className="shrink-0 border-t border-line-faint p-3">
+                        <NavItem
+                            to="/settings"
+                            label="Settings"
+                            icon={Settings}
+                            pathname={pathname}
+                        />
                     </div>
-                </div>
             </aside>
             <MaterialBar className="sticky top-0 z-(--z-sticky) px-4 pt-2 lg:hidden">
                 <div className="flex items-center justify-between">

@@ -42,7 +42,8 @@ function ItemGroup({className, variant = 'panel', role = 'list', ...props}: Item
 
 const itemVariants = cva(
   [
-    'group/item @container/item relative flex w-full min-w-0 items-center gap-3 px-3 text-start text-text-1',
+    // Syllo: the hover and selected washes take the tag corner, so a highlight matches the rounded app around it.
+    'group/item @container/item relative flex w-full min-w-0 items-center gap-3 rounded-tag px-3 text-start text-text-1',
     'transition-[background-color] duration-(--dur-state) ease-out',
     'in-data-[slot=item-group]:rule-row',
     // A row with an ItemLink is one target: the wash under the pointer, the ring inside its edge on focus.
