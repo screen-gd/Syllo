@@ -132,29 +132,12 @@
 }
 
 /* Quiet buttons are covered by the shared press rule; text links only tint. */
-.sy-row-actions > :is(button, a):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    transition:
-        color var(--dur-press) ease-out,
-        transform var(--dur-press) ease-out;
-}
 .sy-time-link:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition: color var(--dur-press) ease-out;
-}
-.sy-row-actions > :is(button, a):active:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    transform: scale(0.97);
 }
 .sy-app :is(button, a, summary):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-}
-
-/* Progress: counters are flat cards, days are grey cells that tint. */
-.sy-stat:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-}
-.sy-week li:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    background: var(--color-surface-subtle);
 }
 
 /* Mobile chrome: a solid bar with hairlines, no blur. */
@@ -257,15 +240,6 @@
     color: var(--color-accent-strong);
 }
 
-/* The colour that stands for a topic; set --topic with topicStyle(id). */
-.sy-topic-dot:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: inline-block;
-    flex-shrink: 0;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--topic, var(--color-accent));
-}
 /* A coloured bar down the left edge of a row or card. */
 .sy-spined:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     position: relative;
@@ -277,19 +251,6 @@
     width: 3px;
     border-radius: 0 2px 2px 0;
     background: var(--topic, var(--color-accent));
-}
-
-/* A small indicator dot. Off by default; data-on lights it. */
-.sy-led:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: inline-block;
-    flex-shrink: 0;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--color-border-strong);
-}
-.sy-led[data-on]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    background: var(--color-accent);
 }
 
 /* A small flat tag for a count or a state. */
@@ -356,7 +317,6 @@
 .sy-box.flush .sy-skel-row:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     border-bottom: 0;
 }/* Bars inside an already-subtle tray need one more shade to stay visible. */
-.sy-week .sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-tray .sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-muted);
 }/* Topic rows inside a box. */

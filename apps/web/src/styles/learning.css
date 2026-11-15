@@ -180,12 +180,6 @@
     align-items: center;
     gap: 14px;
 }
-.sy-topic-count:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-}
 .sy-progress:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 3px;
     background: var(--color-surface-subtle);
@@ -1171,90 +1165,6 @@
 .sy-saved-note .sy-inline-form:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin: 8px 0 0;
 }
-.sy-note-meta:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    gap: 6px 12px;
-    flex-wrap: wrap;
-    font-size: 0.75rem;
-    color: var(--color-text-soft);
-}
-.sy-note-meta b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-weight: 500;
-    color: var(--color-text-muted);
-}
-.sy-row-actions:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    align-items: center;
-    gap: 6px 16px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-    font-size: 0.75rem;
-    color: var(--color-text-soft);
-}
-.sy-row-actions > :is(button, a):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    color: var(--color-text-muted);
-    cursor: pointer;
-}
-@media (hover: hover) and (pointer: fine) {
-    .sy-row-actions > :is(button, a):hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        color: var(--color-text);
-    }
-}
-.sy-row-actions > .sy-time-link:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    color: var(--color-accent);
-}
-.sy-stats:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
-}
-.sy-stat:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    gap: 2px;
-    padding: 18px 20px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-}
-.sy-stat b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-family: var(--font-sans);
-    font-variant-numeric: tabular-nums;
-    font-size: 1.625rem;
-    font-weight: 560;
-    letter-spacing: -0.02em;
-}
-.sy-stat span:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-}
-.sy-week:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 8px;
-    list-style: none;
-    padding: 0;
-}
-.sy-week li:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    gap: 2px;
-    justify-items: center;
-    padding: 12px 4px;
-    background: var(--color-surface-subtle);
-    border-radius: var(--sy-radius);
-    color: var(--color-text-soft);
-}
-.sy-week li[data-active]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    background: var(--color-accent-soft);
-    color: var(--color-accent-strong);
-}
-.sy-week b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 1rem;
-    font-weight: 550;
-    font-variant-numeric: tabular-nums;
-}
-.sy-week span:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.75rem;
-}
 .sy-skeleton-list:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: grid;
     gap: 20px;
@@ -1278,11 +1188,7 @@
         color: var(--color-accent);
     }
 }
-@media (max-width: 760px) {
-    .sy-stats:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
+
 
 @media (max-width: 1199px) {
     .sy-scout-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 

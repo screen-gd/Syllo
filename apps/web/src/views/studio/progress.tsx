@@ -1,5 +1,31 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Icon } from "@/components/glaze/icon";
+import { Button } from "@/components/glaze/ui/button";
+import { Chart } from "@/components/glaze/ui/chart";
+import {
+    DataList,
+    DataListItem,
+    DataListLabel,
+    DataListValue,
+} from "@/components/glaze/ui/data-list";
+import {
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import {
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemLink,
+    ItemMeta,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import { Progress } from "@/components/glaze/ui/progress";
+import { SkeletonText } from "@/components/glaze/ui/skeleton";
 import { useReviews } from "@/hooks/useReviews";
 import { getLadder, LEVEL_LABEL } from "@/lib/ladder";
 import {
@@ -9,7 +35,6 @@ import {
 import { collectNotes } from "@/lib/notes";
 import { isDue, isScheduled } from "@/lib/reviews";
 import { getStorage } from "@/lib/storage";
-import { topicStyle } from "@/lib/topic-color";
 import { getRoadmapStats } from "@/lib/workspace-stats";
 import PageFrame from "@/components/layout/PageFrame";
 
@@ -18,57 +43,33 @@ export default function ProgressPage() {
     const { reviews, roadmaps, records, loaded } = useReviews();
     if (!loaded)
         return (
-            <PageFrame title="Progress">
-                <div role="status" aria-label="Loading">
-                    <div className="sy-stats">
-                        {[0, 1, 2, 3].map((tile) => (
-                            <div className="sy-stat" key={tile}>
-                                <span
-                                    className="sy-skel line"
-                                    style={{ width: "42%" }}
-                                />
-                                <span
-                                    className="sy-skel line-sm"
-                                    style={{ width: "64%" }}
-                                />
+            <PageFrame title="Progress" glazed>
+                <div className="flex flex-col gap-4">
+                    <section className="shell">
+                        <div
+                            className="panel p-4"
+                            role="status"
+                            aria-label="Loading"
+                        >
+                            <span className="sr-only">Loading</span>
+                            <SkeletonText type="heading-sm" last={0.2} />
+                            <div className="mt-3">
+                                <SkeletonText type="body" last={0.42} />
+                                <SkeletonText type="body-sm" last={0.64} />
+                                <SkeletonText type="body-sm" last={0.36} />
                             </div>
-                        ))}
-                    </div>
-                    <section className="sy-box sy-week-box">
-                        <div className="sy-section-head">
-                            <h2>Last 7 days</h2>
                         </div>
-                        <ol className="sy-week">
-                            {Array.from({ length: 7 }, (_, day) => (
-                                <li key={day}>
-                                    <span className="sy-skel dot" />
-                                    <span
-                                        className="sy-skel line-sm"
-                                        style={{ width: "60%" }}
-                                    />
-                                </li>
-                            ))}
-                        </ol>
                     </section>
-                    <section className="sy-box flush">
-                        <div className="sy-section-head">
-                            <h2>Topics</h2>
+                    <section className="shell">
+                        <div className="panel p-4">
+                            <SkeletonText type="heading-sm" last={0.14} />
+                            {[0, 1, 2].map((row) => (
+                                <div key={row} className="mt-3">
+                                    <SkeletonText type="body" last={0.34} />
+                                    <SkeletonText type="body-sm" last={0.68} />
+                                </div>
+                            ))}
                         </div>
-                        {[0, 1, 2].map((row) => (
-                            <div
-                                className="sy-skel-row sy-skel-pair"
-                                key={row}
-                            >
-                                <span
-                                    className="sy-skel line"
-                                    style={{ width: "34%" }}
-                                />
-                                <span
-                                    className="sy-skel line-sm"
-                                    style={{ width: "68%" }}
-                                />
-                            </div>
-                        ))}
                     </section>
                 </div>
             </PageFrame>
@@ -80,194 +81,218 @@ export default function ProgressPage() {
     const notes = collectNotes(records, roadmaps);
     const cards = reviews.filter(isScheduled);
     const dueCount = cards.filter((item) => isDue(item)).length;
-    const stats = [
-        {
-            label: "Day streak",
-            value: record.currentStreak,
-            // The streak tile carries a light that is on while the streak runs.
-            light: record.currentStreak > 0,
-        },
-        { label: "Lessons this week", value: weekTotal },
-        { label: "Cards ready", value: dueCount, to: "/reviews" as const },
-        { label: "Notes", value: notes.length, to: "/notes" as const },
-    ];
 
     return (
-        <PageFrame title="Progress">
-            <div className="sy-stats">
-                {stats.map((stat) => {
-                    const body = (
-                        <>
-                            <b className="sy-num">{stat.value}</b>
-                            <span className="sy-stat-label">
-                                {"light" in stat && (
-                                    <span
-                                        className="sy-led"
-                                        data-on={stat.light || undefined}
-                                    />
-                                )}
-                                {stat.label}
+        <PageFrame title="Progress" glazed>
+            <div className="flex flex-col gap-4">
+                <section className="shell">
+                    <div className="panel">
+                        <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                            <h2 className="type-heading-sm">Last 7 days</h2>
+                            <span className="type-caption text-text-2">
+                                {weekTotal} lesson{weekTotal === 1 ? "" : "s"}
                             </span>
-                        </>
-                    );
-                    return stat.to ? (
-                        <Link key={stat.label} to={stat.to} className="sy-stat">
-                            {body}
-                        </Link>
-                    ) : (
-                        <div key={stat.label} className="sy-stat">
-                            {body}
-                        </div>
-                    );
-                })}
-            </div>
-
-            <section className="sy-box sy-week-box">
-                <div className="sy-section-head">
-                    <h2>Last 7 days</h2>
-                    <span>
-                        <span className="sy-num">{weekTotal}</span> lesson
-                        {weekTotal === 1 ? "" : "s"}
-                    </span>
-                </div>
-                <ol className="sy-week">
-                    {week.map((day) => (
-                        <li key={day.date} data-active={day.count > 0 || undefined}>
-                            <span
-                                className="sy-led"
-                                data-on={day.count > 0 || undefined}
+                        </header>
+                        <div className="px-4 pb-4">
+                            <DataList variant="plain">
+                                <DataListItem>
+                                    <DataListLabel>Day streak</DataListLabel>
+                                    <DataListValue>
+                                        {record.currentStreak}
+                                    </DataListValue>
+                                </DataListItem>
+                                <DataListItem>
+                                    <DataListLabel>
+                                        Lessons this week
+                                    </DataListLabel>
+                                    <DataListValue>{weekTotal}</DataListValue>
+                                </DataListItem>
+                                <DataListItem>
+                                    <DataListLabel>Cards ready</DataListLabel>
+                                    <DataListValue>
+                                        <Link to="/reviews">{dueCount}</Link>
+                                    </DataListValue>
+                                </DataListItem>
+                                <DataListItem>
+                                    <DataListLabel>Notes</DataListLabel>
+                                    <DataListValue>
+                                        <Link to="/notes">{notes.length}</Link>
+                                    </DataListValue>
+                                </DataListItem>
+                            </DataList>
+                            <Chart
+                                type="sparkline"
+                                label="Lessons finished on each of the last 7 days"
+                                data={week.map((day) => day.count)}
+                                unit="count"
+                                className="mt-4 w-full"
                             />
-                            <b className="sy-num">{day.count}</b>
-                            <span>{day.weekday}</span>
-                        </li>
-                    ))}
-                </ol>
-            </section>
-
-            <section className="sy-box flush">
-                <div className="sy-section-head">
-                    <h2>Topics</h2>
-                    <Link to="/workspaces">
-                        View all
-                        <ArrowRight size={13} />
-                    </Link>
-                </div>
-                {roadmaps.length === 0 ? (
-                    <div className="sy-tray">
-                        <p>Progress appears once you start a topic.</p>
-                        <Link className="sy-button secondary" to="/scout">
-                            Open Scout
-                            <ArrowRight />
-                        </Link>
+                        </div>
                     </div>
-                ) : (
-                    roadmaps.map((roadmap) => {
-                        const ladder = getLadder(roadmap);
-                        const stats = getRoadmapStats(roadmap);
-                        const level = ladder.levels.find(
-                            (entry) => entry.level === ladder.current,
-                        );
-                        const noteCount = notes.filter(
-                            (note) => note.groupId === roadmap.id,
-                        ).length;
-                        const cardCount = cards.filter(
-                            (item) => item.roadmapId === roadmap.id,
-                        ).length;
-                        return (
-                            <article
-                                className="sy-topic sy-row sy-spined"
-                                key={roadmap.id}
-                                style={topicStyle(roadmap.id)}
+                </section>
+
+                <section className="shell">
+                    <div className="panel">
+                        <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                            <h2 className="type-heading-sm">Topics</h2>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                render={<Link to="/workspaces" />}
+                                nativeButton={false}
                             >
-                                <div>
-                                    <h3>
-                                        <Link
-                                            to="/learn"
-                                            search={{ roadmap: roadmap.id }}
+                                View all
+                            </Button>
+                        </header>
+                        {roadmaps.length === 0 ? (
+                            <div className="px-4 pb-4">
+                                <Empty variant="plain" reason="empty">
+                                    <EmptyHeader>
+                                        <EmptyTitle>
+                                            Progress appears once you start a
+                                            topic
+                                        </EmptyTitle>
+                                    </EmptyHeader>
+                                    <EmptyContent>
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            render={<Link to="/scout" />}
+                                            nativeButton={false}
                                         >
-                                            {roadmap.title}
-                                        </Link>
-                                    </h3>
-                                    <p>
-                                        {level ? (
-                                            <>
-                                                {LEVEL_LABEL[level.level]} ·{" "}
-                                                <span className="sy-num">
-                                                    {level.coreDone}/
-                                                    {level.coreTotal}
-                                                </span>{" "}
-                                                core
-                                            </>
-                                        ) : ladder.levels.length ? (
-                                            "Ladder complete"
-                                        ) : (
-                                            "No lessons yet"
-                                        )}
-                                        {" · "}
-                                        <span className="sy-num">
-                                            {stats.completedTasks}/
-                                            {stats.totalTasks}
-                                        </span>{" "}
-                                        lessons
-                                    </p>
-                                    <div
-                                        className="sy-progress topic"
-                                        role="progressbar"
-                                        aria-label={`${roadmap.title} progress`}
-                                        aria-valuenow={stats.percent}
-                                        aria-valuemin={0}
-                                        aria-valuemax={100}
-                                    >
-                                        <span
-                                            style={{
-                                                width: `${stats.percent}%`,
-                                            }}
-                                        />
-                                    </div>
-                                    <div className="sy-row-actions">
-                                        <Link
-                                            to="/notes"
-                                            search={{ roadmap: roadmap.id }}
-                                        >
-                                            <span className="sy-num">
-                                                {noteCount}
-                                            </span>{" "}
-                                            note
-                                            {noteCount === 1 ? "" : "s"}
-                                        </Link>
-                                        <Link
-                                            to="/glossary"
-                                            search={{ roadmap: roadmap.id }}
-                                        >
-                                            Glossary
-                                        </Link>
-                                        <span>
-                                            <span className="sy-num">
-                                                {cardCount}
-                                            </span>{" "}
-                                            card
-                                            {cardCount === 1 ? "" : "s"}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span className="sy-topic-count sy-num">
-                                        {stats.percent}%
-                                    </span>
-                                    <Link
-                                        className="sy-button icon"
-                                        to="/learn"
-                                        search={{ roadmap: roadmap.id }}
-                                        aria-label={`Open ${roadmap.title}`}
-                                    >
-                                        <ArrowRight />
-                                    </Link>
-                                </div>
-                            </article>
-                        );
-                    })
-                )}
-            </section>
+                                            Open Scout
+                                            <Icon icon={ArrowRight} />
+                                        </Button>
+                                    </EmptyContent>
+                                </Empty>
+                            </div>
+                        ) : (
+                            <ItemGroup>
+                                {roadmaps.map((roadmap) => {
+                                    const ladder = getLadder(roadmap);
+                                    const stats = getRoadmapStats(roadmap);
+                                    const level = ladder.levels.find(
+                                        (entry) =>
+                                            entry.level === ladder.current,
+                                    );
+                                    const noteCount = notes.filter(
+                                        (note) => note.groupId === roadmap.id,
+                                    ).length;
+                                    const cardCount = cards.filter(
+                                        (item) => item.roadmapId === roadmap.id,
+                                    ).length;
+                                    return (
+                                        <Item key={roadmap.id}>
+                                            <ItemContent>
+                                                <ItemTitle>
+                                                    <ItemLink
+                                                        render={
+                                                            <Link
+                                                                to="/learn"
+                                                                search={{
+                                                                    roadmap:
+                                                                        roadmap.id,
+                                                                }}
+                                                            />
+                                                        }
+                                                    >
+                                                        {roadmap.title}
+                                                    </ItemLink>
+                                                </ItemTitle>
+                                                <ItemDescription>
+                                                    {level
+                                                        ? `${LEVEL_LABEL[level.level]} · ${level.coreDone}/${level.coreTotal} core`
+                                                        : ladder.levels.length
+                                                          ? "Ladder complete"
+                                                          : "No lessons yet"}
+                                                    {" · "}
+                                                    {stats.completedTasks}/
+                                                    {stats.totalTasks} lessons
+                                                </ItemDescription>
+                                                <Progress
+                                                    mode="meter"
+                                                    size="sm"
+                                                    className="mt-1.5 max-w-56"
+                                                    value={stats.percent}
+                                                    max={100}
+                                                    warnAt={null}
+                                                    failAt={null}
+                                                    aria-label={`${roadmap.title} progress`}
+                                                />
+                                                <div className="mt-2 -ms-2 flex flex-wrap items-center gap-1">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        render={
+                                                            <Link
+                                                                to="/notes"
+                                                                search={{
+                                                                    roadmap:
+                                                                        roadmap.id,
+                                                                }}
+                                                            />
+                                                        }
+                                                        nativeButton={false}
+                                                    >
+                                                        {noteCount} note
+                                                        {noteCount === 1
+                                                            ? ""
+                                                            : "s"}
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        render={
+                                                            <Link
+                                                                to="/glossary"
+                                                                search={{
+                                                                    roadmap:
+                                                                        roadmap.id,
+                                                                }}
+                                                            />
+                                                        }
+                                                        nativeButton={false}
+                                                    >
+                                                        Glossary
+                                                    </Button>
+                                                    <span className="type-caption text-text-2">
+                                                        {cardCount} card
+                                                        {cardCount === 1
+                                                            ? ""
+                                                            : "s"}
+                                                    </span>
+                                                </div>
+                                            </ItemContent>
+                                            <ItemMeta>
+                                                {stats.percent}%
+                                            </ItemMeta>
+                                            <ItemActions>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon-sm"
+                                                    aria-label={`Open ${roadmap.title}`}
+                                                    render={
+                                                        <Link
+                                                            to="/learn"
+                                                            search={{
+                                                                roadmap:
+                                                                    roadmap.id,
+                                                            }}
+                                                        />
+                                                    }
+                                                    nativeButton={false}
+                                                >
+                                                    <Icon icon={ArrowRight} />
+                                                </Button>
+                                            </ItemActions>
+                                        </Item>
+                                    );
+                                })}
+                            </ItemGroup>
+                        )}
+                    </div>
+                </section>
+            </div>
         </PageFrame>
     );
 }

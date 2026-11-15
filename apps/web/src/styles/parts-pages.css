@@ -54,17 +54,8 @@
 .sy-section-head > .sy-readout[data-live]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     color: var(--color-accent-strong);
 }
-/* Inline labels that lead with a topic dot. */
-.sy-topic-link:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    min-width: 0;
-}
-.sy-box .sy-note-meta:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-review-card .sy-note-meta:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    align-items: center;
-}
+
+
 
 /* The search and filter row sits on its own flat strip. */
 .sy-toolstrip:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
@@ -96,23 +87,6 @@
 
 
 
-/* Progress: large readout figures, and a dot per day. */
-.sy-stat b.sy-num:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 1.875rem;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-}
-.sy-stat-label:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-}
-.sy-stats + .sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-top: var(--sy-space-section);
-}
-.sy-week .sy-led:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-bottom: 6px;
-}
 
 /* Library: shelves are boxes, so they take the box rhythm. */
 .sy-box.sy-shelf-group:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
@@ -147,9 +121,7 @@
         grid-template-columns: minmax(0, 1fr);
         gap: 16px;
     }
-    .sy-stat b.sy-num:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        font-size: 1.625rem;
-    }
+
     .sy-toolstrip:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding: 6px;
     }
