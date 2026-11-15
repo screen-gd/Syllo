@@ -1198,12 +1198,8 @@
 .sy-term .sy-inline-form:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin: 8px 0 0;
 }
-.sy-note-group + .sy-note-group:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-term-group + .sy-term-group:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-top: var(--sy-space-section);
-}
-.sy-note-group .sy-section-head:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-bottom: 0;
 }
 .sy-note-meta:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: flex;

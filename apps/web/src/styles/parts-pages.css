@@ -106,8 +106,7 @@
     border-top: 1px solid var(--color-border);
 }
 
-/* Notes and Glossary: boxes stack with a block gap. */
-.sy-box.sy-note-group + .sy-box.sy-note-group:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+/* Glossary: boxes stack with a block gap. */
 .sy-box.sy-term-group + .sy-box.sy-term-group:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-top: var(--sy-space-block);
 }
