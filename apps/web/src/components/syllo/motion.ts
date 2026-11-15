@@ -6,8 +6,6 @@ import type { Transition } from "motion/react";
  * reverses from where it is instead of jumping.
  */
 export const springs = {
-    /** A page's content arriving after navigation. */
-    page: { type: "spring", duration: 0.32, bounce: 0 },
     /** A sidebar widening or narrowing. */
     drawer: { type: "spring", duration: 0.36, bounce: 0 },
     /** A scrim fading under a surface. */

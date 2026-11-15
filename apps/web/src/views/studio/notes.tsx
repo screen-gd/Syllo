@@ -315,6 +315,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                 )}
 
                 <SkeletonSwap
+                    className="flex flex-col gap-4"
                     loading={!loaded}
                     label="Loading notes"
                     fallback={

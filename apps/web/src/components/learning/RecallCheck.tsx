@@ -76,7 +76,7 @@ export function useVideoChecks(input: {
  */
 export function RecallPrompt({
     check,
-    eyebrow,
+    meta,
     autoFocus = false,
     onReplay,
     onDone,
@@ -84,7 +84,7 @@ export function RecallPrompt({
     onSkip,
 }: {
     check: VideoCheck;
-    eyebrow: string;
+    meta: string;
     autoFocus?: boolean;
     onReplay: (seconds: number) => void;
     onDone: (answer: string) => void;
@@ -110,7 +110,7 @@ export function RecallPrompt({
             <p className="type-heading-sm" id={`${answerId}-question`}>
                 {check.question}
             </p>
-            <p className="mt-1 type-caption text-text-2">{eyebrow}</p>
+            <p className="mt-1 type-caption text-text-2">{meta}</p>
             {!revealed ? (
                 <>
                     <div className="mt-3">

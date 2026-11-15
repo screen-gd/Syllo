@@ -602,7 +602,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </TabsContent>
 
                         {/* 3. Resources Tab */}
-                        <TabsContent value="resources" className="p-3 sm:p-4">
+                        <TabsContent value="resources" className="p-3">
                             <div className={cn("grid gap-4", sidePanelResource && "lg:grid-cols-2")}>
                                 <ItemGroup variant="plain" aria-label="Course materials">
                                     {resources.map((res) => (

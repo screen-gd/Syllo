@@ -23,22 +23,28 @@ import MaterialBar from "@/components/syllo/MaterialBar";
 import { cn } from "@/lib/utils";
 
 /** Sidebar groups: where you study, the tools you study with, then Scout. */
-const groupLabels = ["Study", "Tools", "Discover"] as const;
 const groups = [
-    [
-        { to: "/dashboard", label: "Home", icon: Home },
-        { to: "/workspaces", label: "Learn", icon: Learn },
-        { to: "/library", label: "Library", icon: Library },
-    ],
-    [
-        { to: "/notes", label: "Notes", icon: Notes },
-        { to: "/glossary", label: "Glossary", icon: Glossary },
-        { to: "/reviews", label: "Reviews", icon: Reviews },
-        { to: "/progress", label: "Progress", icon: Progress },
-    ],
-    [{ to: "/scout", label: "Scout", icon: Scout }],
+    {
+        label: "Study",
+        items: [
+            { to: "/dashboard", label: "Home", icon: Home },
+            { to: "/workspaces", label: "Learn", icon: Learn },
+            { to: "/library", label: "Library", icon: Library },
+        ],
+    },
+    {
+        label: "Tools",
+        items: [
+            { to: "/notes", label: "Notes", icon: Notes },
+            { to: "/glossary", label: "Glossary", icon: Glossary },
+            { to: "/reviews", label: "Reviews", icon: Reviews },
+            { to: "/progress", label: "Progress", icon: Progress },
+        ],
+    },
+    { label: "Discover", items: [{ to: "/scout", label: "Scout", icon: Scout }] },
 ] as const;
-const destinations = groups.flat();
+const destinations: { to: string; label: string; icon: GlazeIcon }[] =
+    groups.flatMap((group) => [...group.items]);
 
 function isActive(to: string, pathname: string) {
     return (
@@ -156,9 +162,9 @@ export default function LearningSidebar() {
                             aria-label="Main navigation"
                             className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-1.5 pb-3"
                         >
-                            {groups.map((group, index) => (
-                                <NavSection key={index} label={groupLabels[index]}>
-                                    {group.map(({ to, label, icon }) => (
+                            {groups.map((group) => (
+                                <NavSection key={group.label} label={group.label}>
+                                    {group.items.map(({ to, label, icon }) => (
                                         <NavItem
                                             key={to}
                                             to={to}

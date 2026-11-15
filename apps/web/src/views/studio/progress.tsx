@@ -45,16 +45,9 @@ import { getStorage } from "@/lib/storage";
 import { getRoadmapStats } from "@/lib/workspace-stats";
 import PageFrame from "@/components/layout/PageFrame";
 
-/** The Learning Record at a glance: streak, the last week, and each topic. */
-export default function ProgressPage() {
-    const { reviews, roadmaps, records, loaded } = useReviews();
-    if (!loaded)
-        return (
-            <PageFrame title="Progress">
-                <SkeletonSwap
-                    loading
-                    label="Loading progress"
-                    fallback={
+/** The loading shape of the two Progress cards. */
+function ProgressSkeleton() {
+    return (
                 <>
                     <section className="shell">
                         <div
@@ -80,13 +73,29 @@ export default function ProgressPage() {
                         </div>
                     </section>
                 </>
-                    }
-                >
-                    {null}
-                </SkeletonSwap>
-            </PageFrame>
-        );
+    );
+}
 
+type ReviewsData = ReturnType<typeof useReviews>;
+
+/** The Learning Record at a glance: streak, the last week, and each topic. */
+export default function ProgressPage() {
+    const data = useReviews();
+    return (
+        <PageFrame title="Progress">
+            <SkeletonSwap
+                className="flex flex-col gap-4"
+                loading={!data.loaded}
+                label="Loading progress"
+                fallback={<ProgressSkeleton />}
+            >
+                {data.loaded ? <ProgressContent {...data} /> : null}
+            </SkeletonSwap>
+        </PageFrame>
+    );
+}
+
+function ProgressContent({ reviews, roadmaps, records }: ReviewsData) {
     const record = normalizeLearningRecord(getStorage().getLearningRecord());
     const week = recentActivity(record);
     const weekTotal = week.reduce((total, day) => total + day.count, 0);
@@ -95,7 +104,6 @@ export default function ProgressPage() {
     const dueCount = cards.filter((item) => isDue(item)).length;
 
     return (
-        <PageFrame title="Progress">
             <>
                 <Card>
                     <CardHeader>
@@ -239,7 +247,7 @@ export default function ProgressPage() {
                                             <ItemMeta>
                                                 {stats.percent}%
                                             </ItemMeta>
-                                            <ItemActions>
+                                            <ItemActions className="max-sm:hidden">
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
@@ -284,6 +292,5 @@ export default function ProgressPage() {
                         )}
                 </Card>
             </>
-        </PageFrame>
     );
 }

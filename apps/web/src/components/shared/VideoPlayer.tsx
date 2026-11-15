@@ -5,6 +5,12 @@ import { Button } from "@/components/glaze/ui/button";
 import { Empty, EmptyContent, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
 import { getEmbedUrl, detectPlatform } from "@/lib/video-utils";
 
+const PLATFORM_NAMES: Record<string, string> = {
+    youtube: "YouTube",
+    vimeo: "Vimeo",
+    loom: "Loom",
+};
+
 interface VideoPlayerProps {
     url: string;
     title?: string;
@@ -17,7 +23,7 @@ export default function VideoPlayer({ url, title, description }: VideoPlayerProp
 
     if (!embedUrl) {
         return (
-            <Empty variant="plain">
+            <Empty variant="plain" reason="error">
                 <EmptyHeader>
                     <EmptyTitle>Unable to embed this video</EmptyTitle>
                 </EmptyHeader>
@@ -49,12 +55,14 @@ export default function VideoPlayer({ url, title, description }: VideoPlayerProp
                 />
             </div>
             {(title || description) ? (
-                <div className="px-1">
+                <div>
                     {title ? <h4 className="type-label">{title}</h4> : null}
                     {description ? (
                         <p className="mt-0.5 line-clamp-2 type-body-sm text-text-2">{description}</p>
                     ) : null}
-                    <span className="type-caption capitalize text-text-2">{platform}</span>
+                    <span className="type-caption text-text-2">
+                        {PLATFORM_NAMES[platform] ?? platform}
+                    </span>
                 </div>
             ) : null}
         </div>

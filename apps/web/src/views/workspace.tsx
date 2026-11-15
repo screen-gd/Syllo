@@ -14,17 +14,34 @@ import {
     EmptyHeader,
     EmptyTitle,
 } from "@/components/glaze/ui/empty-state";
+import { SkeletonText } from "@/components/glaze/ui/skeleton";
 import Header from "@/components/layout/Header";
 import WorkspaceShell from "@/components/workspace/WorkspaceShell";
 import { useRoadmap } from "@/hooks/useRoadmap";
 
 export function WorkspaceView({ id }: { id: string }) {
-    const { roadmap, updateSection, saveRoadmap } = useRoadmap(id);
+    const { loaded, roadmap, updateSection, saveRoadmap } = useRoadmap(id);
     const [apiError, setApiError] = useState<{ message: string } | null>(null);
 
     const handleApiError = (error: { message: string }) => {
         setApiError(error);
     };
+
+    if (!loaded) {
+        return (
+            <div
+                className="flex min-h-dvh bg-page"
+                role="status"
+                aria-label="Loading workspace"
+            >
+                <div className="hidden w-72 shrink-0 border-e border-line-faint bg-paper sm:block" />
+                <div className="mx-auto flex w-full max-w-256 flex-col gap-3 px-4 pt-16 sm:px-6 lg:px-10">
+                    <SkeletonText type="heading" last={0.6} />
+                    <SkeletonText type="body" lines={2} last={0.5} />
+                </div>
+            </div>
+        );
+    }
 
     if (!roadmap) {
         return (

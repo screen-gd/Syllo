@@ -334,6 +334,7 @@ export default function ReviewsPage() {
                 </div>
 
                 <SkeletonSwap
+                    className="flex flex-col gap-4"
                     loading={!loaded}
                     label="Loading reviews"
                     fallback={

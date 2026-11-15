@@ -182,11 +182,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                 <SheetContent showCloseButton={false}>
                     <SheetHeader className="sr-only">
                         <SheetTitle>
-                            {selectedNode?.type === "module"
-                                ? selectedNode.data.title
-                                : selectedNode?.type === "task"
-                                  ? selectedNode.data.title
-                                  : "Details"}
+                            {selectedNode?.data.title ?? "Details"}
                         </SheetTitle>
                     </SheetHeader>
                     {selectedNode && (

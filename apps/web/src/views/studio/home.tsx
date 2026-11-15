@@ -31,7 +31,6 @@ import {
 } from "@/components/glaze/ui/empty-state";
 import {
     Item,
-    ItemActions,
     ItemContent,
     ItemDescription,
     ItemGroup,
@@ -198,7 +197,7 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                     <div className="flex flex-col gap-4 sm:flex-row">
                                         {youtubeId && (
                                             <Link
-                                                className="group relative block aspect-16/9 w-full shrink-0 overflow-hidden rounded-panel bg-field transition-[scale] duration-(--dur-press) ease-out active:scale-(--scale-press) sm:w-48"
+                                                className="group relative isolate block aspect-16/9 w-full shrink-0 overflow-hidden rounded-panel bg-field transition-[scale] duration-(--dur-press) ease-out active:scale-(--scale-press) sm:w-48"
                                                 to="/learn"
                                                 search={{
                                                     roadmap: resumeRoadmap.id,
@@ -209,7 +208,7 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                                 <img
                                                     src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
                                                     alt=""
-                                                    className="size-full object-cover transition-[scale] duration-(--dur-overlay) ease-out group-hover:scale-103"
+                                                    className="size-full object-cover transition-[scale] duration-(--dur-overlay) ease-out motion-safe:group-hover:scale-103"
                                                 />
                                                 <span className="absolute inset-0 grid place-items-center">
                                                     <span className="grid size-8 place-items-center rounded-pill bg-ink text-text-inverse">
@@ -547,22 +546,6 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                                 aria-label={`${book.title} progress`}
                                             />
                                         </ItemContent>
-                                        <ItemActions>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon-sm"
-                                                aria-label={`Continue reading ${book.title}`}
-                                                render={
-                                                    <Link
-                                                        to="/read/$id"
-                                                        params={{ id: book.id }}
-                                                    />
-                                                }
-                                                nativeButton={false}
-                                            >
-                                                <Icon icon={ArrowRight} />
-                                            </Button>
-                                        </ItemActions>
                                     </Item>
                                 ))}
                             </ItemGroup>

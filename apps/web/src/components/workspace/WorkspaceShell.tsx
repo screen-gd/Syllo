@@ -7,7 +7,7 @@ import type { Roadmap, Section, ModuleSection as ModuleSectionType, CalendarSect
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useProgress } from "@/hooks/useProgress";
 import { PHONE_QUERY, useMediaQuery } from "@/hooks/useMediaQuery";
-import MaterialBar from "@/components/syllo/MaterialBar";
+import { useScrolled } from "@/hooks/useScrolled";
 import { springs } from "@/components/syllo/motion";
 import { useStreak } from "@/hooks/useStreak";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -144,16 +144,24 @@ interface WorkspaceShellProps {
 export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadmap, isEmbed = false, isReadOnly = false, onApiError }: WorkspaceShellProps) {
     const [activeSectionId, setActiveSectionId] = useState<string>("dashboard");
     // null follows the screen: open on tablets and up, a rail on phones. A toggle sets a real choice.
-    const [sidebarChoice, setSidebarOpen] = useState<boolean | null>(null);
+    const [sidebarChoice, setSidebarChoice] = useState<boolean | null>(null);
+    // A toggle from the keyboard jumps; one from the pointer springs.
+    const [instantToggle, setInstantToggle] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const progress = useProgress(roadmap);
     const phone = useMediaQuery({ query: PHONE_QUERY, serverValue: false });
     const reduceMotion = useReducedMotion();
     const scrollArea = useRef<HTMLDivElement>(null);
+    const toolbarScrolled = useScrolled({ container: scrollArea });
     // Rail, phone panel and desktop panel widths, in px: w-16, w-64 and w-72.
     const sidebarOpen = sidebarChoice ?? !phone;
-    const sidebarOpenRef = useRef(sidebarOpen);
-    sidebarOpenRef.current = sidebarOpen;
+    // Labels show while the rail is open or still closing, so a closing panel never shrinks around bare icons.
+    const [labelsShown, setLabelsShown] = useState(sidebarOpen);
+    if (sidebarOpen && !labelsShown) setLabelsShown(true);
+    const toggleSidebar = (next: boolean) => {
+        setInstantToggle(false);
+        setSidebarChoice(next);
+    };
     const sidebarWidth = !sidebarOpen ? 64 : phone ? 256 : 288;
 
     // Gamification Hooks
@@ -390,12 +398,13 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.key === "\\") {
                 e.preventDefault();
-                setSidebarOpen(!sidebarOpenRef.current);
+                setInstantToggle(true);
+                setSidebarChoice(!sidebarOpen);
             }
         };
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, []);
+    }, [sidebarOpen]);
 
     const validSections = roadmap.sections;
     const activeSection = validSections.find((s) => s.id === activeSectionId);
@@ -431,7 +440,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
     const onNavigate = (id: string) => {
         setActiveSectionId(id);
-        if (window.innerWidth < 1024) setSidebarOpen(false);
+        if (window.innerWidth < 1024) setSidebarChoice(false);
     };
 
     const handleResetProgress = () => {
@@ -549,13 +558,31 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
         <div className="flex h-dvh flex-col overflow-hidden bg-page text-text-1">
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar */}
+                {/* Mobile overlay */}
+                <AnimatePresence>
+                    {phone && sidebarOpen && (
+                        <motion.div
+                            key="scrim"
+                            aria-hidden="true"
+                            className="fixed inset-0 z-(--z-overlay) bg-scrim"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={springs.fade}
+                            onClick={() => toggleSidebar(false)}
+                        />
+                    )}
+                </AnimatePresence>
                 {phone && <div aria-hidden="true" className="w-16 shrink-0" />}
                 <motion.aside
                     id="tour-sidebar"
                     aria-label="Workspace"
                     initial={false}
                     animate={{ width: sidebarWidth }}
-                    transition={reduceMotion ? { duration: 0 } : springs.drawer}
+                    transition={reduceMotion || instantToggle ? { duration: 0 } : springs.drawer}
+                    onAnimationComplete={() => {
+                        if (!sidebarOpen) setLabelsShown(false);
+                    }}
                     className={cn(
                         "z-(--z-overlay) flex shrink-0 flex-col overflow-hidden border-e border-line-faint",
                         phone ? "fixed inset-y-0 start-0" : "relative",
@@ -567,14 +594,14 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         <Button
                             variant="ghost"
                             size="icon-sm"
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            onClick={() => toggleSidebar(!sidebarOpen)}
                             aria-label="Toggle sidebar"
                             aria-expanded={sidebarOpen}
                             title="Toggle sidebar (Ctrl+\)"
                         >
                             <Icon icon={Menu} />
                         </Button>
-                        {sidebarOpen && (
+                        {labelsShown && (
                             <div className="flex min-w-0 items-center gap-2">
                                 {logoUrl && (
                                     <>
@@ -589,7 +616,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                     <div className="flex-1 overflow-y-auto pb-6">
                         {/* Search & Mini-progress (Only shown when open) */}
-                        {sidebarOpen && (
+                        {labelsShown && (
                             <div className="flex flex-col gap-3 p-3">
                                 <Input
                                     mode="search"
@@ -612,7 +639,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                     <ItemMedia variant="icon">
                                         <Icon icon={Home} />
                                     </ItemMedia>
-                                    <ItemContent className={cn(!sidebarOpen && "sr-only")}>
+                                    <ItemContent className={cn(!labelsShown && "sr-only")}>
                                         <ItemTitle>
                                             <ItemLink
                                                 href="#overview"
@@ -647,7 +674,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                         <span className="type-caption tabular-nums text-text-2">{idx + 1}</span>
                                                     )}
                                                 </ItemMedia>
-                                                <ItemContent className={cn(!sidebarOpen && "sr-only")}>
+                                                <ItemContent className={cn(!labelsShown && "sr-only")}>
                                                     <ItemTitle>
                                                         <ItemLink
                                                             href={`#${section.id}`}
@@ -669,7 +696,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             )}
 
                             {/* Tools / Utility */}
-                            {utilitySections.length > 0 && sidebarOpen && (
+                            {utilitySections.length > 0 && labelsShown && (
                                 <div className="flex flex-col" role="group" aria-label="Resources and tools">
                                     {utilitySections.map((section) => {
                                         const isActive = section.id === activeSectionId;
@@ -710,7 +737,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 <ItemMedia variant="icon">
                                     <Icon icon={ArrowLeft} />
                                 </ItemMedia>
-                                <ItemContent className={cn(!sidebarOpen && "sr-only")}>
+                                <ItemContent className={cn(!labelsShown && "sr-only")}>
                                     <ItemTitle>Back to home</ItemTitle>
                                 </ItemContent>
                             </Item>
@@ -721,16 +748,16 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                     <ItemMedia variant="icon">
                                         <Icon icon={Settings} />
                                     </ItemMedia>
-                                    <ItemContent className={cn(!sidebarOpen && "sr-only")}>
+                                    <ItemContent className={cn(!labelsShown && "sr-only")}>
                                         <ItemTitle>Settings</ItemTitle>
                                     </ItemContent>
                                 </Item>
-                                {sidebarOpen && userConfig?.useCustomKey && (
+                                {labelsShown && userConfig?.useCustomKey && (
                                     <p className="flex items-center gap-1.5 px-3 py-1 type-caption text-text-2" title="Using your custom AI provider">
                                         <Icon icon={Key} className="text-text-3" /> Custom API
                                     </p>
                                 )}
-                                {sidebarOpen && userConfig?.showProgressNotice !== false && (
+                                {labelsShown && userConfig?.showProgressNotice !== false && (
                                     <div className="flex items-center justify-between gap-2 px-3 py-1">
                                         <span className="type-caption text-text-2">Saved in this browser</span>
                                         <Button variant="ghost" size="sm" onClick={() => setIsResetDialogOpen(true)}>
@@ -740,7 +767,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 )}
                             </>
                         )}
-                        {!hideWatermark && sidebarOpen && (
+                        {!hideWatermark && labelsShown && (
                             <p className="px-3 py-1 type-caption text-text-2">
                                 Powered by ZNS Nexus
                             </p>
@@ -748,29 +775,17 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                     </div>
                 </motion.aside>
 
-                {/* Mobile overlay */}
-                <AnimatePresence>
-                    {phone && sidebarOpen && (
-                        <motion.div
-                            key="scrim"
-                            aria-hidden="true"
-                            className="fixed inset-0 z-(--z-sticky) bg-scrim"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={springs.fade}
-                            onClick={() => setSidebarOpen(false)}
-                        />
-                    )}
-                </AnimatePresence>
 
                 {/* Main Content Area */}
                 <main id="main-content" className="relative flex flex-1 flex-col overflow-y-auto bg-page">
                     {/* Workspace Header */}
                     {!isEmbed && !isReadOnly && (
-                        <MaterialBar
-                            scrollContainer={scrollArea}
-                            className="sticky top-0 z-(--z-sticky) flex shrink-0 flex-wrap items-center justify-end gap-2 px-4 py-2 sm:px-6"
+                        <div
+                            data-scrolled={toolbarScrolled || undefined}
+                            className={cn(
+                                "sticky top-0 z-(--z-sticky) flex shrink-0 flex-wrap items-center justify-end gap-2 border-b bg-page px-4 py-2 transition-colors duration-(--dur-state) ease-out sm:px-6",
+                                toolbarScrolled ? "border-line-faint" : "border-transparent",
+                            )}
                         >
                             <Button
                                 variant="ghost"
@@ -815,7 +830,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             >
                                 {dueSrsItems.length > 0 ? `Review ${dueSrsItems.length}` : "Review cards"}
                             </Button>
-                        </MaterialBar>
+                        </div>
                     )}
 
                     <div ref={scrollArea} className="relative flex-1 overflow-y-auto bg-page">

@@ -299,7 +299,7 @@ function CreatePageContent() {
             {creationStep === "generating" && (
                 <section className="shell" aria-label="Generating roadmap">
                     <div
-                        className="panel flex flex-col items-center gap-3 p-6 text-center"
+                        className="panel flex flex-col items-center gap-3 p-5 text-center"
                         role="status"
                     >
                         <Icon
@@ -320,7 +320,7 @@ function CreatePageContent() {
             )}
 
             {creationStep === "review" && draftRoadmap && (
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="flex flex-col gap-4">
                     <section className="shell">
                         <div className="panel">
                             <header className="border-b border-line-faint p-3">

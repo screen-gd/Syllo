@@ -822,7 +822,6 @@ export default function LearnPage({
                     <Button
                         variant="ghost"
                         size="sm"
-                        title="Edit roadmap"
                         render={
                             <Link
                                 to="/workspace/$id"
@@ -927,7 +926,7 @@ export default function LearnPage({
                                 <div className="px-3 pb-3">
                                     <RecallPrompt
                                         check={pausedCheck}
-                                        eyebrow={`Quick check · ${pausedCheck.label}`}
+                                        meta={`Quick check · ${pausedCheck.label}`}
                                         autoFocus
                                         doneLabel="Continue watching"
                                         onDone={() =>
@@ -1585,7 +1584,7 @@ export default function LearnPage({
                                                                 check={
                                                                     nextCheck
                                                                 }
-                                                                eyebrow={`Question ${checks.indexOf(nextCheck) + 1} of ${checks.length} · ${nextCheck.label}`}
+                                                                meta={`Question ${checks.indexOf(nextCheck) + 1} of ${checks.length} · ${nextCheck.label}`}
                                                                 doneLabel={
                                                                     pendingChecks.length >
                                                                     1

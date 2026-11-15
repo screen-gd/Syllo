@@ -146,6 +146,7 @@ export default function WorkspacesPage() {
                 </div>
 
                 <SkeletonSwap
+                    className="flex flex-col gap-4"
                     loading={!mounted}
                     label="Loading learning topics"
                     fallback={

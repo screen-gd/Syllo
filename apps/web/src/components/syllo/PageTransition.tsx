@@ -1,11 +1,8 @@
-import { useEffect, useRef, type ReactNode } from "react";
-import { motion } from "motion/react";
-import { springs } from "./motion";
+import { useState, type ReactNode } from "react";
 
 /**
- * Fades a page in with a 4px rise when the route changes. The first page renders as the server sent it, with no
- * entrance, so nothing is hidden before hydration. Under reduced motion only the fade remains (MotionConfig in
- * Providers drops the rise).
+ * Fades a page in with a 4px rise when the route changes (styles/syllo.css, page-enter). The first page renders as
+ * the server sent it, with no entrance, so nothing is hidden before hydration and the markup matches.
  */
 export default function PageTransition({
     routeKey,
@@ -14,18 +11,10 @@ export default function PageTransition({
     routeKey: string;
     children: ReactNode;
 }) {
-    const mounted = useRef(false);
-    useEffect(() => {
-        mounted.current = true;
-    }, []);
+    const [firstKey] = useState(routeKey);
     return (
-        <motion.div
-            key={routeKey}
-            initial={mounted.current ? { opacity: 0, y: 4 } : false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={springs.page}
-        >
+        <div key={routeKey} className={routeKey === firstKey ? undefined : "page-enter"}>
             {children}
-        </motion.div>
+        </div>
     );
 }

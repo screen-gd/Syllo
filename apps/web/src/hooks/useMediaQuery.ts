@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 /**
  * Whether a media query matches, kept in sync as it changes. `serverValue` is what the server and the hydration pass
@@ -11,15 +11,16 @@ export function useMediaQuery({
     query: string;
     serverValue: boolean;
 }): boolean {
-    return useSyncExternalStore(
-        (onChange) => {
+    const subscribe = useCallback(
+        (onChange: () => void) => {
             const list = window.matchMedia(query);
             list.addEventListener("change", onChange);
             return () => list.removeEventListener("change", onChange);
         },
-        () => window.matchMedia(query).matches,
-        () => serverValue,
+        [query],
     );
+    const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query]);
+    return useSyncExternalStore(subscribe, getSnapshot, () => serverValue);
 }
 
 /** Below Tailwind's `sm` breakpoint (640px). */
