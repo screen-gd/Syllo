@@ -49,11 +49,9 @@
   .glaze .material-bar, .glaze .material-bar[data-scrolled] { border-bottom-color: var(--line-control); }
 }
 
-/* Content that replaces a skeleton fades in instead of popping. */
-.glaze [data-slot="skeleton-swap"][data-phase="done"] > * {
-  transition: opacity var(--dur-overlay) var(--ease-out);
-  @starting-style { opacity: 0; }
-}
+/* Content that replaces a skeleton fades in once, when the swap reaches done. The animation starts when the
+   attribute changes, so rows inserted later (a filter, a new note) appear at once. */
+.glaze [data-slot="skeleton-swap"][data-phase="done"] { animation: syllo-page-fade var(--dur-overlay) cubic-bezier(0.23, 1, 0.32, 1); }
 
 /* Switching light and dark crossfades the whole page (applyTheme starts a view transition). */
 ::view-transition-old(root),
@@ -69,7 +67,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .glaze .page-enter { animation-name: syllo-page-fade; }
-  .glaze [data-slot="skeleton-swap"][data-phase="done"] > * { transition: none; }
+  .glaze [data-slot="skeleton-swap"][data-phase="done"] { animation: none; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none; }
 }
