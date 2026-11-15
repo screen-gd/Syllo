@@ -99,7 +99,7 @@ export default function GlossarySection({ section }: Props) {
                                             <Icon
                                                 icon={ChevronDown}
                                                 className={cn(
-                                                    "text-text-3 transition-transform",
+                                                    "text-text-3 transition-transform duration-(--dur-state) ease-out",
                                                     isExpanded && "rotate-180",
                                                 )}
                                             />

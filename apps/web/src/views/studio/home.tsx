@@ -198,7 +198,7 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                     <div className="flex flex-col gap-4 sm:flex-row">
                                         {youtubeId && (
                                             <Link
-                                                className="relative block aspect-16/9 w-full shrink-0 overflow-hidden rounded-panel bg-field sm:w-48"
+                                                className="group relative block aspect-16/9 w-full shrink-0 overflow-hidden rounded-panel bg-field transition-[scale] duration-(--dur-press) ease-out active:scale-(--scale-press) sm:w-48"
                                                 to="/learn"
                                                 search={{
                                                     roadmap: resumeRoadmap.id,
@@ -209,7 +209,7 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                                 <img
                                                     src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
                                                     alt=""
-                                                    className="size-full object-cover"
+                                                    className="size-full object-cover transition-[scale] duration-(--dur-overlay) ease-out group-hover:scale-103"
                                                 />
                                                 <span className="absolute inset-0 grid place-items-center">
                                                     <span className="grid size-8 place-items-center rounded-pill bg-ink text-text-inverse">
@@ -618,7 +618,15 @@ function HomeSkeleton() {
                 <Card>
                         <SectionHead title="Continue learning" />
                         <CardContent>
-                            <Skeleton className="h-24" />
+                            <div className="flex flex-col gap-4 sm:flex-row">
+                                <Skeleton className="aspect-16/9 w-full rounded-panel sm:w-48" />
+                                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                    <SkeletonText type="body-sm" last={0.4} />
+                                    <SkeletonText type="heading-sm" last={0.8} />
+                                    <SkeletonText type="body-sm" last={0.3} />
+                                    <Skeleton className="mt-2 h-(--control) w-40 rounded-pill" />
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 <Card>
@@ -651,19 +659,31 @@ function HomeSkeleton() {
                 <Card>
                         <SectionHead title="This week" />
                         <CardContent>
-                            <Skeleton className="h-24" />
+                            {[0, 1, 2].map((row) => (
+                                <div key={row}>
+                                    <SkeletonText type="body-sm" last={0.3} />
+                                    <SkeletonText type="body-sm" last={0.15} />
+                                </div>
+                            ))}
+                            <Skeleton className="mt-1 h-10 w-full" />
                         </CardContent>
                     </Card>
                 <Card>
                         <SectionHead title="Reviews" />
                         <CardContent>
-                            <Skeleton className="h-16" />
+                            <SkeletonText type="heading-sm" last={0.5} />
+                            <SkeletonText type="body-sm" last={0.4} />
+                            <Skeleton className="h-(--control) w-20 rounded-pill" />
                         </CardContent>
                     </Card>
                 <Card>
                         <SectionHead title="Currently reading" />
-                        <CardContent>
-                            <Skeleton className="h-16" />
+                        <CardContent className="flex-row items-center">
+                            <Skeleton className="aspect-3/4 w-10 shrink-0" />
+                            <div className="min-w-0 flex-1">
+                                <SkeletonText type="label" last={0.7} />
+                                <SkeletonText type="body-sm" last={0.5} />
+                            </div>
                         </CardContent>
                     </Card>
             </aside>

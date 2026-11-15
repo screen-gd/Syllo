@@ -6,6 +6,7 @@ import { usePathname } from "@/lib/router-nav";
 import { Button } from "@/components/glaze/ui/button";
 import { Close, Icon, Menu } from "@/components/glaze/icon";
 import { Logo } from "@/components/shared/Logo";
+import MaterialBar from "@/components/syllo/MaterialBar";
 import { cn } from "@/lib/utils";
 import { PUBLIC_NAV_ITEMS } from "@/lib/navigation";
 
@@ -19,7 +20,7 @@ export default function Header() {
     }, [pathname]);
 
     return (
-        <header className="sticky top-0 z-(--z-sticky) border-b border-line-faint bg-paper">
+        <MaterialBar className="sticky top-0 z-(--z-sticky)">
             <div className="mx-auto w-full max-w-256 px-4 sm:px-6 flex h-14 items-center justify-between gap-4">
                 <Link to="/" className="flex min-w-0 items-center gap-2.5">
                     <Logo />
@@ -35,7 +36,7 @@ export default function Header() {
                                 to={item.href}
                                 aria-current={active ? "page" : undefined}
                                 className={cn(
-                                    "type-label rounded-pill px-3 py-1.5 transition-colors",
+                                    "type-label rounded-pill px-3 py-1.5 transition-colors duration-(--dur-state) ease-out",
                                     active ? "text-text-1" : "text-text-2 hover:text-text-1",
                                 )}
                             >
@@ -75,7 +76,7 @@ export default function Header() {
                                     to={item.href}
                                     aria-current={active ? "page" : undefined}
                                     className={cn(
-                                        "py-2 type-label",
+                                        "py-2 type-label transition-colors duration-(--dur-state) ease-out",
                                         active ? "text-text-1" : "text-text-2 hover:text-text-1",
                                     )}
                                 >
@@ -93,6 +94,6 @@ export default function Header() {
                     </nav>
                 </div>
             )}
-        </header>
+        </MaterialBar>
     );
 }

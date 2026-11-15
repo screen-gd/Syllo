@@ -21,7 +21,7 @@ export default function AppearanceSettings() {
         const parsed = preferenceSchema.safeParse(value);
         if (!parsed.success) return;
         saveThemePreference(parsed.data);
-        applyTheme(parsed.data);
+        applyTheme(parsed.data, { animate: true });
     }
 
     return (

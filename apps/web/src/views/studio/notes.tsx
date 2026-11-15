@@ -30,6 +30,7 @@ import {
 } from "@/components/glaze/ui/segmented-control";
 import {
     Skeleton,
+    SkeletonSwap,
     SkeletonText,
 } from "@/components/glaze/ui/skeleton";
 import { Textarea } from "@/components/glaze/ui/textarea";
@@ -313,21 +314,27 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                     </div>
                 )}
 
-                {!loaded ? (
-                    <section className="shell">
-                        <div className="panel p-3" role="status" aria-label="Loading">
-                            <span className="sr-only">Loading</span>
-                            <SkeletonText type="heading-sm" last={0.3} />
-                            {[0, 1, 2].map((row) => (
-                                <div key={row} className="mt-3">
-                                    <SkeletonText type="body" last={0.36} />
-                                    <SkeletonText type="body-sm" last={0.74} />
+                <SkeletonSwap
+                    loading={!loaded}
+                    label="Loading notes"
+                    fallback={
+                        <>
+                            <section className="shell">
+                                <div className="panel p-3">
+                                    <SkeletonText type="heading-sm" last={0.3} />
+                                    {[0, 1, 2].map((row) => (
+                                        <div key={row} className="mt-3">
+                                            <SkeletonText type="body" last={0.36} />
+                                            <SkeletonText type="body-sm" last={0.74} />
+                                        </div>
+                                    ))}
+                                    <Skeleton className="mt-3 h-4 w-24" />
                                 </div>
-                            ))}
-                            <Skeleton className="mt-3 h-4 w-24" />
-                        </div>
-                    </section>
-                ) : notes.length === 0 ? (
+                            </section>
+                        </>
+                    }
+                >
+                    {!loaded ? null : notes.length === 0 ? (
                     <Empty reason="empty">
                         <EmptyHeader>
                             <EmptyTitle>No notes yet</EmptyTitle>
@@ -481,6 +488,7 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                         </Card>
                     ))
                 )}
+                </SkeletonSwap>
             </>
         </PageFrame>
     );

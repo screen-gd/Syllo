@@ -32,7 +32,7 @@ import {
     ItemTitle,
 } from "@/components/glaze/ui/item";
 import { Progress } from "@/components/glaze/ui/progress";
-import { SkeletonText } from "@/components/glaze/ui/skeleton";
+import { SkeletonText, SkeletonSwap } from "@/components/glaze/ui/skeleton";
 import { useReviews } from "@/hooks/useReviews";
 import { getLadder, LEVEL_LABEL } from "@/lib/ladder";
 import {
@@ -51,14 +51,15 @@ export default function ProgressPage() {
     if (!loaded)
         return (
             <PageFrame title="Progress">
+                <SkeletonSwap
+                    loading
+                    label="Loading progress"
+                    fallback={
                 <>
                     <section className="shell">
                         <div
                             className="panel p-3"
-                            role="status"
-                            aria-label="Loading"
                         >
-                            <span className="sr-only">Loading</span>
                             <SkeletonText type="heading-sm" last={0.2} />
                             <div className="mt-3">
                                 <SkeletonText type="body" last={0.42} />
@@ -79,6 +80,10 @@ export default function ProgressPage() {
                         </div>
                     </section>
                 </>
+                    }
+                >
+                    {null}
+                </SkeletonSwap>
             </PageFrame>
         );
 

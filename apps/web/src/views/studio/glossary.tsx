@@ -13,7 +13,9 @@ import {
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
 import { Select } from "@/components/glaze/ui/select";
-import { SkeletonText } from "@/components/glaze/ui/skeleton";
+import { SkeletonSwap,
+    SkeletonText,
+} from "@/components/glaze/ui/skeleton";
 import { Textarea } from "@/components/glaze/ui/textarea";
 import { toast } from "@/components/glaze/ui/toast";
 import { useReviews } from "@/hooks/useReviews";
@@ -277,20 +279,26 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                     </div>
                 )}
 
-                {!loaded ? (
-                    <section className="shell">
-                        <div className="panel p-3" role="status" aria-label="Loading">
-                            <span className="sr-only">Loading</span>
-                            <SkeletonText type="heading-sm" last={0.2} />
-                            {[0, 1, 2].map((row) => (
-                                <div key={row} className="mt-3">
-                                    <SkeletonText type="body" last={0.3} />
-                                    <SkeletonText type="body-sm" last={0.72} />
+                <SkeletonSwap
+                    loading={!loaded}
+                    label="Loading glossary"
+                    fallback={
+                        <>
+                            <section className="shell">
+                                <div className="panel p-3">
+                                    <SkeletonText type="heading-sm" last={0.2} />
+                                    {[0, 1, 2].map((row) => (
+                                        <div key={row} className="mt-3">
+                                            <SkeletonText type="body" last={0.3} />
+                                            <SkeletonText type="body-sm" last={0.72} />
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    </section>
-                ) : roadmaps.length === 0 ? (
+                            </section>
+                        </>
+                    }
+                >
+                    {!loaded ? null : roadmaps.length === 0 ? (
                     <Empty reason="empty">
                         <EmptyHeader>
                             <EmptyTitle>
@@ -367,7 +375,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                                                             </p>
                                                             {roadmaps.length > 1 && (
                                                                 <Link
-                                                                    className="mt-1 inline-block type-caption text-text-2 hover:text-text-1"
+                                                                    className="mt-1 inline-block type-caption text-text-2 transition-colors duration-(--dur-state) ease-out hover:text-text-1"
                                                                     to="/learn"
                                                                     search={{
                                                                         roadmap: entry.roadmapId,
@@ -446,6 +454,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                         </CardContent>
                     </Card>
                 )}
+                </SkeletonSwap>
             </>
         </PageFrame>
     );

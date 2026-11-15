@@ -28,6 +28,7 @@ import {
     SheetTitle,
 } from "@/components/glaze/ui/sheet";
 import ContextPanel from "./ContextPanel";
+import { useMediaQuery, WIDE_QUERY } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/glaze/utils";
 
 interface Props {
@@ -47,14 +48,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
     const modules = roadmap.sections.filter(s => s.type === "module" || s.type === "milestones") as ModuleSection[];
     const [selectedNode, setSelectedNode] = useState<SelectedNode>(null);
     // Below 1024px the details open in a sheet instead of the side column.
-    const [wide, setWide] = useState(true);
-    useEffect(() => {
-        const query = window.matchMedia("(min-width: 1024px)");
-        const update = () => setWide(query.matches);
-        update();
-        query.addEventListener("change", update);
-        return () => query.removeEventListener("change", update);
-    }, []);
+    const wide = useMediaQuery({ query: WIDE_QUERY, serverValue: true });
 
     // Scroll to module if activeModuleId changes
     useEffect(() => {
@@ -148,7 +142,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                                         />
                                                     </span>
                                                     <ItemContent>
-                                                        <ItemTitle className={cn(task.completed && "text-text-2 line-through")}>
+                                                        <ItemTitle className={cn("transition-colors duration-(--dur-state) ease-out", task.completed && "text-text-2 line-through")}>
                                                             <ItemLink
                                                                 href={`#task-${task.id}`}
                                                                 aria-current={isTaskSelected ? "true" : undefined}

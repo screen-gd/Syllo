@@ -4,7 +4,11 @@ import { fetchPrivateApi } from "@/lib/private-api-fetch";
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { Roadmap, Section, ModuleSection as ModuleSectionType, CalendarSection, SrsItem } from "@/types";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useProgress } from "@/hooks/useProgress";
+import { PHONE_QUERY, useMediaQuery } from "@/hooks/useMediaQuery";
+import MaterialBar from "@/components/syllo/MaterialBar";
+import { springs } from "@/components/syllo/motion";
 import { useStreak } from "@/hooks/useStreak";
 import { useAchievements } from "@/hooks/useAchievements";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
@@ -142,6 +146,11 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const progress = useProgress(roadmap);
+    const phone = useMediaQuery({ query: PHONE_QUERY, serverValue: false });
+    const reduceMotion = useReducedMotion();
+    const scrollArea = useRef<HTMLDivElement>(null);
+    // Rail, phone panel and desktop panel widths, in px: w-16, w-64 and w-72.
+    const sidebarWidth = !sidebarOpen ? 64 : phone ? 256 : 288;
 
     // Gamification Hooks
     const { currentStreak, isAtRisk, logActivity, tasksCompletedToday, tasksCompletedYesterday } = useStreak();
@@ -537,12 +546,17 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
         <div className="flex h-dvh flex-col overflow-hidden bg-page text-text-1">
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar */}
-                <aside
+                {phone && <div aria-hidden="true" className="w-16 shrink-0" />}
+                <motion.aside
                     id="tour-sidebar"
                     aria-label="Workspace"
+                    initial={false}
+                    animate={{ width: sidebarWidth }}
+                    transition={reduceMotion ? { duration: 0 } : springs.drawer}
                     className={cn(
-                        "z-(--z-overlay) flex shrink-0 flex-col overflow-hidden border-e border-line-faint bg-paper",
-                        sidebarOpen ? "w-64 max-sm:fixed max-sm:inset-y-0 max-sm:start-0 sm:w-72" : "w-16",
+                        "z-(--z-overlay) flex shrink-0 flex-col overflow-hidden border-e border-line-faint",
+                        phone ? "fixed inset-y-0 start-0" : "relative",
+                        phone && sidebarOpen ? "material-heavy" : "bg-paper",
                     )}
                 >
                     {/* Header: Collapse Toggle */}
@@ -729,22 +743,32 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             </p>
                         )}
                     </div>
-                </aside>
+                </motion.aside>
 
                 {/* Mobile overlay */}
-                {sidebarOpen && (
-                    <div
-                        aria-hidden="true"
-                        className="fixed inset-0 z-(--z-overlay) bg-scrim sm:hidden"
-                        onClick={() => setSidebarOpen(false)}
-                    />
-                )}
+                <AnimatePresence>
+                    {phone && sidebarOpen && (
+                        <motion.div
+                            key="scrim"
+                            aria-hidden="true"
+                            className="fixed inset-0 z-(--z-sticky) bg-scrim"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={springs.fade}
+                            onClick={() => setSidebarOpen(false)}
+                        />
+                    )}
+                </AnimatePresence>
 
                 {/* Main Content Area */}
                 <main id="main-content" className="relative flex flex-1 flex-col overflow-y-auto bg-page">
                     {/* Workspace Header */}
                     {!isEmbed && !isReadOnly && (
-                        <div className="sticky top-0 z-(--z-sticky) flex shrink-0 flex-wrap items-center justify-end gap-2 border-b border-line-faint bg-page px-4 py-2 sm:px-6">
+                        <MaterialBar
+                            scrollContainer={scrollArea}
+                            className="sticky top-0 z-(--z-sticky) flex shrink-0 flex-wrap items-center justify-end gap-2 px-4 py-2 sm:px-6"
+                        >
                             <Button
                                 variant="ghost"
                                 size="icon-sm"
@@ -788,10 +812,10 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             >
                                 {dueSrsItems.length > 0 ? `Review ${dueSrsItems.length}` : "Review cards"}
                             </Button>
-                        </div>
+                        </MaterialBar>
                     )}
 
-                    <div className="relative flex-1 overflow-y-auto bg-page">
+                    <div ref={scrollArea} className="relative flex-1 overflow-y-auto bg-page">
                         {/* Banners */}
                         {(isLowQuality || isAtRisk || hasOverdue) && (
                             <div className="mx-auto flex w-full max-w-256 flex-col gap-2 px-4 pt-4 sm:px-6 lg:px-10">

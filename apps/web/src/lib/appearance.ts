@@ -77,8 +77,25 @@ let listening = false;
  * the preference is "system" it keeps listening for OS changes; any other
  * preference drops the listener. Removes the retired appearance keys once.
  */
-export function applyTheme(preference: ThemePreference): void {
+export function applyTheme(
+    preference: ThemePreference,
+    { animate = false }: { animate?: boolean } = {},
+): void {
     if (typeof document === "undefined") return;
+    // A theme the person picks crossfades instead of flashing from light to dark (styles/syllo.css times it).
+    const crossfade =
+        animate &&
+        resolveTheme(preference) !== document.documentElement.dataset.theme &&
+        typeof document.startViewTransition === "function" &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (crossfade) {
+        document.startViewTransition(() => paintTheme(preference));
+        return;
+    }
+    paintTheme(preference);
+}
+
+function paintTheme(preference: ThemePreference): void {
     const resolved = resolveTheme(preference);
     const root = document.documentElement;
     root.dataset.theme = resolved;
@@ -102,7 +119,8 @@ export function applyTheme(preference: ThemePreference): void {
     if (listening || !window.matchMedia) return;
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     media.addEventListener("change", () => {
-        if (getThemePreference() === "system") applyTheme("system");
+        if (getThemePreference() === "system")
+            applyTheme("system", { animate: true });
     });
     listening = true;
 }

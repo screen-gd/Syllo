@@ -19,7 +19,7 @@ export default function Footer() {
                         <Link
                             key={link.href}
                             to={link.href}
-                            className="type-label-sm border-b border-transparent pb-1 text-text-2 transition-colors hover:border-line-faint hover:text-text-1"
+                            className="type-label-sm border-b border-transparent pb-1 text-text-2 transition-colors duration-(--dur-state) ease-out hover:border-line-faint hover:text-text-1"
                         >
                             {link.label}
                         </Link>

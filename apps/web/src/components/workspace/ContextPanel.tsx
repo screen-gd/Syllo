@@ -73,7 +73,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                 <div>
                     <h2
                         className={cn(
-                            "type-heading",
+                            "type-heading transition-colors duration-(--dur-state) ease-out",
                             task.completed && "line-through text-text-2",
                         )}
                     >

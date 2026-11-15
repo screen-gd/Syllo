@@ -261,7 +261,9 @@ export default function LibraryPage() {
                                             aria-label={`Open ${book.title}`}
                                             className="group flex min-w-0 flex-col gap-1.5 rounded-tag"
                                         >
-                                            <BookCover book={book} compact />
+                                            <span className="block transition-[translate,scale] duration-(--dur-state) ease-out group-hover:-translate-y-0.5 group-active:scale-(--scale-press)">
+                                                <BookCover book={book} compact />
+                                            </span>
                                             <span className="line-clamp-2 type-label text-text-1 group-hover:underline">
                                                 {book.title}
                                             </span>

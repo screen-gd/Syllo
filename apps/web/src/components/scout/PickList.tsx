@@ -123,7 +123,7 @@ function PickRow({
                                         href={chapter.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-baseline gap-1.5 type-caption text-text-2 underline-offset-4 hover:text-text-1 hover:underline"
+                                        className="inline-flex items-baseline gap-1.5 type-caption text-text-2 underline-offset-4 transition-colors duration-(--dur-state) ease-out hover:text-text-1 hover:underline"
                                     >
                                         <span>
                                             {formatTimestamp(

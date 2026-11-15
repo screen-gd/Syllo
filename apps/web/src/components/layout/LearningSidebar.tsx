@@ -17,6 +17,7 @@ import {
 } from "@/components/glaze/icon";
 import { useReviews } from "@/hooks/useReviews";
 import { isDue } from "@/lib/reviews";
+import MaterialBar from "@/components/syllo/MaterialBar";
 import { cn } from "@/lib/utils";
 
 /** Sidebar groups: where you study, the tools you study with, then Scout. */
@@ -187,7 +188,7 @@ export default function LearningSidebar() {
                     />
                 </div>
             </aside>
-            <header className="sticky top-0 z-(--z-sticky) border-b border-line-faint bg-paper px-4 pt-2 lg:hidden">
+            <MaterialBar className="sticky top-0 z-(--z-sticky) px-4 pt-2 lg:hidden">
                 <div className="flex items-center justify-between">
                     <Link
                         to="/dashboard"
@@ -220,7 +221,7 @@ export default function LearningSidebar() {
                                 data-slot="nav-link"
                                 aria-current={active ? "page" : undefined}
                                 className={cn(
-                                    "flex h-(--control) shrink-0 items-center whitespace-nowrap rounded-pill px-3 type-label-sm",
+                                    "flex h-(--control) shrink-0 items-center whitespace-nowrap rounded-pill px-3 type-label-sm transition-[background-color,color,scale] duration-(--dur-press) ease-out active:scale-(--scale-press) pointer-coarse:h-(--control-lg)",
                                     active
                                         ? "bg-pressed text-text-1"
                                         : "text-text-2 hover:bg-field hover:text-text-1",
@@ -231,7 +232,7 @@ export default function LearningSidebar() {
                         );
                     })}
                 </nav>
-            </header>
+            </MaterialBar>
         </>
     );
 }

@@ -23,7 +23,7 @@ import {
     SegmentedControlItem,
 } from "@/components/glaze/ui/segmented-control";
 import { Select } from "@/components/glaze/ui/select";
-import { SkeletonText } from "@/components/glaze/ui/skeleton";
+import { SkeletonSwap, SkeletonText } from "@/components/glaze/ui/skeleton";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
 import PageFrame from "@/components/layout/PageFrame";
 import { getStorage } from "@/lib/storage";
@@ -145,7 +145,28 @@ export default function WorkspacesPage() {
                     </div>
                 </div>
 
-                {mounted ? (
+                <SkeletonSwap
+                    loading={!mounted}
+                    label="Loading learning topics"
+                    fallback={
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    <h2 className="type-heading-sm">Topics</h2>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent flush>
+                                {[0, 1, 2].map((row) => (
+                                    <div key={row} className="rule-row p-3">
+                                        <SkeletonText type="label" last={0.4} />
+                                        <SkeletonText type="body-sm" last={0.7} />
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    }
+                >
+                    {!mounted ? null : (
                     filteredRoadmaps.length > 0 ? (
                         <Card>
                             <CardHeader>
@@ -219,29 +240,8 @@ export default function WorkspacesPage() {
                             </EmptyContent>
                         </Empty>
                     )
-                ) : (
-                    <Card>
-                            <CardHeader>
-                                <CardTitle>
-                                    <h2 className="type-heading-sm">Topics</h2>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent
-                                className="gap-3"
-                                role="status"
-                                aria-label="Loading"
-                            >
-                                <span className="sr-only">Loading</span>
-                                {[0, 1, 2].map((row) => (
-                                    <SkeletonText
-                                        key={row}
-                                        type="body"
-                                        last={0.4}
-                                    />
-                                ))}
-                            </CardContent>
-                    </Card>
-                )}
+                    )}
+                </SkeletonSwap>
             </>
         </PageFrame>
     );

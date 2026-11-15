@@ -28,6 +28,7 @@ import {
 } from "@/components/glaze/ui/segmented-control";
 import {
     Skeleton,
+    SkeletonSwap,
     SkeletonText,
 } from "@/components/glaze/ui/skeleton";
 import { Textarea } from "@/components/glaze/ui/textarea";
@@ -332,26 +333,30 @@ export default function ReviewsPage() {
                     )}
                 </div>
 
-                {!loaded ? (
-                    <section className="shell">
-                        <div
-                            className="panel p-3"
-                            role="status"
-                            aria-label="Loading"
-                        >
-                            <span className="sr-only">Loading</span>
-                            <SkeletonText type="caption" last={0.26} />
-                            <div className="mt-3">
-                                <SkeletonText type="heading" last={0.64} />
-                            </div>
-                            <div className="mt-3">
-                                <SkeletonText type="body-sm" last={0.82} />
-                                <SkeletonText type="body-sm" last={0.58} />
-                            </div>
-                            <Skeleton className="mt-4 h-(--control) w-32 rounded-pill" />
-                        </div>
-                    </section>
-                ) : view === "due" ? (
+                <SkeletonSwap
+                    loading={!loaded}
+                    label="Loading reviews"
+                    fallback={
+                        <>
+                            <section className="shell">
+                                <div
+                                    className="panel p-3"
+                                >
+                                    <SkeletonText type="caption" last={0.26} />
+                                    <div className="mt-3">
+                                        <SkeletonText type="heading" last={0.64} />
+                                    </div>
+                                    <div className="mt-3">
+                                        <SkeletonText type="body-sm" last={0.82} />
+                                        <SkeletonText type="body-sm" last={0.58} />
+                                    </div>
+                                    <Skeleton className="mt-4 h-(--control) w-32 rounded-pill" />
+                                </div>
+                            </section>
+                        </>
+                    }
+                >
+                    {!loaded ? null : view === "due" ? (
                     <>
                         {current ? (
                             <Card>
@@ -667,6 +672,7 @@ export default function ReviewsPage() {
                         ) : null}
                     </>
                 )}
+                </SkeletonSwap>
             </>
         </PageFrame>
     );
