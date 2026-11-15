@@ -1,9 +1,20 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Add, Icon } from "@/components/glaze/icon";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { ItemGroup } from "@/components/glaze/ui/item";
+import {
+    SegmentedControl,
+    SegmentedControlItem,
+} from "@/components/glaze/ui/segmented-control";
+import { SkeletonText } from "@/components/glaze/ui/skeleton";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
-import { Button } from "@/components/ui/button";
-import { Segmented } from "@/components/ui/segmented";
 import PageFrame from "@/components/layout/PageFrame";
 import { getStorage } from "@/lib/storage";
 import { getRoadmapStats } from "@/lib/workspace-stats";
@@ -65,127 +76,158 @@ export default function WorkspacesPage() {
         } satisfies Record<LibraryFilter, number>;
     }, [roadmaps]);
 
-    const filterOptions = (
-        [
-            { key: "all", label: "All" },
-            { key: "in-progress", label: "In progress" },
-            { key: "completed", label: "Completed" },
-        ] as const
-    ).map((option) => ({
-        key: option.key,
-        label: mounted ? `${option.label} ${counts[option.key]}` : option.label,
-    }));
-
-    const sortOptions = [
-        { key: "recent", label: "Recent" },
-        { key: "title", label: "Title" },
-        { key: "completion", label: "Progress" },
-    ] as const satisfies readonly { key: SortMode; label: string }[];
-
     return (
         <PageFrame
             title="Learning topics"
+            glazed
             subtitle="Choose a topic to continue learning."
             actions={
-                <Link to="/create" className="button-primary shrink-0">
-                    <Plus size={16} />
+                <Button
+                    render={<Link to="/create" />}
+                    nativeButton={false}
+                >
+                    <Icon icon={Add} />
                     Add roadmap
-                </Link>
+                </Button>
             }
         >
-            <div className="sy-stack">
-            <div className="sy-toolbar sy-toolstrip">
-                <Segmented
-                    label="Filter workspaces"
-                    value={filter}
-                    options={filterOptions}
-                    onChange={setFilter}
-                />
-                <Segmented
-                    label="Sort workspaces"
-                    value={sortMode}
-                    options={sortOptions}
-                    onChange={setSortMode}
-                />
-            </div>
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-center gap-2">
+                    <SegmentedControl
+                        aria-label="Filter workspaces"
+                        value={filter}
+                        onValueChange={(value) =>
+                            setFilter(value as LibraryFilter)
+                        }
+                    >
+                        <SegmentedControlItem
+                            value="all"
+                            count={mounted ? counts.all : undefined}
+                        >
+                            All
+                        </SegmentedControlItem>
+                        <SegmentedControlItem
+                            value="in-progress"
+                            count={mounted ? counts["in-progress"] : undefined}
+                        >
+                            In progress
+                        </SegmentedControlItem>
+                        <SegmentedControlItem
+                            value="completed"
+                            count={mounted ? counts.completed : undefined}
+                        >
+                            Completed
+                        </SegmentedControlItem>
+                    </SegmentedControl>
+                    <SegmentedControl
+                        aria-label="Sort workspaces"
+                        value={sortMode}
+                        onValueChange={(value) =>
+                            setSortMode(value as SortMode)
+                        }
+                    >
+                        <SegmentedControlItem value="recent">
+                            Recent
+                        </SegmentedControlItem>
+                        <SegmentedControlItem value="title">
+                            Title
+                        </SegmentedControlItem>
+                        <SegmentedControlItem value="completion">
+                            Progress
+                        </SegmentedControlItem>
+                    </SegmentedControl>
+                </div>
 
-            {mounted ? (
-                filteredRoadmaps.length > 0 ? (
-                    <section className="sy-box flush sy-workspace-list">
-                        <div className="sy-section-head">
-                            <h2>Topics</h2>
-                            <span className="sy-readout">
-                                {filteredRoadmaps.length}
-                            </span>
-                        </div>
-                        {filteredRoadmaps.map((roadmap) => (
-                            <WorkspaceLibraryCard
-                                key={roadmap.id}
-                                roadmap={roadmap}
-                                onDelete={(id) => {
-                                    getStorage().deleteRoadmap(id);
-                                }}
-                                onRename={(id, nextTitle) => {
-                                    getStorage().updateRoadmap(id, {
-                                        title: nextTitle,
-                                    });
-                                }}
-                            />
-                        ))}
-                    </section>
-                ) : (
-                    <div className="sy-tray sy-empty-row">
-                        <p className="text-sm text-text-muted">
-                            {roadmaps.length === 0
-                                ? "No learning topics yet. Start with Scout or add your own roadmap."
-                                : "No learning topic matches this filter."}
-                        </p>
-                        <div className="flex gap-2">
-                            {roadmaps.length > 0 ? (
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => setFilter("all")}
-                                >
-                                    Show all
-                                </Button>
-                            ) : (
-                                <Button asChild variant="secondary" size="sm">
-                                    <Link to="/scout">Open Scout</Link>
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-                )
-            ) : (
-                <section className="sy-box flush sy-workspace-list">
-                    <div className="sy-section-head">
-                        <h2>Topics</h2>
-                        <span
-                            className="sy-skel line-sm"
-                            style={{ width: 28 }}
-                        />
-                    </div>
-                    <div role="status" aria-label="Loading">
-                        {[0, 1, 2].map((row) => (
-                            <div
-                                className="sy-skel-row sy-skel-pair"
-                                key={row}
-                            >
-                                <span
-                                    className="sy-skel line"
-                                    style={{ width: "32%" }}
-                                />
-                                <span
-                                    className="sy-skel line-sm"
-                                    style={{ width: "70%" }}
-                                />
+                {mounted ? (
+                    filteredRoadmaps.length > 0 ? (
+                        <section className="shell">
+                            <div className="panel">
+                                <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                    <h2 className="type-heading-sm">Topics</h2>
+                                    <span className="type-caption text-text-2">
+                                        {filteredRoadmaps.length}
+                                    </span>
+                                </header>
+                                <ItemGroup variant="plain" className="px-1 pb-1">
+                                    {filteredRoadmaps.map((roadmap) => (
+                                        <WorkspaceLibraryCard
+                                            key={roadmap.id}
+                                            roadmap={roadmap}
+                                            onDelete={(id) => {
+                                                getStorage().deleteRoadmap(id);
+                                            }}
+                                            onRename={(id, nextTitle) => {
+                                                getStorage().updateRoadmap(
+                                                    id,
+                                                    {
+                                                        title: nextTitle,
+                                                    },
+                                                );
+                                            }}
+                                        />
+                                    ))}
+                                </ItemGroup>
                             </div>
-                        ))}
-                    </div>
-                </section>
-            )}
+                        </section>
+                    ) : (
+                        <Empty reason="empty">
+                            <EmptyHeader>
+                                <EmptyTitle>
+                                    {roadmaps.length === 0
+                                        ? "No learning topics yet"
+                                        : "No learning topic matches this filter"}
+                                </EmptyTitle>
+                            </EmptyHeader>
+                            <EmptyContent>
+                                {roadmaps.length === 0 ? (
+                                    <>
+                                        <p className="type-body-sm text-text-2">
+                                            Start with Scout or add your own
+                                            roadmap.
+                                        </p>
+                                        <Button
+                                            className="mt-3"
+                                            variant="secondary"
+                                            render={<Link to="/scout" />}
+                                            nativeButton={false}
+                                        >
+                                            Open Scout
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => setFilter("all")}
+                                    >
+                                        Show all
+                                    </Button>
+                                )}
+                            </EmptyContent>
+                        </Empty>
+                    )
+                ) : (
+                    <section className="shell">
+                        <div className="panel">
+                            <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                <h2 className="type-heading-sm">Topics</h2>
+                            </header>
+                            <div
+                                className="flex flex-col gap-3 px-4 pb-4"
+                                role="status"
+                                aria-label="Loading"
+                            >
+                                <span className="sr-only">Loading</span>
+                                {[0, 1, 2].map((row) => (
+                                    <SkeletonText
+                                        key={row}
+                                        type="body"
+                                        last={0.4}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                )}
             </div>
         </PageFrame>
     );
