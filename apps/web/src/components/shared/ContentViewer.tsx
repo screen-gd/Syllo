@@ -1,107 +1,73 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
-import { motion } from "motion/react";
-import { DRAWER, ENTER, EXIT } from "@/components/shared/motion";
+import { External, Icon } from "@/components/glaze/icon";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Sheet,
+    SheetBody,
+    SheetClose,
+    SheetContent,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/glaze/ui/sheet";
 
 interface ContentViewerProps {
-    url: string;
+    /** The page to show. null keeps the sheet closed, so it can animate out. */
+    url: string | null;
     title?: string;
     onClose: () => void;
 }
 
+/**
+ * Opens a resource in a side sheet over the page, with a link to open it in a new tab.
+ * Render it always and pass url=null to close it.
+ */
 export default function ContentViewer({ url, title, onClose }: ContentViewerProps) {
-    const handleKeyDown = useCallback(
-        (e: KeyboardEvent) => {
-            if (e.key === "Escape") onClose();
-        },
-        [onClose]
-    );
-
-    useEffect(() => {
-        document.addEventListener("keydown", handleKeyDown);
-        document.body.style.overflow = "hidden";
-        return () => {
-            document.removeEventListener("keydown", handleKeyDown);
-            document.body.style.overflow = "";
-        };
-    }, [handleKeyDown]);
-
-    const isPdf = url.toLowerCase().endsWith(".pdf");
+    const isPdf = url?.toLowerCase().endsWith(".pdf") ?? false;
 
     return (
-        <div className="fixed inset-0 z-50 flex">
-            {/* Backdrop */}
-            <motion.div
-                className="absolute inset-0 bg-scrim"
-                onClick={onClose}
-                role="presentation"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, transition: ENTER }}
-                exit={{ opacity: 0, transition: EXIT }}
-            />
-
-            {/* Panel */}
-            <motion.div
-                className="relative ml-auto w-full max-w-4xl h-full bg-surface-muted border-l border-border flex flex-col shadow-[var(--shadow-sheet)]"
-                style={{ overscrollBehavior: "contain" }}
-                initial={{ x: "100%" }}
-                animate={{ x: 0, transition: DRAWER }}
-                exit={{ x: "100%", transition: { ...DRAWER, duration: 0.2 } }}
-            >
-                {/* Toolbar */}
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-surface">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="flex gap-1.5">
-                            <div className="w-3 h-3 rounded-full bg-danger/80" />
-                            <div className="w-3 h-3 rounded-full bg-raised" />
-                            <div className="w-3 h-3 rounded-full bg-accent/80" />
+        <Sheet open={url !== null} onOpenChange={(open) => { if (!open) onClose(); }}>
+            <SheetContent>
+                <SheetHeader>
+                    <SheetTitle>{title || url}</SheetTitle>
+                </SheetHeader>
+                <SheetBody className="flex min-h-0 flex-1 flex-col">
+                    {url ? (
+                        <div className="min-h-0 flex-1 overflow-hidden rounded-panel border border-line-faint">
+                            {isPdf ? (
+                                <iframe
+                                    src={url}
+                                    title={title || "PDF viewer"}
+                                    className="size-full"
+                                    loading="lazy"
+                                />
+                            ) : (
+                                <iframe
+                                    src={url}
+                                    title={title || "Content viewer"}
+                                    className="size-full bg-paper"
+                                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                                    loading="lazy"
+                                />
+                            )}
                         </div>
-                        <p className="text-text-muted text-sm truncate flex-1">
-                            {title || url}
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                        <a
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn btn-ghost text-xs py-1 px-2"
-                            aria-label="Open in new tab"
+                    ) : null}
+                </SheetBody>
+                <SheetFooter>
+                    <SheetClose>Close</SheetClose>
+                    {url ? (
+                        <Button
+                            size="sm"
+                            nativeButton={false}
+                            render={<a href={url} target="_blank" rel="noopener noreferrer" />}
                         >
-                            ↗ Open externally
-                        </a>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="btn btn-ghost text-xs py-1 px-2"
-                            aria-label="Close viewer"
-                        >
-                            ✕ Close
-                        </button>
-                    </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 overflow-hidden">
-                    {isPdf ? (
-                        <iframe
-                            src={url}
-                            title={title || "PDF Viewer"}
-                            className="w-full h-full"
-                            loading="lazy"
-                        />
-                    ) : (
-                        <iframe
-                            src={url}
-                            title={title || "Content Viewer"}
-                            className="w-full h-full bg-text"
-                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                            loading="lazy"
-                        />
-                    )}
-                </div>
-            </motion.div>
-        </div>
+                            Open in new tab
+                            <Icon icon={External} />
+                        </Button>
+                    ) : null}
+                </SheetFooter>
+            </SheetContent>
+        </Sheet>
     );
 }

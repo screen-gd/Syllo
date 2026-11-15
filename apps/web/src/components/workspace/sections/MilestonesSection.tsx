@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { MilestoneSection, Section, Milestone } from "@/types";
 import VideoPlayer from "@/components/shared/VideoPlayer";
 import ContentViewer from "@/components/shared/ContentViewer";
-import { AnimatePresence } from "motion/react";
 import { ChevronDown, Document, Icon } from "@/components/glaze/icon";
 import { Badge } from "@/components/glaze/ui/badge";
 import { Button } from "@/components/glaze/ui/button";
@@ -194,14 +193,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                 })}
             </ol>
 
-            <AnimatePresence>
-                {viewerUrl && (
-                    <ContentViewer
-                        url={viewerUrl}
-                        onClose={() => setViewerUrl(null)}
-                    />
-                )}
-            </AnimatePresence>
+            <ContentViewer url={viewerUrl} onClose={() => setViewerUrl(null)} />
         </div>
     );
 }

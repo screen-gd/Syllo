@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { ResourceSection, Section, Resource } from "@/types";
 import ContentViewer from "@/components/shared/ContentViewer";
-import { AnimatePresence } from "motion/react";
 import { Badge } from "@/components/glaze/ui/badge";
 import {
     Item,
@@ -95,14 +94,7 @@ export default function Resources({ section }: Props) {
                 );
             })}
 
-            <AnimatePresence>
-                {viewerUrl && (
-                    <ContentViewer
-                        url={viewerUrl}
-                        onClose={() => setViewerUrl(null)}
-                    />
-                )}
-            </AnimatePresence>
+            <ContentViewer url={viewerUrl} onClose={() => setViewerUrl(null)} />
         </div>
     );
 }

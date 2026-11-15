@@ -12,5 +12,5 @@
 	"apps/web/src/styles/globals.css": {"raw":72},
 	"apps/web/src/styles/learning.css": {"raw":2},
 	"apps/web/src/views/studio/learn.tsx": {"raw":3},
-	"apps/web/src/views/studio/reader.tsx": {"import":1,"raw":5}
+	"apps/web/src/views/studio/reader.tsx": {"raw":1}
 }
