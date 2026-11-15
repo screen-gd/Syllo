@@ -459,7 +459,6 @@ export default function LearnPage({
     if (!loaded)
         return (
             <div
-                data-glaze
                 className="flex flex-col gap-4"
                 role="status"
                 aria-label="Loading"
@@ -504,7 +503,7 @@ export default function LearnPage({
         );
     if (!roadmap)
         return (
-            <div data-glaze className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
                 <Empty reason="empty">
                     <EmptyHeader>
                         <EmptyTitle>
@@ -541,7 +540,7 @@ export default function LearnPage({
         );
     if (!item)
         return (
-            <div data-glaze className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
                 <Empty reason="empty">
                     <EmptyHeader>
                         <EmptyTitle>
@@ -784,7 +783,7 @@ export default function LearnPage({
     );
 
     return (
-        <div data-glaze className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
             <header className="flex flex-wrap items-center justify-between gap-2">
                 <nav
                     className="flex min-w-0 items-baseline gap-2 type-caption text-text-2"

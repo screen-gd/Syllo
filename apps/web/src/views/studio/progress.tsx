@@ -43,7 +43,7 @@ export default function ProgressPage() {
     const { reviews, roadmaps, records, loaded } = useReviews();
     if (!loaded)
         return (
-            <PageFrame title="Progress" glazed>
+            <PageFrame title="Progress">
                 <div className="flex flex-col gap-4">
                     <section className="shell">
                         <div
@@ -83,7 +83,7 @@ export default function ProgressPage() {
     const dueCount = cards.filter((item) => isDue(item)).length;
 
     return (
-        <PageFrame title="Progress" glazed>
+        <PageFrame title="Progress">
             <div className="flex flex-col gap-4">
                 <section className="shell">
                     <div className="panel">

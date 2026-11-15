@@ -79,7 +79,6 @@ export default function WorkspacesPage() {
     return (
         <PageFrame
             title="Learning topics"
-            glazed
             subtitle="Choose a topic to continue learning."
             actions={
                 <Button

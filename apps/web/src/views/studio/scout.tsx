@@ -390,7 +390,6 @@ export default function ScoutPage() {
 
     return (
         <PageFrame
-            glazed
             title="Scout"
             subtitle="Describe a goal, review the resources, and approve an editable learning roadmap."
         >

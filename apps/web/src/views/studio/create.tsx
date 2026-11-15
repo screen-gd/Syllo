@@ -182,7 +182,6 @@ function CreatePageContent() {
 
     return (
         <PageFrame
-            glazed
             title={
                 creationStep === "review" && draftRoadmap
                     ? draftRoadmap.title

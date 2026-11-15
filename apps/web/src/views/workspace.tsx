@@ -24,7 +24,7 @@ export function WorkspaceView({ id }: { id: string }) {
 
     if (!roadmap) {
         return (
-            <div className="min-h-dvh bg-page" data-glaze>
+            <div className="min-h-dvh bg-page">
                 <Header />
                 <div className="flex min-h-dvh items-center justify-center px-4">
                     <Empty reason="no-results">

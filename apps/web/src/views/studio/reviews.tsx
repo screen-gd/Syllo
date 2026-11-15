@@ -280,7 +280,6 @@ export default function ReviewsPage() {
     return (
         <PageFrame
             title="Reviews"
-            glazed
             subtitle={
                 loaded
                     ? `${due.length} ready · ${scheduled.length} card${scheduled.length === 1 ? "" : "s"}${reviewedToday ? ` · ${reviewedToday} reviewed today` : ""}`

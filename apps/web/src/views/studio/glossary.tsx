@@ -204,7 +204,6 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
     return (
         <PageFrame
             title="Glossary"
-            glazed
             subtitle={
                 loaded
                     ? `${entries.length} term${entries.length === 1 ? "" : "s"}`

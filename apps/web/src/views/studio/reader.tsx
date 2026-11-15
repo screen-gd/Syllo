@@ -341,7 +341,7 @@ export default function ReaderPage({
     }
     if (!book)
         return (
-            <PageFrame title="Book not found" glazed>
+            <PageFrame title="Book not found">
                 <Empty reason="no-results">
                     <EmptyHeader>
                         <EmptyTitle>Book not found</EmptyTitle>
@@ -363,7 +363,7 @@ export default function ReaderPage({
             </PageFrame>
         );
     return (
-        <div data-glaze className="mx-auto flex w-full max-w-256 flex-col gap-4 p-4 sm:p-6">
+        <div className="mx-auto flex w-full max-w-256 flex-col gap-4 p-4 sm:p-6">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>

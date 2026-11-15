@@ -688,7 +688,6 @@ export default function HomePage() {
     return (
         <PageFrame
             title="Home"
-            glazed
             actions={
                 <Button
                     variant="secondary"

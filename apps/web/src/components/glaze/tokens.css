@@ -131,8 +131,8 @@
   --shadow-none: none; /* the only shadow Glaze has: nothing casts one, overlays included | every element */
 
   /* == Type == */
-  --font-sans: "Glaze Sans", "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; /* every word | all text */
-  --font-mono: "Glaze Mono", "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* code, IDs, keys and paths | code, kbd, IDs */
+  --font-sans: "Glaze Sans", "Geist", "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; /* every word | all text */
+  --font-mono: "Glaze Mono", "Geist Mono", "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* code, IDs, keys and paths | code, kbd, IDs */
   --mono-scale: 0.8; /* mono at this share of the sans it sits in or beside, so it never looks bigger; never a block of code | mono, type-code roles */
   --weight-normal: 400; /* running text | body, caption */
   --weight-medium: 500; /* labels, controls and headings: the same cut as text in Glaze Sans, a step up in a fallback | label, button, heading */

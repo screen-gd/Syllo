@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
 import LearningSidebar from "./LearningSidebar";
 
-// The sy-app class stays as the legacy style scope for screens not yet
-// migrated; its grid moved to the utilities on this element.
+/** The studio frame: the app sidebar beside the page column every studio route renders into. */
 export default function LearningLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="sy-app min-h-dvh bg-page lg:flex">
+        <div className="min-h-dvh bg-page lg:flex">
             <LearningSidebar />
             <main
                 id="main-content"

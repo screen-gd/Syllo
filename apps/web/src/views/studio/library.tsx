@@ -7,7 +7,6 @@ import {
     AttachmentDropTrigger,
 } from "@/components/glaze/ui/attachment";
 import { Badge } from "@/components/glaze/ui/badge";
-import { Button } from "@/components/glaze/ui/button";
 import {
     Empty,
     EmptyContent,
@@ -88,7 +87,6 @@ export default function LibraryPage() {
     return (
         <PageFrame
             title="Library"
-            glazed
             subtitle={`${books.length} book${books.length === 1 ? "" : "s"} · ${books.filter((book) => book.status === "reading").length} currently reading`}
             actions={
                 <AttachmentDrop

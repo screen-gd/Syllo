@@ -105,7 +105,6 @@ export default function LearningSidebar() {
     return (
         <>
             <aside
-                data-glaze
                 className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col overflow-y-auto border-e border-line-faint px-3 pb-5 pt-6 lg:flex"
             >
                 <Link
@@ -172,7 +171,6 @@ export default function LearningSidebar() {
                 </div>
             </aside>
             <header
-                data-glaze
                 className="sticky top-0 z-sticky border-b border-line-faint bg-paper px-5 py-2.5 lg:hidden"
             >
                 <div className="flex items-center justify-between">

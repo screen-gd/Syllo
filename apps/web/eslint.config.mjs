@@ -13,6 +13,10 @@ export default tseslint.config(
             ".agents/**",
             "coverage/**",
             "src/routeTree.gen.ts",
+            // Vendored from the design.how Glaze registry; updated by reinstalling, not by hand.
+            "glaze.eslint.config.mjs",
+            "src/components/glaze/**",
+            "src/lib/glaze/**",
         ],
     },
     js.configs.recommended,

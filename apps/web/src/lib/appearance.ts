@@ -73,7 +73,7 @@ let listening = false;
 
 /**
  * Paints the resolved theme: `data-theme` and `colorScheme` on the root, and
- * the theme-color meta from the computed `--page` of the glazed body. While
+ * the theme-color meta from the computed `--page` of the `.glaze` body. While
  * the preference is "system" it keeps listening for OS changes; any other
  * preference drops the listener. Removes the retired appearance keys once.
  */

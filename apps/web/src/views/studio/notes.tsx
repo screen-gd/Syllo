@@ -178,7 +178,6 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
     return (
         <PageFrame
             title="Notes"
-            glazed
             subtitle={
                 loaded
                     ? `${notes.length} note${notes.length === 1 ? "" : "s"}`

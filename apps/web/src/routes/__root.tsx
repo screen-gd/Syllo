@@ -1,8 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import "@/styles/globals.css";
-import "@/styles/learning.css";
-import "@/styles/parts.css";
-import "@/styles/parts-pages.css";
 import "@/components/glaze/styles.css";
 import { Providers } from "@/components/shared/Providers";
 import { GlazePortalProvider } from "@/lib/glaze/portal";
