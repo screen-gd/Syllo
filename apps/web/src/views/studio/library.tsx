@@ -101,6 +101,7 @@ export default function LibraryPage() {
             onFiles={(files) => void onImport(files)}
         >
             <AttachmentDropTrigger
+                size="default"
                 pending={!!importing}
                 pendingLabel="Importing"
             >
@@ -115,7 +116,7 @@ export default function LibraryPage() {
         <PageFrame
             title="Library"
             subtitle={`${books.length} book${books.length === 1 ? "" : "s"} · ${books.filter((book) => book.status === "reading").length} currently reading`}
-            actions={importButton}
+            actions={books.length ? importButton : undefined}
         >
             {error && <Alert status="fail">{error}</Alert>}
             {importing && (
@@ -194,11 +195,7 @@ export default function LibraryPage() {
                         <EmptyTitle>No books yet</EmptyTitle>
                         <EmptyDescription>
                             Import an EPUB to read, highlight and save your
-                            place. Books are cached on this device
-                            {sync.status === "connected"
-                                ? " and synced privately to your other devices"
-                                : "; cloud sync can be connected in Settings"}
-                            .
+                            place.
                         </EmptyDescription>
                     </EmptyHeader>
                     <EmptyContent>{importButton}</EmptyContent>
@@ -206,7 +203,15 @@ export default function LibraryPage() {
             ) : !filtered.length ? (
                 <Empty variant="plain" reason="no-results">
                     <EmptyHeader>
-                        <EmptyTitle>No books match these filters</EmptyTitle>
+                        <EmptyTitle>
+                            {query.trim() ? (
+                                <>
+                                    No books match <code>{query.trim()}</code>
+                                </>
+                            ) : (
+                                "No books in this category or status"
+                            )}
+                        </EmptyTitle>
                     </EmptyHeader>
                     {filtersOn && (
                         <EmptyContent>
@@ -269,9 +274,12 @@ export default function LibraryPage() {
                                             </span>
                                             <span className="line-clamp-1 type-caption text-text-2">
                                                 {book.author}
-                                                {book.percent > 0 &&
-                                                    ` · ${Math.round(book.percent)}%`}
                                             </span>
+                                            {book.percent > 0 && (
+                                                <span className="type-caption text-text-2">
+                                                    {Math.round(book.percent)}% read
+                                                </span>
+                                            )}
                                         </Link>
                                     ))}
                                 </div>

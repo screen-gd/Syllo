@@ -113,8 +113,8 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                                 <h4 className="type-label">Actions</h4>
                                                 <ul className="flex flex-col">
                                                     {(milestone.tasks || []).map((task) => (
-                                                        <li key={task.id}>
-                                                            <label className="rule-row flex cursor-pointer items-start gap-3 py-2">
+                                                        <li key={task.id} className="rule-row">
+                                                            <label className="flex cursor-pointer items-start gap-3 py-2">
                                                                 <Checkbox
                                                                     className="mt-0.5"
                                                                     checked={!!task.completed}

@@ -94,7 +94,7 @@ export default function ManualRoadmap() {
     }
     return (
         <Collapsible className="mt-4">
-            <CollapsibleTrigger>Add resources yourself</CollapsibleTrigger>
+            <CollapsibleTrigger className="-ms-2.5">Add resources yourself</CollapsibleTrigger>
             <CollapsibleContent>
             <p className="mt-2 type-caption text-text-2">
                 No key or AI calls needed. Your order is preserved.

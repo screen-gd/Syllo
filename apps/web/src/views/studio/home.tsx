@@ -413,24 +413,6 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                             <ItemMeta>
                                                 {done}/{total}
                                             </ItemMeta>
-                                            <ItemActions>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon-sm"
-                                                    aria-label={`Open ${roadmap.title}`}
-                                                    render={
-                                                        <Link
-                                                            to="/learn"
-                                                            search={{
-                                                                roadmap: roadmap.id,
-                                                            }}
-                                                        />
-                                                    }
-                                                    nativeButton={false}
-                                                >
-                                                    <Icon icon={ArrowRight} />
-                                                </Button>
-                                            </ItemActions>
                                         </Item>
                                     );
                                 })}

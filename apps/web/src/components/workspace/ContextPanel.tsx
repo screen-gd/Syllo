@@ -29,9 +29,11 @@ import {
     ItemTitle,
 } from "@/components/glaze/ui/item";
 import {
-    SegmentedControl,
-    SegmentedControlItem,
-} from "@/components/glaze/ui/segmented-control";
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/glaze/ui/tabs";
 import { Switch } from "@/components/glaze/ui/switch";
 import { Textarea } from "@/components/glaze/ui/textarea";
 import SmartEmbed from "@/components/shared/SmartEmbed";
@@ -251,23 +253,19 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
     };
 
     return (
-        <>
+        <Tabs
+            value={activeTab}
+            onValueChange={(value) =>
+                setActiveTab(value === "notes" ? "notes" : "content")
+            }
+            className="min-h-0 flex-1 gap-0"
+        >
             {/* Header & Tabs */}
             <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line-faint p-3">
-                <SegmentedControl
-                    aria-label="Panel view"
-                    value={activeTab}
-                    onValueChange={(value) =>
-                        setActiveTab(value as "content" | "notes")
-                    }
-                >
-                    <SegmentedControlItem value="content">
-                        Content
-                    </SegmentedControlItem>
-                    <SegmentedControlItem value="notes">
-                        My notes
-                    </SegmentedControlItem>
-                </SegmentedControl>
+                <TabsList aria-label="Panel view">
+                    <TabsTrigger value="content">Content</TabsTrigger>
+                    <TabsTrigger value="notes">My notes</TabsTrigger>
+                </TabsList>
                 <Button
                     variant="ghost"
                     size="icon-sm"
@@ -279,14 +277,12 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
             </div>
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto p-3">
-                {activeTab === "content" ? (
-                    selectedNode.type === "module" ? (
-                        renderModuleContent()
-                    ) : (
-                        renderTaskContent()
-                    )
-                ) : (
+            <TabsContent value="content" className="overflow-y-auto p-3">
+                {selectedNode.type === "module"
+                    ? renderModuleContent()
+                    : renderTaskContent()}
+            </TabsContent>
+            <TabsContent value="notes" keepMounted className="flex flex-col overflow-y-auto p-3">
                     <Field className="flex h-full flex-col">
                         <FieldLabel className="sr-only">
                             {`Notes for this ${selectedNode.type}`}
@@ -300,8 +296,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                             }
                         />
                     </Field>
-                )}
-            </div>
-        </>
+            </TabsContent>
+        </Tabs>
     );
 }

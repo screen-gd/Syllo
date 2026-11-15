@@ -271,7 +271,7 @@ function CreatePageContent() {
 
                         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
-                                <AttachmentDropTrigger variant="secondary">
+                                <AttachmentDropTrigger variant="secondary" size="default">
                                     <Icon icon={Upload} /> Upload file
                                 </AttachmentDropTrigger>
                                 {hasContent ? (

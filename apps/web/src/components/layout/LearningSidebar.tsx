@@ -1,7 +1,13 @@
+import { useEffect, useRef } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Badge } from "@/components/glaze/ui/badge";
 import { Button } from "@/components/glaze/ui/button";
-import { Item, ItemContent, ItemTitle } from "@/components/glaze/ui/item";
+import {
+    Item,
+    ItemContent,
+    ItemGroup,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
 import {
     Glossary,
     Home,
@@ -21,6 +27,7 @@ import MaterialBar from "@/components/syllo/MaterialBar";
 import { cn } from "@/lib/utils";
 
 /** Sidebar groups: where you study, the tools you study with, then Scout. */
+const groupLabels = ["Study", "Tools", "Discover"] as const;
 const groups = [
     [
         { to: "/dashboard", label: "Home", icon: Home },
@@ -117,6 +124,10 @@ export default function LearningSidebar() {
     });
     const { reviews, roadmaps } = useReviews();
     const dueCount = reviews.filter((item) => isDue(item)).length;
+    const activeLink = useRef<HTMLAnchorElement>(null);
+    useEffect(() => {
+        activeLink.current?.scrollIntoView({ block: "nearest", inline: "center" });
+    }, [pathname]);
     return (
         <>
             <aside className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col overflow-y-auto border-e border-line-faint px-3 pb-6 pt-6 lg:flex">
@@ -130,10 +141,12 @@ export default function LearningSidebar() {
                 </Link>
                 <nav aria-label="Main navigation" className="flex flex-col gap-2">
                     {groups.map((group, index) => (
-                        <div
+                        <ItemGroup
                             key={index}
+                            variant="plain"
+                            aria-label={groupLabels[index]}
                             className={cn(
-                                "flex flex-col gap-0.5",
+                                "gap-0.5",
                                 index > 0 && "border-t border-line-faint pt-2",
                             )}
                         >
@@ -159,14 +172,15 @@ export default function LearningSidebar() {
                                     }
                                 />
                             ))}
-                        </div>
+                        </ItemGroup>
                     ))}
                 </nav>
                 {roadmaps.length > 0 && (
                     <nav
                         aria-label="Learning topics"
-                        className="mt-6 flex flex-col gap-0.5 border-t border-line-faint pt-2"
+                        className="mt-6 border-t border-line-faint pt-2"
                     >
+                        <ItemGroup variant="plain" aria-label="Learning topics" className="gap-0.5">
                         {roadmaps.slice(0, 4).map((roadmap) => (
                             <NavItem
                                 key={roadmap.id}
@@ -177,16 +191,17 @@ export default function LearningSidebar() {
                                 selected={activeRoadmap === roadmap.id}
                             />
                         ))}
+                        </ItemGroup>
                     </nav>
                 )}
-                <div className="mt-auto pt-8">
+                <ItemGroup variant="plain" aria-label="Settings" className="mt-auto pt-8">
                     <NavItem
                         to="/settings"
                         label="Settings"
                         icon={Settings}
                         pathname={pathname}
                     />
-                </div>
+                </ItemGroup>
             </aside>
             <MaterialBar className="sticky top-0 z-(--z-sticky) px-4 pt-2 lg:hidden">
                 <div className="flex items-center justify-between">
@@ -217,6 +232,7 @@ export default function LearningSidebar() {
                         return (
                             <Link
                                 key={to}
+                                ref={active ? activeLink : undefined}
                                 to={to}
                                 data-slot="nav-link"
                                 aria-current={active ? "page" : undefined}

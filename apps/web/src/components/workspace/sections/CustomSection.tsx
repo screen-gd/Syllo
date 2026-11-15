@@ -66,7 +66,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
                 <div className="shell">
                     <ul className="panel flex flex-col">
                         {data.items.map((item) => (
-                            <li key={item.id}>
+                            <li key={item.id} className="rule-row">
                                 <label className="flex cursor-pointer items-start gap-3 p-3">
                                     <Checkbox
                                         className="mt-0.5"

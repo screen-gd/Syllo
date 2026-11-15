@@ -165,11 +165,11 @@ export default function SourcesPanel({
                         ) : null}
                     </ul>
 
-                    <div className="mt-3 flex items-center gap-2">
+                    <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
                         <Select
                             native
                             aria-label="Source kind"
-                            className="w-28"
+                            className="col-span-2"
                             value={kind}
                             onValueChange={(next) =>
                                 setKind((next ?? "creator") as ScoutSourceKind)
@@ -181,7 +181,7 @@ export default function SourcesPanel({
                         />
                         <Input
                             aria-label="Source value"
-                            className="min-w-0 flex-1"
+                            className="min-w-0"
                             value={value}
                             placeholder={activeKind.placeholder}
                             onValueChange={setValue}
@@ -209,7 +209,7 @@ export default function SourcesPanel({
                 </section>
 
                 <Collapsible>
-                    <CollapsibleTrigger>
+                    <CollapsibleTrigger className="-ms-2.5">
                         Manual book task
                     </CollapsibleTrigger>
                     <CollapsibleContent>
@@ -294,7 +294,7 @@ export default function SourcesPanel({
                 </Collapsible>
 
                 <Collapsible>
-                    <CollapsibleTrigger>
+                    <CollapsibleTrigger className="-ms-2.5">
                         Add a URL
                     </CollapsibleTrigger>
                     <CollapsibleContent>

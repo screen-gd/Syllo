@@ -296,6 +296,9 @@ export default function ReaderPage({
         const ink = getComputedStyle(host.current)
             .getPropertyValue("--text-1")
             .trim();
+        for (const cfi of highlighted.current)
+            rendition.annotations.remove(cfi, "highlight");
+        highlighted.current.clear();
         for (const item of annotations) {
             const anchor = item.data.anchor;
             if (anchor.kind !== "book" || highlighted.current.has(anchor.cfi))
@@ -313,7 +316,7 @@ export default function ReaderPage({
                 /* Keep a note even when a revised EPUB invalidates its highlight. */
             }
         }
-    }, [annotations, ready]);
+    }, [annotations, ready, night]);
     function saveAnnotation(text: string) {
         if (!selection) return;
         putPersonalEntry({

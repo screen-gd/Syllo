@@ -217,7 +217,7 @@ export default function PersonalSettingsPage() {
                     onFiles={(files) => void restore(files[0])}
                 >
                     <div className="flex flex-wrap gap-2">
-                        <Button variant="secondary" onClick={exportData}>
+                        <Button variant="secondary" size="sm" onClick={exportData}>
                             <Icon icon={Download} size={14} />
                             Export backup
                         </Button>

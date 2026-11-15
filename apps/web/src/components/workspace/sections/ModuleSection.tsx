@@ -426,7 +426,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
         <div className="shell relative flex h-full flex-col">
             <div className="panel flex min-h-0 flex-1 flex-col">
                 {/* Module Top Header */}
-                <div className="flex flex-col gap-4 border-b border-line-faint p-3 sm:p-4">
+                <div className="flex flex-col gap-4 border-b border-line-faint p-3">
                     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
                         <div className="min-w-0">
                             <h2 className="type-title">{section.title}</h2>
@@ -511,7 +511,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                     <div className="relative min-h-0 w-full flex-1 overflow-y-auto">
                         {/* 1. Overview Tab */}
-                        <TabsContent value="overview" className="flex flex-col gap-8 p-3 sm:p-4">
+                        <TabsContent value="overview" className="flex flex-col gap-8 p-3">
                             {data.description && (
                                 <section>
                                     <h3 className="type-heading-sm">Description</h3>
@@ -546,15 +546,15 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </TabsContent>
 
                         {/* 2. Tasks Tab */}
-                        <TabsContent value="tasks" className="flex flex-col gap-4 p-3 sm:p-4">
+                        <TabsContent value="tasks" className="flex flex-col gap-4 p-3">
                             <Progress value={taskPercent}>
                                 <ProgressLabel>Action items</ProgressLabel>
                                 <ProgressValue>{() => `${completedCount} / ${totalCount} completed`}</ProgressValue>
                             </Progress>
 
-                            <ul className="flex flex-col gap-2">
+                            <ul className="flex flex-col">
                                 {tasks.map((task: Task) => (
-                                    <li key={task.id} className="rounded-panel border border-line-faint p-3">
+                                    <li key={task.id} className="rule-row py-3">
                                         <label className="flex cursor-pointer items-start gap-3">
                                             <Checkbox
                                                 className="mt-0.5"
@@ -604,7 +604,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         {/* 3. Resources Tab */}
                         <TabsContent value="resources" className="p-3 sm:p-4">
                             <div className={cn("grid gap-4", sidePanelResource && "lg:grid-cols-2")}>
-                                <ItemGroup aria-label="Course materials">
+                                <ItemGroup variant="plain" aria-label="Course materials">
                                     {resources.map((res) => (
                                         <Item key={res.id} selected={sidePanelResource?.id === res.id}>
                                             <ItemMedia variant="icon">
@@ -666,7 +666,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                             </div>
                         </TabsContent>
 
-                        <TabsContent value="quiz" className="flex flex-col gap-4 p-3 sm:p-4">
+                        <TabsContent value="quiz" className="flex flex-col gap-4 p-3">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                 <div>
                                     <h3 className="type-heading-sm">Knowledge check</h3>
@@ -751,7 +751,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                                 </RadioGroup>
 
                                                 {quizSubmitted && (
-                                                    <p className="mt-3 rounded-panel bg-field p-3 type-body-sm text-text-2">
+                                                    <p className="well mt-3 rounded-panel p-3 type-body-sm text-text-2">
                                                         <span className="font-medium text-text-1">Explanation:</span> {question.explanation}
                                                     </p>
                                                 )}
@@ -773,7 +773,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </TabsContent>
 
                         {/* 4. Videos Tab */}
-                        <TabsContent value="videos" className="flex flex-col gap-4 p-3 sm:p-4 lg:flex-row">
+                        <TabsContent value="videos" className="flex flex-col gap-4 p-3 lg:flex-row">
                             <div className="min-w-0 flex-1">
                                 {activeVideo && (
                                     <div className="flex flex-col gap-3">
@@ -790,7 +790,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                             {/* Playlist Sidebar */}
                             <div className="w-full shrink-0 lg:w-80">
                                 <h3 className="mb-2 type-heading-sm">Playlist</h3>
-                                <ItemGroup aria-label="Playlist">
+                                <ItemGroup variant="plain" aria-label="Playlist">
                                     {videos.map(v => (
                                         <Item key={v.id} selected={activeVideoId === v.id}>
                                             <ItemContent>
@@ -815,7 +815,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </TabsContent>
 
                         {/* 5. Notes Tab */}
-                        <TabsContent value="notes" keepMounted className="flex flex-col gap-2 p-3 sm:p-4">
+                        <TabsContent value="notes" keepMounted className="flex flex-col gap-2 p-3">
                             <Field>
                                 <div className="flex items-center justify-between gap-3">
                                     <FieldLabel>Module notes</FieldLabel>

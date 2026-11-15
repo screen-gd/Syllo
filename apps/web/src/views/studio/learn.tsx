@@ -890,6 +890,7 @@ export default function LearnPage({
                                     </Empty>
                                 )}
                             </div>
+                            {(videoResource || external) && (
                             <div className="flex items-center justify-between gap-3 p-3">
                                 <div className="min-w-0">
                                     <p className="truncate type-body-sm text-text-1">
@@ -921,6 +922,7 @@ export default function LearnPage({
                                     </Button>
                                 )}
                             </div>
+                            )}
                             {pausedCheck && (
                                 <div className="px-3 pb-3">
                                     <RecallPrompt

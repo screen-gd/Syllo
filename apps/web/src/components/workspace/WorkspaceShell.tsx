@@ -143,13 +143,17 @@ interface WorkspaceShellProps {
 
 export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadmap, isEmbed = false, isReadOnly = false, onApiError }: WorkspaceShellProps) {
     const [activeSectionId, setActiveSectionId] = useState<string>("dashboard");
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    // null follows the screen: open on tablets and up, a rail on phones. A toggle sets a real choice.
+    const [sidebarChoice, setSidebarOpen] = useState<boolean | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const progress = useProgress(roadmap);
     const phone = useMediaQuery({ query: PHONE_QUERY, serverValue: false });
     const reduceMotion = useReducedMotion();
     const scrollArea = useRef<HTMLDivElement>(null);
     // Rail, phone panel and desktop panel widths, in px: w-16, w-64 and w-72.
+    const sidebarOpen = sidebarChoice ?? !phone;
+    const sidebarOpenRef = useRef(sidebarOpen);
+    sidebarOpenRef.current = sidebarOpen;
     const sidebarWidth = !sidebarOpen ? 64 : phone ? 256 : 288;
 
     // Gamification Hooks
@@ -165,7 +169,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
     useEffect(() => {
         setUserConfig(getUserConfig());
         // On a phone the open sidebar floats over the page, so it starts closed there.
-        if (window.matchMedia("(max-width: 639px)").matches) setSidebarOpen(false);
     }, []);
 
     useEffect(() => {
@@ -387,7 +390,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.key === "\\") {
                 e.preventDefault();
-                setSidebarOpen(prev => !prev);
+                setSidebarOpen(!sidebarOpenRef.current);
             }
         };
         window.addEventListener("keydown", handleKeyDown);

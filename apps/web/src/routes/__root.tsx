@@ -107,6 +107,7 @@ function RootError({ error }: { error: unknown }) {
 
     return (
         <main id="main-content" className="flex min-h-dvh items-center justify-center p-6">
+            <h1 className="sr-only">Something went wrong</h1>
             <Empty reason="error" className="w-full max-w-md">
                 <EmptyHeader>
                     <EmptyTitle>Something went wrong</EmptyTitle>

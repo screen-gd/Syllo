@@ -30,7 +30,11 @@ export function WorkspaceView({ id }: { id: string }) {
         return (
             <div className="flex min-h-dvh flex-col bg-page">
                 <Header />
-                <div className="flex flex-1 items-center justify-center px-4 py-10">
+                <main
+                    id="main-content"
+                    className="flex flex-1 items-center justify-center px-4 py-10"
+                >
+                    <h1 className="sr-only">Workspace not found</h1>
                     <Empty reason="no-results" className="w-full max-w-md">
                         <EmptyHeader>
                             <EmptyTitle>Workspace not found</EmptyTitle>
@@ -50,7 +54,7 @@ export function WorkspaceView({ id }: { id: string }) {
                             </Button>
                         </EmptyContent>
                     </Empty>
-                </div>
+                </main>
             </div>
         );
     }

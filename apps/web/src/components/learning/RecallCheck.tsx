@@ -107,10 +107,10 @@ export function RecallPrompt({
 
     return (
         <div className="well rounded-panel p-3">
-            <p className="type-caption text-text-2">{eyebrow}</p>
-            <p className="mt-1 type-heading-sm" id={`${answerId}-question`}>
+            <p className="type-heading-sm" id={`${answerId}-question`}>
                 {check.question}
             </p>
+            <p className="mt-1 type-caption text-text-2">{eyebrow}</p>
             {!revealed ? (
                 <>
                     <div className="mt-3">

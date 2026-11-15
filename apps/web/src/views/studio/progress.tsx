@@ -239,7 +239,7 @@ export default function ProgressPage() {
                                             <ItemMeta>
                                                 {stats.percent}%
                                             </ItemMeta>
-                                            <ItemActions className="max-sm:hidden">
+                                            <ItemActions>
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
@@ -275,25 +275,6 @@ export default function ProgressPage() {
                                                     >
                                                         Glossary
                                                     </Button>
-                                            </ItemActions>
-                                            <ItemActions>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon-sm"
-                                                    aria-label={`Open ${roadmap.title}`}
-                                                    render={
-                                                        <Link
-                                                            to="/learn"
-                                                            search={{
-                                                                roadmap:
-                                                                    roadmap.id,
-                                                            }}
-                                                        />
-                                                    }
-                                                    nativeButton={false}
-                                                >
-                                                    <Icon icon={ArrowRight} />
-                                                </Button>
                                             </ItemActions>
                                         </Item>
                                     );
