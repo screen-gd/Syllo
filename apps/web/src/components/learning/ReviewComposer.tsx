@@ -1,4 +1,9 @@
 import { useState } from "react";
+import { Alert } from "@/components/glaze/ui/alert";
+import { Button } from "@/components/glaze/ui/button";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import type { SrsItem } from "@/types";
 import { createReview } from "@/lib/reviews";
 
@@ -19,8 +24,9 @@ export default function ReviewComposer({
     if (!open)
         return (
             <>
-                <button
-                    className="sy-button quiet"
+                <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                         setAnswer(initialAnswer);
                         setOpen(true);
@@ -29,9 +35,9 @@ export default function ReviewComposer({
                     }}
                 >
                     Make a review card
-                </button>
+                </Button>
                 {saved && (
-                    <p className="sy-form-hint" role="status">
+                    <p className="type-caption text-text-2" role="status">
                         Card kept for review.
                     </p>
                 )}
@@ -39,8 +45,7 @@ export default function ReviewComposer({
         );
     return (
         <form
-            className="sy-form"
-            style={{ marginTop: 18 }}
+            className="mt-4 flex flex-col gap-3"
             onSubmit={(event) => {
                 event.preventDefault();
                 if (!prompt.trim() || !answer.trim()) return;
@@ -56,41 +61,38 @@ export default function ReviewComposer({
                 }
             }}
         >
-            <label>
-                Question
-                <input
-                    className="sy-input"
+            <Field>
+                <FieldLabel>Question</FieldLabel>
+                <Input
                     value={prompt}
-                    onChange={(event) => setPrompt(event.target.value)}
+                    onValueChange={setPrompt}
                     required
                     maxLength={1000}
                 />
-            </label>
-            <label>
-                Answer
-                <textarea
-                    className="sy-textarea"
+            </Field>
+            <Field>
+                <FieldLabel>Answer</FieldLabel>
+                <Textarea
                     value={answer}
-                    onChange={(event) => setAnswer(event.target.value)}
-                    required
-                    maxLength={6000}
+                    onValueChange={setAnswer}
+                    limit={6000}
+                    autoGrow
+                    minRows={2}
+                    maxRows={10}
                 />
-            </label>
-            <div className="sy-card-actions">
-                <button className="sy-button primary">Keep card</button>
-                <button
-                    className="sy-button quiet"
+            </Field>
+            <div className="flex gap-2">
+                <Button size="sm">Keep card</Button>
+                <Button
+                    size="sm"
+                    variant="ghost"
                     type="button"
                     onClick={() => setOpen(false)}
                 >
                     Cancel
-                </button>
+                </Button>
             </div>
-            {error && (
-                <p className="sy-error" role="alert">
-                    {error}
-                </p>
-            )}
+            {error && <Alert status="fail">{error}</Alert>}
         </form>
     );
 }

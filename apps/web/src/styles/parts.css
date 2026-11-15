@@ -6,7 +6,7 @@
  */
 
 /* Raised surfaces: one border on the page colour, no shadow. */
-.sy-card:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+ 
 .sy-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-workspace-list:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-empty.bordered:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
@@ -60,8 +60,7 @@
 .sy-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-search:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-app .sy-control:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-timer-settings input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+.sy-app .sy-control:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background-color: var(--color-surface-subtle);
     border: 0;
 }
@@ -83,9 +82,7 @@
 .sy-search input:focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     outline: none;
 }
-.sy-app :is(.sy-input, .sy-select, .sy-textarea, .sy-control):focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-desk .sy-textarea:focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-desk-note-form textarea:focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+.sy-app :is(.sy-input, .sy-select, .sy-textarea, .sy-control):focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     outline: 2px solid var(--color-accent);
     outline-offset: 0;
 }
@@ -126,12 +123,7 @@
     background: var(--color-surface);
     color: var(--color-text);
     border-radius: calc(var(--sy-radius) - 3px);
-}
-.sy-tabs button[aria-selected="true"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    border-bottom-color: var(--color-text);
-}
-
-/* Quiet buttons are covered by the shared press rule; text links only tint. */
+}/* Quiet buttons are covered by the shared press rule; text links only tint. */
 .sy-time-link:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition: color var(--dur-press) ease-out;
 }
@@ -141,17 +133,7 @@
 }
 
 /* Mobile chrome: a solid bar with hairlines, no blur. */
-@media (max-width: 1024px) {
-    .sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        background: var(--color-surface);
-        border-top: 1px solid var(--color-border);
-        border-bottom: 1px solid var(--color-border);
-    }
-    .sy-mobile-nav nav a[aria-current="page"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        background: var(--color-surface-muted);
-        color: var(--color-text);
-    }
-}
+@media (max-width: 1024px) {}
 
 /* Extra contrast when the user asks for it: fields get a hairline. */
 @media (prefers-contrast: more) {
@@ -159,8 +141,7 @@
     .sy-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
     .sy-search:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
     .sy-textarea:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-app .sy-control:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-timer-settings input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    .sy-app .sy-control:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         border: 1px solid var(--color-border-strong);
     }
 }
@@ -175,9 +156,7 @@
     border-radius: 14px;
     background: var(--color-surface);
 }
-.sy-box + .sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-box + .sy-section:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-section + .sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+.sy-box + .sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-top: var(--sy-space-field);
 }
 .sy-box > .sy-section-head:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
@@ -209,15 +188,7 @@
     line-height: 1.7;
 }
 
-/* A single hairline between sections. */
-.sy-groove:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    height: 0;
-    margin: var(--sy-space-field) 0;
-    border: 0;
-    border-top: 1px solid var(--color-border);
-}
-
-/* Numbers set in the text face with tabular figures. */
+/* A single hairline between sections. *//* Numbers set in the text face with tabular figures. */
 .sy-num:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
@@ -302,13 +273,7 @@
     display: grid;
     gap: 8px;
 }
-/* A skeleton group that fills a card body where rows or copy will be. */
-.sy-skel-body:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    gap: 8px;
-    padding: 14px;
-}
-/* Skeleton rows inside a flush box run edge to edge like real rows. */
+/* A skeleton group that fills a card body where rows or copy will be. *//* Skeleton rows inside a flush box run edge to edge like real rows. */
 .sy-box.flush .sy-skel-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-inline: -24px;
     padding: 16px 24px;
@@ -319,24 +284,7 @@
 }/* Bars inside an already-subtle tray need one more shade to stay visible. */
 .sy-tray .sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-muted);
-}/* Topic rows inside a box. */
-.sy-box .sy-topic:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin: 0 -24px;
-    padding: 16px 24px;
-}
-.sy-box .sy-topic:first-of-type:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    padding-top: 6px;
-}
-.sy-box .sy-topic:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    border-bottom: 0;
-}
-.sy-box .sy-topic.sy-spined:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::before {
-    inset: 14px auto 14px 0;
-}
-.sy-box .sy-topic:first-of-type.sy-spined:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::before {
-    top: 4px;
-}
-.sy-box.flush > .sy-tray:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+}/* Topic rows inside a box. */.sy-box.flush > .sy-tray:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-bottom: 14px;
 }
 
@@ -344,40 +292,7 @@
  * Press response: every real button settles its colour over --dur-fast and
  * answers pointer-down with a scale over --dur-press. Rows and cards answer
  * with colour only; scaling big surfaces reads as layout shift.
- */
-:is(
-    .sy-button,
-    .sy-action,
-    .sy-icon-button,
-    .icon-button,
-    .button-primary,
-    .button-secondary,
-    .button-ghost,
-    .btn
-):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    transition:
-        transform var(--dur-press) ease-out,
-        background-color var(--dur-fast) ease,
-        color var(--dur-fast) ease;
-}
-:is(
-    .sy-button,
-    .sy-action,
-    .sy-icon-button,
-    .icon-button,
-    .button-primary,
-    .button-secondary,
-    .button-ghost,
-    .btn
-):active:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    transform: scale(0.97);
-}
-:is(.sy-topic):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    transition:
-        background-color var(--dur-fast) ease,
-        color var(--dur-fast) ease;
-}
-a.sy-row:active:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+ */a.sy-row:active:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-workspace-row.sy-row:active:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-subtle);
 }

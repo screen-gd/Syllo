@@ -8,6 +8,9 @@ import {
     type ReactNode,
 } from "react";
 import { z } from "zod";
+import { Button } from "@/components/glaze/ui/button";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
 import {
     getPersonalSnapshot,
     putPersonalEntry,
@@ -301,10 +304,11 @@ export function Pomodoro() {
     const minutes = String(Math.floor(session.remaining / 60)).padStart(2, "0");
     const seconds = String(session.remaining % 60).padStart(2, "0");
     return (
-        <section className="sy-pomodoro">
-            <div className="sy-pomodoro-head">
-                <h2>Pomodoro</h2>
+        <section>
+            <div className="flex items-center justify-between gap-3">
+                <h2 className="type-heading-sm">Pomodoro</h2>
                 <span
+                    className="type-caption text-text-2"
                     title={
                         blocking
                             ? "Screen Time is blocking distractions"
@@ -316,53 +320,53 @@ export function Pomodoro() {
                 </span>
             </div>
             <div
-                className="sy-timer-clock"
+                className="mt-3 text-center type-title tabular-nums"
                 role="timer"
                 aria-label={`${session.mode}, ${minutes} minutes ${seconds} seconds`}
             >
                 {minutes}:{seconds}
             </div>
-            <div className="sy-timer-actions">
-                <button className="sy-button secondary" onClick={toggle}>
+            <div className="mt-3 flex justify-center gap-2">
+                <Button variant="secondary" size="sm" onClick={toggle}>
                     {session.endAt === null ? "Start" : "Pause"}
-                </button>
-                <button className="sy-button quiet" onClick={reset}>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={reset}>
                     Reset
-                </button>
+                </Button>
             </div>
             {linked &&
             linkStatus !== null &&
             linkStatus.kind !== "ready" &&
             (runningFocus || linkStatus.kind === "unavailable") ? (
-                <p className="sy-form-hint" role="status">
+                <p className="mt-3 type-caption text-text-2" role="status">
                     {screenTimeMessage(linkStatus)}
                 </p>
             ) : null}
-            <div className="sy-timer-settings">
-                <label>
-                    Focus · min
-                    <input
+            <div className="mt-3 grid grid-cols-2 gap-3">
+                <Field>
+                    <FieldLabel>Focus · min</FieldLabel>
+                    <Input
                         type="number"
                         min={1}
                         max={120}
-                        value={focus}
+                        value={String(focus)}
                         onChange={(event) =>
                             configure("focus", Number(event.target.value))
                         }
                     />
-                </label>
-                <label>
-                    Break · min
-                    <input
+                </Field>
+                <Field>
+                    <FieldLabel>Break · min</FieldLabel>
+                    <Input
                         type="number"
                         min={1}
                         max={60}
-                        value={rest}
+                        value={String(rest)}
                         onChange={(event) =>
                             configure("rest", Number(event.target.value))
                         }
                     />
-                </label>
+                </Field>
             </div>
         </section>
     );

@@ -785,11 +785,7 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display):not(:whe
     animation: sy-dialog-out var(--dur-fast) var(--ease-out) both;
 }
 
-@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-    .sy-bg:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        display: none;
-    }
-    html[data-bg] .sy-app:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {    html[data-bg] .sy-app:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         background: var(--color-page);
     }
 }
@@ -798,55 +794,16 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display):not(:whe
  * Translucent chrome: only bars that content scrolls beneath get material.
  * The desk tab strip sits directly under the desk top bar, so it stays solid -
  * never stack a translucent layer on a translucent layer.
- */
-.sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    background: color-mix(in srgb, var(--color-page) 72%, transparent);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-}
-.sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    border-bottom: 1px solid var(--color-border);
-}
+ */@media (prefers-reduced-transparency: reduce) {}
 
-@media (prefers-reduced-transparency: reduce) {
-    .sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        background: var(--color-page);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-    }
-}
-
-@media (prefers-contrast: more) {
-    .sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        background: var(--color-page);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-    }
-    .sy-mobile-nav:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        border-top: 1px solid var(--color-border-strong);
-    }
-    .sy-desk-top:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-material:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        border-bottom: 1px solid var(--color-border-strong);
-    }
-}
+@media (prefers-contrast: more) {}
 
 /* Touch targets grow to 44px+ on coarse pointers. */
 @media (pointer: coarse) {
     :root {
         --sy-control-height: 2.75rem;
     }
-    .sy-nav a:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-nav .sy-nav-item:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-mobile-nav a:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-desk-tabs button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+     
     .sy-segmented button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
     .sy-view-switch button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         min-height: 2.75rem;

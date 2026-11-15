@@ -4,16 +4,43 @@ import {
     useMemo,
     useRef,
     useState,
-    type KeyboardEvent,
 } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
     ArrowRight,
     Check,
-    ExternalLink,
-    Plus,
-    Trash2,
-} from "lucide-react";
+    ChevronDown,
+    ChevronRight,
+    External,
+    Icon,
+    Add,
+    TrashCan,
+} from "@/components/glaze/icon";
+import { Alert } from "@/components/glaze/ui/alert";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import {
+    Item,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import {
+    SegmentedControl,
+    SegmentedControlItem,
+} from "@/components/glaze/ui/segmented-control";
+import { Skeleton, SkeletonText } from "@/components/glaze/ui/skeleton";
+import { Switch } from "@/components/glaze/ui/switch";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
 import {
     getLadder,
@@ -55,7 +82,6 @@ import {
 import type { VideoChapterInput } from "@/lib/scout/types";
 
 type TabKey = "read" | "check" | "apply";
-const TAB_ORDER: TabKey[] = ["read", "check", "apply"];
 const RECALL_PAUSES_KEY = "syllo:recall-pauses";
 
 /** Scout writes durations as "12 min"; manual videos may use "mm:ss". */
@@ -85,7 +111,6 @@ export default function LearnPage({
 }) {
     const { roadmaps, loaded } = useLearningRoadmaps();
     const records = usePersonalData();
-    const navigate = useNavigate();
     const roadmap =
         roadmaps.find((item) => item.id === roadmapId) ??
         (!roadmapId ? roadmaps[0] : null);
@@ -195,14 +220,7 @@ export default function LearnPage({
     const [pausedCheckId, setPausedCheckId] = useState<string | null>(null);
     const [playSignal, setPlaySignal] = useState(0);
     const [recallPauses, setRecallPauses] = useState(true);
-    const tabRefs = useRef<Record<TabKey, HTMLButtonElement | null>>({
-        read: null,
-        check: null,
-        apply: null,
-    });
     const uid = useId().replace(/:/g, "");
-    const tabId = (key: TabKey) => `${uid}-tab-${key}`;
-    const panelId = (key: TabKey) => `${uid}-panel-${key}`;
 
     // The Pomodoro provider uses this to name the Screen Time session and to
     // keep the lesson's links reachable while blocking runs.
@@ -438,143 +456,118 @@ export default function LearnPage({
         });
     }
 
-    function onTabKey(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-        let next = index;
-        if (event.key === "ArrowRight") next = (index + 1) % TAB_ORDER.length;
-        else if (event.key === "ArrowLeft")
-            next = (index - 1 + TAB_ORDER.length) % TAB_ORDER.length;
-        else if (event.key === "Home") next = 0;
-        else if (event.key === "End") next = TAB_ORDER.length - 1;
-        else return;
-        event.preventDefault();
-        const key = TAB_ORDER[next];
-        setTab(key);
-        tabRefs.current[key]?.focus();
-    }
-
     if (!loaded)
         return (
-            <div className="sy-desk" role="status" aria-label="Loading">
-                <header className="sy-desk-top">
-                    <span className="sy-skel line" style={{ width: "30%" }} />
-                </header>
-                <div className="sy-desk-grid">
-                    <aside className="sy-desk-work" aria-label="Video and notes">
-                        <div className="sy-desk-card sy-desk-video">
-                            <div className="sy-desk-card-head">
-                                <span
-                                    className="sy-skel line-sm"
-                                    style={{ width: "34%" }}
-                                />
-                            </div>
-                            <span className="sy-skel video" />
-                            <div className="sy-desk-video-foot">
-                                <div className="sy-skel-pair">
-                                    <span className="sy-skel line-sm" />
-                                    <span
-                                        className="sy-skel line-sm"
-                                        style={{ width: "60%" }}
-                                    />
+            <div
+                data-glaze
+                className="flex flex-col gap-4"
+                role="status"
+                aria-label="Loading"
+            >
+                <span className="sr-only">Loading</span>
+                <SkeletonText type="body" last={0.3} />
+                <div className="grid gap-4 lg:grid-cols-5">
+                    <div className="flex flex-col gap-4 lg:col-span-2">
+                        <section className="shell">
+                            <div className="panel p-4">
+                                <SkeletonText type="body-sm" last={0.34} />
+                                <Skeleton className="mt-3 h-44 w-full rounded-panel" />
+                                <div className="mt-3">
+                                    <SkeletonText type="body-sm" last={0.6} />
                                 </div>
-                                <span
-                                    className="sy-skel action"
-                                    style={{ width: 96, flex: "none" }}
-                                />
                             </div>
-                        </div>
-                        <div className="sy-desk-card sy-desk-notes">
-                            <div className="sy-desk-card-head">
-                                <span
-                                    className="sy-skel line-sm"
-                                    style={{ width: "24%" }}
-                                />
+                        </section>
+                        <section className="shell">
+                            <div className="panel p-4">
+                                <SkeletonText type="body-sm" last={0.24} />
+                                <div className="mt-3">
+                                    <SkeletonText type="body" last={0.9} />
+                                    <SkeletonText type="body-sm" last={0.7} />
+                                </div>
                             </div>
-                            <div className="sy-skel-body">
-                                <span
-                                    className="sy-skel line"
-                                    style={{ width: "90%" }}
-                                />
-                                <span
-                                    className="sy-skel line-sm"
-                                    style={{ width: "70%" }}
-                                />
+                        </section>
+                    </div>
+                    <div className="lg:col-span-3">
+                        <section className="shell">
+                            <div className="panel p-4">
+                                <SkeletonText type="heading" last={0.45} />
+                                <div className="mt-4">
+                                    <SkeletonText type="body" last={0.92} />
+                                    <SkeletonText type="body" last={0.84} />
+                                    <SkeletonText type="body" last={0.58} />
+                                </div>
                             </div>
-                        </div>
-                    </aside>
-                    <div className="sy-desk-panel">
-                        <header className="sy-desk-claim">
-                            <span
-                                className="sy-skel title"
-                                style={{ width: "45%" }}
-                            />
-                        </header>
-                        <div className="sy-desk-surface">
-                            <div className="sy-skel-body">
-                                <span
-                                    className="sy-skel line"
-                                    style={{ width: "92%" }}
-                                />
-                                <span
-                                    className="sy-skel line"
-                                    style={{ width: "84%" }}
-                                />
-                                <span
-                                    className="sy-skel line"
-                                    style={{ width: "58%" }}
-                                />
-                            </div>
-                        </div>
+                        </section>
                     </div>
                 </div>
             </div>
         );
     if (!roadmap)
         return (
-            <div className="sy-desk sy-desk-simple">
-                <div className="sy-desk-simple-inner">
-                    <h1>
-                        {roadmapId
-                            ? "This learning topic is not on this device"
-                            : "Start a learning topic"}
-                    </h1>
-                    <p className="sy-desk-lede">
-                        {roadmapId
-                            ? "It may have been deleted here, or it only exists on another device."
-                            : "Start with a goal, or organize resources you already have."}
-                    </p>
-                    <div className="sy-desk-actions">
-                        <Link className="sy-button primary" to="/scout">
-                            Open Scout
-                            <ArrowRight />
-                        </Link>
-                        <Link className="sy-button secondary" to="/create">
-                            Add your own roadmap
-                        </Link>
-                    </div>
-                </div>
+            <div data-glaze className="flex flex-col gap-4">
+                <Empty reason="empty">
+                    <EmptyHeader>
+                        <EmptyTitle>
+                            {roadmapId
+                                ? "This learning topic is not on this device"
+                                : "Start a learning topic"}
+                        </EmptyTitle>
+                    </EmptyHeader>
+                    <EmptyContent>
+                        <p className="type-body-sm text-text-2">
+                            {roadmapId
+                                ? "It may have been deleted here, or it only exists on another device."
+                                : "Start with a goal, or organize resources you already have."}
+                        </p>
+                        <div className="mt-3 flex flex-wrap justify-center gap-2">
+                            <Button
+                                render={<Link to="/scout" />}
+                                nativeButton={false}
+                            >
+                                Open Scout
+                                <Icon icon={ArrowRight} />
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                render={<Link to="/create" />}
+                                nativeButton={false}
+                            >
+                                Add your own roadmap
+                            </Button>
+                        </div>
+                    </EmptyContent>
+                </Empty>
             </div>
         );
     if (!item)
         return (
-            <div className="sy-desk sy-desk-simple">
-                <div className="sy-desk-simple-inner">
-                    <p className="sy-desk-eyebrow">{roadmap.title}</p>
-                    <h1>This roadmap has no lessons yet</h1>
-                    <p className="sy-desk-lede">
-                        Open its workspace to add tasks and resources, or
-                        explore what it already holds.
-                    </p>
-                    <div className="sy-desk-actions">
-                        <Link
-                            className="sy-button primary"
-                            to="/workspace/$id"
-                            params={{ id: roadmap.id }}
+            <div data-glaze className="flex flex-col gap-4">
+                <Empty reason="empty">
+                    <EmptyHeader>
+                        <EmptyTitle>
+                            This roadmap has no lessons yet
+                        </EmptyTitle>
+                    </EmptyHeader>
+                    <EmptyContent>
+                        <p className="type-body-sm text-text-2">
+                            Open its workspace to add tasks and resources, or
+                            explore what it already holds.
+                        </p>
+                        <Button
+                            className="mt-3"
+                            render={
+                                <Link
+                                    to="/workspace/$id"
+                                    params={{ id: roadmap.id }}
+                                />
+                            }
+                            nativeButton={false}
                         >
                             Open full workspace
-                            <ArrowRight />
-                        </Link>
-                    </div>
-                </div>
+                            <Icon icon={ArrowRight} />
+                        </Button>
+                    </EmptyContent>
+                </Empty>
             </div>
         );
 
@@ -584,13 +577,6 @@ export default function LearnPage({
     const title = item.task.title || item.task.text || "Untitled lesson";
     const done = item.task.completed || !!item.task.done;
     const next = nextCoreItem(roadmap, { excludeTaskId: item.task.id });
-    const countLabel = openInfo
-        ? openInfo.level === null
-            ? "READING TRACK"
-            : openInfo.item.role === "core"
-              ? `${LEVEL_LABEL[openInfo.level.level].toUpperCase()} · CORE ${openInfo.coreIndex + 1} / ${openInfo.level.coreTotal}`
-              : `${LEVEL_LABEL[openInfo.level.level].toUpperCase()} · GO DEEPER`
-        : `LESSON ${index + 1} / ${tasks.length}`;
     const metaLabel = openInfo
         ? openInfo.level === null
             ? "Reading track"
@@ -625,78 +611,86 @@ export default function LearnPage({
     const lessonRow = (entry: LadderItem, position: number) => {
         const current = entry.task.id === item.task.id;
         return (
-            <li key={entry.task.id}>
-                <button
-                    type="button"
-                    aria-current={current ? "step" : undefined}
-                    onClick={() => {
-                        if (current) return;
-                        void navigate({
-                            to: "/learn",
-                            search: {
-                                roadmap: roadmap.id,
-                                task: entry.task.id,
-                            },
-                        });
-                    }}
-                >
-                    <span className="sy-desk-mono">
-                        {String(position + 1).padStart(2, "0")}
-                    </span>
-                    <span>
-                        {entry.task.title || entry.task.text || "Untitled lesson"}
-                        {entry.role === "core" && entry.task.coreReason ? (
-                            <small className="sy-desk-reason">
-                                {entry.task.coreReason}
-                            </small>
-                        ) : null}
-                    </span>
-                    <span
-                        className="sy-desk-pip"
-                        data-done={entry.done || undefined}
-                        aria-hidden="true"
+            <Item
+                key={entry.task.id}
+                size="sm"
+                selected={current}
+                aria-current={current ? "step" : undefined}
+                render={
+                    <Link
+                        to="/learn"
+                        search={{
+                            roadmap: roadmap.id,
+                            task: entry.task.id,
+                        }}
                     />
-                </button>
-            </li>
+                }
+            >
+                <span className="type-caption text-text-3">
+                    {String(position + 1).padStart(2, "0")}
+                </span>
+                <ItemContent>
+                    <ItemTitle>
+                        {entry.task.title || entry.task.text || "Untitled lesson"}
+                    </ItemTitle>
+                    {entry.role === "core" && entry.task.coreReason ? (
+                        <ItemDescription>
+                            {entry.task.coreReason}
+                        </ItemDescription>
+                    ) : null}
+                </ItemContent>
+                {entry.done ? <Icon icon={Check} /> : null}
+            </Item>
         );
     };
 
     const levelSection = (level: LadderLevel) => {
         const open = isLevelOpen(level.level);
-        const panelId = `${uid}-level-${level.level}`;
+        const regionId = `${uid}-level-${level.level}`;
         return (
-            <div key={level.level} className="sy-desk-level">
-                <button
-                    type="button"
-                    className="sy-desk-level-head"
+            <div key={level.level}>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
                     aria-expanded={open}
-                    aria-controls={panelId}
+                    aria-controls={regionId}
                     onClick={() => toggleLevel(level.level)}
                 >
-                    <span>{LEVEL_LABEL[level.level]}</span>
-                    <span className="sy-desk-mono">
+                    <Icon
+                        icon={open ? ChevronDown : ChevronRight}
+                        className="text-text-3"
+                    />
+                    <span className="min-w-0 flex-1 truncate text-start">
+                        {LEVEL_LABEL[level.level]}
+                    </span>
+                    <span className="type-caption text-text-2">
                         {level.coreDone}/{level.coreTotal} core
                     </span>
                     {level.complete ? (
-                        <span className="sy-desk-level-tag">Done</span>
+                        <Badge>Done</Badge>
                     ) : level.level === ladder?.current ? (
-                        <span className="sy-desk-level-tag">Up next</span>
+                        <Badge>Up next</Badge>
                     ) : null}
-                </button>
+                </Button>
                 {open ? (
-                    <ol id={panelId}>
+                    <ItemGroup
+                        id={regionId}
+                        variant="plain"
+                        className="mt-1"
+                    >
                         {level.core.map((entry, position) =>
                             lessonRow(entry, position),
                         )}
                         {level.deeper.length > 0 && (
-                            <li className="sy-desk-deeper-head">
+                            <p className="px-3 pt-2 pb-1 type-caption text-text-3">
                                 Go deeper (optional)
-                            </li>
+                            </p>
                         )}
                         {level.deeper.map((entry, position) =>
                             lessonRow(entry, position),
                         )}
-                    </ol>
+                    </ItemGroup>
                 ) : null}
             </div>
         );
@@ -790,881 +784,1073 @@ export default function LearnPage({
     );
 
     return (
-        <div className="sy-desk">
-            <header className="sy-desk-top">
-                <nav className="sy-desk-crumb" aria-label="Breadcrumb">
-                    <Link to="/workspaces">Learning topics</Link>
-                    <span className="sy-desk-crumb-sep">/</span>
-                    <span className="sy-desk-crumb-topic">
-                        {roadmap.title}
-                    </span>
-                    <span className="sy-desk-crumb-sep">/</span>
-                    <b>{title}</b>
-                </nav>
-                <div className="sy-desk-top-right">
-                    <span className="sy-desk-count">{countLabel}</span>
-                    <Link
-                        className="sy-button quiet"
-                        to="/workspace/$id"
-                        params={{ id: roadmap.id }}
-                        title="Edit roadmap"
-                    >
-                        <span className="sy-desk-edit-label">
-                            Edit roadmap
-                        </span>
-                        <ExternalLink />
+        <div data-glaze className="flex flex-col gap-4">
+            <header className="flex flex-wrap items-center justify-between gap-2">
+                <nav
+                    className="flex min-w-0 items-baseline gap-2 type-caption text-text-2"
+                    aria-label="Breadcrumb"
+                >
+                    <Link to="/workspaces" className="hover:text-text-1">
+                        Learning topics
                     </Link>
+                    <span aria-hidden="true">/</span>
+                    <span className="truncate">{roadmap.title}</span>
+                    <span aria-hidden="true">/</span>
+                    <b className="truncate text-text-1">{title}</b>
+                </nav>
+                <div className="flex items-center gap-2">
+                    <span className="type-caption text-text-2">{metaLabel}</span>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        title="Edit roadmap"
+                        render={
+                            <Link
+                                to="/workspace/$id"
+                                params={{ id: roadmap.id }}
+                            />
+                        }
+                        nativeButton={false}
+                    >
+                        Edit roadmap
+                        <Icon icon={External} />
+                    </Button>
                 </div>
             </header>
 
-            {error && (
-                <div className="sy-desk-alert">
-                    <p role="alert" className="sy-error">
-                        {error}
-                    </p>
-                </div>
-            )}
+            {error && <Alert status="fail">{error}</Alert>}
 
-            <div className="sy-desk-grid">
-                <aside className="sy-desk-work" aria-label="Video and notes">
-                    <div className="sy-desk-card sy-desk-video">
-                        <div className="sy-desk-card-head sy-desk-video-head">
-                            <span className="sy-desk-live">
-                                <i aria-hidden="true" />
-                                {videoResource
-                                    ? "Watch the walkthrough"
-                                    : "Lesson source"}
-                            </span>
-                            {video?.duration && (
-                                <span className="sy-desk-mono">
-                                    {video.duration}
+            <div className="grid gap-4 lg:grid-cols-5">
+                <aside
+                    className="flex min-w-0 flex-col gap-4 lg:col-span-2"
+                    aria-label="Video and notes"
+                >
+                    <section className="shell">
+                        <div className="panel">
+                            <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                <span className="type-caption text-text-2">
+                                    {videoResource
+                                        ? "Watch the walkthrough"
+                                        : "Lesson source"}
                                 </span>
-                            )}
-                        </div>
-                        {videoResource ? (
-                            <div className="sy-desk-video-body">
-                                <StudyVideo
-                                    key={`${item.task.id}:${videoResource.url}`}
-                                    url={videoResource.url}
-                                    title={
-                                        video?.title || videoResource.title
-                                    }
-                                    startSeconds={startSeconds}
-                                    seekTo={seekTo}
-                                    onPosition={recordPosition}
-                                    checkpoints={checkpoints}
-                                    onCheckpoint={(seconds) => {
-                                        const due = pendingChecks.find(
-                                            (check) =>
-                                                check.pauseAt === seconds,
-                                        );
-                                        if (due) setPausedCheckId(due.id);
-                                    }}
-                                    playSignal={playSignal}
-                                />
-                            </div>
-                        ) : (
-                            <div className="sy-desk-video-empty">
-                                <p>
-                                    This lesson is reading only. Open a source
-                                    from the Read tab.
-                                </p>
-                            </div>
-                        )}
-                        <div className="sy-desk-video-foot">
-                            <div>
-                                <b>
-                                    {video?.title ||
-                                        videoResource?.title ||
-                                        title}
-                                </b>
-                                {videoResource && (
-                                    <span>
-                                        Saved at {formatTimestamp(position)}
+                                {video?.duration && (
+                                    <span className="type-caption text-text-2">
+                                        {video.duration}
                                     </span>
                                 )}
+                            </header>
+                            <div className="px-4">
+                                {videoResource ? (
+                                    <StudyVideo
+                                        key={`${item.task.id}:${videoResource.url}`}
+                                        url={videoResource.url}
+                                        title={
+                                            video?.title || videoResource.title
+                                        }
+                                        startSeconds={startSeconds}
+                                        seekTo={seekTo}
+                                        onPosition={recordPosition}
+                                        checkpoints={checkpoints}
+                                        onCheckpoint={(seconds) => {
+                                            const due = pendingChecks.find(
+                                                (check) =>
+                                                    check.pauseAt === seconds,
+                                            );
+                                            if (due) setPausedCheckId(due.id);
+                                        }}
+                                        playSignal={playSignal}
+                                    />
+                                ) : (
+                                    <Empty variant="plain" reason="empty">
+                                        <EmptyHeader>
+                                            <EmptyTitle>
+                                                This lesson is reading only.
+                                                Open a source from the Read tab.
+                                            </EmptyTitle>
+                                        </EmptyHeader>
+                                    </Empty>
+                                )}
                             </div>
-                            {external && (
-                                <a
-                                    className="sy-desk-external"
-                                    href={external.toString()}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    External
-                                    <ExternalLink size={12} />
-                                </a>
+                            <div className="flex items-center justify-between gap-3 p-4 pt-3">
+                                <div className="min-w-0">
+                                    <p className="truncate type-body-sm text-text-1">
+                                        {video?.title ||
+                                            videoResource?.title ||
+                                            title}
+                                    </p>
+                                    {videoResource && (
+                                        <p className="type-caption text-text-3">
+                                            Saved at {formatTimestamp(position)}
+                                        </p>
+                                    )}
+                                </div>
+                                {external && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        render={
+                                            <a
+                                                href={external.toString()}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            />
+                                        }
+                                        nativeButton={false}
+                                    >
+                                        External
+                                        <Icon icon={External} />
+                                    </Button>
+                                )}
+                            </div>
+                            {pausedCheck && (
+                                <div className="px-4 pb-4">
+                                    <RecallPrompt
+                                        check={pausedCheck}
+                                        eyebrow={`Quick check · ${pausedCheck.label}`}
+                                        autoFocus
+                                        doneLabel="Continue watching"
+                                        onDone={() =>
+                                            resumeAfterCheck(pausedCheck.id)
+                                        }
+                                        onSkip={() =>
+                                            resumeAfterCheck(pausedCheck.id)
+                                        }
+                                        onReplay={(seconds) => {
+                                            finishCheck(pausedCheck.id);
+                                            setPausedCheckId(null);
+                                            seek(seconds);
+                                            setPlaySignal((value) => value + 1);
+                                        }}
+                                    />
+                                </div>
                             )}
-                        </div>
-                        {pausedCheck && (
-                            <RecallPrompt
-                                check={pausedCheck}
-                                eyebrow={`Quick check · ${pausedCheck.label}`}
-                                autoFocus
-                                doneLabel="Continue watching"
-                                onDone={() => resumeAfterCheck(pausedCheck.id)}
-                                onSkip={() => resumeAfterCheck(pausedCheck.id)}
-                                onReplay={(seconds) => {
-                                    finishCheck(pausedCheck.id);
-                                    setPausedCheckId(null);
-                                    seek(seconds);
-                                    setPlaySignal((value) => value + 1);
-                                }}
-                            />
-                        )}
-                        {hasChapterChecks && (
-                            <label className="sy-recall-toggle">
-                                <input
-                                    type="checkbox"
-                                    checked={recallPauses}
-                                    onChange={(event) =>
-                                        toggleRecallPauses(event.target.checked)
-                                    }
-                                />
-                                Pause for one question at the end of each
-                                chapter
-                            </label>
-                        )}
-                        {videoResource && (
-                            <details className="sy-desk-manual">
-                                <summary>
-                                    Update position after listening elsewhere
-                                </summary>
-                                <div className="sy-desk-manual-row">
-                                    <label>
-                                        Minutes
-                                        <input
-                                            className="sy-input"
-                                            type="number"
-                                            min={0}
-                                            step="0.1"
-                                            value={manualPosition}
-                                            onChange={(event) =>
-                                                setManualPosition(
-                                                    event.target.value,
-                                                )
+                            {hasChapterChecks && (
+                                <div className="px-4 pb-4">
+                                    <Field orientation="horizontal">
+                                        <FieldLabel className="flex-1">
+                                            Pause for one question at the end
+                                            of each chapter
+                                        </FieldLabel>
+                                        <Switch
+                                            checked={recallPauses}
+                                            onCheckedChange={
+                                                toggleRecallPauses
                                             }
                                         />
-                                    </label>
-                                    <button
-                                        className="sy-button secondary"
-                                        disabled={manualPosition === ""}
-                                        onClick={() => {
-                                            const minutes = Number(
-                                                manualPosition,
-                                            );
-                                            if (!Number.isFinite(minutes))
-                                                return;
-                                            setManualPosition("");
-                                            seek(Math.max(0, minutes * 60));
-                                        }}
-                                    >
-                                        Save
-                                    </button>
+                                    </Field>
                                 </div>
-                            </details>
-                        )}
-                    </div>
+                            )}
+                            {videoResource && (
+                                <details className="px-4 pb-4">
+                                    <summary className="cursor-pointer type-caption text-text-2">
+                                        Update position after listening
+                                        elsewhere
+                                    </summary>
+                                    <div className="mt-2 flex items-end gap-2">
+                                        <Field className="w-32">
+                                            <FieldLabel>Minutes</FieldLabel>
+                                            <Input
+                                                type="number"
+                                                min={0}
+                                                step={0.1}
+                                                value={manualPosition}
+                                                onChange={(event) =>
+                                                    setManualPosition(
+                                                        event.target.value,
+                                                    )
+                                                }
+                                            />
+                                        </Field>
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            disabled={manualPosition === ""}
+                                            onClick={() => {
+                                                const minutes = Number(
+                                                    manualPosition,
+                                                );
+                                                if (!Number.isFinite(minutes))
+                                                    return;
+                                                setManualPosition("");
+                                                seek(Math.max(0, minutes * 60));
+                                            }}
+                                        >
+                                            Save
+                                        </Button>
+                                    </div>
+                                </details>
+                            )}
+                        </div>
+                    </section>
 
                     {chapters.length > 0 && (
-                        <div className="sy-desk-card sy-desk-chapters">
-                            <div className="sy-desk-card-head">
-                                <b>Chapters</b>
-                                <span className="sy-desk-mono">
-                                    {chapters.length}
-                                </span>
-                            </div>
-                            <ol>
-                                {chapters.map((chapter) => (
-                                    <li key={`${chapter.seconds}:${chapter.label}`}>
-                                        <button
-                                            type="button"
+                        <section className="shell">
+                            <div className="panel">
+                                <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                    <h2 className="type-heading-sm">
+                                        Chapters
+                                    </h2>
+                                    <span className="type-caption text-text-2">
+                                        {chapters.length}
+                                    </span>
+                                </header>
+                                <ItemGroup variant="plain" className="px-2 pb-2">
+                                    {chapters.map((chapter) => (
+                                        <Button
+                                            key={`${chapter.seconds}:${chapter.label}`}
+                                            variant="ghost"
+                                            size="sm"
                                             aria-current={
                                                 activeChapter ===
                                                 chapter.seconds
                                                     ? "true"
                                                     : undefined
                                             }
-                                            onClick={() => seek(chapter.seconds)}
+                                            className="w-full justify-start"
+                                            onClick={() =>
+                                                seek(chapter.seconds)
+                                            }
                                         >
-                                            <span className="sy-desk-mono">
+                                            <span className="type-caption text-text-3">
                                                 {chapter.time}
                                             </span>
-                                            <span>{chapter.label}</span>
-                                        </button>
-                                    </li>
-                                ))}
-                            </ol>
-                        </div>
+                                            <span
+                                                className={
+                                                    activeChapter ===
+                                                    chapter.seconds
+                                                        ? "min-w-0 flex-1 truncate text-start"
+                                                        : "min-w-0 flex-1 truncate text-start text-text-2"
+                                                }
+                                            >
+                                                {chapter.label}
+                                            </span>
+                                        </Button>
+                                    ))}
+                                </ItemGroup>
+                            </div>
+                        </section>
                     )}
 
-                    <div className="sy-desk-card sy-desk-notes">
-                        <div className="sy-desk-card-head sy-desk-notes-head">
-                            <b>Notes</b>
-                            <span className="sy-desk-mono">
-                                at {formatTimestamp(position)}
-                            </span>
-                            <Link to="/notes" search={{ roadmap: roadmap.id }}>
-                                All notes
-                            </Link>
-                        </div>
-                        <form
-                            className="sy-desk-note-form"
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                                saveNote();
-                            }}
-                        >
-                            <textarea
-                                rows={1}
-                                value={draft}
-                                onChange={(event) =>
-                                    setDraft(event.target.value)
-                                }
-                                placeholder="A thought, a question…"
-                                aria-label="New note"
-                            />
-                            <button
-                                type="submit"
-                                aria-label="Save note"
-                                disabled={!draft.trim()}
-                            >
-                                <Plus size={14} />
-                            </button>
-                        </form>
-                        {pausedCheck ? (
-                            <p className="sy-desk-notes-empty">
-                                Notes are hidden while you answer.
-                            </p>
-                        ) : notes.length === 0 ? (
-                            <p className="sy-desk-notes-empty">
-                                No notes yet. They attach to{" "}
-                                {formatTimestamp(position)}.
-                            </p>
-                        ) : (
-                            <ul className="sy-desk-note-list">
-                                {notes.map((note) => (
-                                    <li key={note.id}>
-                                        <button
-                                            type="button"
-                                            className="sy-desk-note-time"
-                                            onClick={() => seek(note.seconds)}
-                                        >
-                                            {formatTimestamp(note.seconds)}
-                                        </button>
-                                        <p>{note.text}</p>
-                                        <button
-                                            type="button"
-                                            className="sy-desk-note-del"
-                                            aria-label="Delete note"
-                                            onClick={() =>
-                                                removePersonalEntry(note.id)
-                                            }
-                                        >
-                                            <Trash2 size={11} />
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-
-                    <div className="sy-desk-card sy-desk-lessons">
-                        <div className="sy-desk-card-head">
-                            <b>Ladder</b>
-                            <span className="sy-desk-mono">
-                                {ladder
-                                    ? `${ladder.levels.reduce((total, level) => total + level.coreDone, 0)}/${ladder.levels.reduce((total, level) => total + level.coreTotal, 0)} core`
-                                    : "0/0 core"}
-                            </span>
-                        </div>
-                        {ladderLevelUp && ladderLevelUpTarget ? (
-                            <Link
-                                className="sy-desk-levelup"
-                                to="/learn"
-                                search={{
-                                    roadmap: roadmap.id,
-                                    task: ladderLevelUpTarget.task.id,
+                    <section className="shell">
+                        <div className="panel">
+                            <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                <h2 className="type-heading-sm">Notes</h2>
+                                <span className="type-caption text-text-2">
+                                    at {formatTimestamp(position)}
+                                </span>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    render={
+                                        <Link
+                                            to="/notes"
+                                            search={{ roadmap: roadmap.id }}
+                                        />
+                                    }
+                                    nativeButton={false}
+                                >
+                                    All notes
+                                </Button>
+                            </header>
+                            <form
+                                className="flex items-start gap-2 px-4 pb-3"
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    saveNote();
                                 }}
                             >
-                                Level up: start{" "}
-                                {LEVEL_LABEL[ladderLevelUp.to]}
-                                <ArrowRight />
-                            </Link>
-                        ) : null}
-                        {ladder?.levels.map(levelSection)}
-                        {ladder && ladder.reading.length > 0 ? (
-                            <div className="sy-desk-level">
-                                <button
-                                    type="button"
-                                    className="sy-desk-level-head"
-                                    aria-expanded={readingOpen}
-                                    aria-controls={`${uid}-level-reading`}
-                                    onClick={() =>
-                                        setReadingOpen((open) => !open)
-                                    }
-                                >
-                                    <span>Reading track</span>
-                                    <span className="sy-desk-mono">
-                                        {ladder.reading.filter((entry) => entry.done).length}
-                                        /{ladder.reading.length}
-                                    </span>
-                                </button>
-                                {readingOpen ? (
-                                    <ol id={`${uid}-level-reading`}>
-                                        {ladder.reading.map((entry, position) =>
-                                            lessonRow(entry, position),
-                                        )}
-                                    </ol>
-                                ) : null}
-                            </div>
-                        ) : null}
-                    </div>
-
-                    <div className="sy-desk-card sy-desk-pomodoro-card">
-                        <Pomodoro />
-                    </div>
-                </aside>
-
-                <div className="sy-desk-panel">
-                    <header className="sy-desk-claim">
-                        <div className="sy-desk-claim-top">
-                            <p className="sy-desk-eyebrow">
-                                {item.sectionTitle}
-                            </p>
-                            <label className="sy-desk-done">
-                                <input
-                                    type="checkbox"
-                                    checked={done}
-                                    onChange={(event) =>
-                                        onMarkDone(event.target.checked)
-                                    }
+                                <Textarea
+                                    className="min-w-0 flex-1"
+                                    value={draft}
+                                    onValueChange={setDraft}
+                                    placeholder="A thought, a question"
+                                    aria-label="New note"
+                                    autoGrow
+                                    minRows={1}
+                                    maxRows={6}
                                 />
-                                <span>
-                                    {done ? "Completed" : "Mark complete"}
-                                </span>
-                            </label>
-                        </div>
-                        <h1>{title}</h1>
-                        <div className="sy-desk-claim-meta">
-                            {item.task.estimatedTime && (
-                                <span>{item.task.estimatedTime}</span>
-                            )}
-                            {subtasks.length > 0 && (
-                                <span>
-                                    {doneSubtasks}/{subtasks.length} steps
-                                </span>
-                            )}
-                            <span>{metaLabel}</span>
-                        </div>
-                    </header>
-
-                    {completionOpen && completion ? (
-                        <div className="sy-desk-card sy-desk-recall">
-                            {completion.core && !recallResolved ? (
-                                <>
-                                    <p className="sy-desk-eyebrow">
-                                        Explain it back
-                                    </p>
-                                    <p className="sy-desk-recall-hint">
-                                        Optional. 30 seconds, 1–3 lines, in
-                                        your own words.
-                                    </p>
-                                    <textarea
-                                        className="sy-textarea"
-                                        rows={3}
-                                        maxLength={400}
-                                        value={recallText}
-                                        onChange={(event) =>
-                                            setRecallText(event.target.value)
-                                        }
-                                        aria-label="Explain it back"
-                                    />
-                                    <div className="sy-desk-actions">
-                                        <button
-                                            type="button"
-                                            className="sy-button primary"
-                                            disabled={!recallText.trim()}
-                                            onClick={saveRecall}
-                                        >
-                                            Save note
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="sy-button quiet"
-                                            onClick={() =>
-                                                setRecallResolved(true)
-                                            }
-                                        >
-                                            Skip
-                                        </button>
-                                    </div>
-                                </>
-                            ) : completionLevelUp && completionLevelUpTarget ? (
-                                <>
-                                    <p className="sy-desk-eyebrow">
-                                        {`Level up: ${LEVEL_LABEL[completionLevelUp.to]}`}
-                                    </p>
-                                    <p className="sy-desk-recall-hint">
-                                        The {LEVEL_LABEL[completionLevelUp.from].toLowerCase()} core is done.
-                                    </p>
-                                    <Link
-                                        className="sy-button primary"
-                                        to="/learn"
-                                        search={{
-                                            roadmap: roadmap.id,
-                                            task: completionLevelUpTarget.task
-                                                .id,
-                                        }}
-                                    >
-                                        Start {LEVEL_LABEL[completionLevelUp.to]}
-                                        <ArrowRight />
-                                    </Link>
-                                </>
-                            ) : completionNext ? (
-                                <>
-                                    <p className="sy-desk-eyebrow">
-                                        Next core video
-                                    </p>
-                                    <p className="sy-desk-recall-hint">
-                                        {completionNext.task.title ||
-                                            completionNext.task.text}
-                                    </p>
-                                    <Link
-                                        className="sy-button primary"
-                                        to="/learn"
-                                        search={{
-                                            roadmap: roadmap.id,
-                                            task: completionNext.task.id,
-                                        }}
-                                    >
-                                        Continue
-                                        <ArrowRight />
-                                    </Link>
-                                </>
-                            ) : (
-                                <p className="sy-desk-recall-hint">
-                                    Every core video is watched.
-                                </p>
-                            )}
-                        </div>
-                    ) : null}
-
-                    <div
-                        className="sy-desk-tabs"
-                        role="tablist"
-                        aria-label="Lesson views"
-                    >
-                        {TAB_ORDER.map((key, tabIndex) => {
-                            const count =
-                                key === "check"
-                                    ? subtasks.length
-                                    : key === "apply"
-                                      ? 1
-                                      : 0;
-                            return (
-                                <button
-                                    key={key}
-                                    ref={(node) => {
-                                        tabRefs.current[key] = node;
-                                    }}
-                                    id={tabId(key)}
-                                    type="button"
-                                    role="tab"
-                                    aria-selected={tab === key}
-                                    aria-controls={panelId(key)}
-                                    tabIndex={tab === key ? 0 : -1}
-                                    onClick={() => setTab(key)}
-                                    onKeyDown={(event) =>
-                                        onTabKey(event, tabIndex)
-                                    }
+                                <Button
+                                    type="submit"
+                                    variant="secondary"
+                                    size="icon-sm"
+                                    aria-label="Save note"
+                                    disabled={!draft.trim()}
                                 >
-                                    {key === "read"
-                                        ? "Read"
-                                        : key === "check"
-                                          ? "Check"
-                                          : "Apply"}
-                                    {count > 0 && (
-                                        <span className="sy-desk-tab-count">
-                                            {count}
-                                        </span>
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    <div className="sy-desk-surface">
-                        <section
-                            className="sy-desk-tab"
-                            id={panelId("read")}
-                            role="tabpanel"
-                            aria-labelledby={tabId("read")}
-                            hidden={tab !== "read"}
-                        >
-                            <div className="sy-desk-copy">
-                                {brief ? (
-                                    <p className="sy-desk-lede">{brief}</p>
-                                ) : (
-                                    <p className="sy-desk-empty">
-                                        No written brief yet. The source and
-                                        your notes are the lesson.
-                                    </p>
-                                )}
-
-                                {(contextDescription ||
-                                    objectives.length > 0 ||
-                                    concepts ||
-                                    sectionNotes) && (
-                                    <section className="sy-desk-block">
-                                        <h2>In this module</h2>
-                                        <div className="sy-desk-prose">
-                                            {contextDescription && (
-                                                <p>{contextDescription}</p>
-                                            )}
-                                            {concepts && (
-                                                <p>
-                                                    <b>Concepts · </b>
-                                                    {concepts}
-                                                </p>
-                                            )}
-                                            {sectionNotes && (
-                                                <p>{sectionNotes}</p>
-                                            )}
-                                        </div>
-                                        {objectives.length > 0 && (
-                                            <ul className="sy-desk-objectives">
-                                                {objectives.map(
-                                                    (objective, objectiveIndex) => (
-                                                        <li
-                                                            key={`${objectiveIndex}:${objective}`}
-                                                        >
-                                                            <span className="sy-desk-mono">
-                                                                {String(
-                                                                    objectiveIndex +
-                                                                        1,
-                                                                ).padStart(
-                                                                    2,
-                                                                    "0",
-                                                                )}
-                                                            </span>
-                                                            <span>
-                                                                {objective}
-                                                            </span>
-                                                        </li>
-                                                    ),
-                                                )}
-                                            </ul>
-                                        )}
-                                    </section>
-                                )}
-
-                                <section className="sy-desk-block">
-                                    <h2>Sources</h2>
-                                    {sources.length > 0 ? (
-                                        <div className="sy-desk-source-list">
-                                            {sources.map((resource) => (
-                                                <a
-                                                    key={resource.id}
-                                                    className="sy-desk-source"
-                                                    href={
-                                                        safeResourceUrl(
-                                                            resource.url,
-                                                        ) ?? "#"
-                                                    }
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    <span className="sy-desk-source-type sy-desk-mono">
-                                                        {resource.type}
-                                                    </span>
-                                                    <span className="sy-desk-source-body">
-                                                        <b>
-                                                            {resource.title ||
-                                                                resource.url}
-                                                        </b>
-                                                        {resource.description && (
-                                                            <small>
-                                                                {
-                                                                    resource.description
-                                                                }
-                                                            </small>
-                                                        )}
-                                                    </span>
-                                                    <ExternalLink size={14} />
-                                                </a>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="sy-desk-empty">
-                                            No source is attached to this
-                                            lesson yet.
-                                        </p>
-                                    )}
-                                </section>
-                            </div>
-                        </section>
-
-                        <section
-                            className="sy-desk-tab"
-                            id={panelId("check")}
-                            role="tabpanel"
-                            aria-labelledby={tabId("check")}
-                            hidden={tab !== "check"}
-                        >
-                            <div className="sy-desk-copy">
-                                <header className="sy-desk-tab-head">
-                                    <h2>Check what stuck</h2>
-                                    <p>
-                                        {videoChecks.state.kind === "off"
-                                            ? "Tick the steps you finished. This is a record, not a grade."
-                                            : "Answer from memory first, then look at the video. Nothing here is graded."}
-                                    </p>
-                                </header>
-
-                                {videoChecks.state.kind !== "off" && (
-                                    <section className="sy-desk-block sy-recall-block">
-                                        <h2>From memory</h2>
-                                        <VideoChecksStatus
-                                            state={videoChecks.state}
-                                            onRetry={videoChecks.retry}
-                                        />
-                                        {videoChecks.state.kind === "ready" &&
-                                            (checks.length === 0 ? (
-                                                <p className="sy-desk-empty">
-                                                    No questions came out of
-                                                    this video.
-                                                </p>
-                                            ) : nextCheck ? (
-                                                <RecallPrompt
-                                                    check={nextCheck}
-                                                    eyebrow={`Question ${checks.indexOf(nextCheck) + 1} of ${checks.length} · ${nextCheck.label}`}
-                                                    doneLabel={
-                                                        pendingChecks.length > 1
-                                                            ? "Next question"
-                                                            : "Done"
-                                                    }
-                                                    onDone={() =>
-                                                        finishCheck(nextCheck.id)
-                                                    }
-                                                    onSkip={() =>
-                                                        finishCheck(nextCheck.id)
-                                                    }
-                                                    onReplay={seek}
-                                                />
-                                            ) : (
-                                                <p className="sy-desk-empty">
-                                                    All {checks.length}{" "}
-                                                    answered. Missed one?
-                                                    Replay it below.
-                                                </p>
-                                            ))}
-                                        {answeredList.length > 0 && (
-                                            <ul className="sy-recall-done">
-                                                {answeredList.map((check) => (
-                                                    <li key={check.id}>
-                                                        <span>
-                                                            {check.question}
-                                                        </span>
-                                                        <button
-                                                            type="button"
-                                                            className="sy-desk-note-time"
-                                                            onClick={() =>
-                                                                seek(
-                                                                    check.sourceStart,
-                                                                )
-                                                            }
-                                                        >
-                                                            {formatTimestamp(
-                                                                check.sourceStart,
-                                                            )}
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </section>
-                                )}
-
-                                {subtasks.length > 0 &&
-                                    videoChecks.state.kind !== "off" && (
-                                        <h2 className="sy-recall-steps-head">
-                                            Steps you finished
-                                        </h2>
-                                    )}
-
-                                {subtasks.length > 0 ? (
-                                    <ul className="sy-desk-subtasks">
-                                        {subtasks.map((subtask) => (
-                                            <li key={subtask.id}>
-                                                <label>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={
-                                                            subtask.completed
-                                                        }
-                                                        onChange={(event) =>
-                                                            setLearningSubtaskDone(
-                                                                roadmap,
-                                                                item.task.id,
-                                                                subtask.id,
-                                                                event.target
-                                                                    .checked,
-                                                            )
-                                                        }
-                                                    />
-                                                    <span>
-                                                        {subtask.title}
-                                                    </span>
-                                                </label>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <>
-                                        <p className="sy-desk-empty">
-                                            This lesson has no checklist or
-                                            quiz yet.
-                                        </p>
-                                        <button
-                                            className="sy-button secondary"
-                                            onClick={() => setTab("apply")}
+                                    <Icon icon={Add} />
+                                </Button>
+                            </form>
+                            {pausedCheck ? (
+                                <p className="px-4 pb-4 type-caption text-text-3">
+                                    Notes are hidden while you answer.
+                                </p>
+                            ) : notes.length === 0 ? (
+                                <p className="px-4 pb-4 type-caption text-text-3">
+                                    No notes yet. They attach to{" "}
+                                    {formatTimestamp(position)}.
+                                </p>
+                            ) : (
+                                <ul className="px-4 pb-4">
+                                    {notes.map((note) => (
+                                        <li
+                                            key={note.id}
+                                            className="flex items-baseline gap-2 py-1"
                                         >
-                                            Go to the practice note
-                                            <ArrowRight />
-                                        </button>
-                                    </>
-                                )}
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() =>
+                                                    seek(note.seconds)
+                                                }
+                                            >
+                                                {formatTimestamp(note.seconds)}
+                                            </Button>
+                                            <p className="min-w-0 flex-1 type-body-sm">
+                                                {note.text}
+                                            </p>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon-sm"
+                                                aria-label="Delete note"
+                                                onClick={() =>
+                                                    removePersonalEntry(
+                                                        note.id,
+                                                    )
+                                                }
+                                            >
+                                                <Icon icon={TrashCan} />
+                                            </Button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </section>
 
-                                {item.task.notes && (
-                                    <section className="sy-desk-block">
-                                        <h2>From your roadmap</h2>
-                                        <div className="sy-desk-prose">
-                                            <p>{item.task.notes}</p>
-                                        </div>
-                                    </section>
-                                )}
-                            </div>
-                        </section>
-
-                        <section
-                            className="sy-desk-tab"
-                            id={panelId("apply")}
-                            role="tabpanel"
-                            aria-labelledby={tabId("apply")}
-                            hidden={tab !== "apply"}
-                        >
-                            <div className="sy-desk-copy">
-                                <header className="sy-desk-tab-head">
-                                    <h2>Apply it</h2>
-                                    <p>
-                                        Optional. Use one idea in your own
-                                        work, then keep what you learned.
-                                    </p>
-                                </header>
-
-                                <label className="sy-desk-field">
-                                    <span>Practice note</span>
-                                    <textarea
-                                        className="sy-textarea"
-                                        value={practice}
-                                        onChange={(event) =>
-                                            setPractice(event.target.value)
-                                        }
-                                        placeholder={
-                                            "What I tried:\n\nWhat happened:\n\nWhat I would change:"
-                                        }
-                                    />
-                                </label>
-                                <div className="sy-desk-actions">
-                                    <button
-                                        className="sy-button primary"
-                                        disabled={!practice.trim()}
-                                        onClick={savePractice}
-                                    >
-                                        Save practice note
-                                    </button>
-                                    {practiceSaved && (
-                                        <span
-                                            className="sy-desk-saved"
-                                            role="status"
-                                        >
-                                            <Check size={13} />
-                                            Saved
-                                        </span>
-                                    )}
-                                </div>
-
-                                <section className="sy-desk-block sy-desk-review">
-                                    <h2>Keep a concept for review</h2>
-                                    <p className="sy-desk-hint">
-                                        Reviews are opt-in. Only the cards you
-                                        make come back later.
-                                    </p>
-                                    <ReviewComposer
-                                        key={item.task.id}
-                                        roadmapId={roadmap.id}
-                                        source={{
-                                            url: activeUrl,
-                                            taskId: item.task.id,
-                                            seconds: position,
-                                        }}
-                                        initialAnswer={practice}
-                                    />
-                                    <TermComposer
-                                        key={`term:${item.task.id}`}
-                                        roadmapId={roadmap.id}
-                                    />
-                                </section>
-
-                                <section className="sy-desk-next">
-                                    {next ? (
-                                        <>
-                                            <div>
-                                                <span className="sy-desk-eyebrow">
-                                                    Next core video
-                                                </span>
-                                                <p>
-                                                    {next.task.title ||
-                                                        next.task.text ||
-                                                        "Untitled lesson"}
-                                                </p>
-                                            </div>
+                    <section className="shell">
+                        <div className="panel">
+                            <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                <h2 className="type-heading-sm">Ladder</h2>
+                                <span className="type-caption text-text-2">
+                                    {ladder
+                                        ? `${ladder.levels.reduce((total, level) => total + level.coreDone, 0)}/${ladder.levels.reduce((total, level) => total + level.coreTotal, 0)} core`
+                                        : "0/0 core"}
+                                </span>
+                            </header>
+                            {ladderLevelUp && ladderLevelUpTarget ? (
+                                <div className="px-4 pb-3">
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
+                                        render={
                                             <Link
-                                                className="sy-button primary"
                                                 to="/learn"
                                                 search={{
                                                     roadmap: roadmap.id,
-                                                    task: next.task.id,
+                                                    task: ladderLevelUpTarget
+                                                        .task.id,
                                                 }}
+                                            />
+                                        }
+                                        nativeButton={false}
+                                    >
+                                        Level up: start{" "}
+                                        {LEVEL_LABEL[ladderLevelUp.to]}
+                                        <Icon icon={ArrowRight} />
+                                    </Button>
+                                </div>
+                            ) : null}
+                            <div className="px-4 pb-4">
+                                {ladder?.levels.map(levelSection)}
+                                {ladder && ladder.reading.length > 0 ? (
+                                    <div>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="w-full justify-start"
+                                            aria-expanded={readingOpen}
+                                            aria-controls={`${uid}-level-reading`}
+                                            onClick={() =>
+                                                setReadingOpen((open) => !open)
+                                            }
+                                        >
+                                            <Icon
+                                                icon={
+                                                    readingOpen
+                                                        ? ChevronDown
+                                                        : ChevronRight
+                                                }
+                                                className="text-text-3"
+                                            />
+                                            <span className="min-w-0 flex-1">
+                                                Reading track
+                                            </span>
+                                            <span className="type-caption text-text-2">
+                                                {ladder.reading.filter((entry) => entry.done).length}
+                                                /{ladder.reading.length}
+                                            </span>
+                                        </Button>
+                                        {readingOpen ? (
+                                            <ItemGroup
+                                                id={`${uid}-level-reading`}
+                                                variant="plain"
+                                                className="mt-1"
+                                            >
+                                                {ladder.reading.map(
+                                                    (entry, position) =>
+                                                        lessonRow(
+                                                            entry,
+                                                            position,
+                                                        ),
+                                                )}
+                                            </ItemGroup>
+                                        ) : null}
+                                    </div>
+                                ) : null}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="shell">
+                        <div className="panel p-4">
+                            <Pomodoro />
+                        </div>
+                    </section>
+                </aside>
+
+                <div className="min-w-0 lg:col-span-3">
+                    <section className="shell">
+                        <div className="panel">
+                            <header className="p-4 pb-3">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
+                                    <p className="type-caption text-text-2">
+                                        {item.sectionTitle}
+                                    </p>
+                                    <Field orientation="horizontal">
+                                        <FieldLabel>
+                                            {done
+                                                ? "Completed"
+                                                : "Mark complete"}
+                                        </FieldLabel>
+                                        <Switch
+                                            checked={done}
+                                            onCheckedChange={onMarkDone}
+                                        />
+                                    </Field>
+                                </div>
+                                <h1 className="mt-1 type-title">{title}</h1>
+                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 type-caption text-text-2">
+                                    {item.task.estimatedTime && (
+                                        <span>{item.task.estimatedTime}</span>
+                                    )}
+                                    {subtasks.length > 0 && (
+                                        <span>
+                                            {doneSubtasks}/{subtasks.length}{" "}
+                                            steps
+                                        </span>
+                                    )}
+                                    <span>{metaLabel}</span>
+                                </div>
+                            </header>
+
+                            {completionOpen && completion ? (
+                                <div className="mx-4 mb-4 rounded-panel border border-line-faint bg-field p-4">
+                                    {completion.core && !recallResolved ? (
+                                        <>
+                                            <p className="type-label">
+                                                Explain it back
+                                            </p>
+                                            <p className="mt-1 type-caption text-text-2">
+                                                Optional. 30 seconds, 1-3
+                                                lines, in your own words.
+                                            </p>
+                                            <div className="mt-2">
+                                                <Textarea
+                                                    value={recallText}
+                                                    onValueChange={setRecallText}
+                                                    aria-label="Explain it back"
+                                                    limit={400}
+                                                    autoGrow
+                                                    minRows={3}
+                                                    maxRows={6}
+                                                />
+                                            </div>
+                                            <div className="mt-2 flex gap-2">
+                                                <Button
+                                                    size="sm"
+                                                    variant="secondary"
+                                                    disabled={!recallText.trim()}
+                                                    onClick={saveRecall}
+                                                >
+                                                    Save note
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    onClick={() =>
+                                                        setRecallResolved(true)
+                                                    }
+                                                >
+                                                    Skip
+                                                </Button>
+                                            </div>
+                                        </>
+                                    ) : completionLevelUp &&
+                                      completionLevelUpTarget ? (
+                                        <>
+                                            <p className="type-label">
+                                                {`Level up: ${LEVEL_LABEL[completionLevelUp.to]}`}
+                                            </p>
+                                            <p className="mt-1 type-caption text-text-2">
+                                                The{" "}
+                                                {LEVEL_LABEL[
+                                                    completionLevelUp.from
+                                                ].toLowerCase()}{" "}
+                                                core is done.
+                                            </p>
+                                            <Button
+                                                className="mt-2"
+                                                variant="secondary"
+                                                size="sm"
+                                                render={
+                                                    <Link
+                                                        to="/learn"
+                                                        search={{
+                                                            roadmap:
+                                                                roadmap.id,
+                                                            task: completionLevelUpTarget
+                                                                .task.id,
+                                                        }}
+                                                    />
+                                                }
+                                                nativeButton={false}
+                                            >
+                                                Start{" "}
+                                                {
+                                                    LEVEL_LABEL[
+                                                        completionLevelUp.to
+                                                    ]
+                                                }
+                                                <Icon icon={ArrowRight} />
+                                            </Button>
+                                        </>
+                                    ) : completionNext ? (
+                                        <>
+                                            <p className="type-label">
+                                                Next core video
+                                            </p>
+                                            <p className="mt-1 type-caption text-text-2">
+                                                {completionNext.task.title ||
+                                                    completionNext.task.text}
+                                            </p>
+                                            <Button
+                                                className="mt-2"
+                                                variant="secondary"
+                                                size="sm"
+                                                render={
+                                                    <Link
+                                                        to="/learn"
+                                                        search={{
+                                                            roadmap:
+                                                                roadmap.id,
+                                                            task: completionNext
+                                                                .task.id,
+                                                        }}
+                                                    />
+                                                }
+                                                nativeButton={false}
                                             >
                                                 Continue
-                                                <ArrowRight />
-                                            </Link>
+                                                <Icon icon={ArrowRight} />
+                                            </Button>
                                         </>
                                     ) : (
-                                        <>
-                                            <div>
-                                                <span className="sy-desk-eyebrow">
-                                                    Last lesson
-                                                </span>
-                                                <p>
-                                                    You are at the end of this
-                                                    roadmap.
-                                                </p>
-                                            </div>
-                                            <Link
-                                                className="sy-button secondary"
-                                                to="/workspaces"
-                                            >
-                                                All learning topics
-                                            </Link>
-                                        </>
+                                        <p className="type-caption text-text-2">
+                                            Every core video is watched.
+                                        </p>
                                     )}
+                                </div>
+                            ) : null}
+
+                            <div className="border-t border-line-faint px-4 pt-4">
+                                <SegmentedControl
+                                    aria-label="Lesson views"
+                                    value={tab}
+                                    onValueChange={(value) =>
+                                        setTab(value as TabKey)
+                                    }
+                                >
+                                    <SegmentedControlItem value="read">
+                                        Read
+                                    </SegmentedControlItem>
+                                    <SegmentedControlItem
+                                        value="check"
+                                        count={subtasks.length || undefined}
+                                    >
+                                        Check
+                                    </SegmentedControlItem>
+                                    <SegmentedControlItem value="apply">
+                                        Apply
+                                    </SegmentedControlItem>
+                                </SegmentedControl>
+                            </div>
+
+                            <div className="p-4">
+                                <section
+                                    aria-label="Read"
+                                    hidden={tab !== "read"}
+                                >
+                                    <div className="flex flex-col gap-4">
+                                        {brief ? (
+                                            <p className="type-body">
+                                                {brief}
+                                            </p>
+                                        ) : (
+                                            <p className="type-body-sm text-text-2">
+                                                No written brief yet. The
+                                                source and your notes are the
+                                                lesson.
+                                            </p>
+                                        )}
+
+                                        {(contextDescription ||
+                                            objectives.length > 0 ||
+                                            concepts ||
+                                            sectionNotes) && (
+                                            <section>
+                                                <h2 className="type-heading-sm">
+                                                    In this module
+                                                </h2>
+                                                <div className="mt-2 flex flex-col gap-2 type-body-sm text-text-2">
+                                                    {contextDescription && (
+                                                        <p>
+                                                            {contextDescription}
+                                                        </p>
+                                                    )}
+                                                    {concepts && (
+                                                        <p>
+                                                            <b>Concepts · </b>
+                                                            {concepts}
+                                                        </p>
+                                                    )}
+                                                    {sectionNotes && (
+                                                        <p>{sectionNotes}</p>
+                                                    )}
+                                                </div>
+                                                {objectives.length > 0 && (
+                                                    <ul className="mt-3 flex flex-col gap-1.5">
+                                                        {objectives.map(
+                                                            (
+                                                                objective,
+                                                                objectiveIndex,
+                                                            ) => (
+                                                                <li
+                                                                    key={`${objectiveIndex}:${objective}`}
+                                                                    className="flex items-baseline gap-2 type-body-sm"
+                                                                >
+                                                                    <span className="type-caption text-text-3">
+                                                                        {String(
+                                                                            objectiveIndex +
+                                                                                1,
+                                                                        ).padStart(
+                                                                            2,
+                                                                            "0",
+                                                                        )}
+                                                                    </span>
+                                                                    <span>
+                                                                        {
+                                                                            objective
+                                                                        }
+                                                                    </span>
+                                                                </li>
+                                                            ),
+                                                        )}
+                                                    </ul>
+                                                )}
+                                            </section>
+                                        )}
+
+                                        <section>
+                                            <h2 className="type-heading-sm">
+                                                Sources
+                                            </h2>
+                                            {sources.length > 0 ? (
+                                                <div className="mt-2 flex flex-col">
+                                                    {sources.map(
+                                                        (resource) => (
+                                                            <a
+                                                                key={
+                                                                    resource.id
+                                                                }
+                                                                className="flex items-center gap-3 rounded-tag px-2 py-2 hover:bg-field"
+                                                                href={
+                                                                    safeResourceUrl(
+                                                                        resource.url,
+                                                                    ) ?? "#"
+                                                                }
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <span className="shrink-0 type-caption text-text-3">
+                                                                    {
+                                                                        resource.type
+                                                                    }
+                                                                </span>
+                                                                <span className="min-w-0 flex-1">
+                                                                    <b className="block truncate type-body-sm text-text-1">
+                                                                        {resource.title ||
+                                                                            resource.url}
+                                                                    </b>
+                                                                    {resource.description && (
+                                                                        <small className="block truncate type-caption text-text-2">
+                                                                            {
+                                                                                resource.description
+                                                                            }
+                                                                        </small>
+                                                                    )}
+                                                                </span>
+                                                                <Icon
+                                                                    icon={
+                                                                        External
+                                                                    }
+                                                                    className="text-text-3"
+                                                                />
+                                                            </a>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <p className="mt-2 type-body-sm text-text-2">
+                                                    No source is attached to
+                                                    this lesson yet.
+                                                </p>
+                                            )}
+                                        </section>
+                                    </div>
+                                </section>
+
+                                <section
+                                    aria-label="Check"
+                                    hidden={tab !== "check"}
+                                >
+                                    <div className="flex flex-col gap-4">
+                                        <header>
+                                            <h2 className="type-heading-sm">
+                                                Check what stuck
+                                            </h2>
+                                            <p className="mt-1 type-body-sm text-text-2">
+                                                {videoChecks.state.kind ===
+                                                "off"
+                                                    ? "Tick the steps you finished. This is a record, not a grade."
+                                                    : "Answer from memory first, then look at the video. Nothing here is graded."}
+                                            </p>
+                                        </header>
+
+                                        {videoChecks.state.kind !== "off" && (
+                                            <section>
+                                                <h2 className="type-heading-sm">
+                                                    From memory
+                                                </h2>
+                                                <div className="mt-2">
+                                                    <VideoChecksStatus
+                                                        state={
+                                                            videoChecks.state
+                                                        }
+                                                        onRetry={
+                                                            videoChecks.retry
+                                                        }
+                                                    />
+                                                    {videoChecks.state.kind ===
+                                                        "ready" &&
+                                                        (checks.length ===
+                                                        0 ? (
+                                                            <p className="type-body-sm text-text-2">
+                                                                No questions
+                                                                came out of
+                                                                this video.
+                                                            </p>
+                                                        ) : nextCheck ? (
+                                                            <RecallPrompt
+                                                                check={
+                                                                    nextCheck
+                                                                }
+                                                                eyebrow={`Question ${checks.indexOf(nextCheck) + 1} of ${checks.length} · ${nextCheck.label}`}
+                                                                doneLabel={
+                                                                    pendingChecks.length >
+                                                                    1
+                                                                        ? "Next question"
+                                                                        : "Done"
+                                                                }
+                                                                onDone={() =>
+                                                                    finishCheck(
+                                                                        nextCheck.id,
+                                                                    )
+                                                                }
+                                                                onSkip={() =>
+                                                                    finishCheck(
+                                                                        nextCheck.id,
+                                                                    )
+                                                                }
+                                                                onReplay={seek}
+                                                            />
+                                                        ) : (
+                                                            <p className="type-body-sm text-text-2">
+                                                                All{" "}
+                                                                {checks.length}{" "}
+                                                                answered.
+                                                                Missed one?
+                                                                Replay it
+                                                                below.
+                                                            </p>
+                                                        ))}
+                                                    {answeredList.length >
+                                                        0 && (
+                                                        <ul className="mt-3 flex flex-col gap-1">
+                                                            {answeredList.map(
+                                                                (check) => (
+                                                                    <li
+                                                                        key={
+                                                                            check.id
+                                                                        }
+                                                                        className="flex items-baseline gap-2 type-body-sm"
+                                                                    >
+                                                                        <span className="min-w-0 flex-1">
+                                                                            {
+                                                                                check.question
+                                                                            }
+                                                                        </span>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            onClick={() =>
+                                                                                seek(
+                                                                                    check.sourceStart,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            {formatTimestamp(
+                                                                                check.sourceStart,
+                                                                            )}
+                                                                        </Button>
+                                                                    </li>
+                                                                ),
+                                                            )}
+                                                        </ul>
+                                                    )}
+                                                </div>
+                                            </section>
+                                        )}
+
+                                        {subtasks.length > 0 &&
+                                            videoChecks.state.kind !==
+                                                "off" && (
+                                                <h2 className="type-heading-sm">
+                                                    Steps you finished
+                                                </h2>
+                                            )}
+
+                                        {subtasks.length > 0 ? (
+                                            <ul className="flex flex-col gap-3">
+                                                {subtasks.map((subtask) => (
+                                                    <li key={subtask.id}>
+                                                        <Field orientation="horizontal">
+                                                            <FieldLabel className="flex-1">
+                                                                {subtask.title}
+                                                            </FieldLabel>
+                                                            <Switch
+                                                                checked={
+                                                                    subtask.completed
+                                                                }
+                                                                onCheckedChange={(
+                                                                    checked,
+                                                                ) =>
+                                                                    setLearningSubtaskDone(
+                                                                        roadmap,
+                                                                        item
+                                                                            .task
+                                                                            .id,
+                                                                        subtask.id,
+                                                                        checked,
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Field>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <div>
+                                                <p className="type-body-sm text-text-2">
+                                                    This lesson has no
+                                                    checklist or quiz yet.
+                                                </p>
+                                                <Button
+                                                    className="mt-2"
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        setTab("apply")
+                                                    }
+                                                >
+                                                    Go to the practice note
+                                                    <Icon icon={ArrowRight} />
+                                                </Button>
+                                            </div>
+                                        )}
+
+                                        {item.task.notes && (
+                                            <section>
+                                                <h2 className="type-heading-sm">
+                                                    From your roadmap
+                                                </h2>
+                                                <p className="mt-2 type-body-sm text-text-2">
+                                                    {item.task.notes}
+                                                </p>
+                                            </section>
+                                        )}
+                                    </div>
+                                </section>
+
+                                <section
+                                    aria-label="Apply"
+                                    hidden={tab !== "apply"}
+                                >
+                                    <div className="flex flex-col gap-4">
+                                        <header>
+                                            <h2 className="type-heading-sm">
+                                                Apply it
+                                            </h2>
+                                            <p className="mt-1 type-body-sm text-text-2">
+                                                Optional. Use one idea in your
+                                                own work, then keep what you
+                                                learned.
+                                            </p>
+                                        </header>
+
+                                        <Field>
+                                            <FieldLabel>
+                                                Practice note
+                                            </FieldLabel>
+                                            <Textarea
+                                                value={practice}
+                                                onValueChange={setPractice}
+                                                placeholder={
+                                                    "What I tried:\n\nWhat happened:\n\nWhat I would change:"
+                                                }
+                                                autoGrow
+                                                minRows={5}
+                                                maxRows={14}
+                                            />
+                                        </Field>
+                                        <div className="flex items-center gap-3">
+                                            <Button
+                                                disabled={!practice.trim()}
+                                                onClick={savePractice}
+                                            >
+                                                Save practice note
+                                            </Button>
+                                            {practiceSaved && (
+                                                <span
+                                                    className="flex items-center gap-1 type-caption text-text-2"
+                                                    role="status"
+                                                >
+                                                    <Icon icon={Check} />
+                                                    Saved
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <section>
+                                            <h2 className="type-heading-sm">
+                                                Keep a concept for review
+                                            </h2>
+                                            <p className="mt-1 type-caption text-text-2">
+                                                Reviews are opt-in. Only the
+                                                cards you make come back later.
+                                            </p>
+                                            <div className="mt-3 flex flex-col gap-3">
+                                                <ReviewComposer
+                                                    key={item.task.id}
+                                                    roadmapId={roadmap.id}
+                                                    source={{
+                                                        url: activeUrl,
+                                                        taskId: item.task.id,
+                                                        seconds: position,
+                                                    }}
+                                                    initialAnswer={practice}
+                                                />
+                                                <TermComposer
+                                                    key={`term:${item.task.id}`}
+                                                    roadmapId={roadmap.id}
+                                                />
+                                            </div>
+                                        </section>
+
+                                        <section className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-line-faint bg-field p-4">
+                                            {next ? (
+                                                <>
+                                                    <div className="min-w-0">
+                                                        <p className="type-caption text-text-2">
+                                                            Next core video
+                                                        </p>
+                                                        <p className="type-body-sm text-text-1">
+                                                            {next.task.title ||
+                                                                next.task
+                                                                    .text ||
+                                                                "Untitled lesson"}
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        variant="secondary"
+                                                        size="sm"
+                                                        render={
+                                                            <Link
+                                                                to="/learn"
+                                                                search={{
+                                                                    roadmap:
+                                                                        roadmap.id,
+                                                                    task: next
+                                                                        .task
+                                                                        .id,
+                                                                }}
+                                                            />
+                                                        }
+                                                        nativeButton={false}
+                                                    >
+                                                        Continue
+                                                        <Icon
+                                                            icon={ArrowRight}
+                                                        />
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="min-w-0">
+                                                        <p className="type-caption text-text-2">
+                                                            Last lesson
+                                                        </p>
+                                                        <p className="type-body-sm text-text-1">
+                                                            You are at the end
+                                                            of this roadmap.
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        variant="secondary"
+                                                        size="sm"
+                                                        render={
+                                                            <Link to="/workspaces" />
+                                                        }
+                                                        nativeButton={false}
+                                                    >
+                                                        All learning topics
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </section>
+                                    </div>
                                 </section>
                             </div>
-                        </section>
-                    </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>

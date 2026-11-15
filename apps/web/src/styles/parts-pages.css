@@ -39,15 +39,7 @@
     }
 }
 
-/* Header strips: a title with its dot, and a count in a readout. */
-.sy-box-title:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
-.sy-section-head > .sy-readout:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+/* Header strips: a title with its dot, and a count in a readout. */.sy-section-head > .sy-readout:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     color: var(--color-text);
     font-size: 0.75rem;
 }
@@ -106,23 +98,7 @@
     margin-top: 0;
 }
 
-/* Settings: title in the header strip, description beside the controls. */
-.sy-box.sy-settings-section:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: block;
-}
-.sy-box.sy-settings-section + .sy-box.sy-settings-section:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-top: var(--sy-space-field);
-    padding-top: 20px;
-    border-top: 0;
-}
-
-@media (max-width: 760px) {
-    .sy-settings-body:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 16px;
-    }
-
-    .sy-toolstrip:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+/* Settings: title in the header strip, description beside the controls. */@media (max-width: 760px) {    .sy-toolstrip:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding: 6px;
     }
 }
