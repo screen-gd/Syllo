@@ -1,5 +1,6 @@
 "use client";
 import { fetchPrivateApi } from "@/lib/private-api-fetch";
+import SlidingHighlight from "@/components/syllo/SlidingHighlight";
 
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
@@ -635,7 +636,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                         <nav aria-label="Workspace sections" className="flex flex-col gap-4 p-2">
                             {/* Dashboard Link */}
                             <div className="flex flex-col">
-                                <Item size="sm" selected={activeSectionId === "dashboard"}>
+                                <Item size="sm" data-highlight-host="">
+{(activeSectionId === "dashboard") && <SlidingHighlight group="workspace-nav" shape="tag" />}
                                     <ItemMedia variant="icon">
                                         <Icon icon={Home} />
                                     </ItemMedia>
@@ -666,7 +668,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         if (!matches(section.title)) return null;
 
                                         return (
-                                            <Item key={section.id} size="sm" selected={isActive}>
+                                            <Item key={section.id} size="sm" data-highlight-host="">
+{(isActive) && <SlidingHighlight group="workspace-nav" shape="tag" />}
                                                 <ItemMedia variant="icon">
                                                     {modulePercent === 100 ? (
                                                         <Icon icon={Success} label="Complete" />
@@ -704,7 +707,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                         if (!matches(label)) return null;
 
                                         return (
-                                            <Item key={section.id} size="sm" selected={isActive}>
+                                            <Item key={section.id} size="sm" data-highlight-host="">
+{(isActive) && <SlidingHighlight group="workspace-nav" shape="tag" />}
                                                 <ItemMedia variant="icon">
                                                     <Icon icon={UTILITY_ICONS[section.type] ?? Tool} />
                                                 </ItemMedia>

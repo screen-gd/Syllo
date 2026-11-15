@@ -6,6 +6,7 @@ import {
     useState,
 } from "react";
 import { Link } from "@tanstack/react-router";
+import SlidingHighlight from "@/components/syllo/SlidingHighlight";
 import {
     ArrowRight,
     Check,
@@ -633,7 +634,7 @@ export default function LearnPage({
             <Item
                 key={entry.task.id}
                 size="sm"
-                selected={current}
+                data-highlight-host=""
                 aria-current={current ? "step" : undefined}
                 render={
                     <Link
@@ -645,6 +646,7 @@ export default function LearnPage({
                     />
                 }
             >
+{(current) && <SlidingHighlight group="ladder" shape="tag" />}
                 <span className="type-caption text-text-2">
                     {String(position + 1).padStart(2, "0")}
                 </span>
@@ -1029,10 +1031,12 @@ export default function LearnPage({
                                                     active ? "true" : undefined
                                                 }
                                                 className="w-full justify-start"
+                                                data-highlight-host=""
                                                 onClick={() =>
                                                     seek(chapter.seconds)
                                                 }
                                             >
+                                                {active && <SlidingHighlight group="chapters" />}
                                                 <span className="w-10 shrink-0 text-start type-caption text-text-2">
                                                     {chapter.time}
                                                 </span>

@@ -19,6 +19,7 @@ import { useReviews } from "@/hooks/useReviews";
 import { isDue } from "@/lib/reviews";
 import { getRoadmapStats } from "@/lib/workspace-stats";
 import MaterialBar from "@/components/syllo/MaterialBar";
+import SlidingHighlight from "@/components/syllo/SlidingHighlight";
 import { cn } from "@/lib/utils";
 
 /** Sidebar groups: where you study, the tools you study with, then Scout. */
@@ -85,7 +86,10 @@ function NavSection({
     );
 }
 
-/** One destination row: a pill link, washed under the pointer and a paper pill with a hairline when current, the way Glaze marks a selected tab. */
+/**
+ * One destination row: a pill link, washed under the pointer. The current row holds the paper pill with a hairline
+ * (the way Glaze marks a selected tab), and that pill slides to the next row when you navigate.
+ */
 function NavItem({
     to,
     label,
@@ -110,13 +114,15 @@ function NavItem({
             search={search}
             aria-current={active ? "page" : undefined}
             data-slot="nav-row"
+            data-highlight-host=""
             className={cn(
-                "flex h-(--control) min-w-0 items-center gap-2 rounded-pill border px-3 type-label transition-[background-color,border-color,color,scale] duration-(--dur-press) ease-out active:scale-(--scale-press-flat) focus-visible:focus-ring",
+                "flex h-(--control) min-w-0 items-center gap-2 rounded-pill px-3 type-label transition-[background-color,color,scale] duration-(--dur-press) ease-out active:scale-(--scale-press-flat) focus-visible:focus-ring",
                 active
-                    ? "border-line-faint bg-paper text-text-1"
-                    : "border-transparent text-text-2 hover:bg-hover hover:text-text-1",
+                    ? "text-text-1"
+                    : "text-text-2 hover:bg-hover hover:text-text-1",
             )}
         >
+            {active && <SlidingHighlight group="sidebar" look="paper" />}
             {icon && <Icon icon={icon} size={16} />}
             <span className="min-w-0 flex-1 truncate">{label}</span>
             {trailing}
@@ -148,7 +154,7 @@ export default function LearningSidebar() {
                         <Link
                             to="/dashboard"
                             data-slot="nav-brand"
-                            className="flex h-16 shrink-0 items-center gap-2 px-5 text-text-1"
+                            className="flex h-16 shrink-0 items-center gap-2 px-6 text-text-1"
                         >
                             <SylloMark />
                             <span className="type-label-lg">Syllo</span>
@@ -249,13 +255,15 @@ export default function LearningSidebar() {
                                 to={to}
                                 data-slot="nav-link"
                                 aria-current={active ? "page" : undefined}
+                                data-highlight-host=""
                                 className={cn(
                                     "flex h-(--control) shrink-0 items-center whitespace-nowrap rounded-pill px-3 type-label-sm transition-[background-color,color,scale] duration-(--dur-press) ease-out active:scale-(--scale-press) pointer-coarse:h-(--control-lg)",
                                     active
-                                        ? "bg-pressed text-text-1"
+                                        ? "text-text-1"
                                         : "text-text-2 hover:bg-field hover:text-text-1",
                                 )}
                             >
+                                {active && <SlidingHighlight group="mobile-nav" />}
                                 {label}
                             </Link>
                         );

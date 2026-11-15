@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import SlidingHighlight from "@/components/syllo/SlidingHighlight";
 import type { Roadmap, ModuleSection, Task } from "@/types";
 import { ChevronRight, Icon } from "@/components/glaze/icon";
 import { Badge } from "@/components/glaze/ui/badge";
@@ -96,7 +97,8 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                         return (
                             <div key={mod.id} id={`module-${mod.id}`} className="shell">
                                 <div className="panel flex flex-col gap-3 p-3">
-                                    <Item selected={isModuleSelected}>
+                                    <Item data-highlight-host="">
+{(isModuleSelected) && <SlidingHighlight group="split-selection" shape="tag" />}
                                         <ItemContent>
                                             <ItemTitle className="type-heading-sm">
                                                 <ItemLink
@@ -129,7 +131,8 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                             const isTaskSelected = selectedNode?.type === "task" && selectedNode.id === task.id;
                                             const subtasks = task.subtasks || [];
                                             return (
-                                                <Item key={task.id} selected={isTaskSelected}>
+                                                <Item key={task.id} data-highlight-host="">
+{(isTaskSelected) && <SlidingHighlight group="split-selection" shape="tag" />}
                                                     <span className="relative z-(--z-raised) flex">
                                                         <Checkbox
                                                             aria-label={

@@ -1,5 +1,6 @@
 "use client";
 import { fetchPrivateApi } from "@/lib/private-api-fetch";
+import SlidingHighlight from "@/components/syllo/SlidingHighlight";
 
 
 import { useState, useEffect, useMemo } from "react";
@@ -606,7 +607,8 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                             <div className={cn("grid gap-4", sidePanelResource && "lg:grid-cols-2")}>
                                 <ItemGroup variant="plain" aria-label="Course materials">
                                     {resources.map((res) => (
-                                        <Item key={res.id} selected={sidePanelResource?.id === res.id}>
+                                        <Item key={res.id} data-highlight-host="">
+{(sidePanelResource?.id === res.id) && <SlidingHighlight group="module-list" shape="tag" />}
                                             <ItemMedia variant="icon">
                                                 <Icon icon={resourceTypeIcon(res.type)} />
                                             </ItemMedia>
@@ -792,7 +794,8 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                 <h3 className="mb-2 type-heading-sm">Playlist</h3>
                                 <ItemGroup variant="plain" aria-label="Playlist">
                                     {videos.map(v => (
-                                        <Item key={v.id} selected={activeVideoId === v.id}>
+                                        <Item key={v.id} data-highlight-host="">
+{(activeVideoId === v.id) && <SlidingHighlight group="module-list" shape="tag" />}
                                             <ItemContent>
                                                 <ItemTitle>
                                                     <ItemLink

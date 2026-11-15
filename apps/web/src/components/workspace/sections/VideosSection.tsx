@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import SlidingHighlight from "@/components/syllo/SlidingHighlight";
 import type { VideoSection, Section } from "@/types";
 import VideoPlayer from "@/components/shared/VideoPlayer";
 import { Badge } from "@/components/glaze/ui/badge";
@@ -95,8 +96,9 @@ export default function Videos({ section }: Props) {
                                     return (
                                         <Item
                                             key={video.id}
-                                            selected={video.id === activeVideoId}
+                                            data-highlight-host=""
                                         >
+{(video.id === activeVideoId) && <SlidingHighlight group="playlist" shape="tag" />}
                                             {imgUrl ? (
                                                 <ItemMedia>
                                                     {/* next/image is not practical here because thumbnail hosts are provider-controlled. */}

@@ -49,6 +49,10 @@
   .glaze .material-bar, .glaze .material-bar[data-scrolled] { border-bottom-color: var(--line-control); }
 }
 
+/* A row hosting a SlidingHighlight keeps it behind the row content. */
+.glaze [data-highlight-host] { position: relative; isolation: isolate; }
+.glaze [data-slot="sliding-highlight"] { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+
 /* Content that replaces a skeleton fades in once, when the swap reaches done. The animation starts when the
    attribute changes, so rows inserted later (a filter, a new note) appear at once. */
 .glaze [data-slot="skeleton-swap"][data-phase="done"] { animation: syllo-page-fade var(--dur-overlay) cubic-bezier(0.23, 1, 0.32, 1); }

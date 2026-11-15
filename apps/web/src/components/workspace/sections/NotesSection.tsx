@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import SlidingHighlight from "@/components/syllo/SlidingHighlight";
 import type { NoteSection, Section, Note } from "@/types";
 import { Add, Icon } from "@/components/glaze/icon";
 import { Button } from "@/components/glaze/ui/button";
@@ -101,8 +102,9 @@ export default function Notes({ section, onUpdate }: Props) {
                                 {section.data.map((note) => (
                                     <Item
                                         key={note.id}
-                                        selected={note.id === activeNoteId}
+                                        data-highlight-host=""
                                     >
+{(note.id === activeNoteId) && <SlidingHighlight group="workspace-notes" shape="tag" />}
                                         <ItemContent>
                                             <ItemTitle>
                                                 <ItemLink
