@@ -2,6 +2,19 @@
 
 import { useState } from "react";
 import type { NoteSection, Section, Note } from "@/types";
+import { Add, Icon } from "@/components/glaze/icon";
+import { Button } from "@/components/glaze/ui/button";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
+import {
+    Item,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemLink,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import { Input } from "@/components/glaze/ui/input";
+import { Textarea } from "@/components/glaze/ui/textarea";
 
 interface Props {
     section: NoteSection;
@@ -66,86 +79,102 @@ export default function Notes({ section, onUpdate }: Props) {
     const wordCount = activeNote?.content.trim().split(/\s+/).filter(Boolean).length || 0;
 
     return (
-        <div className="h-[max(calc(100vh-160px),600px)] flex flex-col lg:flex-row gap-6 relative z-10">
+        <div className="flex min-h-0 flex-col gap-4 lg:h-full lg:flex-row">
 
             {/* Sidebar List */}
-            <div className="w-full lg:w-80 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border bg-surface">
-                <div className="p-5 border-b border-border/50 flex items-center justify-between z-10 sticky top-0 bg-surface rounded-t-2xl">
-                    <div className="flex items-center gap-2">
-                        <h2 className="font-display text-lg font-semibold text-text">📝 Notes</h2>
+            <div className="shell w-full shrink-0 lg:w-72">
+                <div className="panel flex min-h-0 flex-col">
+                    <div className="flex items-center justify-between border-b border-line-faint p-4 pb-3">
+                        <h2 className="type-heading-sm">Notes</h2>
+                        <Button
+                            variant="secondary"
+                            size="icon-sm"
+                            aria-label="Create new note"
+                            onClick={addNote}
+                        >
+                            <Icon icon={Add} />
+                        </Button>
                     </div>
-                    <button
-                        onClick={addNote}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-raised text-text-muted hover:text-text transition-colors"
-                        title="Create new note"
-                    >
-                        +
-                    </button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                    {section.data.map((note) => {
-                        const isActive = note.id === activeNoteId;
-                        return (
-                            <button
-                                key={note.id}
-                                onClick={() => setActiveNoteId(note.id)}
-                                className={`w-full text-left p-4 rounded-xl transition-colors group overflow-hidden relative ${isActive
-                                    ? "bg-accent/10 border border-accent/20 "
-                                    : "hover:bg-page border border-transparent hover:border-border"
-                                    }`}
-                            >
-                                {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent" />}
-
-                                <h3 className={`font-bold transition-colors truncate mb-1 ${isActive ? "text-accent" : "text-text group-hover:text-accent-strong"}`}>
-                                    {note.title || "Untitled Note"}
-                                </h3>
-                                <p className="text-sm text-text-muted truncate">
-                                    {new Intl.DateTimeFormat("en-US", { dateStyle: "short" }).format(new Date(note.updatedAt))}
-                                </p>
-                            </button>
-                        );
-                    })}
-                    {section.data.length === 0 && (
-                        <div className="p-6 text-center text-text-muted text-sm border border-dashed border-border rounded-xl m-2">
-                            No notes yet. Click the + button to create one.
-                        </div>
-                    )}
+                    <div className="min-h-0 flex-1 overflow-y-auto p-2">
+                        {section.data.length > 0 ? (
+                            <ItemGroup>
+                                {section.data.map((note) => (
+                                    <Item
+                                        key={note.id}
+                                        selected={note.id === activeNoteId}
+                                    >
+                                        <ItemContent>
+                                            <ItemTitle>
+                                                <ItemLink
+                                                    href={`#note-${note.id}`}
+                                                    aria-current={note.id === activeNoteId ? "true" : undefined}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setActiveNoteId(note.id);
+                                                    }}
+                                                >
+                                                    {note.title || "Untitled note"}
+                                                </ItemLink>
+                                            </ItemTitle>
+                                            <ItemDescription>
+                                                {new Intl.DateTimeFormat("en-US", { dateStyle: "short" }).format(new Date(note.updatedAt))}
+                                            </ItemDescription>
+                                        </ItemContent>
+                                    </Item>
+                                ))}
+                            </ItemGroup>
+                        ) : (
+                            <p className="p-4 type-caption text-text-2">
+                                No notes yet. Create one to begin.
+                            </p>
+                        )}
+                    </div>
                 </div>
             </div>
 
             {/* Editor Main */}
             {activeNote ? (
-                <div className="flex-1 flex flex-col min-h-0 surface rounded-2xl border border-border bg-page relative overflow-hidden">
-
-                    <div className="p-6 sm:p-8 lg:px-12 lg:pt-10 flex-shrink-0 border-b border-border pb-6 bg-surface-subtle">
-                        <input
-                            type="text"
-                            value={activeNote.title}
-                            onChange={(e) => updateNote(activeNote.id, { title: e.target.value })}
-                            className="mb-2 w-full bg-transparent border-none text-2xl font-display font-semibold text-text placeholder:text-text-muted/40 focus-visible:outline-2 focus-visible:outline-accent sm:text-3xl"
-                            placeholder="Note Title"
-                        />
-                        <div className="flex items-center gap-4 text-xs font-bold text-text-muted/60">
-                            <span>Updated {new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short" }).format(new Date(activeNote.updatedAt))}</span>
-                            <span>•</span>
-                            <span className="tabular-nums">{wordCount} words</span>
+                <div className="shell min-h-0 flex-1">
+                    <div className="panel flex min-h-0 flex-1 flex-col">
+                        <div className="border-b border-line-faint p-4">
+                            <Input
+                                value={activeNote.title}
+                                onValueChange={(value) => updateNote(activeNote.id, { title: value })}
+                                aria-label="Note title"
+                                placeholder="Note title"
+                            />
+                            <p className="mt-1 type-caption text-text-2">
+                                Updated {new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short" }).format(new Date(activeNote.updatedAt))}{" "}
+                                · {wordCount} words
+                            </p>
                         </div>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto lg:px-12 px-6 sm:px-8 py-8 relative group">
-
-                        <textarea
-                            className="custom-scrollbar relative z-10 h-full w-full resize-none border-none bg-transparent text-[0.9375rem] font-serif leading-8 text-text placeholder:text-text-muted focus-visible:outline-2 focus-visible:outline-accent sm:text-base"
+                        <div className="flex-1 p-4">
+                        <Textarea
+                            autoGrow
+                            minRows={12}
+                            maxRows={40}
                             value={activeNote.content}
-                            onChange={(e) => updateNote(activeNote.id, { content: e.target.value })}
+                            onValueChange={(value) =>
+                                updateNote(activeNote.id, { content: value })
+                            }
                             onKeyDown={handleKeyDown}
                             placeholder="Type your notes here... (Use -, *, or 1. to trigger smart lists)"
+                            aria-label="Note content"
                         />
+                        </div>
                     </div>
                 </div>
             ) : (
-                <div className="flex-1 flex items-center justify-center surface rounded-2xl border-border border-dashed border m-2 lg:m-0">
-                    <p className="text-text-muted font-display text-lg">Select or create a note to begin.</p>
+                <div className="shell flex-1">
+                    <Empty className="panel h-full">
+                        <EmptyHeader>
+                            <EmptyTitle>Select or create a note</EmptyTitle>
+                            <EmptyDescription>
+                                Pick a note on the left or create a new one to
+                                begin.
+                            </EmptyDescription>
+                        </EmptyHeader>
+                    </Empty>
                 </div>
             )}
         </div>

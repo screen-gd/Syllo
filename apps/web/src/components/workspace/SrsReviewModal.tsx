@@ -1,11 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { Icon, Retry } from "@/components/glaze/icon";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Dialog,
+    DialogBody,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/glaze/ui/dialog";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
+import { Progress } from "@/components/glaze/ui/progress";
 import type { SrsItem } from "@/types";
 import { applySrsReview, type SrsRating } from "@/lib/spaced-repetition";
-import { ENTER, EXIT } from "@/components/shared/motion";
-import { X, Brain, RotateCcw } from "lucide-react";
 
 interface SrsReviewModalProps {
     isOpen: boolean;
@@ -14,21 +22,18 @@ interface SrsReviewModalProps {
     onSave: (items: SrsItem[]) => void | Promise<void>;
 }
 
-const REVIEW_LABELS: Record<SrsRating, { title: string; hint: string; className: string }> = {
+const REVIEW_LABELS: Record<SrsRating, { title: string; hint: string }> = {
     hard: {
         title: "Hard",
         hint: "Bring this card back sooner.",
-        className: "bg-danger/10 text-danger hover:bg-danger/20",
     },
     okay: {
         title: "Okay",
         hint: "Keep the normal pace.",
-        className: "bg-warning/10 text-warning hover:bg-warning/20",
     },
     easy: {
         title: "Easy",
         hint: "Push this card further out.",
-        className: "bg-accent/10 text-accent hover:bg-accent/20",
     },
 };
 
@@ -79,110 +84,108 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
     };
 
     return (
-        <AnimatePresence>
-            {isOpen && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
-            <motion.div
-                className="absolute inset-0 bg-scrim"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, transition: ENTER }}
-                exit={{ opacity: 0, transition: EXIT }}
-            />
-            <motion.div
-                className="relative w-full max-w-3xl overflow-hidden rounded-[1.125rem] border border-border bg-surface-muted shadow-[var(--shadow-sheet)]"
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1, transition: ENTER }}
-                exit={{ opacity: 0, scale: 0.96, transition: EXIT }}
-            >
-                <div className="flex items-center justify-between border-b border-border px-6 py-5">
-                    <div>
-                        <div className="mb-1 flex items-center gap-2 text-accent">
-                            <Brain size={16} />
-                            <span className="font-display text-xs">Spaced Review</span>
-                        </div>
-                        <h2 className="font-display text-2xl text-text">Refresh what you have learned</h2>
-                    </div>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="rounded-lg bg-surface p-2 text-text-muted transition hover:text-text active:scale-[0.97]"
-                        aria-label="Close review modal"
-                    >
-                        <X size={16} />
-                    </button>
-                </div>
-
-                <div className="border-b border-border px-6 py-4">
-                    <div className="mb-2 flex items-center justify-between text-xs text-text-muted">
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open) onClose();
+            }}
+        >
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Refresh what you have learned</DialogTitle>
+                </DialogHeader>
+                <DialogBody>
+                    <div className="mb-2 flex items-center justify-between type-caption text-text-2">
                         <span>{progressLabel}</span>
                         <span>{remainingCount} due</span>
                     </div>
-                    <div className="h-1 overflow-hidden rounded-full bg-surface">
-                        <div
-                            className="h-full rounded-full bg-accent"
-                            style={{ width: `${items.length === 0 ? 0 : (reviewedCount / items.length) * 100}%` }}
-                        />
-                    </div>
-                </div>
+                    <Progress
+                        value={
+                            items.length === 0
+                                ? 0
+                                : (reviewedCount / items.length) * 100
+                        }
+                        aria-label="Review progress"
+                    />
 
-                <div className="p-6">
-                    {items.length === 0 ? (
-                        <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface-subtle p-8 text-center">
-                            <RotateCcw size={28} className="mb-4 text-text-muted" />
-                            <h3 className="font-display text-2xl text-text">Nothing due right now</h3>
-                            <p className="mt-3 max-w-md text-sm leading-relaxed text-text-muted">
-                                Your review queue is clear. Keep making progress in modules and cards will come back on schedule.
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                            <div className="rounded-2xl border border-border bg-surface-subtle p-6">
-                                <div className="mb-3 font-display text-xs text-text-muted">
-                                    Prompt
+                    <div className="mt-5">
+                        {items.length === 0 ? (
+                            <Empty>
+                                <EmptyHeader>
+                                    <Icon icon={Retry} size={20} />
+                                    <EmptyTitle>
+                                        Nothing due right now
+                                    </EmptyTitle>
+                                    <EmptyDescription>
+                                        Your review queue is clear. Keep making
+                                        progress in modules and cards will come
+                                        back on schedule.
+                                    </EmptyDescription>
+                                </EmptyHeader>
+                                <EmptyContent />
+                            </Empty>
+                        ) : (
+                            <div className="flex flex-col gap-4">
+                                <div className="rounded-panel bg-field p-4">
+                                    <p className="type-caption text-text-2">
+                                        Prompt
+                                    </p>
+                                    <p className="mt-2 type-heading">
+                                        {currentItem?.prompt}
+                                    </p>
                                 </div>
-                                <p className="font-display text-3xl leading-tight text-text">{currentItem?.prompt}</p>
-                            </div>
 
-                            <div className="rounded-2xl border border-border bg-surface-muted/60 p-6">
-                                <div className="mb-3 font-display text-xs text-text-muted">
-                                    Answer
-                                </div>
-                                {showAnswer ? (
-                                    <p className="text-base leading-relaxed text-text">{currentItem?.answer}</p>
-                                ) : (
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowAnswer(true)}
-                                        className="inline-flex items-center gap-2 rounded-lg bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20 active:scale-[0.97]"
-                                    >
-                                        Reveal answer
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="grid gap-3 md:grid-cols-3">
-                                {(["hard", "okay", "easy"] as SrsRating[]).map((rating) => {
-                                    const config = REVIEW_LABELS[rating];
-                                    return (
-                                        <button
-                                            key={rating}
-                                            type="button"
-                                            disabled={!showAnswer || isSaving}
-                                            onClick={() => void handleRate(rating)}
-                                            className={`rounded-2xl px-4 py-4 text-left transition disabled:cursor-not-allowed disabled:opacity-50 ${config.className}`}
+                                <div className="rounded-panel bg-field p-4">
+                                    <p className="type-caption text-text-2">
+                                        Answer
+                                    </p>
+                                    {showAnswer ? (
+                                        <p className="mt-2 type-body">
+                                            {currentItem?.answer}
+                                        </p>
+                                    ) : (
+                                        <Button
+                                            variant="secondary"
+                                            className="mt-2"
+                                            onClick={() => setShowAnswer(true)}
                                         >
-                                            <div className="font-display text-xs">{config.title}</div>
-                                            <div className="mt-2 text-sm leading-relaxed">{config.hint}</div>
-                                        </button>
-                                    );
-                                })}
+                                            Reveal answer
+                                        </Button>
+                                    )}
+                                </div>
+
+                                <div className="grid gap-3 sm:grid-cols-3">
+                                    {(["hard", "okay", "easy"] as SrsRating[]).map(
+                                        (rating) => {
+                                            const config =
+                                                REVIEW_LABELS[rating];
+                                            return (
+                                                <Button
+                                                    key={rating}
+                                                    variant="secondary"
+                                                    disabled={
+                                                        !showAnswer || isSaving
+                                                    }
+                                                    onClick={() =>
+                                                        void handleRate(rating)
+                                                    }
+                                                >
+                                                    {config.title}
+                                                </Button>
+                                            );
+                                        },
+                                    )}
+                                </div>
+                                <p className="type-caption text-text-2">
+                                    {REVIEW_LABELS.hard.hint}{" "}
+                                    {REVIEW_LABELS.okay.hint}{" "}
+                                    {REVIEW_LABELS.easy.hint}
+                                </p>
                             </div>
-                        </div>
-                    )}
-                </div>
-            </motion.div>
-        </div>
-            )}
-        </AnimatePresence>
+                        )}
+                    </div>
+                </DialogBody>
+            </DialogContent>
+        </Dialog>
     );
 }

@@ -4,17 +4,6 @@
 	"apps/web/src/components/ui/alert-dialog.tsx": {"import":2},
 	"apps/web/src/components/ui/button.tsx": {"import":1},
 	"apps/web/src/components/ui/switch.tsx": {"import":1},
-	"apps/web/src/components/workspace/ContextPanel.tsx": {"import":1},
-	"apps/web/src/components/workspace/SettingsModal.tsx": {"import":1,"raw":1},
-	"apps/web/src/components/workspace/SrsReviewModal.tsx": {"import":1},
-	"apps/web/src/components/workspace/WorkspaceShell.tsx": {"import":4,"raw":4},
-	"apps/web/src/components/workspace/WorkspaceSplitView.tsx": {"import":1},
-	"apps/web/src/components/workspace/sections/CalendarSection.tsx": {"import":1},
-	"apps/web/src/components/workspace/sections/CustomSection.tsx": {"import":1},
-	"apps/web/src/components/workspace/sections/ModuleSection.tsx": {"import":1},
-	"apps/web/src/components/workspace/sections/ProgressSection.tsx": {"import":1},
-	"apps/web/src/components/workspace/sections/SubmissionsSection.tsx": {"import":3},
-	"apps/web/src/components/workspace/sections/TaskListSection.tsx": {"import":1},
 	"apps/web/src/lib/notes.ts": {"raw":1},
 	"apps/web/src/lib/personal/books.ts": {"raw":6},
 	"apps/web/src/lib/topic-color.ts": {"raw":8},
@@ -23,6 +12,5 @@
 	"apps/web/src/styles/globals.css": {"raw":72},
 	"apps/web/src/styles/learning.css": {"raw":2},
 	"apps/web/src/views/studio/learn.tsx": {"raw":3},
-	"apps/web/src/views/studio/reader.tsx": {"import":1,"raw":5},
-	"apps/web/src/views/workspace.tsx": {"import":1}
+	"apps/web/src/views/studio/reader.tsx": {"import":1,"raw":5}
 }

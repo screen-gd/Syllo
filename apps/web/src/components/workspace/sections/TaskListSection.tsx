@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Clock } from "lucide-react";
 import type { TaskSection, Section, TaskGroup, Task } from "@/types";
+import { Icon, Time } from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import { Checkbox } from "@/components/glaze/ui/checkbox";
+import { Empty, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
+import { cn } from "@/lib/glaze/utils";
 
 interface Props {
     section: TaskSection;
@@ -102,125 +107,115 @@ export default function TaskListSection({ section, onUpdate }: Props) {
     };
 
     return (
-        <div className="space-y-10">
-            <div className="text-center sm:text-left">
-                <h2 className="text-2xl font-semibold text-text mb-2">
-                    ✅ {section.title}
-                </h2>
-                <p className="text-text-muted text-sm">Actionable items to keep you moving forward.</p>
+        <div className="flex flex-col gap-6">
+            <div>
+                <h2 className="type-heading">{section.title}</h2>
+                <p className="mt-1 type-body-sm text-text-2">Actionable items to keep you moving forward.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
                 {(section.data || []).map((group) => {
                     const totalCount = (group.tasks || []).length;
                     const completedCount = (group.tasks || []).filter(t => t.completed).length;
 
                     return (
-                        <div
-                            key={group.id}
-                            className="surface rounded-2xl p-5 sm:p-6 border border-border group"
-                        >
-                            <div className="flex items-center justify-between mb-5">
-                                <h3 className="font-display font-bold text-text text-sm text-text flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-accent" />
-                                    {group.title}
-                                </h3>
-                                <div className="flex items-center gap-3">
-                                    <span className="bg-surface-muted px-2.5 py-1 rounded-full text-[0.75rem] font-bold text-text-muted border border-border">
-                                        {completedCount} / {totalCount} done
-                                    </span>
-                                    {completedCount > 0 && (
-                                        <button
-                                            onClick={() => clearCompleted(group.id)}
-                                            className="text-xs font-bold text-accent hover:text-accent transition-colors opacity-0 group-hover:opacity-100 px-2 py-1 hover:bg-accent/10 rounded"
-                                        >
-                                            Clear Done
-                                        </button>
-                                    )}
+                        <div key={group.id} className="shell">
+                            <div className="panel p-4">
+                                <div className="mb-4 flex items-center justify-between gap-3">
+                                    <h3 className="type-heading-sm">{group.title}</h3>
+                                    <div className="flex items-center gap-2">
+                                        <Badge>{completedCount} / {totalCount} done</Badge>
+                                        {completedCount > 0 && (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => clearCompleted(group.id)}
+                                            >
+                                                Clear done
+                                            </Button>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
 
-                            {(group.tasks || []).length === 0 ? (
-                                <div className="py-8 text-center border border-dashed border-border rounded-xl bg-surface-subtle">
-                                    <p className="text-text-muted text-sm italic">All tasks completed! 🎉</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    {(group.tasks || []).map((task) => (
-                                        <div
-                                            key={task.id}
-                                            className={`relative bg-surface-muted/40 border rounded-xl p-3 sm:p-4 transition-colors hover:bg-surface-subtle hover:border-border ${task.completed ? "opacity-40  grayscale" : "opacity-100 "} ${focusedTaskPath?.g === section.data.indexOf(group) && focusedTaskPath?.t === group.tasks.indexOf(task) ? "border-accent " : "border-border"}`}
-                                        >
-                                            <label className="flex items-start gap-3 cursor-pointer group/label">
-                                                <div className="relative flex items-center justify-center w-5 h-5 mt-0.5 shrink-0">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={task.completed}
-                                                        onChange={() => toggleComplete(group.id, task.id)}
-                                                        className="peer appearance-none w-5 h-5 rounded-md border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-colors cursor-pointer hover:border-accent"
-                                                    />
-                                                    <span className="absolute text-white text-[0.75rem] font-semibold pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
-                                                </div>
-                                                <div className="flex-1 min-w-0 pt-0.5">
-                                                    <span
-                                                        className={`block text-sm sm:text-base transition-colors font-medium ${task.completed
-                                                            ? "text-text-muted line-through decoration-text-soft"
-                                                            : "text-text group-hover/label:text-accent-strong"
-                                                            }`}
-                                                    >
-                                                        {task.title}
-                                                        {task.priority && (
-                                                            <span className={`ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${
-                                                                task.priority === 'core' ? 'bg-accent/10 text-accent' :
-                                                                task.priority === 'optional' ? 'bg-raised/10 text-text-muted' :
-                                                                task.priority === 'advanced' ? 'bg-warning/10 text-warning' : ''
-                                                            }`}>
-                                                                {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-                                                            </span>
-                                                        )}
-                                                        {task.estimatedTime && (
-                                                            <span className="ml-3 inline-flex items-center gap-1 text-[0.75rem] text-text-muted opacity-70">
-                                                                <Clock size={12} />
-                                                                {task.estimatedTime}
-                                                            </span>
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            </label>
-
-                                            {/* Subtasks */}
-                                            {!task.completed && task.subtasks && task.subtasks.length > 0 && (
-                                                <div className="mt-3 ml-8 space-y-2 border-l border-border pl-3">
-                                                    {(task.subtasks || []).map((st) => (
-                                                        <label
-                                                            key={st.id}
-                                                            className="flex items-start gap-2 cursor-pointer group/sub"
-                                                        >
-                                                            <div className="relative flex items-center justify-center w-4 h-4 shrink-0 mt-0.5">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={st.completed}
-                                                                    onChange={() => toggleComplete(group.id, task.id, st.id)}
-                                                                    className="peer appearance-none w-4 h-4 rounded border border-border-strong bg-surface checked:bg-accent checked:border-accent transition-colors cursor-pointer hover:border-accent"
-                                                                />
-                                                                <span className="absolute text-text text-xs font-semibold pointer-events-none opacity-0 peer-checked:opacity-100">✓</span>
-                                                            </div>
+                                {(group.tasks || []).length === 0 ? (
+                                    <Empty>
+                                        <EmptyHeader>
+                                            <EmptyTitle>All tasks completed</EmptyTitle>
+                                        </EmptyHeader>
+                                    </Empty>
+                                ) : (
+                                    <ul className="flex flex-col gap-2">
+                                        {(group.tasks || []).map((task) => {
+                                            const focused =
+                                                focusedTaskPath?.g === section.data.indexOf(group) &&
+                                                focusedTaskPath?.t === group.tasks.indexOf(task);
+                                            return (
+                                                <li
+                                                    key={task.id}
+                                                    className={cn(
+                                                        "rounded-panel border p-3",
+                                                        focused ? "border-line-focus" : "border-line-faint",
+                                                    )}
+                                                >
+                                                    <label className="flex cursor-pointer items-start gap-3">
+                                                        <Checkbox
+                                                            className="mt-0.5"
+                                                            checked={!!task.completed}
+                                                            onCheckedChange={() => toggleComplete(group.id, task.id)}
+                                                        />
+                                                        <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
                                                             <span
-                                                                className={`text-xs transition-colors mt-0.5 ${st.completed
-                                                                    ? "text-text-muted line-through"
-                                                                    : "text-text-muted group-hover/sub:text-text"
-                                                                    }`}
+                                                                className={cn(
+                                                                    "type-body-sm",
+                                                                    task.completed ? "text-text-2 line-through" : "text-text-1",
+                                                                )}
                                                             >
-                                                                {st.title}
+                                                                {task.title}
                                                             </span>
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                                                            {task.priority && (
+                                                                <Badge>
+                                                                    {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                                                                </Badge>
+                                                            )}
+                                                            {task.estimatedTime && (
+                                                                <span className="inline-flex items-center gap-1 type-caption text-text-2">
+                                                                    <Icon icon={Time} className="text-text-3" />
+                                                                    {task.estimatedTime}
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                    </label>
+
+                                                    {/* Subtasks */}
+                                                    {!task.completed && task.subtasks && task.subtasks.length > 0 && (
+                                                        <ul className="mt-3 ms-7 flex flex-col gap-2">
+                                                            {(task.subtasks || []).map((st) => (
+                                                                <li key={st.id}>
+                                                                    <label className="flex cursor-pointer items-start gap-2">
+                                                                        <Checkbox
+                                                                            className="mt-0.5"
+                                                                            checked={!!st.completed}
+                                                                            onCheckedChange={() => toggleComplete(group.id, task.id, st.id)}
+                                                                        />
+                                                                        <span
+                                                                            className={cn(
+                                                                                "type-caption",
+                                                                                st.completed ? "text-text-2 line-through" : "text-text-1",
+                                                                            )}
+                                                                        >
+                                                                            {st.title}
+                                                                        </span>
+                                                                    </label>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    )}
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                )}
+                            </div>
                         </div>
                     );
                 })}

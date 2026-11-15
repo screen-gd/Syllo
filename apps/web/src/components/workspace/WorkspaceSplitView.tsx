@@ -2,9 +2,27 @@
 
 import { useState, useEffect } from "react";
 import type { Roadmap, ModuleSection, Task } from "@/types";
-import { CheckCircle2, ChevronRight, Target, BookOpen } from "lucide-react";
+import { ChevronRight, Icon } from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Checkbox } from "@/components/glaze/ui/checkbox";
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import {
+    Item,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemLink,
+    ItemMeta,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
+import { Progress } from "@/components/glaze/ui/progress";
 import ContextPanel from "./ContextPanel";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/glaze/utils";
 
 interface Props {
     roadmap: Roadmap;
@@ -14,7 +32,7 @@ interface Props {
     activeModuleId?: string; // If passed from sidebar
 }
 
-export type SelectedNode = 
+export type SelectedNode =
     | { type: "module"; id: string; data: ModuleSection }
     | { type: "task"; id: string; moduleId: string; data: Task }
     | null;
@@ -52,142 +70,128 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
 
     return (
         <div className="flex h-full w-full overflow-hidden">
-            {/* LEFT PANE: 60% TIMELINE */}
+            {/* LEFT PANE: module list */}
             <div className={cn(
-"flex-1 overflow-y-auto no-scrollbar border-r border-border",
-                selectedNode ? "lg:w-[65%] lg:flex-none lg:max-w-[65%]" : "w-full"
+                "flex-1 overflow-y-auto",
+                selectedNode ? "lg:w-[65%] lg:flex-none" : "w-full"
             )}>
-                <div className="max-w-5xl mx-auto p-6 sm:p-8 lg:p-12 pb-32 space-y-12">
-                    
-                    <header className="mb-8">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 border border-accent/20 rounded-full text-xs font-semibold text-accent mb-4">
-                           Timeline View
-                        </div>
-                        <h1 className="text-3xl font-display text-text tracking-tight">Active Roadmap</h1>
-                        <p className="text-text-muted mt-2">Follow the path and complete your tasks. Select any item to view its details.</p>
+                <div className="mx-auto flex max-w-256 flex-col gap-4 p-4 pb-32 sm:p-6">
+
+                    <header className="mb-2">
+                        <h1 className="type-title">Active roadmap</h1>
+                        <p className="mt-1 type-body-sm text-text-2">Follow the path and complete your tasks. Select any item to view its details.</p>
                     </header>
 
-                    <div className="relative border-l-2 border-border ml-4 space-y-12">
-                        {modules.map((mod, i) => {
-                            const progress = getModuleProgress(mod);
-                            const isModuleSelected = selectedNode?.type === "module" && selectedNode.id === mod.id;
-                            const tasks = mod.data.tasks || [];
+                    {modules.map((mod) => {
+                        const progress = getModuleProgress(mod);
+                        const isModuleSelected = selectedNode?.type === "module" && selectedNode.id === mod.id;
+                        const tasks = mod.data.tasks || [];
 
-                            return (
-                                <div key={mod.id} id={`module-${mod.id}`} className="relative group">
-                                    {/* Timeline dot */}
-                                    <div className="absolute -left-[29px] top-4 w-14 h-14 bg-page rounded-full flex items-center justify-center">
-                                        <div className={cn(
-"w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-colors ",
-                                            progress === 100 ? "bg-accent border-accent text-page " : 
-                                            progress > 0 ? "border-accent text-accent bg-accent/10 " : 
-"border-border text-text-soft bg-surface"
-                                        )}>
-                                            {progress === 100 ? <CheckCircle2 size={20} /> : i + 1}
-                                        </div>
+                        return (
+                            <div key={mod.id} id={`module-${mod.id}`} className="shell">
+                                <div className="panel flex flex-col gap-3 p-3">
+                                    <Item selected={isModuleSelected}>
+                                        <ItemContent>
+                                            <ItemTitle className="type-heading-sm">
+                                                <ItemLink
+                                                    href={`#module-${mod.id}`}
+                                                    aria-current={isModuleSelected ? "true" : undefined}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setSelectedNode({ type: "module", id: mod.id, data: mod });
+                                                    }}
+                                                >
+                                                    {mod.title || "Untitled module"}
+                                                </ItemLink>
+                                            </ItemTitle>
+                                            {mod.data.description ? (
+                                                <ItemDescription>{mod.data.description}</ItemDescription>
+                                            ) : null}
+                                        </ItemContent>
+                                        <Badge>{progress}%</Badge>
+                                    </Item>
+
+                                    <div className="px-3">
+                                    <Progress
+                                        value={progress}
+                                        aria-label={`${mod.title} progress`}
+                                    />
                                     </div>
 
-                                    {/* Module Card */}
-                                    <div className="ml-12">
-                                        <button 
-                                            onClick={() => setSelectedNode({ type: "module", id: mod.id, data: mod })}
-                                            className={cn(
-"w-full text-left p-6 rounded-2xl border transition-colors",
-                                                isModuleSelected ? "border-accent/50 bg-accent/5 " : "border-border bg-surface hover:border-border-strong"
-                                            )}
-                                        >
-                                            <div className="flex justify-between items-start mb-4">
-                                                <h3 className="font-display text-xl text-text">{mod.title || "Untitled Module"}</h3>
-                                                <span className="text-xs font-semibold text-accent bg-accent/10 px-2 py-1 rounded-full border border-accent/20">{progress}%</span>
-                                            </div>
-                                            {mod.data.description && (
-                                                <p className="text-sm text-text-muted line-clamp-2">{mod.data.description}</p>
-                                            )}
-                                            
-                                            {/* Condensed tasks preview if not expanded into details */}
-                                            <div className="mt-6 space-y-2">
-                                                {tasks.map(task => {
-                                                    const isTaskSelected = selectedNode?.type === "task" && selectedNode.id === task.id;
-                                                    return (
-                                                        <div 
-                                                            key={task.id}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setSelectedNode({ type: "task", id: task.id, moduleId: mod.id, data: task });
-                                                            }}
-                                                            className={cn(
-"group/task flex items-start gap-4 p-4 rounded-xl border transition-colors cursor-pointer",
-                                                                isTaskSelected ? "border-accent/40 bg-accent/10" : "border-border bg-surface hover:border-border hover:bg-surface-muted"
-                                                            )}
-                                                        >
-                                                            <button 
+                                    <ItemGroup aria-label={`${mod.title} tasks`}>
+                                        {tasks.map(task => {
+                                            const isTaskSelected = selectedNode?.type === "task" && selectedNode.id === task.id;
+                                            const subtasks = task.subtasks || [];
+                                            return (
+                                                <Item key={task.id} selected={isTaskSelected}>
+                                                    <span className="relative z-(--z-raised) flex">
+                                                        <Checkbox
+                                                            aria-label={
+                                                                task.completed
+                                                                    ? `Mark ${task.title} incomplete`
+                                                                    : `Mark ${task.title} complete`
+                                                            }
+                                                            checked={!!task.completed}
+                                                            onCheckedChange={() => onUpdateTask(mod.id, task.id)}
+                                                        />
+                                                    </span>
+                                                    <ItemContent>
+                                                        <ItemTitle className={cn(task.completed && "text-text-2 line-through")}>
+                                                            <ItemLink
+                                                                href={`#task-${task.id}`}
+                                                                aria-current={isTaskSelected ? "true" : undefined}
                                                                 onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    onUpdateTask(mod.id, task.id);
+                                                                    e.preventDefault();
+                                                                    setSelectedNode({ type: "task", id: task.id, moduleId: mod.id, data: task });
                                                                 }}
-                                                                className={cn(
-"mt-0.5 shrink-0 flex items-center justify-center w-5 h-5 rounded-sm border transition-colors cursor-pointer",
-                                                                    task.completed ? "bg-accent border-accent text-page " : "border-border-strong bg-surface hover:border-accent/50"
-                                                                )}
                                                             >
-                                                                {task.completed && <CheckCircle2 size={14} />}
-                                                            </button>
-                                                            <div className="flex-1">
-                                                                <h4 className={cn("text-sm font-medium transition-colors", task.completed ? "text-text-soft line-through" : "text-text")}>
-                                                                    {task.title}
-                                                                </h4>
-                                                                {(task.subtasks || []).length > 0 && (
-                                                                    <div className="mt-2 flex gap-1.5 flex-wrap">
-                                                                        {task.subtasks!.map(sub => (
-                                                                            <span key={sub.id} className={cn("w-2 h-2 rounded-full transition-colors", sub.completed ? "bg-accent " : "bg-raised")} />
-                                                                        ))}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            <ChevronRight size={16} className={cn("text-text-soft transition-colors", isTaskSelected && "text-accent", "group-hover/task:text-text-muted")} />
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                        </button>
-                                    </div>
+                                                                {task.title}
+                                                            </ItemLink>
+                                                        </ItemTitle>
+                                                    </ItemContent>
+                                                    {subtasks.length > 0 ? (
+                                                        <ItemMeta>
+                                                            {subtasks.filter(s => s.completed).length}/{subtasks.length}
+                                                        </ItemMeta>
+                                                    ) : null}
+                                                    <Icon icon={ChevronRight} className="text-text-3" />
+                                                </Item>
+                                            );
+                                        })}
+                                    </ItemGroup>
                                 </div>
-                            )
-                        })}
-
-                        {/* End of Timeline marker */}
-                        <div className="relative !mt-6">
-                            <div className="absolute -left-[14px] top-0 w-8 h-8 rounded-full border-2 border-dashed border-border-strong bg-page flex items-center justify-center pointer-events-none">
-                                <Target size={14} className="text-text-soft" />
                             </div>
-                        </div>
-                    </div>
+                        );
+                    })}
                 </div>
             </div>
 
-            {/* RIGHT PANE: 35% CONTEXT */}
+            {/* RIGHT PANE: context */}
             {selectedNode ? (
-                <div className="w-[35%] bg-page flex flex-col h-full hidden lg:flex border-l border-border">
-                    <ContextPanel 
-                        selectedNode={selectedNode} 
+                <div className="hidden h-full w-[35%] flex-col border-l border-line-faint bg-page lg:flex">
+                    <ContextPanel
+                        selectedNode={selectedNode}
                         roadmap={roadmap}
                         onUpdateSubtask={onUpdateSubtask}
                         onUpdateTask={onUpdateTask}
                         onUpdateModule={onUpdateModule}
-                        onClose={() => setSelectedNode(null)} 
+                        onClose={() => setSelectedNode(null)}
                     />
                 </div>
             ) : (
-                <div className="w-[35%] bg-page hidden lg:flex flex-col items-center justify-center p-12 text-center border-l border-border">
-                    <div className="w-16 h-16 rounded-2xl bg-surface border border-border flex items-center justify-center text-text-soft mb-6">
-                        <BookOpen size={24} />
-                    </div>
-                    <h3 className="text-xl font-display text-text mb-2 tracking-tight">Context Panel</h3>
-                    <p className="text-text-muted text-sm leading-relaxed">Select any module or task on the timeline to view its details, resources, and take notes here.</p>
+                <div className="hidden w-[35%] flex-col items-center justify-center border-l border-line-faint bg-page p-8 lg:flex">
+                    <Empty>
+                        <EmptyHeader>
+                            <EmptyTitle>Context panel</EmptyTitle>
+                            <EmptyDescription>
+                                Select any module or task to view its details,
+                                resources, and take notes here.
+                            </EmptyDescription>
+                        </EmptyHeader>
+                    </Empty>
                 </div>
             )}
-            
-            {/* Mobile drawer overlay for ContextPanel can be added here if needed */}
+
         </div>
     );
 }

@@ -10,7 +10,7 @@ import {
   PaperPlaneRightIcon, PaperclipIcon, PauseIcon, PencilSimpleIcon, PlayIcon, PlusIcon, RobotIcon, ShieldSlashIcon,
   SparkleIcon, SquareIcon, SunIcon, TableIcon, TerminalWindowIcon, TrashIcon, TrayIcon,
   UploadSimpleIcon, UserIcon, WarningIcon, WarningCircleIcon, WrenchIcon, XIcon, XCircleIcon, HourglassSimpleMediumIcon,
-  HouseIcon, BookOpenIcon, BooksIcon, NotebookIcon, BookOpenTextIcon, ArrowCounterClockwiseIcon, BinocularsIcon, ListIcon, ChartBarIcon, ListPlusIcon,
+  HouseIcon, BookOpenIcon, BooksIcon, NotebookIcon, BookOpenTextIcon, ArrowCounterClockwiseIcon, BinocularsIcon, ListIcon, ChartBarIcon, ListPlusIcon, TrophyIcon,
 } from '@phosphor-icons/react/ssr';
 import {cn} from '@/lib/glaze/utils';
 
@@ -112,6 +112,7 @@ export const Scout = BinocularsIcon;
 export const Progress = ChartBarIcon;
 export const Menu = ListIcon;
 export const Create = ListPlusIcon;
+export const Trophy = TrophyIcon;
 
 export type GlazeIcon = PhosphorIcon;
 

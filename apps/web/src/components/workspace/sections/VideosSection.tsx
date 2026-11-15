@@ -3,6 +3,18 @@
 import { useState } from "react";
 import type { VideoSection, Section } from "@/types";
 import VideoPlayer from "@/components/shared/VideoPlayer";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
+import { FileVideo, Icon } from "@/components/glaze/icon";
+import {
+    Item,
+    ItemContent,
+    ItemDescription,
+    ItemGroup,
+    ItemLink,
+    ItemMedia,
+    ItemTitle,
+} from "@/components/glaze/ui/item";
 
 interface Props {
     section: VideoSection;
@@ -17,117 +29,114 @@ export default function Videos({ section }: Props) {
     const activeVideo = section.data.find((v) => v.id === activeVideoId) || section.data[0];
 
     return (
-        <div className="h-[max(calc(100vh-160px),600px)] flex flex-col relative z-10">
-            <div className="mb-6 shrink-0 text-center sm:text-left">
-                <h2 className="font-display text-4xl font-semibold text-text mb-2 flex items-center justify-center sm:justify-start gap-3">
-                    <span className="text-accent">▶</span> {section.title}
-                </h2>
-                <p className="text-text-muted text-sm">Distraction-free viewing experience.</p>
+        <div className="flex min-h-0 flex-col gap-4 lg:h-full">
+            <div>
+                <h2 className="type-heading">{section.title}</h2>
+                <p className="mt-1 type-body-sm text-text-2">Distraction-free viewing experience.</p>
             </div>
 
-            <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-6">
+            <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
                 {/* Main Player Area */}
                 {activeVideo ? (
-                    <div className="flex-1 flex flex-col min-h-0 group rounded-2xl overflow-hidden border border-border bg-page">
-                        <div className="relative w-full aspect-video bg-page flex-shrink-0">
-                            <VideoPlayer
-                                url={activeVideo.url}
-                                title={activeVideo.title}
-                                description={activeVideo.description}
-                            />
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-surface">
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="bg-accent/20 text-accent text-[0.75rem] font-bold px-2.5 py-1 rounded">Now Playing</span>
-                                {activeVideo.duration && <span className="text-text-muted text-sm tabular-nums">⏱ {activeVideo.duration}</span>}
+                    <div className="shell min-w-0 flex-1">
+                        <div className="panel flex min-h-0 flex-col overflow-hidden">
+                            <div className="relative aspect-16/9 w-full shrink-0 bg-page">
+                                <VideoPlayer
+                                    url={activeVideo.url}
+                                    title={activeVideo.title}
+                                    description={activeVideo.description}
+                                />
                             </div>
-                            <h3 className="text-xl font-semibold text-text mb-4">{activeVideo.title}</h3>
-                            <p className="text-text-muted leading-relaxed bg-surface-muted/30 p-4 rounded-xl border border-border">
-                                {activeVideo.description || "No description provided."}
-                            </p>
+                            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                                <div className="mb-3 flex items-center gap-3">
+                                    <Badge>Now playing</Badge>
+                                    {activeVideo.duration ? (
+                                        <span className="type-caption text-text-2">
+                                            {activeVideo.duration}
+                                        </span>
+                                    ) : null}
+                                </div>
+                                <h3 className="type-heading-sm">{activeVideo.title}</h3>
+                                <p className="mt-2 type-body-sm text-text-2">
+                                    {activeVideo.description || "No description provided."}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 ) : (
-                    <div className="flex-1 flex items-center justify-center surface rounded-2xl border-border border-dashed border">
-                        <div className="text-center">
-                            <div className="text-4xl mb-4">🎥</div>
-                            <h3 className="text-lg font-bold text-text">No videos available</h3>
-                            <p className="text-sm text-text-muted mt-2">Add videos to this playlist to watch them here.</p>
-                        </div>
+                    <div className="shell flex-1">
+                        <Empty className="panel h-full">
+                            <EmptyHeader>
+                                <Icon icon={FileVideo} size={20} />
+                                <EmptyTitle>No videos available</EmptyTitle>
+                                <EmptyDescription>
+                                    Add videos to this playlist to watch them
+                                    here.
+                                </EmptyDescription>
+                            </EmptyHeader>
+                        </Empty>
                     </div>
                 )}
 
                 {/* Playlist Sidebar */}
-                <div className="w-full lg:w-96 shrink-0 flex flex-col min-h-0 surface rounded-2xl border border-border overflow-hidden">
-                    <div className="p-4 border-b border-border/50 bg-surface shrink-0 flex items-center justify-between">
-                        <h3 className="font-display font-bold text-text text-sm text-text-muted">Playlist</h3>
-                        <span className="text-[0.75rem] bg-surface px-2 py-0.5 rounded text-text-muted">{section.data.length} items</span>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-page">
-                        {section.data.map((video) => {
-                            const isActive = video.id === activeVideoId;
-                            const pseudoProgress = (video.id.length * 7) % 100; // Deterministic visual mock progress
-
-                            const imgUrl = video.platform === "youtube" && video.videoId
-                                ? `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`
-                                : null;
-
-                            return (
-                                <button
-                                    key={video.id}
-                                    type="button"
-                                    className={`w-full flex gap-3 p-3 rounded-xl text-left transition-colors relative group overflow-hidden ${isActive
-                                        ? "bg-accent/10 border border-accent/20 "
-                                        : "hover:bg-surface border border-transparent hover:border-border"
-                                        }`}
-                                    onClick={() => setActiveVideoId(video.id)}
-                                >
-                                    <div className={`relative w-28 aspect-video rounded-lg shrink-0 overflow-hidden bg-surface-muted flex items-center justify-center ${isActive ? 'ring-1 ring-border-strong' : ''}`}>
-                                        {imgUrl ? (
-                                            <>
-                                                {/* next/image is not practical here because thumbnail hosts are provider-controlled. */}
-                                                <img src={imgUrl} alt={video.title} className="absolute inset-0 w-full h-full object-cover" />
-                                            </>
-                                        ) : (
-                                            <span className="text-xl">🎥</span>
-                                        )}
-                                        {/* Duration Tag */}
-                                        {video.duration && (
-                                            <div className="absolute bottom-1 right-1 bg-black/80 font-mono text-xs text-white px-1 rounded">
-                                                {video.duration}
-                                            </div>
-                                        )}
-                                        {/* Active Overlay */}
-                                        {isActive && (
-                                            <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
-                                                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
-                                                    <span className="text-white text-[0.75rem] ml-0.5">▶</span>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="flex-1 min-w-0 flex flex-col py-0.5 justify-between">
-                                        <div>
-                                            <span className={`text-sm font-bold line-clamp-2 leading-snug transition-colors ${isActive ? 'text-accent' : 'text-text group-hover:text-accent-strong'}`}>
-                                                {video.title}
-                                            </span>
-                                            <span className="text-[0.75rem] text-text-muted mt-1 block">
-                                                {video.platform}
-                                            </span>
-                                        </div>
-
-                                        {/* Visual Mock Progress Bar */}
-                                        <div className="w-full h-1 bg-surface-muted overflow-hidden rounded-full mt-2">
-                                            {pseudoProgress > 0 && (
-                                                <div className={`h-full bg-accent rounded-full`} style={{ width: `${pseudoProgress}%` }} />
+                <div className="shell w-full shrink-0 lg:w-80">
+                    <div className="panel flex min-h-0 flex-col">
+                        <div className="flex items-center justify-between border-b border-line-faint p-4 pb-3">
+                            <h3 className="type-heading-sm">Playlist</h3>
+                            <Badge>{section.data.length} items</Badge>
+                        </div>
+                        <div className="min-h-0 flex-1 overflow-y-auto p-2">
+                            <ItemGroup>
+                                {section.data.map((video) => {
+                                    const imgUrl =
+                                        video.platform === "youtube" &&
+                                        video.videoId
+                                            ? `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`
+                                            : null;
+                                    return (
+                                        <Item
+                                            key={video.id}
+                                            selected={video.id === activeVideoId}
+                                        >
+                                            {imgUrl ? (
+                                                <ItemMedia>
+                                                    {/* next/image is not practical here because thumbnail hosts are provider-controlled. */}
+                                                    <img
+                                                        src={imgUrl}
+                                                        alt=""
+                                                        className="aspect-16/9 h-full rounded-tag object-cover"
+                                                    />
+                                                </ItemMedia>
+                                            ) : (
+                                                <ItemMedia>
+                                                    <Icon icon={FileVideo} />
+                                                </ItemMedia>
                                             )}
-                                        </div>
-                                    </div>
-                                </button>
-                            );
-                        })}
+                                            <ItemContent>
+                                                <ItemTitle>
+                                                    <ItemLink
+                                                        href={video.url}
+                                                        aria-current={video.id === activeVideoId ? "true" : undefined}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setActiveVideoId(video.id);
+                                                        }}
+                                                    >
+                                                        {video.title}
+                                                    </ItemLink>
+                                                </ItemTitle>
+                                                <ItemDescription>
+                                                    {video.platform}
+                                                    {video.duration
+                                                        ? ` · ${video.duration}`
+                                                        : ""}
+                                                </ItemDescription>
+                                            </ItemContent>
+                                        </Item>
+                                    );
+                                })}
+                            </ItemGroup>
+                        </div>
                     </div>
                 </div>
             </div>

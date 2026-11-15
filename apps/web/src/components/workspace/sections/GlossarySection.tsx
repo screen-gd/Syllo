@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from "react";
 import type { GlossarySection, Section } from "@/types";
+import { ChevronDown, Icon } from "@/components/glaze/icon";
+import { Button } from "@/components/glaze/ui/button";
+import { cn } from "@/lib/glaze/utils";
 
 interface Props {
     section: GlossarySection;
@@ -36,87 +39,76 @@ export default function GlossarySection({ section }: Props) {
     const lettersToShow = activeLetter ? [activeLetter] : visibleLetters.sort();
 
     return (
-        <div className="space-y-8">
-            <div className="text-center sm:text-left">
-                <h2 className="text-2xl font-semibold text-text mb-2">
-                    📖 {section.title}
-                </h2>
-                <p className="text-text-muted text-sm">Key definitions and terminology.</p>
+        <div className="flex flex-col gap-6">
+            <div>
+                <h2 className="type-heading">{section.title}</h2>
+                <p className="mt-1 type-body-sm text-text-2">Key definitions and terminology.</p>
             </div>
 
             {/* A-Z Filter Bar */}
-            <div className="surface rounded-2xl p-4 sm:p-5 flex flex-wrap gap-2 sm:gap-3 justify-center border border-border bg-surface sticky top-20 z-10">
-                <button
+            <div className="sticky top-4 z-10 flex flex-wrap gap-1 rounded-panel border border-line-faint bg-paper p-2">
+                <Button
+                    variant={activeLetter === null ? "secondary" : "ghost"}
+                    size="sm"
                     onClick={() => setActiveLetter(null)}
-                    className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-colors ${activeLetter === null
-                            ? "bg-raised text-text "
-                            : "text-text-muted hover:bg-page hover:text-text"
-                        }`}
                 >
                     All
-                </button>
-                <div className="w-px h-8 bg-surface-muted mx-1" />
+                </Button>
                 {ALPHABET.map((letter) => {
                     const hasTerms = visibleLetters.includes(letter);
                     return (
-                        <button
+                        <Button
                             key={letter}
+                            variant={activeLetter === letter ? "secondary" : "ghost"}
+                            size="sm"
                             disabled={!hasTerms}
                             onClick={() => setActiveLetter(letter)}
-                            className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-colors ${activeLetter === letter
-                                    ? "bg-raised text-text "
-                                    : hasTerms
-                                        ? "text-text-muted hover:bg-page hover:text-text"
-                                        : "text-text-muted/20 cursor-not-allowed"
-                                }`}
                         >
                             {letter}
-                        </button>
+                        </Button>
                     );
                 })}
             </div>
 
-            <div className="space-y-10 px-2 sm:px-0">
+            <div className="flex flex-col gap-8">
                 {lettersToShow.map((letter) => (
                     <div key={letter}>
-                        <div className="flex items-center gap-4 mb-4">
-                            <h3 className="font-display text-2xl font-semibold text-accent w-8 text-center">{letter}</h3>
-                            <div className="h-px bg-accent/30 to-transparent flex-1" />
-                        </div>
+                        <h3 className="type-heading-sm">{letter}</h3>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
                             {groupedTerms[letter].map((item) => {
                                 const isExpanded = expandedTermId === item.id;
 
                                 return (
                                     <div
                                         key={item.id}
-                                        className={`surface rounded-2xl overflow-hidden border transition-colors ${isExpanded
-                                                ? 'border-accent/40  bg-surface-muted/80 ring-1 ring-border-strong'
-                                                : 'border-border hover:border-border hover:bg-surface-subtle'
-                                            }`}
+                                        className={cn(
+                                            "rounded-panel border border-line-faint bg-paper",
+                                            isExpanded && "bg-pressed",
+                                        )}
                                     >
-                                        <button
-                                            type="button"
-                                            className="w-full text-left p-5 flex items-start justify-between gap-4 outline-none group"
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-between"
+                                            aria-expanded={isExpanded}
                                             onClick={() => toggleExpand(item.id)}
                                         >
-                                            <span className={`font-bold text-base transition-colors ${isExpanded ? 'text-accent' : 'text-text group-hover:text-accent-strong'}`}>
+                                            <span className="type-body-sm">
                                                 {item.term}
                                             </span>
-                                            <span className={`text-text-muted text-xs shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-surface-muted transition-transform ${isExpanded ? 'rotate-180 bg-accent-soft text-accent-strong' : ''}`}>
-                                                ▼
-                                            </span>
-                                        </button>
-
-                                        {/* Smooth Accordion Body */}
-                                        <div className={`grid transition-opacity ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-                                            <div className="overflow-hidden">
-                                                <div className="p-5 pt-0 text-sm text-text-muted leading-relaxed border-t border-border bg-transparent">
-                                                    {item.definition}
-                                                </div>
+                                            <Icon
+                                                icon={ChevronDown}
+                                                className={cn(
+                                                    "text-text-3 transition-transform",
+                                                    isExpanded && "rotate-180",
+                                                )}
+                                            />
+                                        </Button>
+                                        {isExpanded ? (
+                                            <div className="border-t border-line-faint p-3 type-body-sm text-text-2">
+                                                {item.definition}
                                             </div>
-                                        </div>
+                                        ) : null}
                                     </div>
                                 );
                             })}
