@@ -50,12 +50,15 @@ import {
     ItemMeta,
     ItemTitle,
 } from "@/components/glaze/ui/item";
-import {
-    SegmentedControl,
-    SegmentedControlItem,
-} from "@/components/glaze/ui/segmented-control";
 import { Skeleton, SkeletonText } from "@/components/glaze/ui/skeleton";
 import { Switch } from "@/components/glaze/ui/switch";
+import {
+    Tabs,
+    TabsContent,
+    TabsCount,
+    TabsList,
+    TabsTrigger,
+} from "@/components/glaze/ui/tabs";
 import { Textarea } from "@/components/glaze/ui/textarea";
 import { cn } from "@/lib/glaze/utils";
 import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
@@ -642,7 +645,7 @@ export default function LearnPage({
                     />
                 }
             >
-                <span className="type-caption text-text-3">
+                <span className="type-caption text-text-2">
                     {String(position + 1).padStart(2, "0")}
                 </span>
                 <ItemContent>
@@ -699,7 +702,7 @@ export default function LearnPage({
                             lessonRow(entry, position),
                         )}
                         {level.deeper.length > 0 && (
-                            <p className="px-3 pt-2 pb-1 type-caption text-text-3">
+                            <p className="px-3 pt-2 pb-1 type-caption text-text-2">
                                 Go deeper (optional)
                             </p>
                         )}
@@ -895,7 +898,7 @@ export default function LearnPage({
                                             title}
                                     </p>
                                     {videoResource && (
-                                        <p className="type-caption text-text-3">
+                                        <p className="type-caption text-text-2">
                                             Saved at {formatTimestamp(position)}
                                         </p>
                                     )}
@@ -1390,34 +1393,28 @@ export default function LearnPage({
                                 </div>
                             ) : null}
 
+                            <Tabs
+                                value={tab}
+                                onValueChange={(value) =>
+                                    setTab(value as TabKey)
+                                }
+                                className="gap-0"
+                            >
                             <div className="border-t border-line-faint px-3 pt-3">
-                                <SegmentedControl
-                                    aria-label="Lesson views"
-                                    value={tab}
-                                    onValueChange={(value) =>
-                                        setTab(value as TabKey)
-                                    }
-                                >
-                                    <SegmentedControlItem value="read">
-                                        Read
-                                    </SegmentedControlItem>
-                                    <SegmentedControlItem
-                                        value="check"
-                                        count={subtasks.length || undefined}
-                                    >
+                                <TabsList aria-label="Lesson views">
+                                    <TabsTrigger value="read">Read</TabsTrigger>
+                                    <TabsTrigger value="check">
                                         Check
-                                    </SegmentedControlItem>
-                                    <SegmentedControlItem value="apply">
-                                        Apply
-                                    </SegmentedControlItem>
-                                </SegmentedControl>
+                                        {subtasks.length > 0 && (
+                                            <TabsCount>{subtasks.length}</TabsCount>
+                                        )}
+                                    </TabsTrigger>
+                                    <TabsTrigger value="apply">Apply</TabsTrigger>
+                                </TabsList>
                             </div>
 
                             <div className="p-3">
-                                <section
-                                    aria-label="Read"
-                                    hidden={tab !== "read"}
-                                >
+                                <TabsContent value="read" keepMounted>
                                     <div className="flex flex-col gap-4">
                                         {brief ? (
                                             <p className="type-body">
@@ -1466,7 +1463,7 @@ export default function LearnPage({
                                                                     key={`${objectiveIndex}:${objective}`}
                                                                     className="flex items-baseline gap-2 type-body-sm"
                                                                 >
-                                                                    <span className="type-caption text-text-3">
+                                                                    <span className="type-caption text-text-2">
                                                                         {String(
                                                                             objectiveIndex +
                                                                                 1,
@@ -1542,12 +1539,9 @@ export default function LearnPage({
                                             )}
                                         </section>
                                     </div>
-                                </section>
+                                </TabsContent>
 
-                                <section
-                                    aria-label="Check"
-                                    hidden={tab !== "check"}
-                                >
+                                <TabsContent value="check" keepMounted>
                                     <div className="flex flex-col gap-4">
                                         <header>
                                             <h2 className="type-heading-sm">
@@ -1724,12 +1718,9 @@ export default function LearnPage({
                                             </section>
                                         )}
                                     </div>
-                                </section>
+                                </TabsContent>
 
-                                <section
-                                    aria-label="Apply"
-                                    hidden={tab !== "apply"}
-                                >
+                                <TabsContent value="apply" keepMounted>
                                     <div className="flex flex-col gap-4">
                                         <header>
                                             <h2 className="type-heading-sm">
@@ -1863,8 +1854,9 @@ export default function LearnPage({
                                             )}
                                         </section>
                                     </div>
-                                </section>
+                                </TabsContent>
                             </div>
+                            </Tabs>
                         </div>
                     </section>
                 </div>

@@ -40,7 +40,7 @@ export default function Videos({ section }: Props) {
                 {activeVideo ? (
                     <div className="shell min-w-0 flex-1">
                         <div className="panel flex min-h-0 flex-col overflow-hidden">
-                            <div className="relative aspect-16/9 w-full shrink-0 bg-page">
+                            <div className="w-full shrink-0">
                                 <VideoPlayer
                                     url={activeVideo.url}
                                     title={activeVideo.title}
@@ -67,8 +67,7 @@ export default function Videos({ section }: Props) {
                     <div className="flex-1">
                         <Empty className="h-full">
                             <EmptyHeader>
-                                <Icon icon={FileVideo} size={20} />
-                                <EmptyTitle>No videos available</EmptyTitle>
+                                <EmptyTitle icon={FileVideo}>No videos available</EmptyTitle>
                                 <EmptyDescription>
                                     Add videos to this playlist to watch them
                                     here.

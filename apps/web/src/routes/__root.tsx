@@ -85,6 +85,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 function NotFound() {
     return (
         <main id="main-content" className="flex min-h-dvh items-center justify-center p-6">
+            <h1 className="sr-only">This page does not exist</h1>
             <Empty reason="empty" className="w-full max-w-md">
                 <EmptyHeader>
                     <EmptyTitle>This page does not exist</EmptyTitle>

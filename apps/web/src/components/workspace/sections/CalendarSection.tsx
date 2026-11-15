@@ -2,7 +2,6 @@
 
 import type { CalendarSection as CalendarSectionType, Section, CalendarEvent } from "@/types";
 import { Calendar } from "@/components/glaze/icon";
-import { Icon } from "@/components/glaze/icon";
 import {
     Empty,
     EmptyDescription,
@@ -38,8 +37,7 @@ export default function CalendarSection({ section, onUpdate }: Props) {
         return (
             <Empty className="w-full max-w-md">
                 <EmptyHeader>
-                    <Icon icon={Calendar} size={20} />
-                    <EmptyTitle>No events</EmptyTitle>
+                    <EmptyTitle icon={Calendar}>No events</EmptyTitle>
                     <EmptyDescription>
                         Calendar events mentioned in your roadmap will appear
                         here as a timeline.
@@ -79,7 +77,7 @@ export default function CalendarSection({ section, onUpdate }: Props) {
                             <p className="type-body-sm text-text-2">
                                 {event.description}
                             </p>
-                            <p className="mt-1 type-caption text-text-3">
+                            <p className="mt-1 type-caption text-text-2">
                                 {new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(event.date))}
                             </p>
                         </div>

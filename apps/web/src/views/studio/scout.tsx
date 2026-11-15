@@ -541,7 +541,7 @@ export default function ScoutPage() {
                                                                 dateTime={
                                                                     item.createdAt
                                                                 }
-                                                                className="type-caption text-text-3"
+                                                                className="type-caption text-text-2"
                                                             >
                                                                 {new Date(
                                                                     item.createdAt,
@@ -636,7 +636,7 @@ export default function ScoutPage() {
                                                             <span className="truncate text-text-2">
                                                                 {resource.title}
                                                             </span>
-                                                            <span className="shrink-0 type-caption text-text-3">
+                                                            <span className="shrink-0 type-caption text-text-2">
                                                                 {resource.kind}
                                                             </span>
                                                         </li>
@@ -723,15 +723,14 @@ export default function ScoutPage() {
                                         </p>
                                         <Button
                                             pending={approving}
+                                            pendingLabel="Building"
                                             onClick={() => void approve()}
                                             disabled={
                                                 approving ||
                                                 selected.size === 0
                                             }
                                         >
-                                            {approving
-                                                ? "Building"
-                                                : `Keep ${selected.size} and build`}
+                                            {`Keep ${selected.size} and build`}
                                         </Button>
                                     </div>
 

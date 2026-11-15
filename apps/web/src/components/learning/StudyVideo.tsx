@@ -174,11 +174,11 @@ export default function StudyVideo({
         <>
             {error && <Alert status="fail">{error}</Alert>}
             {youtubeId ? (
-                <div className="h-56 w-full overflow-hidden rounded-panel sm:h-72 [&_iframe]:size-full [&>div]:size-full">
+                <div className="aspect-16/9 w-full overflow-hidden rounded-panel [&_iframe]:size-full [&>div]:size-full">
                     <div ref={mount} />
                 </div>
             ) : embed && detectPlatform(url) === "vimeo" ? (
-                <div className="h-56 w-full sm:h-72">
+                <div className="aspect-16/9 w-full">
                     <iframe
                         className="size-full rounded-panel"
                         title={title}

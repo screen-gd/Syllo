@@ -568,7 +568,8 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                         <ItemActions>
                                             <Button
                                                 variant="ghost"
-                                                size="sm"
+                                                size="icon-sm"
+                                                aria-label={`Continue reading ${book.title}`}
                                                 render={
                                                     <Link
                                                         to="/read/$id"
@@ -577,7 +578,7 @@ function HomeContent({ reviews, roadmaps, records }: ReviewsData) {
                                                 }
                                                 nativeButton={false}
                                             >
-                                                Continue reading
+                                                <Icon icon={ArrowRight} />
                                             </Button>
                                         </ItemActions>
                                     </Item>

@@ -161,7 +161,7 @@ export function RecallPrompt({
                             <span className="text-text-1">In short:</span> {check.answer}
                         </p>
                     </div>
-                    <p className="mt-3 type-caption text-text-3">Compare for yourself. If you missed it, replay that moment.</p>
+                    <p className="mt-3 type-caption text-text-2">Compare for yourself. If you missed it, replay that moment.</p>
                     <div className="mt-2 flex gap-2">
                         <Button size="sm" onClick={() => onDone(answer.trim())}>
                             {doneLabel}

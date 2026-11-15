@@ -230,7 +230,7 @@ export default function SubmissionsSection({ section, onUpdate }: Props) {
                         >
                             Request revision
                         </Button>
-                        <Button onClick={() => showReview && handleReview(showReview, "approved")}>
+                        <Button variant="confirm" onClick={() => showReview && handleReview(showReview, "approved")}>
                             Approve
                         </Button>
                     </DialogFooter>

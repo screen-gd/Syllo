@@ -165,8 +165,8 @@ export default function Notes({ section, onUpdate }: Props) {
                     </div>
                 </div>
             ) : (
-                <div className="shell flex-1">
-                    <Empty className="panel h-full">
+                <div className="flex-1">
+                    <Empty className="h-full">
                         <EmptyHeader>
                             <EmptyTitle>Select or create a note</EmptyTitle>
                             <EmptyDescription>

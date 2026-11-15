@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Icon, Retry } from "@/components/glaze/icon";
+import { Retry } from "@/components/glaze/icon";
 import { Button } from "@/components/glaze/ui/button";
 import {
     Dialog,
@@ -10,7 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/glaze/ui/dialog";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/glaze/ui/empty-state";
 import { Progress } from "@/components/glaze/ui/progress";
 import type { SrsItem } from "@/types";
 import { applySrsReview, type SrsRating } from "@/lib/spaced-repetition";
@@ -110,10 +110,9 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
 
                     <div className="mt-5">
                         {items.length === 0 ? (
-                            <Empty>
+                            <Empty variant="plain">
                                 <EmptyHeader>
-                                    <Icon icon={Retry} size={20} />
-                                    <EmptyTitle>
+                                    <EmptyTitle icon={Retry}>
                                         Nothing due right now
                                     </EmptyTitle>
                                     <EmptyDescription>
@@ -122,7 +121,6 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                                         back on schedule.
                                     </EmptyDescription>
                                 </EmptyHeader>
-                                <EmptyContent />
                             </Empty>
                         ) : (
                             <div className="flex flex-col gap-4">

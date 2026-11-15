@@ -26,7 +26,7 @@ export default function Footer() {
                     ))}
                 </nav>
 
-                <p className="type-caption text-text-3">&copy; {new Date().getFullYear()}</p>
+                <p className="type-caption text-text-2">&copy; {new Date().getFullYear()}</p>
             </div>
         </footer>
     );

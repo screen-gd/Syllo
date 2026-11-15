@@ -138,7 +138,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
                                 </div>
 
                                 {(group.tasks || []).length === 0 ? (
-                                    <Empty>
+                                    <Empty variant="plain">
                                         <EmptyHeader>
                                             <EmptyTitle>All tasks completed</EmptyTitle>
                                         </EmptyHeader>

@@ -356,8 +356,11 @@ export default function ReviewsPage() {
                         {current ? (
                             <Card>
                                 <CardContent>
-                                    <div className="flex flex-wrap items-baseline gap-2">
-                                        <span className="type-label">
+                                    <h2 className="type-heading">
+                                        {current.prompt}
+                                    </h2>
+                                    <div className="flex flex-wrap items-baseline gap-2 type-caption text-text-2">
+                                        <span>
                                             {sourceTitle(current)}
                                         </span>
                                         {due.length > 0 ? (
@@ -370,9 +373,6 @@ export default function ReviewsPage() {
                                             </span>
                                         )}
                                     </div>
-                                    <h2 className="type-heading">
-                                        {current.prompt}
-                                    </h2>
                                     {revealed === current.id ? (
                                         <>
                                             <div className="type-body">
