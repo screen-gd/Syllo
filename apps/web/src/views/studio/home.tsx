@@ -601,20 +601,12 @@ function HomeSkeleton() {
                             variant="plain"
                             aria-label="Your learning topics"
                         >
+                            {/* Plain rows: ItemDescription is a <p>, and the skeleton lines are divs. */}
                             {[0, 1, 2].map((row) => (
-                                <Item key={row}>
-                                    <ItemContent>
-                                        <ItemTitle>
-                                            <SkeletonText type="label" />
-                                        </ItemTitle>
-                                        <ItemDescription>
-                                            <SkeletonText
-                                                type="body-sm"
-                                                last={0.7}
-                                            />
-                                        </ItemDescription>
-                                    </ItemContent>
-                                </Item>
+                                <div key={row} role="listitem" className="rule-row px-3 py-2">
+                                    <SkeletonText type="label" />
+                                    <SkeletonText type="body-sm" last={0.7} />
+                                </div>
                             ))}
                         </ItemGroup>
                         </CardContent>
