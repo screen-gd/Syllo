@@ -120,44 +120,47 @@ export default function LibraryPage() {
                     placeholder="Search books or authors"
                     aria-label="Search books"
                 />
-                <Select
-                    native
-                    className="w-48"
-                    aria-label="Book category"
-                    value={category}
-                    onValueChange={(value) => setCategory(value ?? "all")}
-                    items={[
-                        { value: "all", label: "All categories" },
-                        ...categories.map((value) => ({
-                            value,
-                            label: value,
-                        })),
-                    ]}
-                />
-                <Select
-                    native
-                    className="w-44"
-                    aria-label="Reading status"
-                    value={status}
-                    onValueChange={(value) => setStatus(value ?? "all")}
-                    items={[
-                        { value: "all", label: "All books" },
-                        { value: "reading", label: "Reading" },
-                        { value: "to-read", label: "To read" },
-                        { value: "finished", label: "Finished" },
-                    ]}
-                />
-                <Select
-                    native
-                    className="w-44"
-                    aria-label="Group books by"
-                    value={groupBy}
-                    onValueChange={(value) => setGroupBy(value ?? "status")}
-                    items={[
-                        { value: "status", label: "Reading status" },
-                        { value: "category", label: "Category" },
-                    ]}
-                />
+                <div className="w-48">
+                    <Select
+                        native
+                        aria-label="Book category"
+                        value={category}
+                        onValueChange={(value) => setCategory(value ?? "all")}
+                        items={[
+                            { value: "all", label: "All categories" },
+                            ...categories.map((value) => ({
+                                value,
+                                label: value,
+                            })),
+                        ]}
+                    />
+                </div>
+                <div className="w-44">
+                    <Select
+                        native
+                        aria-label="Reading status"
+                        value={status}
+                        onValueChange={(value) => setStatus(value ?? "all")}
+                        items={[
+                            { value: "all", label: "All books" },
+                            { value: "reading", label: "Reading" },
+                            { value: "to-read", label: "To read" },
+                            { value: "finished", label: "Finished" },
+                        ]}
+                    />
+                </div>
+                <div className="w-44">
+                    <Select
+                        native
+                        aria-label="Group books by"
+                        value={groupBy}
+                        onValueChange={(value) => setGroupBy(value ?? "status")}
+                        items={[
+                            { value: "status", label: "Reading status" },
+                            { value: "category", label: "Category" },
+                        ]}
+                    />
+                </div>
                 <SegmentedControl
                     aria-label="Library view"
                     value={view}
