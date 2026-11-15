@@ -2,12 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Badge } from "@/components/glaze/ui/badge";
 import { Button } from "@/components/glaze/ui/button";
-import {
-    Item,
-    ItemContent,
-    ItemGroup,
-    ItemTitle,
-} from "@/components/glaze/ui/item";
+import { Item, ItemContent, ItemTitle } from "@/components/glaze/ui/item";
 import {
     Glossary,
     Home,
@@ -23,6 +18,7 @@ import {
 } from "@/components/glaze/icon";
 import { useReviews } from "@/hooks/useReviews";
 import { isDue } from "@/lib/reviews";
+import { getRoadmapStats } from "@/lib/workspace-stats";
 import MaterialBar from "@/components/syllo/MaterialBar";
 import { cn } from "@/lib/utils";
 
@@ -66,15 +62,30 @@ function SylloMark() {
     );
 }
 
-/**
- * One destination row: the Item itself is the link, so the whole row navigates. A row with no icon is indented to
- * the icon rows' text, so every label starts at the same x.
- */
+/** A labelled run of destinations: the label in caption text-2 over its rows, aligned with their icons. */
+function NavSection({
+    label,
+    children,
+}: {
+    label: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <div role="group" aria-label={label} className="flex flex-col gap-0.5">
+            <p aria-hidden="true" className="px-3 pb-1 pt-2 type-caption text-text-2">
+                {label}
+            </p>
+            {children}
+        </div>
+    );
+}
+
+/** One destination row: the Item itself is the link, so the whole row navigates. */
 function NavItem({
     to,
     label,
     icon,
-    badge,
+    trailing,
     pathname,
     search,
     selected,
@@ -82,7 +93,7 @@ function NavItem({
     to: string;
     label: string;
     icon?: GlazeIcon;
-    badge?: React.ReactNode;
+    trailing?: React.ReactNode;
     pathname: string;
     search?: Record<string, string>;
     selected?: boolean;
@@ -101,12 +112,12 @@ function NavItem({
             }
         >
             {icon && <Icon icon={icon} size={16} />}
-            <ItemContent className={icon ? undefined : "ps-6"}>
+            <ItemContent>
                 <ItemTitle>
                     <span>{label}</span>
                 </ItemTitle>
             </ItemContent>
-            {badge}
+            {trailing}
         </Item>
     );
 }
@@ -130,78 +141,90 @@ export default function LearningSidebar() {
     }, [pathname]);
     return (
         <>
-            <aside className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col overflow-y-auto border-e border-line-faint px-3 pb-6 pt-6 lg:flex">
-                <Link
-                    to="/dashboard"
-                    data-slot="nav-brand"
-                    className="mb-8 flex items-center gap-2 px-3 text-text-1"
-                >
-                    <SylloMark />
-                    <span className="type-label-lg">Syllo</span>
-                </Link>
-                <nav aria-label="Main navigation" className="flex flex-col gap-2">
-                    {groups.map((group, index) => (
-                        <ItemGroup
-                            key={index}
-                            variant="plain"
-                            aria-label={groupLabels[index]}
-                            className={cn(
-                                "gap-0.5",
-                                index > 0 && "border-t border-line-faint pt-2",
-                            )}
+            <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 py-3 ps-3 lg:block">
+                <div className="shell flex h-full flex-col">
+                    <div className="panel flex min-h-0 flex-1 flex-col">
+                        <Link
+                            to="/dashboard"
+                            data-slot="nav-brand"
+                            className="flex items-center gap-2 border-b border-line-faint p-3 text-text-1"
                         >
-                            {group.map(({ to, label, icon }) => (
-                                <NavItem
-                                    key={to}
-                                    to={to}
-                                    label={label}
-                                    icon={icon}
-                                    pathname={pathname}
-                                    selected={
-                                        to === "/workspaces" && activeRoadmap
-                                            ? false
-                                            : undefined
-                                    }
-                                    badge={
-                                        to === "/reviews" && dueCount > 0 ? (
-                                            <Badge
-                                                count={dueCount}
-                                                aria-label={`${dueCount} ready`}
+                            <SylloMark />
+                            <span className="type-label-lg">Syllo</span>
+                        </Link>
+                        <nav
+                            aria-label="Main navigation"
+                            className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-1.5 pb-3"
+                        >
+                            {groups.map((group, index) => (
+                                <NavSection key={index} label={groupLabels[index]}>
+                                    {group.map(({ to, label, icon }) => (
+                                        <NavItem
+                                            key={to}
+                                            to={to}
+                                            label={label}
+                                            icon={icon}
+                                            pathname={pathname}
+                                            selected={
+                                                to === "/workspaces" && activeRoadmap
+                                                    ? false
+                                                    : undefined
+                                            }
+                                            trailing={
+                                                to === "/reviews" && dueCount > 0 ? (
+                                                    <Badge
+                                                        count={dueCount}
+                                                        aria-label={`${dueCount} ready`}
+                                                    />
+                                                ) : undefined
+                                            }
+                                        />
+                                    ))}
+                                </NavSection>
+                            ))}
+                            {roadmaps.length > 0 && (
+                                <NavSection label="Topics">
+                                    {roadmaps.slice(0, 4).map((roadmap) => {
+                                        const percent = getRoadmapStats(roadmap).percent;
+                                        return (
+                                            <NavItem
+                                                key={roadmap.id}
+                                                to="/learn"
+                                                label={roadmap.title}
+                                                pathname={pathname}
+                                                search={{ roadmap: roadmap.id }}
+                                                selected={activeRoadmap === roadmap.id}
+                                                trailing={
+                                                    <span className="shrink-0 type-caption tabular-nums text-text-2">
+                                                        {percent}%
+                                                    </span>
+                                                }
                                             />
-                                        ) : undefined
+                                        );
+                                    })}
+                                </NavSection>
+                            )}
+                        </nav>
+                    </div>
+                    <div className="shell-foot">
+                        <Button
+                            variant={pathname.startsWith("/settings") ? "secondary" : "ghost"}
+                            size="sm"
+                            render={
+                                <Link
+                                    to="/settings"
+                                    aria-current={
+                                        pathname.startsWith("/settings") ? "page" : undefined
                                     }
                                 />
-                            ))}
-                        </ItemGroup>
-                    ))}
-                </nav>
-                {roadmaps.length > 0 && (
-                    <nav
-                        aria-label="Learning topics"
-                        className="mt-6 border-t border-line-faint pt-2"
-                    >
-                        <ItemGroup variant="plain" aria-label="Learning topics" className="gap-0.5">
-                        {roadmaps.slice(0, 4).map((roadmap) => (
-                            <NavItem
-                                key={roadmap.id}
-                                to="/learn"
-                                label={roadmap.title}
-                                pathname={pathname}
-                                search={{ roadmap: roadmap.id }}
-                                selected={activeRoadmap === roadmap.id}
-                            />
-                        ))}
-                        </ItemGroup>
-                    </nav>
-                )}
-                <ItemGroup variant="plain" aria-label="Settings" className="mt-auto pt-8">
-                    <NavItem
-                        to="/settings"
-                        label="Settings"
-                        icon={Settings}
-                        pathname={pathname}
-                    />
-                </ItemGroup>
+                            }
+                            nativeButton={false}
+                        >
+                            <Icon icon={Settings} />
+                            Settings
+                        </Button>
+                    </div>
+                </div>
             </aside>
             <MaterialBar className="sticky top-0 z-(--z-sticky) px-4 pt-2 lg:hidden">
                 <div className="flex items-center justify-between">
