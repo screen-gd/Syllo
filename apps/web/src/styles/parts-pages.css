@@ -1,26 +1,13 @@
 /*
  * Page-level finish for Notes, Glossary, Reviews, Progress, Library, Learning
- * topics, Scout and Settings. Loaded after parts.css and built only from its
- * parts: .sy-box, .sy-groove, .sy-num, .sy-topic-dot and .sy-led.
+ * topics,, .sy-groove,, .sy-topic-dot and .sy-led.
  * Home and the sidebar are styled in parts.css.
  */
 
 /*
- * Page parts added here, used by the pages above:
- * .sy-row       a row inside a .sy-box.flush that runs edge to edge, with a
- *               hairline under it (none under the last row).
- * .sy-toolstrip a flat strip that holds a page's search and filters.
- * .sy-box-title a header-strip title with a leading dot.
- * .sy-initial   a large mono letter for a header strip.
- * .sy-topic-link, .sy-state  inline label with a leading dot.
- * .sy-cut       a hairline along the top edge of a block.
- * .sy-grooved   a list whose items are split by hairlines.
- */
-
-/* Rows that run to the edges of a flush box, split by hairlines. */
-.sy-box.flush > .sy-section-head:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+ * Page parts added here,,{
     margin-bottom: 0;
-}.sy-box.flush > .sy-tray:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+}{
     margin: 16px 0 14px;
 }
 @media (hover: hover) and (pointer: fine) {}

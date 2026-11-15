@@ -1,7 +1,4 @@
 {
-	"apps/web/src/components/scout/PickList.tsx": {"import":1},
-	"apps/web/src/components/scout/ScoutProgress.tsx": {"import":1},
-	"apps/web/src/components/scout/SourcesPanel.tsx": {"import":5},
 	"apps/web/src/components/shared/EmptyState.tsx": {"import":2},
 	"apps/web/src/components/shared/Modal.tsx": {"import":3},
 	"apps/web/src/components/ui/alert-dialog.tsx": {"import":2},
@@ -25,10 +22,7 @@
 	"apps/web/src/routes/__root.tsx": {"import":4},
 	"apps/web/src/styles/globals.css": {"raw":72},
 	"apps/web/src/styles/learning.css": {"raw":2},
-	"apps/web/src/views/studio/create.tsx": {"import":5},
 	"apps/web/src/views/studio/learn.tsx": {"raw":3},
 	"apps/web/src/views/studio/reader.tsx": {"import":1,"raw":5},
-	"apps/web/src/views/studio/scout.tsx": {"import":3},
-	"apps/web/src/views/studio/workspaces.tsx": {"import":3},
 	"apps/web/src/views/workspace.tsx": {"import":1}
 }

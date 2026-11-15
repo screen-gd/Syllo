@@ -40,7 +40,7 @@
     min-width: 0;
     margin: 0;
     padding: 0;
-}.sy-stack:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+}{
     display: grid;
     gap: var(--sy-space-block);
     align-content: start;
@@ -583,24 +583,18 @@
 }@media (hover: hover) and (pointer: fine) {}
 
 
-@media (max-width: 1199px) {
-    .sy-scout-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+@media (max-width: 1199px) {{
         grid-template-columns: minmax(0, 1fr);
-    }    .sy-sources-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    }{
         grid-template-columns: repeat(2, minmax(0, 1fr));
         align-items: start;
-    }
-    .sy-sources-panel > div:first-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-sources-panel > [role="alert"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    },{
         grid-column: 1 / -1;
     }}
-@media (min-width: 761px) and (max-width: 1199px) {
-    .sy-sources-panel > .sy-source-watch:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+@media (min-width: 761px) and (max-width: 1199px) {{
         grid-column: 1;
         grid-row: 2 / span 4;
-    }
-    .sy-sources-panel
-        > :is(.sy-source-disclosure, .sy-source-settings, .sy-source-cost):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    }{
         grid-column: 2;
     }
 }
@@ -617,10 +611,9 @@
         font-size: 0.875rem;
     }    .sy-segmented button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         min-height: 36px;
-    }    .sy-sources-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    }{
         grid-template-columns: minmax(0, 1fr);
-    }
-    .sy-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    }, 
     .sy-empty.bordered:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding: 20px;
     }    .sy-reader-mount:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
@@ -628,9 +621,7 @@
     }
     .sy-reader-tools .sy-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         width: 100%;
-    }
-     
-    .sy-create-review-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    }{
         grid-template-columns: minmax(0, 1fr);
         gap: 20px;
     }

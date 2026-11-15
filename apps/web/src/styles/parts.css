@@ -5,9 +5,7 @@
  * learning.css so equal selectors win.
  */
 
-/* Raised surfaces: one border on the page colour, no shadow. */
- 
-.sy-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+/* Raised surfaces: one border on the page colour,, 
 .sy-workspace-list:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-empty.bordered:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface);
