@@ -1,6 +1,19 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Plus, Search } from "lucide-react";
+import { ArrowRight, Icon, Add } from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import { Select } from "@/components/glaze/ui/select";
+import { SkeletonText } from "@/components/glaze/ui/skeleton";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import { toast } from "@/components/glaze/ui/toast";
 import { useReviews } from "@/hooks/useReviews";
 import {
@@ -13,7 +26,6 @@ import {
 } from "@/lib/glossary";
 import { saveReview } from "@/lib/reviews";
 import { getStorage } from "@/lib/storage";
-import { topicStyle } from "@/lib/topic-color";
 import PageFrame from "@/components/layout/PageFrame";
 
 const STORAGE_ERROR =
@@ -127,64 +139,64 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
 
     const form = draft && (
         <form
-            className="sy-form sy-inline-form"
+            className="flex flex-col gap-3"
             onSubmit={(event) => {
                 event.preventDefault();
                 saveDraft();
             }}
         >
-            <label>
-                Term
-                <input
-                    className="sy-input"
+            <Field>
+                <FieldLabel>Term</FieldLabel>
+                <Input
                     value={draft.term}
-                    onChange={(event) =>
-                        setDraft({ ...draft, term: event.target.value })
+                    onValueChange={(value) =>
+                        setDraft({ ...draft, term: value })
                     }
                     required
                     maxLength={200}
                     autoFocus
                 />
-            </label>
-            <label>
-                Definition
-                <textarea
-                    className="sy-textarea"
+            </Field>
+            <Field>
+                <FieldLabel>Definition</FieldLabel>
+                <Textarea
                     value={draft.definition}
-                    onChange={(event) =>
-                        setDraft({ ...draft, definition: event.target.value })
+                    onValueChange={(value) =>
+                        setDraft({ ...draft, definition: value })
                     }
-                    required
-                    maxLength={4000}
+                    limit={4000}
+                    autoGrow
+                    minRows={2}
+                    maxRows={10}
                 />
-            </label>
-            <div className="sy-inline-form-row">
+            </Field>
+            <div className="flex flex-wrap items-center gap-2">
                 {!draft.id && (
-                    <select
-                        className="sy-select"
-                        value={draft.roadmapId}
-                        onChange={(event) =>
-                            setDraft({ ...draft, roadmapId: event.target.value })
-                        }
+                    <Select
+                        native
                         aria-label="Topic"
-                    >
-                        {roadmaps.map((roadmap) => (
-                            <option key={roadmap.id} value={roadmap.id}>
-                                {roadmap.title}
-                            </option>
-                        ))}
-                    </select>
+                        className="w-56"
+                        value={draft.roadmapId}
+                        onValueChange={(value) =>
+                            setDraft({
+                                ...draft,
+                                roadmapId: value ?? draft.roadmapId,
+                            })
+                        }
+                        items={roadmaps.map((roadmap) => ({
+                            value: roadmap.id,
+                            label: roadmap.title,
+                        }))}
+                    />
                 )}
-                <button className="sy-button primary">
-                    {draft.id ? "Save" : "Add term"}
-                </button>
-                <button
+                <Button>{draft.id ? "Save" : "Add term"}</Button>
+                <Button
                     type="button"
-                    className="sy-button quiet"
+                    variant="ghost"
                     onClick={() => setDraft(null)}
                 >
                     Cancel
-                </button>
+                </Button>
             </div>
         </form>
     );
@@ -192,6 +204,7 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
     return (
         <PageFrame
             title="Glossary"
+            glazed
             subtitle={
                 loaded
                     ? `${entries.length} term${entries.length === 1 ? "" : "s"}`
@@ -200,16 +213,15 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
             actions={
                 <>
                     {uncarded.length > 1 && (
-                        <button
-                            className="sy-button secondary"
+                        <Button
+                            variant="secondary"
                             onClick={() => addCards(uncarded)}
                         >
                             Add {uncarded.length} to Reviews
-                        </button>
+                        </Button>
                     )}
                     {roadmaps.length > 0 && (
-                        <button
-                            className="sy-button primary"
+                        <Button
                             onClick={() =>
                                 setDraft({
                                     roadmapId:
@@ -221,189 +233,237 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                                 })
                             }
                         >
-                            <Plus />
+                            <Icon icon={Add} />
                             New term
-                        </button>
+                        </Button>
                     )}
                 </>
             }
         >
+            <div className="flex flex-col gap-4">
+                {draft && !draft.id && (
+                    <section className="shell">
+                        <div className="panel p-4">{form}</div>
+                    </section>
+                )}
 
-            {draft && !draft.id && form}
-
-            {entries.length > 0 && (
-                <div className="sy-library-tools sy-toolstrip">
-                    <label className="sy-search">
-                        <Search />
-                        <input
+                {entries.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Input
+                            className="w-56"
                             value={query}
-                            onChange={(event) => setQuery(event.target.value)}
+                            onValueChange={setQuery}
                             placeholder="Search terms"
                             aria-label="Search terms"
                         />
-                    </label>
-                    {roadmaps.length > 1 && (
-                        <div className="sy-filters">
-                            <select
-                                className="sy-select"
-                                value={topic}
-                                onChange={(event) =>
-                                    setTopic(event.target.value)
-                                }
+                        {roadmaps.length > 1 && (
+                            <Select
+                                native
                                 aria-label="Topic"
-                            >
-                                <option value="all">All topics</option>
-                                {roadmaps.map((roadmap) => (
-                                    <option key={roadmap.id} value={roadmap.id}>
-                                        {roadmap.title}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-                </div>
-            )}
+                                className="w-56"
+                                value={topic}
+                                onValueChange={(value) =>
+                                    setTopic(value ?? "all")
+                                }
+                                items={[
+                                    { value: "all", label: "All topics" },
+                                    ...roadmaps.map((roadmap) => ({
+                                        value: roadmap.id,
+                                        label: roadmap.title,
+                                    })),
+                                ]}
+                            />
+                        )}
+                    </div>
+                )}
 
-            {!loaded ? (
-                <section className="sy-box flush sy-term-group">
-                    <div className="sy-section-head">
-                        <span
-                            className="sy-skel title"
-                            style={{ width: 20 }}
-                        />
-                        <span
-                            className="sy-skel line-sm"
-                            style={{ width: 28 }}
-                        />
-                    </div>
-                    <div role="status" aria-label="Loading">
-                        {[0, 1, 2].map((row) => (
-                            <div
-                                className="sy-skel-row sy-skel-pair"
-                                key={row}
-                            >
-                                <span
-                                    className="sy-skel line"
-                                    style={{ width: "30%" }}
-                                />
-                                <span
-                                    className="sy-skel line-sm"
-                                    style={{ width: "72%" }}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            ) : roadmaps.length === 0 ? (
-                <div className="sy-tray">
-                    <p>Terms belong to a learning topic. Start one first.</p>
-                    <Link className="sy-button secondary" to="/scout">
-                        Open Scout
-                        <ArrowRight />
-                    </Link>
-                </div>
-            ) : entries.length === 0 ? (
-                <p className="sy-tray">
-                    No terms yet. Add the words you want to remember.
-                </p>
-            ) : visible.length === 0 ? (
-                <p className="sy-tray">No term matches this search.</p>
-            ) : (
-                [...letters].map(([letter, group]) => (
-                    <section key={letter} className="sy-box flush sy-term-group">
-                        <div className="sy-section-head">
-                            <h2 className="sy-initial">{letter}</h2>
-                            <span className="sy-readout">{group.length}</span>
+                {!loaded ? (
+                    <section className="shell">
+                        <div className="panel p-4" role="status" aria-label="Loading">
+                            <span className="sr-only">Loading</span>
+                            <SkeletonText type="heading-sm" last={0.2} />
+                            {[0, 1, 2].map((row) => (
+                                <div key={row} className="mt-3">
+                                    <SkeletonText type="body" last={0.3} />
+                                    <SkeletonText type="body-sm" last={0.72} />
+                                </div>
+                            ))}
                         </div>
-                        <dl>
-                            {group.map((entry) => {
-                                const hasCard = carded.has(
-                                    glossaryReviewId(
-                                        entry.roadmapId,
-                                        entry.term.id,
-                                    ),
-                                );
-                                return draft?.id === entry.term.id ? (
-                                    <div
-                                        key={entry.term.id}
-                                        className="sy-term sy-row"
-                                    >
-                                        {form}
-                                    </div>
-                                ) : (
-                                    <div
-                                        key={entry.term.id}
-                                        className="sy-term sy-row"
-                                    >
-                                        <dt>{entry.term.term}</dt>
-                                        <dd>
-                                            <p>{entry.term.definition}</p>
-                                            <div className="sy-row-actions">
-                                                {roadmaps.length > 1 && (
-                                                    <Link
-                                                        className="sy-topic-link"
-                                                        style={topicStyle(
-                                                            entry.roadmapId,
-                                                        )}
-                                                        to="/learn"
-                                                        search={{
-                                                            roadmap:
-                                                                entry.roadmapId,
-                                                        }}
-                                                    >
-                                                        <span className="sy-topic-dot" />
-                                                        {entry.roadmapTitle}
-                                                    </Link>
-                                                )}
-                                                {hasCard ? (
-                                                    <span className="sy-state">
-                                                        <span
-                                                            className="sy-led"
-                                                            data-on
-                                                        />
-                                                        In Reviews
-                                                    </span>
-                                                ) : (
-                                                    <button
-                                                        onClick={() =>
-                                                            addCards([entry])
-                                                        }
-                                                    >
-                                                        Add to Reviews
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={() =>
-                                                        setDraft({
-                                                            id: entry.term.id,
-                                                            roadmapId:
-                                                                entry.roadmapId,
-                                                            term: entry.term
-                                                                .term,
-                                                            definition:
-                                                                entry.term
-                                                                    .definition,
-                                                        })
-                                                    }
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        remove(entry)
-                                                    }
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </dd>
-                                    </div>
-                                );
-                            })}
-                        </dl>
                     </section>
-                ))
-            )}
+                ) : roadmaps.length === 0 ? (
+                    <Empty reason="empty">
+                        <EmptyHeader>
+                            <EmptyTitle>
+                                Terms belong to a learning topic
+                            </EmptyTitle>
+                        </EmptyHeader>
+                        <EmptyContent>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                render={<Link to="/scout" />}
+                                nativeButton={false}
+                            >
+                                Open Scout
+                                <Icon icon={ArrowRight} />
+                            </Button>
+                        </EmptyContent>
+                    </Empty>
+                ) : entries.length === 0 ? (
+                    <Empty reason="empty">
+                        <EmptyHeader>
+                            <EmptyTitle>No terms yet</EmptyTitle>
+                        </EmptyHeader>
+                    </Empty>
+                ) : visible.length === 0 ? (
+                    <Empty variant="plain" reason="no-results">
+                        <EmptyHeader>
+                            <EmptyTitle>
+                                {query ? (
+                                    <>
+                                        No terms match <code>{query}</code>
+                                    </>
+                                ) : (
+                                    "No terms match these filters"
+                                )}
+                            </EmptyTitle>
+                        </EmptyHeader>
+                    </Empty>
+                ) : (
+                    [...letters].map(([letter, group]) => (
+                        <section key={letter} className="shell">
+                            <div className="panel">
+                                <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                    <h2 className="type-heading-sm">
+                                        {letter}
+                                    </h2>
+                                    <Badge count={group.length} />
+                                </header>
+                                <dl>
+                                    {group.map((entry, index) => {
+                                        const hasCard = carded.has(
+                                            glossaryReviewId(
+                                                entry.roadmapId,
+                                                entry.term.id,
+                                            ),
+                                        );
+                                        return (
+                                            <div
+                                                key={entry.term.id}
+                                                className={
+                                                    index === 0
+                                                        ? "border-t border-line-faint px-4 py-3"
+                                                        : "rule-row px-4 py-3"
+                                                }
+                                            >
+                                                {draft?.id ===
+                                                entry.term.id ? (
+                                                    form
+                                                ) : (
+                                                    <>
+                                                        <dt className="type-label">
+                                                            {entry.term.term}
+                                                        </dt>
+                                                        <dd>
+                                                            <p className="mt-1 type-body-sm text-text-2">
+                                                                {
+                                                                    entry.term
+                                                                        .definition
+                                                                }
+                                                            </p>
+                                                            <div className="mt-2 -ms-2 flex flex-wrap items-center gap-1">
+                                                                {roadmaps.length >
+                                                                    1 && (
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        render={
+                                                                            <Link
+                                                                                to="/learn"
+                                                                                search={{
+                                                                                    roadmap:
+                                                                                        entry.roadmapId,
+                                                                                }}
+                                                                            />
+                                                                        }
+                                                                        nativeButton={
+                                                                            false
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            entry.roadmapTitle
+                                                                        }
+                                                                    </Button>
+                                                                )}
+                                                                {hasCard ? (
+                                                                    <Badge>
+                                                                        In
+                                                                        Reviews
+                                                                    </Badge>
+                                                                ) : (
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() =>
+                                                                            addCards(
+                                                                                [
+                                                                                    entry,
+                                                                                ],
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Add to
+                                                                        Reviews
+                                                                    </Button>
+                                                                )}
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() =>
+                                                                        setDraft(
+                                                                            {
+                                                                                id: entry
+                                                                                    .term
+                                                                                    .id,
+                                                                                roadmapId:
+                                                                                    entry.roadmapId,
+                                                                                term: entry
+                                                                                    .term
+                                                                                    .term,
+                                                                                definition:
+                                                                                    entry
+                                                                                        .term
+                                                                                        .definition,
+                                                                            },
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Edit
+                                                                </Button>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() =>
+                                                                        remove(
+                                                                            entry,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Delete
+                                                                </Button>
+                                                            </div>
+                                                        </dd>
+                                                    </>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </dl>
+                            </div>
+                        </section>
+                    ))
+                )}
+            </div>
         </PageFrame>
     );
 }

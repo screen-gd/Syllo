@@ -1194,12 +1194,8 @@
     flex-wrap: wrap;
 }
 .sy-saved-note .sy-inline-form:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-suggestion .sy-inline-form:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-term .sy-inline-form:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+.sy-suggestion .sy-inline-form:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin: 8px 0 0;
-}
-.sy-term-group + .sy-term-group:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-top: var(--sy-space-section);
 }
 .sy-note-meta:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: flex;
@@ -1235,31 +1231,6 @@
 }
 .sy-key-hint:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-left: auto;
-}
-.sy-term-group > h2:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    color: var(--color-text-soft);
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--color-border);
-}
-.sy-term:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr);
-    gap: 4px 24px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--color-border);
-    overflow-wrap: anywhere;
-}
-.sy-term > .sy-inline-form:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    grid-column: 1 / -1;
-}
-.sy-term dt:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-weight: 550;
-}
-.sy-term dd p:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.8125rem;
-    line-height: 1.75;
-    color: var(--color-text-muted);
-    white-space: pre-wrap;
 }
 .sy-review-card:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     max-width: 44rem;
@@ -1367,9 +1338,6 @@
 @media (max-width: 760px) {
     .sy-stats:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .sy-term:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-template-columns: minmax(0, 1fr);
     }
     .sy-key-hint:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         display: none;
