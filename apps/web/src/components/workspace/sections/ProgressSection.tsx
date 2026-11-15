@@ -36,7 +36,7 @@ export default function ProgressSection({ roadmap }: Props) {
             </div>
 
             <section className="shell">
-                <div className="panel flex flex-col gap-4 p-4">
+                <div className="panel flex flex-col gap-4 p-3">
                     <div className="flex items-baseline justify-between gap-3">
                         <span className="type-heading-sm">Total completion</span>
                         <span className="type-heading">{progress.overall}%</span>
@@ -64,7 +64,7 @@ export default function ProgressSection({ roadmap }: Props) {
 
             {progress.phaseProgress.length > 0 ? (
                 <section className="shell">
-                    <div className="panel p-4">
+                    <div className="panel p-3">
                         <h3 className="type-heading-sm">Phase breakdown</h3>
                         <ul className="mt-3 flex flex-col gap-4">
                             {progress.phaseProgress.map((pm: { id: string; title: string; percent: number }) => (

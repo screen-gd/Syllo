@@ -84,7 +84,7 @@ export default function Notes({ section, onUpdate }: Props) {
             {/* Sidebar List */}
             <div className="shell w-full shrink-0 lg:w-72">
                 <div className="panel flex min-h-0 flex-col">
-                    <div className="flex items-center justify-between border-b border-line-faint p-4 pb-3">
+                    <div className="flex items-center justify-between border-b border-line-faint p-3">
                         <h2 className="type-heading-sm">Notes</h2>
                         <Button
                             variant="secondary"
@@ -95,9 +95,9 @@ export default function Notes({ section, onUpdate }: Props) {
                             <Icon icon={Add} />
                         </Button>
                     </div>
-                    <div className="min-h-0 flex-1 overflow-y-auto p-2">
+                    <div className="min-h-0 flex-1 overflow-y-auto">
                         {section.data.length > 0 ? (
-                            <ItemGroup>
+                            <ItemGroup variant="plain" aria-label="Notes">
                                 {section.data.map((note) => (
                                     <Item
                                         key={note.id}
@@ -124,7 +124,7 @@ export default function Notes({ section, onUpdate }: Props) {
                                 ))}
                             </ItemGroup>
                         ) : (
-                            <p className="p-4 type-caption text-text-2">
+                            <p className="p-3 type-caption text-text-2">
                                 No notes yet. Create one to begin.
                             </p>
                         )}
@@ -136,7 +136,7 @@ export default function Notes({ section, onUpdate }: Props) {
             {activeNote ? (
                 <div className="shell min-h-0 flex-1">
                     <div className="panel flex min-h-0 flex-1 flex-col">
-                        <div className="border-b border-line-faint p-4">
+                        <div className="border-b border-line-faint p-3">
                             <Input
                                 value={activeNote.title}
                                 onValueChange={(value) => updateNote(activeNote.id, { title: value })}
@@ -148,7 +148,7 @@ export default function Notes({ section, onUpdate }: Props) {
                                 · {wordCount} words
                             </p>
                         </div>
-                        <div className="flex-1 p-4">
+                        <div className="flex-1 p-3">
                         <Textarea
                             autoGrow
                             minRows={12}

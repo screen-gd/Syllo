@@ -111,7 +111,7 @@ export default function SubmissionsSection({ section, onUpdate }: Props) {
             {/* Submit form */}
             {showSubmit ? (
                 <div className="shell">
-                    <div className="panel flex flex-col gap-3 p-4">
+                    <div className="panel flex flex-col gap-3 p-3">
                         <Field>
                             <FieldLabel>Title</FieldLabel>
                             <Input
@@ -156,7 +156,7 @@ export default function SubmissionsSection({ section, onUpdate }: Props) {
                     const status = STATUS[sub.status] ?? STATUS.pending;
                     return (
                         <div key={sub.id} className="shell">
-                            <div className="panel flex flex-col gap-2 p-4">
+                            <div className="panel flex flex-col gap-2 p-3">
                                 <div className="flex items-start justify-between gap-3">
                                     <h3 className="flex-1 type-heading-sm">{sub.title}</h3>
                                     <Badge variant={status.variant}>{status.label}</Badge>

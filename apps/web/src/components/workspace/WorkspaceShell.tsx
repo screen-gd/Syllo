@@ -155,6 +155,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
     useEffect(() => {
         setUserConfig(getUserConfig());
+        // On a phone the open sidebar floats over the page, so it starts closed there.
+        if (window.matchMedia("(max-width: 639px)").matches) setSidebarOpen(false);
     }, []);
 
     useEffect(() => {
@@ -539,8 +541,8 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                     id="tour-sidebar"
                     aria-label="Workspace"
                     className={cn(
-                        "z-30 flex shrink-0 flex-col overflow-hidden border-e border-line-faint bg-paper",
-                        sidebarOpen ? "w-64 sm:w-72" : "w-16",
+                        "z-(--z-overlay) flex shrink-0 flex-col overflow-hidden border-e border-line-faint bg-paper",
+                        sidebarOpen ? "w-64 max-sm:fixed max-sm:inset-y-0 max-sm:start-0 sm:w-72" : "w-16",
                     )}
                 >
                     {/* Header: Collapse Toggle */}
@@ -721,6 +723,11 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 )}
                             </>
                         )}
+                        {!hideWatermark && sidebarOpen && (
+                            <p className="px-3 py-1 type-caption text-text-2">
+                                Powered by ZNS Nexus
+                            </p>
+                        )}
                     </div>
                 </aside>
 
@@ -728,7 +735,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                 {sidebarOpen && (
                     <div
                         aria-hidden="true"
-                        className="fixed inset-0 z-20 bg-scrim sm:hidden"
+                        className="fixed inset-0 z-(--z-overlay) bg-scrim sm:hidden"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
@@ -737,7 +744,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                 <main id="main-content" className="relative flex flex-1 flex-col overflow-y-auto bg-page">
                     {/* Workspace Header */}
                     {!isEmbed && !isReadOnly && (
-                        <div className="sticky top-0 z-30 flex shrink-0 items-center justify-end gap-2 border-b border-line-faint bg-page px-4 py-2 sm:px-6">
+                        <div className="sticky top-0 z-(--z-sticky) flex shrink-0 flex-wrap items-center justify-end gap-2 border-b border-line-faint bg-page px-4 py-2 sm:px-6">
                             <Button
                                 variant="ghost"
                                 size="icon-sm"
@@ -774,6 +781,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                             </DropdownMenu>
                             <Button
                                 size="sm"
+                                variant="secondary"
                                 onClick={() => setIsSrsModalOpen(true)}
                                 disabled={dueSrsItems.length === 0}
                                 title={dueSrsItems.length === 0 ? "No spaced repetition cards are due right now" : `Review ${dueSrsItems.length} spaced repetition cards`}
@@ -786,7 +794,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                     <div className="relative flex-1 overflow-y-auto bg-page">
                         {/* Banners */}
                         {(isLowQuality || isAtRisk || hasOverdue) && (
-                            <div className="flex flex-col gap-2 p-4 sm:px-6">
+                            <div className="mx-auto flex w-full max-w-256 flex-col gap-2 px-4 pt-4 sm:px-6 lg:px-10">
                                 {isLowQuality && (
                                     <Alert>
                                         <AlertDescription>
@@ -816,7 +824,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                         {activeSectionId === "dashboard" ? (
                             // COURSE DASHBOARD
-                            <div className="mx-auto flex max-w-256 flex-col gap-10 p-4 sm:p-6 lg:p-10">
+                            <div className="mx-auto flex max-w-256 flex-col gap-6 px-4 pb-24 pt-6 sm:px-6 lg:px-10 lg:pt-10">
                                 {/* Dashboard Header */}
                                 <header className="flex flex-col gap-3">
                                     <h1 className="type-title">{roadmap.title}</h1>
@@ -844,9 +852,9 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 )}
 
                                 {/* Progress & Continue */}
-                                <div className="grid gap-4 lg:grid-cols-3">
+                                <div className="grid gap-4 lg:grid-cols-3 lg:items-start">
                                     <div id="tour-progress" className="shell lg:col-span-2">
-                                        <div className="panel flex flex-col gap-4 p-4 sm:p-6">
+                                        <div className="panel flex flex-col gap-3 p-3">
                                             <div>
                                                 <h2 className="type-heading">{getMotivationalMessage(progress.overall)}</h2>
                                                 <p className="mt-1 type-body-sm text-text-2">
@@ -857,7 +865,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                                 <ProgressValue />
                                             </Progress>
                                         </div>
-                                        <div className="shell-foot flex flex-wrap items-center gap-2">
+                                        <div className="shell-foot">
                                             <span className="me-auto type-caption text-text-2">
                                                 {totalModules} modules · {progress.totalTasks} tasks · {totalResources} resources · {totalVideos} videos
                                             </span>
@@ -881,7 +889,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                     {/* Smart Insights */}
                                     <div className="flex flex-col gap-4">
                                         <section className="shell">
-                                            <div className="panel p-4">
+                                            <div className="panel p-3">
                                                 <h2 className="type-heading-sm">Your progress</h2>
                                                 <DataList className="mt-3">
                                                     <DataListItem>
@@ -914,7 +922,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
 
                                         {calendarEvents.length > 0 && (
                                             <section className="shell">
-                                                <div className="panel p-4">
+                                                <div className="panel p-3">
                                                     <h2 className="type-heading-sm">Upcoming deadlines</h2>
                                                     <ul className="mt-3 flex flex-col gap-3">
                                                         {calendarEvents.slice(0, 3).map(event => {
@@ -942,7 +950,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 {moduleSections.length > 0 && (
                                     <section>
                                         <h2 className="type-heading-sm">Course modules</h2>
-                                        <ItemGroup className="mt-3" aria-label="Course modules">
+                                        <ItemGroup className="mt-2" aria-label="Course modules">
                                             {moduleSections.map((mod, idx) => {
                                                 const modPercent = getModuleProgress(mod);
                                                 const tasksCount = mod.type === "module" ? ((mod as ModuleSectionType).data.tasks || []).length : 0;
@@ -977,7 +985,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                 {/* Achievements Section */}
                                 <section>
                                     <h2 className="type-heading-sm">Achievements</h2>
-                                    <ItemGroup className="mt-3" aria-label="Achievements">
+                                    <ItemGroup className="mt-2" aria-label="Achievements">
                                         {getBadges().map(badge => (
                                             <Item key={badge.id} disabled={!badge.unlockedAt}>
                                                 <ItemMedia variant="icon">
@@ -1054,7 +1062,7 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                                     />
                             </div>
                         ) : activeSection ? (
-                            <div className="relative mx-auto min-h-full max-w-256 p-4 sm:p-6 lg:p-10">
+                            <div className="relative mx-auto min-h-full w-full max-w-256 px-4 pb-24 pt-6 sm:px-6 lg:px-10 lg:pt-10">
                                     <SectionRenderer
                                         section={activeSection}
                                         roadmap={roadmap}
@@ -1212,12 +1220,6 @@ export default function WorkspaceShell({ roadmap, onUpdateSection, onUpdateRoadm
                 onUpdateBranding={(branding) => onUpdateRoadmap?.({ branding })}
             />
 
-            {/* Watermark */}
-            {!hideWatermark && (
-                <p className="pointer-events-none fixed bottom-2 end-24 z-(--z-sticky) type-caption text-text-2">
-                    Powered by ZNS Nexus
-                </p>
-            )}
         </div>
     );
 }

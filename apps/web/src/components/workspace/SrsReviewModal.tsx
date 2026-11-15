@@ -126,7 +126,7 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                             </Empty>
                         ) : (
                             <div className="flex flex-col gap-4">
-                                <div className="rounded-panel bg-field p-4">
+                                <div className="well rounded-panel p-3">
                                     <p className="type-caption text-text-2">
                                         Prompt
                                     </p>
@@ -135,7 +135,7 @@ export default function SrsReviewModal({ isOpen, items, onClose, onSave }: SrsRe
                                     </p>
                                 </div>
 
-                                <div className="rounded-panel bg-field p-4">
+                                <div className="well rounded-panel p-3">
                                     <p className="type-caption text-text-2">
                                         Answer
                                     </p>

@@ -47,8 +47,9 @@ export default function Videos({ section }: Props) {
                                     description={activeVideo.description}
                                 />
                             </div>
-                            <div className="min-h-0 flex-1 overflow-y-auto p-4">
-                                <div className="mb-3 flex items-center gap-3">
+                            <div className="min-h-0 flex-1 overflow-y-auto p-3">
+                                <h3 className="type-heading-sm">{activeVideo.title}</h3>
+                                <div className="mt-1 flex items-center gap-3">
                                     <Badge>Now playing</Badge>
                                     {activeVideo.duration ? (
                                         <span className="type-caption text-text-2">
@@ -56,7 +57,6 @@ export default function Videos({ section }: Props) {
                                         </span>
                                     ) : null}
                                 </div>
-                                <h3 className="type-heading-sm">{activeVideo.title}</h3>
                                 <p className="mt-2 type-body-sm text-text-2">
                                     {activeVideo.description || "No description provided."}
                                 </p>
@@ -64,8 +64,8 @@ export default function Videos({ section }: Props) {
                         </div>
                     </div>
                 ) : (
-                    <div className="shell flex-1">
-                        <Empty className="panel h-full">
+                    <div className="flex-1">
+                        <Empty className="h-full">
                             <EmptyHeader>
                                 <Icon icon={FileVideo} size={20} />
                                 <EmptyTitle>No videos available</EmptyTitle>
@@ -81,12 +81,12 @@ export default function Videos({ section }: Props) {
                 {/* Playlist Sidebar */}
                 <div className="shell w-full shrink-0 lg:w-80">
                     <div className="panel flex min-h-0 flex-col">
-                        <div className="flex items-center justify-between border-b border-line-faint p-4 pb-3">
+                        <div className="flex items-center justify-between border-b border-line-faint p-3">
                             <h3 className="type-heading-sm">Playlist</h3>
-                            <Badge>{section.data.length} items</Badge>
+                            <Badge count={section.data.length} />
                         </div>
-                        <div className="min-h-0 flex-1 overflow-y-auto p-2">
-                            <ItemGroup>
+                        <div className="min-h-0 flex-1 overflow-y-auto">
+                            <ItemGroup variant="plain" aria-label="Playlist">
                                 {section.data.map((video) => {
                                     const imgUrl =
                                         video.platform === "youtube" &&

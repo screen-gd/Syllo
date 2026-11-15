@@ -64,7 +64,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
             <div className="flex flex-col gap-6">
                 {header}
                 <div className="shell">
-                    <ul className="panel flex flex-col divide-y divide-line-faint">
+                    <ul className="panel flex flex-col">
                         {data.items.map((item) => (
                             <li key={item.id}>
                                 <label className="flex cursor-pointer items-start gap-3 p-3">
@@ -104,7 +104,7 @@ export default function CustomSection({ section, onUpdate }: Props) {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {data.items.map((item) => (
                         <div key={item.id} className="shell">
-                            <div className="panel h-full p-4">
+                            <div className="panel h-full p-3">
                                 <h4 className="type-heading-sm">{item.title}</h4>
                                 {item.description ? (
                                     <p className="mt-1 type-body-sm text-text-2">{item.description}</p>

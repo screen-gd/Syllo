@@ -99,7 +99,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                 {isExpanded ? (
                                     <div
                                         id={bodyId}
-                                        className="flex flex-col gap-6 border-t border-line-faint p-4"
+                                        className="flex flex-col gap-5 border-t border-line-faint p-3"
                                     >
                                         {milestone.description ? (
                                             <p className="whitespace-pre-line type-body-sm text-text-2">
@@ -111,10 +111,10 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                         {(milestone.tasks || []).length > 0 && (
                                             <div className="flex flex-col gap-2">
                                                 <h4 className="type-label">Actions</h4>
-                                                <ul className="flex flex-col gap-2">
+                                                <ul className="flex flex-col">
                                                     {(milestone.tasks || []).map((task) => (
                                                         <li key={task.id}>
-                                                            <label className="flex cursor-pointer items-start gap-3 rounded-panel border border-line-faint p-3">
+                                                            <label className="rule-row flex cursor-pointer items-start gap-3 py-2">
                                                                 <Checkbox
                                                                     className="mt-0.5"
                                                                     checked={!!task.completed}
@@ -158,7 +158,7 @@ export default function MilestonesSection({ section, onUpdate }: Props) {
                                         {(milestone.resources || []).length > 0 && (
                                             <div className="flex flex-col gap-2">
                                                 <h4 className="type-label">Materials</h4>
-                                                <ItemGroup>
+                                                <ItemGroup variant="plain" aria-label="Materials">
                                                     {(milestone.resources || []).map((res) => (
                                                         <Item key={res.id}>
                                                             <ItemMedia variant="icon">

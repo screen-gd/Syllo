@@ -46,7 +46,7 @@ export default function GlossarySection({ section }: Props) {
             </div>
 
             {/* A-Z Filter Bar */}
-            <div className="sticky top-4 z-10 flex flex-wrap gap-1 rounded-panel border border-line-faint bg-paper p-2">
+            <div className="sticky top-4 z-(--z-sticky) flex flex-wrap gap-1 rounded-panel border border-line-faint bg-paper p-2">
                 <Button
                     variant={activeLetter === null ? "secondary" : "ghost"}
                     size="sm"

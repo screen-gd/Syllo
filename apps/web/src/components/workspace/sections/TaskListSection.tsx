@@ -120,7 +120,7 @@ export default function TaskListSection({ section, onUpdate }: Props) {
 
                     return (
                         <div key={group.id} className="shell">
-                            <div className="panel p-4">
+                            <div className="panel p-3">
                                 <div className="mb-4 flex items-center justify-between gap-3">
                                     <h3 className="type-heading-sm">{group.title}</h3>
                                     <div className="flex items-center gap-2">

@@ -69,20 +69,20 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
         const moduleId = selectedNode.moduleId;
 
         return (
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-5">
                 <div>
-                    <div className="mb-2 flex items-center gap-2">
-                        <Badge>Task</Badge>
-                        {task.priority ? <Badge>{task.priority}</Badge> : null}
-                    </div>
                     <h2
                         className={cn(
                             "type-heading",
-                            task.completed && "line-through text-text-3",
+                            task.completed && "line-through text-text-2",
                         )}
                     >
                         {task.title}
                     </h2>
+                    <div className="mt-2 flex items-center gap-2">
+                        <Badge>Task</Badge>
+                        {task.priority ? <Badge>{task.priority}</Badge> : null}
+                    </div>
                 </div>
 
                 {task.completed ? (
@@ -99,7 +99,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                 )}
 
                 {task.description ? (
-                    <div className="rounded-panel border border-line-faint bg-paper p-4">
+                    <div className="well rounded-panel p-3">
                         <h4 className="type-caption text-text-2">Description</h4>
                         <p className="mt-2 whitespace-pre-wrap type-body-sm text-text-1">
                             {task.description}
@@ -114,11 +114,11 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                             {task.subtasks!.filter((s) => s.completed).length}/
                             {task.subtasks!.length})
                         </h4>
-                        <ul className="mt-2 flex flex-col gap-1">
+                        <ul className="mt-1 flex flex-col">
                             {task.subtasks!.map((sub) => (
                                 <li
                                     key={sub.id}
-                                    className="flex items-center gap-3 rounded-panel border border-line-faint bg-paper px-3 py-2"
+                                    className="rule-row flex items-center gap-3 py-2"
                                 >
                                     <Switch
                                         size="sm"
@@ -136,7 +136,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                                         className={cn(
                                             "type-body-sm",
                                             sub.completed
-                                                ? "text-text-3 line-through"
+                                                ? "text-text-2 line-through"
                                                 : "text-text-1",
                                         )}
                                     >
@@ -157,12 +157,12 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
         const data = mod.data;
 
         return (
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-5">
                 <div>
-                    <div className="mb-2">
+                    <h2 className="type-heading">{mod.title}</h2>
+                    <div className="mt-2">
                         <Badge>Module</Badge>
                     </div>
-                    <h2 className="type-heading">{mod.title}</h2>
                 </div>
 
                 {data.completed ? (
@@ -215,7 +215,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
                         <h4 className="type-caption text-text-2">
                             Learning materials ({data.resources.length})
                         </h4>
-                        <ItemGroup className="mt-2">
+                        <ItemGroup variant="plain" aria-label="Learning materials" className="mt-1">
                             {data.resources.map((res) => (
                                 <Item
                                     key={res.id}
@@ -253,7 +253,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
     return (
         <>
             {/* Header & Tabs */}
-            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line-faint px-4 pt-4">
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line-faint p-3">
                 <SegmentedControl
                     aria-label="Panel view"
                     value={activeTab}
@@ -279,7 +279,7 @@ export default function ContextPanel({ selectedNode, onUpdateSubtask, onUpdateTa
             </div>
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-3">
                 {activeTab === "content" ? (
                     selectedNode.type === "module" ? (
                         renderModuleContent()

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Close, Failed, Settings } from "@/components/glaze/icon";
-import { Icon } from "@/components/glaze/icon";
+import { Close, Icon } from "@/components/glaze/icon";
+import {
+    Alert,
+    AlertAction,
+    AlertDescription,
+} from "@/components/glaze/ui/alert";
 import { Button } from "@/components/glaze/ui/button";
 import {
     Empty,
@@ -24,10 +28,10 @@ export function WorkspaceView({ id }: { id: string }) {
 
     if (!roadmap) {
         return (
-            <div className="min-h-dvh bg-page">
+            <div className="flex min-h-dvh flex-col bg-page">
                 <Header />
-                <div className="flex min-h-dvh items-center justify-center px-4">
-                    <Empty reason="no-results">
+                <div className="flex flex-1 items-center justify-center px-4 py-10">
+                    <Empty reason="no-results" className="w-full max-w-md">
                         <EmptyHeader>
                             <EmptyTitle>Workspace not found</EmptyTitle>
                             <EmptyDescription>
@@ -37,10 +41,12 @@ export function WorkspaceView({ id }: { id: string }) {
                         </EmptyHeader>
                         <EmptyContent>
                             <Button
+                                variant="secondary"
+                                size="sm"
                                 render={<Link to="/workspaces" />}
                                 nativeButton={false}
                             >
-                                Back to library
+                                Back to learning topics
                             </Button>
                         </EmptyContent>
                     </Empty>
@@ -52,28 +58,28 @@ export function WorkspaceView({ id }: { id: string }) {
     return (
         <div>
             {apiError ? (
-                <div className="fixed inset-x-0 top-0 z-50 border-b border-line-faint bg-paper px-4 py-3">
-                    <div className="mx-auto flex max-w-224 items-center justify-center gap-3 type-body-sm text-text-1">
-                        <Icon icon={Failed} />
-                        <span>{apiError.message}</span>
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            render={<Link to="/settings" />}
-                            nativeButton={false}
-                        >
-                            <Icon icon={Settings} />
-                            Open settings
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label="Dismiss error"
-                            onClick={() => setApiError(null)}
-                        >
-                            <Icon icon={Close} />
-                        </Button>
-                    </div>
+                <div className="fixed inset-x-0 top-0 z-(--z-overlay) mx-auto max-w-224 p-3">
+                    <Alert status="fail">
+                        <AlertDescription>{apiError.message}</AlertDescription>
+                        <AlertAction>
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                render={<Link to="/settings" />}
+                                nativeButton={false}
+                            >
+                                Open settings
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label="Dismiss error"
+                                onClick={() => setApiError(null)}
+                            >
+                                <Icon icon={Close} />
+                            </Button>
+                        </AlertAction>
+                    </Alert>
                 </div>
             ) : null}
 

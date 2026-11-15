@@ -21,6 +21,12 @@ import {
     ItemTitle,
 } from "@/components/glaze/ui/item";
 import { Progress } from "@/components/glaze/ui/progress";
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/glaze/ui/sheet";
 import ContextPanel from "./ContextPanel";
 import { cn } from "@/lib/glaze/utils";
 
@@ -40,6 +46,15 @@ export type SelectedNode =
 export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateTask, onUpdateModule, activeModuleId }: Props) {
     const modules = roadmap.sections.filter(s => s.type === "module" || s.type === "milestones") as ModuleSection[];
     const [selectedNode, setSelectedNode] = useState<SelectedNode>(null);
+    // Below 1024px the details open in a sheet instead of the side column.
+    const [wide, setWide] = useState(true);
+    useEffect(() => {
+        const query = window.matchMedia("(min-width: 1024px)");
+        const update = () => setWide(query.matches);
+        update();
+        query.addEventListener("change", update);
+        return () => query.removeEventListener("change", update);
+    }, []);
 
     // Scroll to module if activeModuleId changes
     useEffect(() => {
@@ -71,11 +86,8 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
     return (
         <div className="flex h-full w-full overflow-hidden">
             {/* LEFT PANE: module list */}
-            <div className={cn(
-                "flex-1 overflow-y-auto",
-                selectedNode ? "lg:w-[65%] lg:flex-none" : "w-full"
-            )}>
-                <div className="mx-auto flex max-w-256 flex-col gap-4 p-4 pb-32 sm:p-6">
+            <div className="min-w-0 flex-1 overflow-y-auto">
+                <div className="mx-auto flex max-w-256 flex-col gap-4 px-4 pb-24 pt-6 sm:px-6 lg:px-10 lg:pt-10">
 
                     <header className="mb-2">
                         <h1 className="type-title">Active roadmap</h1>
@@ -118,7 +130,7 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                                     />
                                     </div>
 
-                                    <ItemGroup aria-label={`${mod.title} tasks`}>
+                                    <ItemGroup variant="plain" aria-label={`${mod.title} tasks`}>
                                         {tasks.map(task => {
                                             const isTaskSelected = selectedNode?.type === "task" && selectedNode.id === task.id;
                                             const subtasks = task.subtasks || [];
@@ -167,8 +179,30 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
             </div>
 
             {/* RIGHT PANE: context */}
+            <Sheet
+                open={selectedNode !== null && !wide}
+                onOpenChange={(open) => {
+                    if (!open) setSelectedNode(null);
+                }}
+            >
+                <SheetContent showCloseButton={false}>
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>Details</SheetTitle>
+                    </SheetHeader>
+                    {selectedNode && (
+                        <ContextPanel
+                            selectedNode={selectedNode}
+                            roadmap={roadmap}
+                            onUpdateSubtask={onUpdateSubtask}
+                            onUpdateTask={onUpdateTask}
+                            onUpdateModule={onUpdateModule}
+                            onClose={() => setSelectedNode(null)}
+                        />
+                    )}
+                </SheetContent>
+            </Sheet>
             {selectedNode ? (
-                <div className="hidden h-full w-[35%] flex-col border-l border-line-faint bg-page lg:flex">
+                <div className="hidden h-full w-96 shrink-0 flex-col border-s border-line-faint bg-page lg:flex xl:w-md">
                     <ContextPanel
                         selectedNode={selectedNode}
                         roadmap={roadmap}
@@ -179,8 +213,8 @@ export default function WorkspaceSplitView({ roadmap, onUpdateSubtask, onUpdateT
                     />
                 </div>
             ) : (
-                <div className="hidden w-[35%] flex-col items-center justify-center border-l border-line-faint bg-page p-8 lg:flex">
-                    <Empty>
+                <div className="hidden w-96 shrink-0 flex-col items-center justify-center border-s border-line-faint bg-page p-6 lg:flex xl:w-md">
+                    <Empty variant="plain">
                         <EmptyHeader>
                             <EmptyTitle>Context panel</EmptyTitle>
                             <EmptyDescription>

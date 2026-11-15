@@ -426,7 +426,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
         <div className="shell relative flex h-full flex-col">
             <div className="panel flex min-h-0 flex-1 flex-col">
                 {/* Module Top Header */}
-                <div className="flex flex-col gap-4 border-b border-line-faint p-4 sm:p-6">
+                <div className="flex flex-col gap-4 border-b border-line-faint p-3 sm:p-4">
                     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
                         <div className="min-w-0">
                             <h2 className="type-title">{section.title}</h2>
@@ -499,7 +499,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                     }}
                     className="flex min-h-0 flex-1 flex-col"
                 >
-                    <div className="border-b border-line-faint px-4 py-2 sm:px-6">
+                    <div className="border-b border-line-faint px-3 py-2 sm:px-4">
                         <TabsList aria-label="Module">
                             {availableTabs.map((tab) => (
                                 <TabsTrigger key={tab.id} value={tab.id}>
@@ -511,7 +511,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
 
                     <div className="relative min-h-0 w-full flex-1 overflow-y-auto">
                         {/* 1. Overview Tab */}
-                        <TabsContent value="overview" className="flex flex-col gap-8 p-4 sm:p-6">
+                        <TabsContent value="overview" className="flex flex-col gap-8 p-3 sm:p-4">
                             {data.description && (
                                 <section>
                                     <h3 className="type-heading-sm">Description</h3>
@@ -546,7 +546,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </TabsContent>
 
                         {/* 2. Tasks Tab */}
-                        <TabsContent value="tasks" className="flex flex-col gap-4 p-4 sm:p-6">
+                        <TabsContent value="tasks" className="flex flex-col gap-4 p-3 sm:p-4">
                             <Progress value={taskPercent}>
                                 <ProgressLabel>Action items</ProgressLabel>
                                 <ProgressValue>{() => `${completedCount} / ${totalCount} completed`}</ProgressValue>
@@ -602,7 +602,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </TabsContent>
 
                         {/* 3. Resources Tab */}
-                        <TabsContent value="resources" className="p-4 sm:p-6">
+                        <TabsContent value="resources" className="p-3 sm:p-4">
                             <div className={cn("grid gap-4", sidePanelResource && "lg:grid-cols-2")}>
                                 <ItemGroup aria-label="Course materials">
                                     {resources.map((res) => (
@@ -666,7 +666,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                             </div>
                         </TabsContent>
 
-                        <TabsContent value="quiz" className="flex flex-col gap-4 p-4 sm:p-6">
+                        <TabsContent value="quiz" className="flex flex-col gap-4 p-3 sm:p-4">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                 <div>
                                     <h3 className="type-heading-sm">Knowledge check</h3>
@@ -717,7 +717,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                                         const isCorrect = selectedAnswer === question.answerIndex;
 
                                         return (
-                                            <fieldset key={question.id} className="rounded-panel border border-line-faint p-4">
+                                            <fieldset key={question.id} className="rule-row py-3">
                                                 <div className="mb-3 flex items-start justify-between gap-4">
                                                     <legend className="type-heading-sm">
                                                         <span className="sr-only">Question {index + 1}: </span>
@@ -773,7 +773,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </TabsContent>
 
                         {/* 4. Videos Tab */}
-                        <TabsContent value="videos" className="flex flex-col gap-4 p-4 sm:p-6 lg:flex-row">
+                        <TabsContent value="videos" className="flex flex-col gap-4 p-3 sm:p-4 lg:flex-row">
                             <div className="min-w-0 flex-1">
                                 {activeVideo && (
                                     <div className="flex flex-col gap-3">
@@ -815,7 +815,7 @@ export default function ModuleSection({ section, roadmap, onUpdate, onNavigate, 
                         </TabsContent>
 
                         {/* 5. Notes Tab */}
-                        <TabsContent value="notes" keepMounted className="flex flex-col gap-2 p-4 sm:p-6">
+                        <TabsContent value="notes" keepMounted className="flex flex-col gap-2 p-3 sm:p-4">
                             <Field>
                                 <div className="flex items-center justify-between gap-3">
                                     <FieldLabel>Module notes</FieldLabel>

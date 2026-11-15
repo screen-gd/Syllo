@@ -36,7 +36,7 @@ export default function CalendarSection({ section, onUpdate }: Props) {
 
     if (sorted.length === 0) {
         return (
-            <Empty>
+            <Empty className="w-full max-w-md">
                 <EmptyHeader>
                     <Icon icon={Calendar} size={20} />
                     <EmptyTitle>No events</EmptyTitle>
@@ -53,11 +53,12 @@ export default function CalendarSection({ section, onUpdate }: Props) {
         <div>
             <h2 className="type-heading">{section.title}</h2>
 
-            <ul className="mt-4 flex flex-col gap-2">
+            <div className="shell mt-4">
+            <ul className="panel flex flex-col">
                 {sorted.map((event) => (
                     <li
                         key={event.id}
-                        className="flex items-start gap-3 rounded-panel border border-line-faint bg-paper p-4"
+                        className="rule-row flex items-start gap-3 p-3"
                     >
                         <Switch
                             className="mt-0.5"
@@ -70,7 +71,7 @@ export default function CalendarSection({ section, onUpdate }: Props) {
                                 className={cn(
                                     "type-label",
                                     event.completed &&
-                                        "text-text-3 line-through",
+                                        "text-text-2 line-through",
                                 )}
                             >
                                 {event.title}
@@ -85,6 +86,7 @@ export default function CalendarSection({ section, onUpdate }: Props) {
                     </li>
                 ))}
             </ul>
+            </div>
         </div>
     );
 }
