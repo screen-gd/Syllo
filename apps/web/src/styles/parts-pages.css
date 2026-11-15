@@ -20,24 +20,10 @@
 /* Rows that run to the edges of a flush box, split by hairlines. */
 .sy-box.flush > .sy-section-head:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-bottom: 0;
-}
-.sy-box.flush .sy-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-inline: -24px;
-    padding-inline: 24px;
-    border-bottom: 1px solid var(--color-border);
-}
-.sy-box.flush .sy-row:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    border-bottom: 0;
-}
-.sy-box.flush > .sy-tray:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+}.sy-box.flush > .sy-tray:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin: 16px 0 14px;
 }
-@media (hover: hover) and (pointer: fine) {
-    .sy-box.flush a.sy-row:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-box.flush .sy-workspace-row.sy-row:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        background: var(--color-surface-subtle);
-    }
-}
+@media (hover: hover) and (pointer: fine) {}
 
 /* Header strips: a title with its dot, and a count in a readout. */.sy-section-head > .sy-readout:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     color: var(--color-text);
@@ -80,25 +66,7 @@
 
 
 
-/* Library: shelves are boxes, so they take the box rhythm. */
-.sy-box.sy-shelf-group:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-bottom: 0;
-}
-.sy-shelf-group > .sy-section-head h2:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-bottom: 0;
-    color: var(--color-text);
-    font-weight: 550;
-}
-
-/* Learning topics: rows are split by .sy-row, not bordered. */
-.sy-box.flush .sy-workspace-row + .sy-workspace-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    border-top: 0;
-}
-.sy-workspace-progress .sy-progress:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-top: 0;
-}
-
-/* Settings: title in the header strip, description beside the controls. */@media (max-width: 760px) {    .sy-toolstrip:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+/* Library: shelves are boxes, so they take the box rhythm. *//* Learning topics: rows are split by .sy-row, not bordered. *//* Settings: title in the header strip, description beside the controls. */@media (max-width: 760px) {    .sy-toolstrip:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding: 6px;
     }
 }

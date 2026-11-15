@@ -804,8 +804,7 @@ html:not([data-heading-font="sans"]) .sy-app :is(h1, h2, .font-display):not(:whe
         --sy-control-height: 2.75rem;
     }
      
-    .sy-segmented button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-view-switch button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    .sy-segmented button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         min-height: 2.75rem;
     }
 }

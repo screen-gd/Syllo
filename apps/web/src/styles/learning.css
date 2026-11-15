@@ -144,17 +144,6 @@
 }
 .sy-section-head svg:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     flex-shrink: 0;
-}.sy-progress:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    height: 3px;
-    background: var(--color-surface-subtle);
-    overflow: hidden;
-    border-radius: 2px;
-    margin-top: 14px;
-}
-.sy-progress > span:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: block;
-    height: 100%;
-    background: var(--color-accent);
 }.sy-empty:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     padding: 16px 0;
     color: var(--color-text-muted);
@@ -181,49 +170,7 @@
     color: var(--color-danger);
     font-size: 0.8125rem;
     line-height: 1.6;
-}
-.sy-library-tools:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: var(--sy-space-block);
-}
-.sy-search:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    background: var(--color-surface-subtle);
-    border: 0;
-    border-radius: 5px;
-    padding: 0 10px;
-    flex: 1 1 20rem;
-    min-width: min(100%, 16rem);
-}
-.sy-search svg:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    width: 16px;
-    height: 16px;
-    color: var(--color-text-soft);
-}
-.sy-search input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    width: 100%;
-    min-width: 0;
-    padding: 9px 0;
-    background: none;
-    border: 0;
-    outline: none;
-    color: var(--color-text);
-    font-size: 0.8125rem;
-}
-.sy-filters:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    min-width: 0;
-}
-.sy-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+}.sy-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-subtle);
     color: var(--color-text);
@@ -238,91 +185,7 @@
 }
 .sy-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     width: 100%;
-}
-.sy-view-switch:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    gap: 3px;
-}
-.sy-view-switch button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    place-items: center;
-    color: var(--color-text-muted);
-    border-radius: var(--sy-radius);
-}
-.sy-view-switch button[aria-pressed="true"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    color: var(--color-text);
-    background: var(--color-surface);
-}
-.sy-shelf-group:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-bottom: 30px;
-}
-.sy-shelf-group h2:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-bottom: 16px;
-}
-.sy-shelf:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    align-items: flex-end;
-    gap: 5px;
-    flex-wrap: wrap;
-    padding: 0 8px 9px;
-    border-bottom: 1px solid var(--color-border-strong);
-    min-height: 210px;
-}
-.sy-spine:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: column;
-    position: relative;
-    width: var(--spine-width, 56px);
-    min-width: 44px;
-    height: var(--spine-height, 220px);
-    padding: 12px 0 10px;
-    background: var(--book-color);
-    color: #1b2421;
-    border-radius: 3px 3px 0 0;
-}
-.sy-spine-title:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    max-height: 168px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font:
-        16px/1.4 Georgia,
-        serif;
-}
-.sy-spine-author:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font: 12px/1.2 var(--font-sans);
-    max-width: 90%;
-    text-align: center;
-}
-.sy-bookmark:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    position: absolute;
-    top: -2px;
-    left: 8px;
-    width: 7px;
-    height: 20px;
-    background: #e2e5df;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 77%, 0 100%);
-}
-.sy-library-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.3fr) minmax(0, 0.3fr);
-    gap: 20px;
-    align-items: center;
-    padding: 17px 0;
-    border-bottom: 1px solid var(--color-border);
-    overflow-wrap: anywhere;
-}
-.sy-library-row p:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-library-row > span:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    margin-top: 4px;
-}
-.sy-breadcrumb:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+}.sy-breadcrumb:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: flex;
     gap: 8px;
     align-items: center;
@@ -524,19 +387,7 @@
 }
 .sy-app textarea.sy-control:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     min-height: 7rem;
-}
-.sy-app
-    :is(
-        .sy-control,
-        .sy-input,
-        .sy-select,
-        .sy-textarea,
-        .sy-search input
-    ):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::placeholder {
-    color: var(--color-text-soft);
-    opacity: 1;
-}
-.sy-app :is(a, button, input, textarea, select, summary):not([data-slot]):focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+}.sy-app :is(a, button, input, textarea, select, summary):not([data-slot]):focus-visible:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     outline: 2px solid var(--color-accent);
     outline-offset: 0;
 }
@@ -570,25 +421,7 @@
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 14px;
-}
-.sy-workspace-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.4fr) auto;
-    gap: 16px 24px;
-    align-items: center;
-    padding: 20px 24px;
-}
-.sy-workspace-row + .sy-workspace-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    border-top: 1px solid var(--color-border);
-}
-.sy-workspace-progress:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 0;
-}
-.sy-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+}.sy-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     min-width: 0;
     padding: 24px;
     border: 1px solid var(--color-border);
@@ -760,19 +593,7 @@
     .sy-sources-panel > div:first-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
     .sy-sources-panel > [role="alert"]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         grid-column: 1 / -1;
-    }
-    .sy-workspace-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-template-columns: minmax(0, 1fr) auto;
-    }
-    .sy-workspace-progress:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-column: 1;
-        grid-row: 2;
-    }
-    .sy-workspace-row > div:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-    }
-}
+    }}
 @media (min-width: 761px) and (max-width: 1199px) {
     .sy-sources-panel > .sy-source-watch:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         grid-column: 1;
@@ -791,57 +612,18 @@
     .sy-app:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         --sy-control-height: 2.5rem;
         --sy-space-section: 28px;
-    }    .sy-library-tools:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        align-items: stretch;
-    }
-    .sy-search:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        flex-basis: 100%;
-    }
-    .sy-filters:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        width: 100%;
-    }
-    .sy-filters > select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        flex: 1 1 8rem;
-    }
-    .sy-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
+    }    .sy-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
     .sy-input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         font-size: 0.875rem;
-    }
-    .sy-search input:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        padding-block: 10px;
-        font-size: 0.875rem;
-    }
-    .sy-segmented button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    }    .sy-segmented button:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         min-height: 36px;
-    }
-    .sy-spine:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        height: calc(var(--spine-height, 220px) * 0.85);
-    }
-    .sy-spine-title:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        font-size: 0.875rem;
-        max-height: 140px;
-    }
-    .sy-library-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 8px 16px;
-    }
-    .sy-library-row > div:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-column: 1 / -1;
-    }
-    .sy-library-row > span:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        text-align: right;
-    }
-    .sy-sources-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    }    .sy-sources-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         grid-template-columns: minmax(0, 1fr);
     }
     .sy-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
     .sy-empty.bordered:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         padding: 20px;
-    }
-    .sy-workspace-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        padding: 20px;
-    }
-    .sy-reader-mount:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+    }    .sy-reader-mount:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
         height: clamp(22rem, 65dvh, 44rem);
     }
     .sy-reader-tools .sy-select:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
