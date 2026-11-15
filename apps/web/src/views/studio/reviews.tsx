@@ -1,8 +1,27 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Plus, Search } from "lucide-react";
+import { ArrowRight, Icon, Add } from "@/components/glaze/icon";
+import { Badge } from "@/components/glaze/ui/badge";
+import { Button } from "@/components/glaze/ui/button";
+import {
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyTitle,
+} from "@/components/glaze/ui/empty-state";
+import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import { Input } from "@/components/glaze/ui/input";
+import { Select } from "@/components/glaze/ui/select";
+import {
+    SegmentedControl,
+    SegmentedControlItem,
+} from "@/components/glaze/ui/segmented-control";
+import {
+    Skeleton,
+    SkeletonText,
+} from "@/components/glaze/ui/skeleton";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import { toast } from "@/components/glaze/ui/toast";
-import { Segmented } from "@/components/ui/segmented";
 import { useReviews } from "@/hooks/useReviews";
 import { personalEntries } from "@/lib/personal/store";
 import {
@@ -15,7 +34,6 @@ import {
     saveReview,
     scheduleReview,
 } from "@/lib/reviews";
-import { topicStyle } from "@/lib/topic-color";
 import PageFrame from "@/components/layout/PageFrame";
 import type { SrsItem } from "@/types";
 
@@ -73,9 +91,6 @@ export default function ReviewsPage() {
     const topics = new Map(roadmaps.map((item) => [item.id, item.title]));
     const sourceTitle = (item: SrsItem) =>
         topics.get(item.roadmapId) ?? books.get(item.roadmapId) ?? "General";
-    // Cards with no topic keep the accent colour.
-    const itemStyle = (item: SrsItem) =>
-        item.roadmapId ? topicStyle(item.roadmapId) : undefined;
     const needle = query.trim().toLowerCase();
     const listed = [...reviews]
         .filter(
@@ -151,30 +166,42 @@ export default function ReviewsPage() {
     function sourceLink(item: SrsItem) {
         if (item.source?.bookId)
             return books.has(`book:${item.source.bookId}`) ? (
-                <Link
-                    className="sy-time-link"
-                    to="/read/$id"
-                    params={{ id: item.source.bookId }}
-                    search={{ cfi: item.source.cfi }}
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    render={
+                        <Link
+                            to="/read/$id"
+                            params={{ id: item.source.bookId }}
+                            search={{ cfi: item.source.cfi }}
+                        />
+                    }
+                    nativeButton={false}
                 >
                     Return to passage
-                    <ArrowRight size={13} />
-                </Link>
+                    <Icon icon={ArrowRight} />
+                </Button>
             ) : null;
         if (!topics.has(item.roadmapId) || !item.source?.taskId) return null;
         return (
-            <Link
-                className="sy-time-link"
-                to="/learn"
-                search={{
-                    roadmap: item.roadmapId,
-                    task: item.source?.taskId,
-                    seconds: item.source?.seconds,
-                }}
+            <Button
+                variant="ghost"
+                size="sm"
+                render={
+                    <Link
+                        to="/learn"
+                        search={{
+                            roadmap: item.roadmapId,
+                            task: item.source?.taskId,
+                            seconds: item.source?.seconds,
+                        }}
+                    />
+                }
+                nativeButton={false}
             >
                 Return to source
-                <ArrowRight size={13} />
-            </Link>
+                <Icon icon={ArrowRight} />
+            </Button>
         );
     }
 
@@ -188,65 +215,64 @@ export default function ReviewsPage() {
 
     const form = draft && (
         <form
-            className="sy-form sy-inline-form"
+            className="flex flex-col gap-3"
             onSubmit={(event) => {
                 event.preventDefault();
                 saveDraft();
             }}
         >
-            <label>
-                Question
-                <input
-                    className="sy-input"
+            <Field>
+                <FieldLabel>Question</FieldLabel>
+                <Input
                     value={draft.prompt}
-                    onChange={(event) =>
-                        setDraft({ ...draft, prompt: event.target.value })
+                    onValueChange={(value) =>
+                        setDraft({ ...draft, prompt: value })
                     }
                     required
                     maxLength={1000}
                     autoFocus
                 />
-            </label>
-            <label>
-                Answer
-                <textarea
-                    className="sy-textarea"
+            </Field>
+            <Field>
+                <FieldLabel>Answer</FieldLabel>
+                <Textarea
                     value={draft.answer}
-                    onChange={(event) =>
-                        setDraft({ ...draft, answer: event.target.value })
+                    onValueChange={(value) =>
+                        setDraft({ ...draft, answer: value })
                     }
-                    required
-                    maxLength={6000}
+                    limit={6000}
+                    autoGrow
+                    minRows={3}
+                    maxRows={12}
                 />
-            </label>
-            <div className="sy-inline-form-row">
+            </Field>
+            <div className="flex flex-wrap items-center gap-2">
                 {!draft.id && roadmaps.length > 0 && (
-                    <select
-                        className="sy-select"
-                        value={draft.roadmapId}
-                        onChange={(event) =>
-                            setDraft({ ...draft, roadmapId: event.target.value })
-                        }
+                    <Select
+                        native
                         aria-label="Topic"
-                    >
-                        <option value="">No topic</option>
-                        {roadmaps.map((roadmap) => (
-                            <option key={roadmap.id} value={roadmap.id}>
-                                {roadmap.title}
-                            </option>
-                        ))}
-                    </select>
+                        className="w-56"
+                        value={draft.roadmapId}
+                        onValueChange={(value) =>
+                            setDraft({ ...draft, roadmapId: value ?? "" })
+                        }
+                        items={[
+                            { value: "", label: "No topic" },
+                            ...roadmaps.map((roadmap) => ({
+                                value: roadmap.id,
+                                label: roadmap.title,
+                            })),
+                        ]}
+                    />
                 )}
-                <button className="sy-button primary">
-                    {draft.id ? "Save" : "Keep card"}
-                </button>
-                <button
+                <Button>{draft.id ? "Save" : "Keep card"}</Button>
+                <Button
                     type="button"
-                    className="sy-button quiet"
+                    variant="ghost"
                     onClick={() => setDraft(null)}
                 >
                     Cancel
-                </button>
+                </Button>
             </div>
         </form>
     );
@@ -254,288 +280,235 @@ export default function ReviewsPage() {
     return (
         <PageFrame
             title="Reviews"
+            glazed
             subtitle={
                 loaded
                     ? `${due.length} ready · ${scheduled.length} card${scheduled.length === 1 ? "" : "s"}${reviewedToday ? ` · ${reviewedToday} reviewed today` : ""}`
                     : undefined
             }
             actions={
-                <button
-                    className="sy-button primary"
+                <Button
                     onClick={() => {
                         setView("all");
                         setDraft({ roadmapId: "", prompt: "", answer: "" });
                     }}
                 >
-                    <Plus />
+                    <Icon icon={Add} />
                     New card
-                </button>
+                </Button>
             }
         >
-
-            <div className="sy-library-tools sy-toolstrip">
-                <Segmented
-                    label="Review view"
-                    value={view}
-                    options={[
-                        { key: "due", label: `Review ${due.length}` },
-                        { key: "all", label: `All cards ${reviews.length}` },
-                    ]}
-                    onChange={setView}
-                />
-                {view === "all" && reviews.length > 0 && (
-                    <label className="sy-search">
-                        <Search />
-                        <input
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-center gap-2">
+                    <SegmentedControl
+                        aria-label="Review view"
+                        value={view}
+                        onValueChange={(value) => setView(value as View)}
+                    >
+                        <SegmentedControlItem value="due">
+                            Review {due.length}
+                        </SegmentedControlItem>
+                        <SegmentedControlItem value="all">
+                            All cards {reviews.length}
+                        </SegmentedControlItem>
+                    </SegmentedControl>
+                    {view === "all" && reviews.length > 0 && (
+                        <Input
+                            className="w-56"
                             value={query}
-                            onChange={(event) => setQuery(event.target.value)}
+                            onValueChange={setQuery}
                             placeholder="Search cards"
                             aria-label="Search cards"
                         />
-                    </label>
-                )}
-            </div>
+                    )}
+                </div>
 
-            {!loaded ? (
-                <article
-                    className="sy-card sy-review-card"
-                    role="status"
-                    aria-label="Loading"
-                >
-                    <span className="sy-skel line" style={{ width: "26%" }} />
-                    <span
-                        className="sy-skel title"
-                        style={{ width: "64%", marginTop: 12 }}
-                    />
-                    <div className="sy-skel-pair" style={{ marginTop: 14 }}>
-                        <span
-                            className="sy-skel line-sm"
-                            style={{ width: "82%" }}
-                        />
-                        <span
-                            className="sy-skel line-sm"
-                            style={{ width: "58%" }}
-                        />
-                    </div>
-                    <span
-                        className="sy-skel action"
-                        style={{ width: 168, marginTop: 22 }}
-                    />
-                </article>
-            ) : view === "due" ? (
-                <>
-                    {current ? (
-                        <article
-                            className="sy-card sy-review-card"
-                            style={itemStyle(current)}
+                {!loaded ? (
+                    <section className="shell">
+                        <div
+                            className="panel p-4"
+                            role="status"
+                            aria-label="Loading"
                         >
-                            <div className="sy-note-meta">
-                                <b className="sy-topic-link">
-                                    <span className="sy-topic-dot" />
-                                    {sourceTitle(current)}
-                                </b>
-                                {due.length > 0 ? (
-                                    <span className="sy-review-left">
-                                        <span className="sy-readout" data-live>
-                                            {due.length}
-                                        </span>
-                                        left
-                                    </span>
-                                ) : (
-                                    <span>
-                                        {`Ahead of schedule · ${status(current).toLowerCase()}`}
-                                    </span>
-                                )}
+                            <span className="sr-only">Loading</span>
+                            <SkeletonText type="caption" last={0.26} />
+                            <div className="mt-3">
+                                <SkeletonText type="heading" last={0.64} />
                             </div>
-                            <h2>{current.prompt}</h2>
-                            {revealed === current.id ? (
-                                <>
-                                    <div className="sy-card-answer">
-                                        {current.answer}
-                                    </div>
-                                    <div className="sy-card-actions sy-rate-row">
-                                        {reviewRatings.map((rating, index) => (
-                                            <button
-                                                key={rating.label}
-                                                className={`sy-button sy-rate ${rating.label === "Good" ? "primary" : "secondary"}`}
-                                                aria-keyshortcuts={String(
-                                                    index + 1,
-                                                )}
-                                                onClick={() =>
-                                                    persist(
-                                                        scheduleReview(
-                                                            current,
-                                                            rating.value,
-                                                        ),
-                                                    )
-                                                }
-                                            >
-                                                {rating.label}
-                                                <small className="sy-num">
-                                                    {formatInterval(
-                                                        scheduleReview(
-                                                            current,
-                                                            rating.value,
-                                                        ).dueAt,
-                                                        now,
-                                                    )}
-                                                </small>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </>
-                            ) : (
-                                <button
-                                    className="sy-button primary"
-                                    aria-keyshortcuts="Space"
-                                    onClick={() => setRevealed(current.id)}
-                                >
-                                    Show answer
-                                </button>
-                            )}
-                            <div className="sy-row-actions">
-                                {sourceLink(current)}
-                                <button
-                                    onClick={() => {
-                                        setView("all");
-                                        setDraft({
-                                            id: current.id,
-                                            roadmapId: current.roadmapId,
-                                            prompt: current.prompt,
-                                            answer: current.answer,
-                                        });
-                                    }}
-                                >
-                                    Edit
-                                </button>
-                                <span className="sy-key-hint">
-                                    Space shows the answer, 1 to 4 rate it
-                                </span>
+                            <div className="mt-3">
+                                <SkeletonText type="body-sm" last={0.82} />
+                                <SkeletonText type="body-sm" last={0.58} />
                             </div>
-                        </article>
-                    ) : (
-                        <div className="sy-tray">
-                            <p>
-                                {upcoming.length > 0
-                                    ? `Nothing due. Next card in ${formatInterval(upcoming[0].dueAt, now)}.`
-                                    : "No cards yet. Keep a concept from a lesson, a book passage or the glossary."}
-                            </p>
-                            {upcoming.length > 0 ? (
-                                <button
-                                    className="sy-button secondary"
-                                    onClick={() =>
-                                        setAhead(
-                                            upcoming.map((item) => item.id),
-                                        )
-                                    }
-                                >
-                                    Review ahead
-                                </button>
-                            ) : (
-                                <Link
-                                    className="sy-button secondary"
-                                    to="/glossary"
-                                >
-                                    Open Glossary
-                                    <ArrowRight />
-                                </Link>
-                            )}
+                            <Skeleton className="mt-5 h-10 w-40 rounded-pill" />
                         </div>
-                    )}
-                    {suggested.length > 0 && (
-                        <section className="sy-box flush sy-review-box">
-                            <div className="sy-section-head">
-                                <h2>Suggested cards</h2>
-                                <span className="sy-readout">
-                                    {suggested.length}
-                                </span>
-                            </div>
-                            {suggested.map((item) => (
-                                <article
-                                    key={item.id}
-                                    className="sy-suggestion sy-row sy-spined"
-                                    style={itemStyle(item)}
-                                >
-                                    <h3>{item.prompt}</h3>
-                                    <p>{item.answer}</p>
-                                    <div className="sy-row-actions">
-                                        <button
-                                            onClick={() =>
-                                                persist({
-                                                    ...item,
-                                                    status: "kept",
-                                                    dueAt: new Date().toISOString(),
-                                                })
-                                            }
-                                        >
-                                            Keep card
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                persist({
-                                                    ...item,
-                                                    status: "skipped",
-                                                })
-                                            }
-                                        >
-                                            Skip
-                                        </button>
-                                        {sourceLink(item)}
-                                    </div>
-                                </article>
-                            ))}
-                        </section>
-                    )}
-                </>
-            ) : (
-                <>
-                    {draft && !draft.id && form}
-                    {reviews.length === 0 && !draft ? (
-                        <p className="sy-tray">No cards yet.</p>
-                    ) : listed.length === 0 && !draft ? (
-                        <p className="sy-tray">No card matches this search.</p>
-                    ) : listed.length > 0 ? (
-                        <section className="sy-box flush sy-review-box">
-                            <div className="sy-section-head">
-                                <h2>All cards</h2>
-                                <span className="sy-readout">
-                                    {listed.length}
-                                </span>
-                            </div>
-                            {listed.map((item) =>
-                                draft?.id === item.id ? (
-                                    <div
-                                        key={item.id}
-                                        className="sy-suggestion sy-row sy-spined"
-                                        style={itemStyle(item)}
-                                    >
-                                        {form}
-                                    </div>
-                                ) : (
-                                    <article
-                                        key={item.id}
-                                        className="sy-suggestion sy-row sy-spined"
-                                        style={itemStyle(item)}
-                                    >
-                                        <div className="sy-note-meta">
-                                            <b>{sourceTitle(item)}</b>
-                                            <span
-                                                className="sy-badge"
-                                                data-tone={
-                                                    status(item) === "Due now"
-                                                        ? "accent"
-                                                        : undefined
-                                                }
-                                            >
-                                                {status(item)}
+                    </section>
+                ) : view === "due" ? (
+                    <>
+                        {current ? (
+                            <section className="shell">
+                                <div className="panel p-4">
+                                    <div className="flex flex-wrap items-baseline gap-2">
+                                        <b className="type-label">
+                                            {sourceTitle(current)}
+                                        </b>
+                                        {due.length > 0 ? (
+                                            <span className="type-caption text-text-2">
+                                                {due.length} left
                                             </span>
-                                        </div>
-                                        <h3>{item.prompt}</h3>
-                                        <p>{item.answer}</p>
-                                        <div className="sy-row-actions">
-                                            {sourceLink(item)}
-                                            {!isScheduled(item) && (
-                                                <button
+                                        ) : (
+                                            <span className="type-caption text-text-2">
+                                                {`Ahead of schedule · ${status(current).toLowerCase()}`}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h2 className="mt-2 type-heading">
+                                        {current.prompt}
+                                    </h2>
+                                    {revealed === current.id ? (
+                                        <>
+                                            <div className="mt-3 type-body">
+                                                {current.answer}
+                                            </div>
+                                            <div className="mt-5 flex flex-wrap gap-2">
+                                                {reviewRatings.map(
+                                                    (rating, index) => (
+                                                        <Button
+                                                            key={rating.label}
+                                                            variant={
+                                                                rating.label ===
+                                                                "Good"
+                                                                    ? "primary"
+                                                                    : "secondary"
+                                                            }
+                                                            aria-keyshortcuts={String(
+                                                                index + 1,
+                                                            )}
+                                                            onClick={() =>
+                                                                persist(
+                                                                    scheduleReview(
+                                                                        current,
+                                                                        rating.value,
+                                                                    ),
+                                                                )
+                                                            }
+                                                        >
+                                                            {rating.label}
+                                                            <span className="type-caption">
+                                                                {formatInterval(
+                                                                    scheduleReview(
+                                                                        current,
+                                                                        rating.value,
+                                                                    ).dueAt,
+                                                                    now,
+                                                                )}
+                                                            </span>
+                                                        </Button>
+                                                    ),
+                                                )}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <Button
+                                            className="mt-4"
+                                            aria-keyshortcuts="Space"
+                                            onClick={() =>
+                                                setRevealed(current.id)
+                                            }
+                                        >
+                                            Show answer
+                                        </Button>
+                                    )}
+                                    <div className="mt-3 -ms-2 flex flex-wrap items-center gap-1">
+                                        {sourceLink(current)}
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                                setView("all");
+                                                setDraft({
+                                                    id: current.id,
+                                                    roadmapId:
+                                                        current.roadmapId,
+                                                    prompt: current.prompt,
+                                                    answer: current.answer,
+                                                });
+                                            }}
+                                        >
+                                            Edit
+                                        </Button>
+                                        <span className="ms-auto type-caption text-text-3">
+                                            Space shows the answer, 1 to 4
+                                            rate it
+                                        </span>
+                                    </div>
+                                </div>
+                            </section>
+                        ) : (
+                            <Empty reason="empty">
+                                <EmptyHeader>
+                                    <EmptyTitle>
+                                        {upcoming.length > 0
+                                            ? `Nothing due. Next card in ${formatInterval(upcoming[0].dueAt, now)}`
+                                            : "No cards yet. Keep a concept from a lesson, a book passage or the glossary."}
+                                    </EmptyTitle>
+                                </EmptyHeader>
+                                <EmptyContent>
+                                    {upcoming.length > 0 ? (
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            onClick={() =>
+                                                setAhead(
+                                                    upcoming.map(
+                                                        (item) => item.id,
+                                                    ),
+                                                )
+                                            }
+                                        >
+                                            Review ahead
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            render={<Link to="/glossary" />}
+                                            nativeButton={false}
+                                        >
+                                            Open Glossary
+                                            <Icon icon={ArrowRight} />
+                                        </Button>
+                                    )}
+                                </EmptyContent>
+                            </Empty>
+                        )}
+                        {suggested.length > 0 && (
+                            <section className="shell">
+                                <div className="panel">
+                                    <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                        <h2 className="type-heading-sm">
+                                            Suggested cards
+                                        </h2>
+                                        <Badge count={suggested.length} />
+                                    </header>
+                                    {suggested.map((item, index) => (
+                                        <article
+                                            key={item.id}
+                                            className={
+                                                index === 0
+                                                    ? "border-t border-line-faint px-4 py-3"
+                                                    : "rule-row px-4 py-3"
+                                            }
+                                        >
+                                            <h3 className="type-heading-sm">
+                                                {item.prompt}
+                                            </h3>
+                                            <p className="mt-1 type-body-sm text-text-2">
+                                                {item.answer}
+                                            </p>
+                                            <div className="mt-2 -ms-2 flex flex-wrap gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
                                                     onClick={() =>
                                                         persist({
                                                             ...item,
@@ -545,31 +518,150 @@ export default function ReviewsPage() {
                                                     }
                                                 >
                                                     Keep card
-                                                </button>
-                                            )}
-                                            <button
-                                                onClick={() =>
-                                                    setDraft({
-                                                        id: item.id,
-                                                        roadmapId: item.roadmapId,
-                                                        prompt: item.prompt,
-                                                        answer: item.answer,
-                                                    })
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        persist({
+                                                            ...item,
+                                                            status: "skipped",
+                                                        })
+                                                    }
+                                                >
+                                                    Skip
+                                                </Button>
+                                                {sourceLink(item)}
+                                            </div>
+                                        </article>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        {draft && !draft.id && (
+                            <section className="shell">
+                                <div className="panel p-4">{form}</div>
+                            </section>
+                        )}
+                        {reviews.length === 0 && !draft ? (
+                            <Empty reason="empty">
+                                <EmptyHeader>
+                                    <EmptyTitle>No cards yet</EmptyTitle>
+                                </EmptyHeader>
+                            </Empty>
+                        ) : listed.length === 0 && !draft ? (
+                            <Empty variant="plain" reason="no-results">
+                                <EmptyHeader>
+                                    <EmptyTitle>
+                                        {query ? (
+                                            <>
+                                                No cards match{" "}
+                                                <code>{query}</code>
+                                            </>
+                                        ) : (
+                                            "No cards match these filters"
+                                        )}
+                                    </EmptyTitle>
+                                </EmptyHeader>
+                            </Empty>
+                        ) : listed.length > 0 ? (
+                            <section className="shell">
+                                <div className="panel">
+                                    <header className="flex items-center justify-between gap-3 p-4 pb-3">
+                                        <h2 className="type-heading-sm">
+                                            All cards
+                                        </h2>
+                                        <Badge count={listed.length} />
+                                    </header>
+                                    {listed.map((item, index) =>
+                                        draft?.id === item.id ? (
+                                            <div
+                                                key={item.id}
+                                                className={
+                                                    index === 0
+                                                        ? "border-t border-line-faint px-4 py-3"
+                                                        : "rule-row px-4 py-3"
                                                 }
                                             >
-                                                Edit
-                                            </button>
-                                            <button onClick={() => remove(item)}>
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </article>
-                                ),
-                            )}
-                        </section>
-                    ) : null}
-                </>
-            )}
+                                                {form}
+                                            </div>
+                                        ) : (
+                                            <article
+                                                key={item.id}
+                                                className={
+                                                    index === 0
+                                                        ? "border-t border-line-faint px-4 py-3"
+                                                        : "rule-row px-4 py-3"
+                                                }
+                                            >
+                                                <div className="flex flex-wrap items-baseline gap-2">
+                                                    <b className="type-label">
+                                                        {sourceTitle(item)}
+                                                    </b>
+                                                    <Badge>
+                                                        {status(item)}
+                                                    </Badge>
+                                                </div>
+                                                <h3 className="mt-2 type-heading-sm">
+                                                    {item.prompt}
+                                                </h3>
+                                                <p className="mt-1 type-body-sm text-text-2">
+                                                    {item.answer}
+                                                </p>
+                                                <div className="mt-2 -ms-2 flex flex-wrap gap-1">
+                                                    {sourceLink(item)}
+                                                    {!isScheduled(item) && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                persist({
+                                                                    ...item,
+                                                                    status: "kept",
+                                                                    dueAt: new Date().toISOString(),
+                                                                })
+                                                            }
+                                                        >
+                                                            Keep card
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            setDraft({
+                                                                id: item.id,
+                                                                roadmapId:
+                                                                    item.roadmapId,
+                                                                prompt: item.prompt,
+                                                                answer: item.answer,
+                                                            })
+                                                        }
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            remove(item)
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </article>
+                                        ),
+                                    )}
+                                </div>
+                            </section>
+                        ) : null}
+                    </>
+                )}
+            </div>
         </PageFrame>
     );
 }

@@ -95,34 +95,6 @@
 }
 
 
-/* Reviews: the open card's count, and the four ratings on one track. */
-.sy-review-left:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: auto;
-}
-.sy-card-actions.sy-rate-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-    max-width: 30rem;
-    padding: 5px;
-    border-radius: calc(var(--sy-radius) + 4px);
-    background: var(--color-surface-subtle);
-}
-.sy-rate-row .sy-rate:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    width: 100%;
-    min-width: 0;
-    padding-inline: 4px;
-}
-.sy-rate-row .sy-rate small:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.75rem;
-}
-.sy-review-card + .sy-review-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-tray + .sy-review-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-top: var(--sy-space-section);
-}
 
 /* Progress: large readout figures, and a dot per day. */
 .sy-stat b.sy-num:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
