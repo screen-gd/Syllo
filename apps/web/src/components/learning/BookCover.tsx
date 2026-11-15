@@ -1,8 +1,10 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import type { LibraryBook } from "@/lib/personal/schema";
 import { getLocalFile, saveLocalFile } from "@/lib/personal/files";
 import { useCloudSync } from "@/components/sync/CloudSync";
+import { cn } from "@/lib/utils";
 
+/** A book's cover image, or a neutral placeholder with its title and author while none is stored. */
 export default function BookCover({
     book,
     className = "",
@@ -33,16 +35,26 @@ export default function BookCover({
             if (objectUrl) URL.revokeObjectURL(objectUrl);
         };
     }, [book.coverKey, book.cloudCoverId, downloadFile]);
+    const frame = cn(
+        "aspect-3/4 w-full overflow-hidden rounded-tag bg-field",
+        className,
+    );
     return url ? (
-        <img className={`sy-book-cover ${className}`} src={url} alt="" />
+        <img className={cn(frame, "object-cover")} src={url} alt="" />
     ) : (
         <div
-            className={`sy-book-cover sy-book-cover-type ${className}`}
-            style={{ backgroundColor: book.color } satisfies CSSProperties}
+            className={cn(
+                frame,
+                "flex flex-col items-center justify-center gap-0.5 p-1.5 text-center",
+            )}
             aria-hidden="true"
         >
-            <span>{book.title}</span>
-            <small>{book.author}</small>
+            <span className="line-clamp-3 type-caption text-text-1">
+                {book.title}
+            </span>
+            <span className="line-clamp-1 type-caption text-text-2">
+                {book.author}
+            </span>
         </div>
     );
 }

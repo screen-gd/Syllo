@@ -129,8 +129,17 @@ function ItemMeta({className, ...props}: React.ComponentProps<'div'>) {
  * The row's link, inside ItemTitle. Its hit area covers the whole row, ItemActions stay their own buttons above it,
  * and the row takes one tab stop with its ring inside the row's edge.
  */
-function ItemLink({className, ...props}: React.ComponentProps<'a'>) {
-  return <a data-slot="item-link" data-control="" className={cn('min-w-0 truncate after:absolute after:inset-0 after:content-[""]', className)} {...props}/>;
+function ItemLink({className, render, ...props}: useRender.ComponentProps<'a'>) {
+  return useRender({
+    defaultTagName: 'a',
+    props: mergeProps<'a'>(
+      {className: cn('min-w-0 truncate after:absolute after:inset-0 after:content-[""]', className)},
+      {'data-slot': 'item-link', 'data-control': ''} as React.ComponentProps<'a'>,
+      props,
+    ),
+    render,
+    state: {slot: 'item-link'},
+  });
 }
 
 /** Buttons at the end of the row: size="icon-sm" ghost, or one size="sm" secondary Button. They never drop. */

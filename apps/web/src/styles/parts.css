@@ -8,7 +8,6 @@
 /* Raised surfaces: one border on the page colour, no shadow. */
 .sy-card:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-panel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-.sy-resume:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-workspace-list:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-empty.bordered:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface);
@@ -310,40 +309,6 @@
     color: var(--color-accent-strong);
 }
 
-/* Home. */
-.sy-home-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    gap: var(--sy-space-field);
-}
-.sy-home-grid .sy-box:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-top: 0;
-}
-@media (min-width: 761px) {
-    .sy-home-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        align-items: stretch;
-    }
-    .sy-home-main:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-home-aside:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        display: flex;
-        flex-direction: column;
-        gap: var(--sy-space-field);
-    }
-    .sy-home-main > :last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
-    .sy-home-aside > :last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        flex: 1;
-    }
-}
-@media (max-width: 760px) {
-    .sy-home-grid:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        gap: var(--sy-space-field);
-    }
-    .sy-home-main > .sy-box:first-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        order: 0;
-    }
-    .sy-home-main > .sy-home-topics:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        order: 2;
-    }
-}
-
 /* Loading placeholders: flat bars that sit where the data will appear. */
 .sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     display: block;
@@ -358,19 +323,7 @@
 }
 .sy-skel.title:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     height: 22px;
-}
-.sy-skel.block:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    height: 64px;
-}
-.sy-skel.hero:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    height: 132px;
-}
-.sy-skel.deck:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    flex: none;
-    width: 44px;
-    height: 56px;
-}
-.sy-skel.video:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+}.sy-skel.video:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     aspect-ratio: 16 / 9;
 }
 .sy-skel.action:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
@@ -402,98 +355,11 @@
 }
 .sy-box.flush .sy-skel-row:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     border-bottom: 0;
-}
-.sy-skel-dots:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 14px;
-}
-.sy-skel-split:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-.sy-skel-split > div:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    flex: 1;
-    gap: 8px;
-    min-width: 0;
-}
-/* Bars inside an already-subtle tray need one more shade to stay visible. */
+}/* Bars inside an already-subtle tray need one more shade to stay visible. */
 .sy-week .sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])), 
 .sy-tray .sy-skel:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     background: var(--color-surface-muted);
-}
-
-/* The lesson to resume sits in a grey tray inside its box. */
-.sy-box .sy-resume:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    background: var(--color-surface-subtle);
-    border: 0;
-}
-.sy-resume-topic:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-.sy-box .sy-next-label:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    padding-top: 14px;
-}
-
-/* First steps on an empty Home: three flat cards. */
-.sy-starters:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    list-style: none;
-    padding: 0;
-}
-.sy-starter:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    position: relative;
-    display: grid;
-    gap: 4px;
-    height: 100%;
-    padding: 16px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--sy-radius);
-    background: var(--color-surface);
-    transition: background-color var(--dur-press) ease-out;
-}
-@media (hover: hover) and (pointer: fine) {
-    .sy-starter:hover:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        background: var(--color-surface-subtle);
-    }
-}
-.sy-starter-knob:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    place-items: center;
-    width: 38px;
-    height: 38px;
-    margin-bottom: 10px;
-    border-radius: 50%;
-    color: var(--color-accent-strong);
-    background: var(--color-accent-soft);
-}
-.sy-starter-step:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    font-family: var(--font-sans);
-    font-variant-numeric: tabular-nums;
-    font-size: 0.75rem;
-    color: var(--color-text-soft);
-}
-.sy-starter b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.875rem;
-    font-weight: 550;
-}
-.sy-starter small:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.75rem;
-    line-height: 1.5;
-    color: var(--color-text-muted);
-}
-
-/* Topic rows inside a box. */
+}/* Topic rows inside a box. */
 .sy-box .sy-topic:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin: 0 -24px;
     padding: 16px 24px;
@@ -509,105 +375,6 @@
 }
 .sy-box .sy-topic:first-of-type.sy-spined:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot]))::before {
     top: 4px;
-}
-
-/* This week: three counters over a row of day cells. */
-.sy-gauges:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    border-radius: var(--sy-radius);
-    background: var(--color-surface-subtle);
-}
-.sy-gauges > *:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    gap: 2px;
-    justify-items: center;
-    padding: 14px 6px 12px;
-}
-.sy-gauges > * + *:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    border-left: 1px solid var(--color-border);
-}
-.sy-gauges b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-family: var(--font-sans);
-    font-variant-numeric: tabular-nums;
-    font-size: 1.5rem;
-    font-weight: 500;
-    line-height: 1.1;
-    color: var(--color-text);
-}
-.sy-gauges span:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-size: 0.75rem;
-    color: var(--color-text-soft);
-}
-.sy-week-leds:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    list-style: none;
-    padding: 0;
-    margin-top: 16px;
-}
-.sy-week-leds li:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    gap: 6px;
-    justify-items: center;
-    font-size: 0.75rem;
-    color: var(--color-text-soft);
-}
-
-/* Reviews: a flat tile that shows the count due. */
-.sy-deck-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 16px;
-    align-items: center;
-}
-.sy-deck-row p:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-top: 3px;
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-}
-.sy-deck:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    position: relative;
-    display: grid;
-    place-items: center;
-    width: 54px;
-    height: 68px;
-    margin: 4px 8px 8px 2px;
-    border-radius: 6px;
-    background: var(--color-surface-muted);
-}
-.sy-deck b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    font-family: var(--font-sans);
-    font-variant-numeric: tabular-nums;
-    font-size: 1.375rem;
-    font-weight: 500;
-    color: var(--color-text-soft);
-}
-.sy-deck[data-due]:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    background: var(--color-accent-soft);
-}
-.sy-deck[data-due] b:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    color: var(--color-accent-strong);
-}
-.sy-box .sy-current-book:last-child:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-    margin-bottom: 0;
-}
-@media (max-width: 760px) {
-    .sy-starters:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-template-columns: minmax(0, 1fr);
-    }
-    .sy-starter:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-template-columns: auto minmax(0, 1fr);
-        column-gap: 14px;
-        align-items: center;
-    }
-    .sy-starter-knob:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        grid-row: span 2;
-        margin-bottom: 0;
-    }
-    .sy-deck-row:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
-        margin-top: 0;
-    }
 }
 .sy-box.flush > .sy-tray:not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     margin-bottom: 14px;
@@ -647,7 +414,7 @@
 ):active:not(:disabled):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transform: scale(0.97);
 }
-:is(.sy-starter, .sy-deck, .sy-topic, .sy-resume):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
+:is(.sy-topic):not(:where([data-glaze] :not([data-legacy] *))):not(:where([data-slot])) {
     transition:
         background-color var(--dur-fast) ease,
         color var(--dur-fast) ease;
