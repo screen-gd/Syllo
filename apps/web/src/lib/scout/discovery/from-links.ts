@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ScoutError, scoutGenerateObject, type ScoutLlmConfig } from "../llm";
+import { SOURCE_COPY } from "../source-copy";
 import type { SourceLink } from "../source-links";
 import { canonicalResourceUrl, dedupeResources, goalScore, isLikelyFree, type DiscoveredResource } from "./index";
 import { listLinkVideos } from "./youtube";
@@ -117,6 +118,7 @@ export async function discoverFromLinks(input: {
     const pinned: DiscoveredResource[] = [];
     const pool: DiscoveredResource[] = [];
     let feedOnly = false;
+    let firstError: string | null = null;
 
     for (const link of input.links) {
         try {
@@ -126,7 +128,9 @@ export async function discoverFromLinks(input: {
             else pool.push(...listed.videos);
         } catch (error) {
             if (error instanceof ScoutError) throw error;
-            console.warn(`[scout] link ${linkLabel(link)} failed:`, error instanceof Error ? error.message : error);
+            const message = error instanceof Error ? error.message : String(error);
+            firstError ??= message;
+            console.warn(`[scout] link ${linkLabel(link)} failed:`, message);
         }
     }
 
@@ -137,5 +141,9 @@ export async function discoverFromLinks(input: {
         rank: (rankPool, slots) => rankLinkPool({ goal: input.goal, pool: rankPool, slots, packId: input.packId, llm: input.llm }),
     });
 
+    // An empty pack after real failures needs the reason, not "no videos".
+    if (videos.length === 0 && firstError) {
+        throw new Error(SOURCE_COPY.listFailed(firstError.slice(0, 200)));
+    }
     return { videos, feedOnly };
 }

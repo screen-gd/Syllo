@@ -1,6 +1,8 @@
 import { getScoutDb, nowIso } from "../db";
 import { parseIsoDuration } from "../format";
 import { dedupeResources, goalScore, type DiscoveredResource } from "./index";
+import { ScoutError } from "../llm";
+import { SOURCE_COPY } from "../source-copy";
 import type { SourceLink } from "../source-links";
 import { z } from "zod";
 
@@ -66,6 +68,14 @@ async function youtubeFetch<T>(path: string, params: Record<string, string>): Pr
     const response = await fetch(url, { signal: AbortSignal.timeout(20_000) });
     if (!response.ok) {
         const body = await response.text().catch(() => "");
+        if (
+            (response.status === 400 || response.status === 401 || response.status === 403) &&
+            /API key not valid|API keys are not supported|API_KEY_INVALID/i.test(body)
+        ) {
+            // A wrong or malformed key is a configuration fault, not a quota
+            // or network problem; the caller must be told to fix the key.
+            throw new ScoutError("config", SOURCE_COPY.badYouTubeKey);
+        }
         if (response.status === 403) {
             throw new Error(`YouTube API quota or permission error: ${body.slice(0, 200)}`);
         }
@@ -213,6 +223,22 @@ export async function discoverYouTubeForGoal(input: {
 const handleCache = new Map<string, string | null>();
 
 /**
+ * Pulls the page owner's channel id out of channel page HTML. The canonical
+ * link and the feed URL name the channel itself; a bare "channelId" can be any
+ * channel YouTube mentions on the page, so it stays the last resort.
+ */
+export function channelIdFromHtml(html: string): string | null {
+    return (
+        html.match(/<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{20,})"/)?.[1] ??
+        html.match(/"externalId":"(UC[\w-]{20,})"/)?.[1] ??
+        html.match(/feeds\/videos\.xml\?channel_id=(UC[\w-]{20,})/)?.[1] ??
+        html.match(/"channelId":"(UC[\w-]{20,})"/)?.[1] ??
+        html.match(/channel\/(UC[\w-]{20,})/)?.[1] ??
+        null
+    );
+}
+
+/**
  * Public channel pages expose their id in the HTML. This keeps goal discovery
  * working when no YOUTUBE_API_KEY is configured; it is one request per handle
  * and cached for the life of the process.
@@ -247,10 +273,7 @@ export async function resolveChannelIdWithoutKey(value: string): Promise<string 
         }
 
         const html = await response.text();
-        const channelId =
-            html.match(/"channelId":"(UC[\w-]{20,})"/)?.[1] ??
-            html.match(/channel\/(UC[\w-]{20,})/)?.[1] ??
-            null;
+        const channelId = channelIdFromHtml(html);
 
         handleCache.set(handle, channelId);
         return channelId;
@@ -495,20 +518,33 @@ async function listPlaylistVideos(playlistId: string): Promise<{ videos: Discove
 
 async function listChannelVideos(value: string): Promise<{ videos: DiscoveredResource[]; feedOnly: boolean }> {
     const hasKey = Boolean(getYouTubeApiKey());
-    let channelId = await resolveChannelIdWithoutKey(value);
-    if (!channelId && hasKey) channelId = (await resolveChannel(value))?.channelId ?? null;
+
+    // For @handles and UC ids the Data API is authoritative, so it goes first;
+    // /c/ and /user/ links and the keyless case rely on the HTML scrape.
+    const apiResolvable = value.startsWith("@") || /^UC[\w-]{20,}$/.test(value);
+    let channelId: string | null = null;
+    let uploadsPlaylistId: string | null = null;
+
+    if (hasKey && apiResolvable) {
+        const info = await resolveChannel(value);
+        if (info) {
+            channelId = info.channelId;
+            uploadsPlaylistId = info.uploadsPlaylistId;
+        }
+    }
+    if (!channelId) channelId = await resolveChannelIdWithoutKey(value);
     if (!channelId) return { videos: [], feedOnly: !hasKey };
 
     if (!hasKey) {
         return { videos: await fetchChannelFeed(channelId), feedOnly: true };
     }
 
-    const info = await cachedChannel(channelId);
-    if (!info) return { videos: [], feedOnly: false };
+    const playlistId = uploadsPlaylistId ?? (await cachedChannel(channelId))?.uploadsPlaylistId ?? null;
+    if (!playlistId) return { videos: [], feedOnly: false };
 
     // The uploads playlist is newest first; the cap keeps the pack current
     // while known durations outside the range (Shorts, streams) drop out.
-    const ids = await listPlaylistVideoIds(info.uploadsPlaylistId);
+    const ids = await listPlaylistVideoIds(playlistId);
     const videos = (await fetchVideosInOrder(ids)).filter(
         (video) => !video.durationSeconds || (video.durationSeconds >= MIN_VIDEO_SECONDS && video.durationSeconds <= MAX_VIDEO_SECONDS),
     );

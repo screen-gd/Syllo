@@ -13,4 +13,6 @@ export const SOURCE_COPY = {
     listing: "Finding videos in your links",
     found: (count: number) => `Reading ${count} ${count === 1 ? "video" : "videos"} from your links`,
     feedOnly: "Scout sees only the latest 15 channel videos. Add a YouTube key to unlock the full channel.",
+    badYouTubeKey: "YouTube rejected the saved key because it is not a valid YouTube Data API key. A Gemini key does not work here. Replace YOUTUBE_API_KEY in apps/web/.env.local or remove it to use the latest 15 videos only.",
+    listFailed: (detail: string) => `Scout could not read those links. Check them and try again. Reason: ${detail}`,
 };
