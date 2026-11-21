@@ -1,6 +1,7 @@
 import { getScoutDb, nowIso } from "../db";
 import { parseIsoDuration } from "../format";
 import { dedupeResources, goalScore, type DiscoveredResource } from "./index";
+import type { SourceLink } from "../source-links";
 import { z } from "zod";
 
 const API_ROOT = "https://www.googleapis.com/youtube/v3";
@@ -136,13 +137,16 @@ async function listUploads(
 }
 
 async function fetchVideos(ids: string[]): Promise<NonNullable<VideosResponse["items"]>> {
-    if (ids.length === 0) return [];
-    const payload = await youtubeFetch<VideosResponse>("videos", {
-        part: "snippet,contentDetails",
-        id: ids.slice(0, 50).join(","),
-        maxResults: "50",
-    });
-    return payload.items ?? [];
+    const items: NonNullable<VideosResponse["items"]> = [];
+    for (let start = 0; start < ids.length; start += 50) {
+        const payload = await youtubeFetch<VideosResponse>("videos", {
+            part: "snippet,contentDetails",
+            id: ids.slice(start, start + 50).join(","),
+            maxResults: "50",
+        });
+        items.push(...(payload.items ?? []));
+    }
+    return items;
 }
 
 function toVideo(item: NonNullable<VideosResponse["items"]>[number]): DiscoveredResource {
@@ -395,4 +399,129 @@ export async function discoverYouTubeRecent(input: {
     }
 
     return deduped.slice(0, input.limit);
+}
+
+/* ------------------------------------------------------------------ *
+ * Listing videos behind pasted links
+ * ------------------------------------------------------------------ */
+
+const LINK_LIST_LIMIT = 200;
+
+async function listVideoById(videoId: string): Promise<{ videos: DiscoveredResource[]; feedOnly: boolean }> {
+    if (getYouTubeApiKey()) {
+        const items = await fetchVideos([videoId]);
+        return { videos: items.map(toVideo), feedOnly: false };
+    }
+
+    // oEmbed is keyless; a video that is private or gone simply lists nothing.
+    try {
+        const url = `https://www.youtube.com/watch?v=${videoId}`;
+        const response = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`, {
+            signal: AbortSignal.timeout(15_000),
+        });
+        if (!response.ok) return { videos: [], feedOnly: false };
+        const data = z
+            .object({
+                title: z.string(),
+                author_name: z.string().optional(),
+                thumbnail_url: z.string().optional(),
+            })
+            .parse(await response.json());
+        return {
+            videos: [
+                {
+                    kind: "video",
+                    source: "youtube-oembed",
+                    externalId: videoId,
+                    url,
+                    title: data.title,
+                    creator: data.author_name ?? null,
+                    thumbnailUrl: data.thumbnail_url ?? null,
+                },
+            ],
+            feedOnly: false,
+        };
+    } catch {
+        return { videos: [], feedOnly: false };
+    }
+}
+
+async function listPlaylistVideoIds(playlistId: string, limit = LINK_LIST_LIMIT): Promise<string[]> {
+    const ids: string[] = [];
+    let pageToken = "";
+    while (ids.length < limit) {
+        const params: Record<string, string> = {
+            part: "contentDetails",
+            playlistId,
+            maxResults: String(Math.min(50, limit - ids.length)),
+        };
+        if (pageToken) params.pageToken = pageToken;
+
+        const payload = await youtubeFetch<PlaylistItemsResponse>("playlistItems", params);
+        for (const item of payload.items ?? []) {
+            const id = item.contentDetails?.videoId;
+            if (id) ids.push(id);
+        }
+        pageToken = payload.nextPageToken ?? "";
+        if (!pageToken) break;
+    }
+    return ids;
+}
+
+async function fetchVideosInOrder(ids: string[]): Promise<DiscoveredResource[]> {
+    const byId = new Map((await fetchVideos(ids)).map((item) => [item.id, item]));
+    const seen = new Set<string>();
+    const videos: DiscoveredResource[] = [];
+    for (const id of ids) {
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const item = byId.get(id);
+        if (item) videos.push(toVideo(item));
+    }
+    return videos;
+}
+
+async function listPlaylistVideos(playlistId: string): Promise<{ videos: DiscoveredResource[]; feedOnly: boolean }> {
+    if (!getYouTubeApiKey()) {
+        const response = await fetch(`https://www.youtube.com/feeds/videos.xml?playlist_id=${encodeURIComponent(playlistId)}`, {
+            signal: AbortSignal.timeout(15_000),
+        });
+        return { videos: response.ok ? parseYouTubeFeed(await response.text()) : [], feedOnly: true };
+    }
+
+    const ids = await listPlaylistVideoIds(playlistId);
+    return { videos: await fetchVideosInOrder(ids), feedOnly: false };
+}
+
+async function listChannelVideos(value: string): Promise<{ videos: DiscoveredResource[]; feedOnly: boolean }> {
+    const hasKey = Boolean(getYouTubeApiKey());
+    let channelId = await resolveChannelIdWithoutKey(value);
+    if (!channelId && hasKey) channelId = (await resolveChannel(value))?.channelId ?? null;
+    if (!channelId) return { videos: [], feedOnly: !hasKey };
+
+    if (!hasKey) {
+        return { videos: await fetchChannelFeed(channelId), feedOnly: true };
+    }
+
+    const info = await cachedChannel(channelId);
+    if (!info) return { videos: [], feedOnly: false };
+
+    // The uploads playlist is newest first; the cap keeps the pack current
+    // while known durations outside the range (Shorts, streams) drop out.
+    const ids = await listPlaylistVideoIds(info.uploadsPlaylistId);
+    const videos = (await fetchVideosInOrder(ids)).filter(
+        (video) => !video.durationSeconds || (video.durationSeconds >= MIN_VIDEO_SECONDS && video.durationSeconds <= MAX_VIDEO_SECONDS),
+    );
+    return { videos, feedOnly: false };
+}
+
+/**
+ * Lists the videos behind one pasted YouTube link for the links entry point.
+ * Errors throw so the caller can warn per link and continue with the rest.
+ * `feedOnly` marks listings capped at the latest 15 feed entries.
+ */
+export async function listLinkVideos(link: SourceLink): Promise<{ videos: DiscoveredResource[]; feedOnly: boolean }> {
+    if (link.kind === "video") return listVideoById(link.videoId);
+    if (link.kind === "playlist") return listPlaylistVideos(link.playlistId);
+    return listChannelVideos(link.value);
 }

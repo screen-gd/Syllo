@@ -54,6 +54,7 @@ export interface ScoutStartInput {
     provider?: string;
     model?: string;
     apiKey?: string;
+    sources?: string[];
 }
 
 export const scoutApi = {
