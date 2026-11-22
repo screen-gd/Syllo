@@ -5,8 +5,10 @@
  */
 export const AGENT_COPY = {
     readerLabel: "Read videos with",
-    readerCaption: "Use a free Gemini API key, or pick an agent installed on this computer to use your subscription.",
+    readerCaption: "Installed agents use your own subscription and need no key, while the Gemini API key option is free.",
     readerGemini: "Gemini API key",
+    startNoteGemini: "Uses free Gemini allowances. No paid fallback.",
+    startNoteAgent: (agent: string) => `Scout reads with ${agent} on your own subscription. No Gemini key needed.`,
     needsReader: "Scout needs a way to read videos. Add a Gemini API key or pick an installed agent, then try again.",
     agentMissing: (agent: string) => `Scout could not find or start ${agent} on this computer. Check that it is installed, or pick another option.`,
     agentFailed: (agent: string, detail: string) => `${agent} stopped with an error while reading for Scout. Try again or pick another option. Reason: ${detail}`,

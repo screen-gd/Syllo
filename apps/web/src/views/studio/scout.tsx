@@ -10,7 +10,13 @@ import {
     FieldLabel,
 } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
-import { Select } from "@/components/glaze/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import { Textarea } from "@/components/glaze/ui/textarea";
 import {
     Item,
@@ -203,6 +209,32 @@ export default function ScoutPage() {
         if (!agents.some((agent) => agent.id === reader)) setReader("gemini");
     }, [agents, reader]);
 
+    // The selected installed agent, or null when Scout reads with the key.
+    const chosenAgent =
+        reader === "gemini"
+            ? null
+            : (agents ?? []).find((agent) => agent.id === reader) ?? null;
+    const readerItems = useMemo(
+        () => [
+            { value: "gemini", label: AGENT_COPY.readerGemini },
+            ...(agents ?? []).map((agent) => ({
+                value: agent.id,
+                label: agent.label,
+            })),
+        ],
+        [agents],
+    );
+
+    function chooseReader(value: string | null) {
+        const next = value ?? "gemini";
+        setReader(next);
+        const chosen =
+            next === "gemini"
+                ? null
+                : (agents ?? []).find((agent) => agent.id === next)?.id ?? null;
+        saveUserConfig({ ...getUserConfig(), scoutAgent: chosen });
+    }
+
     const packId = pack?.id;
     const packStatus = pack?.status;
     const running = Boolean(
@@ -324,10 +356,6 @@ export default function ScoutPage() {
         try {
             const config = getUserConfig();
             const apiKey = config.useCustomKey ? getActiveApiKey(config) : "";
-            const chosenAgent =
-                reader === "gemini"
-                    ? null
-                    : (agents ?? []).find((agent) => agent.id === reader)?.id ?? null;
             const result = await scoutApi.start({
                 goal: [
                     clean,
@@ -341,7 +369,7 @@ export default function ScoutPage() {
                 provider: config.provider,
                 model: getActiveModel(config),
                 apiKey: chosenAgent ? undefined : apiKey,
-                agent: chosenAgent ?? "gemini",
+                agent: chosenAgent?.id ?? "gemini",
                 sources: sourceLines.length > 0 ? sourceLines : undefined,
             });
             setPack(detailOf(result.pack));
@@ -544,37 +572,24 @@ export default function ScoutPage() {
                                             {AGENT_COPY.readerLabel}
                                         </FieldLabel>
                                         <Select
-                                            native
                                             value={reader}
-                                            onValueChange={(value) => {
-                                                const next = value ?? "gemini";
-                                                setReader(next);
-                                                const chosen =
-                                                    next === "gemini"
-                                                        ? null
-                                                        : (agents ?? []).find(
-                                                              (agent) =>
-                                                                  agent.id ===
-                                                                  next,
-                                                          )?.id ?? null;
-                                                saveUserConfig({
-                                                    ...getUserConfig(),
-                                                    scoutAgent: chosen,
-                                                });
-                                            }}
-                                            items={[
-                                                {
-                                                    value: "gemini",
-                                                    label: AGENT_COPY.readerGemini,
-                                                },
-                                                ...(agents ?? []).map(
-                                                    (agent) => ({
-                                                        value: agent.id,
-                                                        label: agent.label,
-                                                    }),
-                                                ),
-                                            ]}
-                                        />
+                                            onValueChange={chooseReader}
+                                            items={readerItems}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {readerItems.map((item) => (
+                                                    <SelectItem
+                                                        key={item.value}
+                                                        value={item.value}
+                                                    >
+                                                        {item.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FieldDescription>
                                             {AGENT_COPY.readerCaption}
                                         </FieldDescription>
@@ -617,8 +632,11 @@ export default function ScoutPage() {
                                                 : "Start Scout"}
                                         </Button>
                                         <p className="type-caption text-text-2">
-                                            Uses free Gemini allowances. No
-                                            paid fallback.
+                                            {chosenAgent
+                                                ? AGENT_COPY.startNoteAgent(
+                                                      chosenAgent.label,
+                                                  )
+                                                : AGENT_COPY.startNoteGemini}
                                         </p>
                                     </div>
 
