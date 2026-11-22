@@ -1,6 +1,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { getScoutDb } from "../db";
+import { SOURCE_COPY } from "../source-copy";
 
 const run = promisify(execFile);
 
@@ -73,6 +74,7 @@ interface PythonCandidate {
     command: string;
     available: boolean;
     checkedAt: number;
+    reason?: "missing_module" | "failed";
 }
 
 const globalKey = Symbol.for("syllo.scout.pythonTranscript");
@@ -162,6 +164,7 @@ async function fromPython(videoId: string): Promise<TranscriptResult | null> {
 
             if (payload.reason === "missing_module") {
                 candidate.available = false;
+                candidate.reason = "missing_module";
                 continue;
             }
 
@@ -170,9 +173,18 @@ async function fromPython(videoId: string): Promise<TranscriptResult | null> {
             return { ...EMPTY, error: payload.error ?? "No transcript available" };
         } catch {
             candidate.available = false;
+            candidate.reason = "failed";
         }
     }
 
+    // A missing helper and a missing interpreter read differently to the
+    // learner; the recorded reason picks the right hint.
+    if (candidates().some((candidate) => candidate.reason === "missing_module")) {
+        return { ...EMPTY, error: SOURCE_COPY.noTranscriptHelper };
+    }
+    if (candidates().every((candidate) => !candidate.available)) {
+        return { ...EMPTY, error: SOURCE_COPY.noPython };
+    }
     return null;
 }
 

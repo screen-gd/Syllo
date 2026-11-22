@@ -1,4 +1,6 @@
 import { discoverForGoal, discoverNewFromSources } from "./discovery/combine";
+import { discoverFromLinks } from "./discovery/from-links";
+import type { DiscoveredResource } from "./discovery";
 import { extractResource } from "./extract";
 import { readArticle } from "./fetch/reader";
 import { fetchTranscript, markTranscriptFetched, transcriptDelayMs } from "./fetch/transcripts";
@@ -16,6 +18,7 @@ import {
     latestGoal,
     packProcessingFinished,
     packResourceRows,
+    resetUnreadResource,
     saveResourceExtraction,
     setResourceError,
     toScoutResource,
@@ -26,6 +29,8 @@ import {
 import { buildWorkspace } from "./plan";
 import { registerJobHandler } from "./runner";
 import { getScoutSettings } from "./settings";
+import { SOURCE_COPY } from "./source-copy";
+import { parseSourceLinks } from "./source-links";
 import { listEnabledSources, touchSource } from "./sources";
 import type { JobRow } from "./types";
 
@@ -51,20 +56,45 @@ async function handleDiscover(_job: JobRow, payload: Record<string, unknown>) {
     if (!pack) throw new Error(`Pack ${packId} no longer exists`);
     if (pack.status !== "discovering") return { skipped: true };
 
-    updatePack(packId, { progress: 6, stage: "Looking for free resources" });
+    const links = Array.isArray(payload.links)
+        ? payload.links.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+        : [];
 
-    const discovered = await discoverForGoal({ goal: pack.goal, limit: DISCOVERY_LIMIT, llm: recallScoutLlm(packId) }).catch(error => { failPack(packId, error); return []; });
-    if (getPackRow(packId)?.status === "failed") return { found: 0 };
-    if (discovered.length === 0) {
-        failPack(
+    let discovered: DiscoveredResource[];
+    let stage: string;
+
+    if (links.length > 0) {
+        updatePack(packId, { progress: 6, stage: SOURCE_COPY.listing });
+        const result = await discoverFromLinks({
+            goal: pack.goal,
+            links: parseSourceLinks(links.join("\n")).links,
             packId,
-            new Error("No free resources matched that goal. Add a channel or site in Sources and try again."),
-        );
-        return { found: 0 };
+            llm: recallScoutLlm(packId),
+        }).catch(error => { failPack(packId, error); return null; });
+        if (!result) return { found: 0 };
+        if (result.videos.length === 0) {
+            failPack(packId, new Error(SOURCE_COPY.noVideos));
+            return { found: 0 };
+        }
+        discovered = result.videos;
+        stage = SOURCE_COPY.found(result.videos.length) + (result.feedOnly ? ` ${SOURCE_COPY.feedOnly}` : "");
+    } else {
+        updatePack(packId, { progress: 6, stage: "Looking for free resources" });
+
+        discovered = await discoverForGoal({ goal: pack.goal, limit: DISCOVERY_LIMIT, llm: recallScoutLlm(packId) }).catch(error => { failPack(packId, error); return []; });
+        if (getPackRow(packId)?.status === "failed") return { found: 0 };
+        if (discovered.length === 0) {
+            failPack(
+                packId,
+                new Error("No free resources matched that goal. Add a channel or site in Sources and try again."),
+            );
+            return { found: 0 };
+        }
+        stage = `Found ${discovered.length} candidates — reading them now`;
     }
 
     const rows = discovered.map((item, index) => {
-        const row = upsertDiscoveredResource(item);
+        const row = resetUnreadResource(upsertDiscoveredResource(item));
         attachResourceToPack(packId, row.id, index);
         return row;
     });
@@ -72,7 +102,7 @@ async function handleDiscover(_job: JobRow, payload: Record<string, unknown>) {
     updatePack(packId, {
         status: "processing",
         progress: 10,
-        stage: `Found ${rows.length} candidates — reading them now`,
+        stage,
     });
 
     // A small stagger avoids fifteen identical requests in the same tick; the
@@ -349,10 +379,10 @@ export function registerPipelineHandlers() {
 }
 
 /** Creates a pack and queues discovery without waiting for the next tick. */
-export function startPack(goal: string, llm?: ScoutLlmConfig | null) {
+export function startPack(goal: string, llm?: ScoutLlmConfig | null, links?: string[]) {
     const created = createPack(goal);
     if (llm) rememberScoutLlm(created.id, llm);
-    enqueueJob("discover", { packId: created.id });
+    enqueueJob("discover", links && links.length > 0 ? { packId: created.id, links } : { packId: created.id });
     return created;
 }
 

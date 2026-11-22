@@ -40,7 +40,7 @@ export const AI_PROVIDER_OPTIONS: Array<{
 
 export const DEFAULT_PROVIDER_MODELS: Record<AIProvider, string> = {
     openai: "gpt-5.4",
-    gemini: "gemini-2.5-flash",
+    gemini: "gemini-3.5-flash-lite",
     groq: "llama-3.3-70b-versatile",
     deepseek: "deepseek-chat",
     openrouter: "openai/gpt-4.1-mini",
@@ -48,7 +48,7 @@ export const DEFAULT_PROVIDER_MODELS: Record<AIProvider, string> = {
 
 export const PROVIDER_MODEL_PRESETS: Record<AIProvider, string[]> = {
     openai: ["gpt-5.4"],
-    gemini: ["gemini-2.5-flash", "gemini-2.5-pro"],
+    gemini: ["gemini-3.5-flash-lite", "gemini-3.8-flash"],
     groq: ["llama-3.3-70b-versatile", "deepseek-r1-distill-llama-70b"],
     deepseek: ["deepseek-chat", "deepseek-reasoner"],
     openrouter: ["openai/gpt-4.1-mini", "google/gemini-2.5-flash"],

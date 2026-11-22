@@ -4,8 +4,13 @@ import { ArrowRight, Icon, Pending, Sparkle } from "@/components/glaze/icon";
 import { Alert } from "@/components/glaze/ui/alert";
 import { Badge } from "@/components/glaze/ui/badge";
 import { Button } from "@/components/glaze/ui/button";
-import { Field, FieldLabel } from "@/components/glaze/ui/field";
+import {
+    Field,
+    FieldDescription,
+    FieldLabel,
+} from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
+import { Textarea } from "@/components/glaze/ui/textarea";
 import {
     Item,
     ItemContent,
@@ -23,6 +28,8 @@ import { LEVEL_LABEL } from "@/lib/ladder";
 import { scoutApi } from "@/lib/scout/api-client";
 import { getLastScoutPack, publishScoutPack } from "@/lib/scout/client";
 import { humanDuration } from "@/lib/scout/format";
+import { SOURCE_COPY } from "@/lib/scout/source-copy";
+import { MAX_SOURCE_LINKS, parseSourceLinks } from "@/lib/scout/source-links";
 import type { ScoutPackDetail } from "@/lib/scout/pack";
 import type {
     ScoutPack,
@@ -75,6 +82,7 @@ export default function ScoutPage() {
     const [goal, setGoal] = useState("");
     const [startingPoint, setStartingPoint] = useState("");
     const [outcome, setOutcome] = useState("");
+    const [links, setLinks] = useState("");
     const [draftRoadmap, setDraftRoadmap] = useState<Roadmap | null>(null);
     const [pack, setPack] = useState<ScoutPackDetail | null>(null);
     const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -262,6 +270,20 @@ export default function ScoutPage() {
             return;
         }
 
+        const parsed = parseSourceLinks(links);
+        if (parsed.invalid.length > 0) {
+            setError(SOURCE_COPY.invalidLink(parsed.invalid[0]));
+            return;
+        }
+        if (parsed.links.length > MAX_SOURCE_LINKS) {
+            setError(SOURCE_COPY.tooManyLinks);
+            return;
+        }
+        const sourceLines = links
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean);
+
         setStarting(true);
         setError(null);
 
@@ -281,6 +303,7 @@ export default function ScoutPage() {
                 provider: config.provider,
                 model: getActiveModel(config),
                 apiKey,
+                sources: sourceLines.length > 0 ? sourceLines : undefined,
             });
             setPack(detailOf(result.pack));
         } catch (startError) {
@@ -457,6 +480,25 @@ export default function ScoutPage() {
                                             </Button>
                                         ))}
                                     </div>
+
+                                    <Field>
+                                        <FieldLabel>
+                                            {SOURCE_COPY.label}
+                                        </FieldLabel>
+                                        <Textarea
+                                            value={links}
+                                            onValueChange={setLinks}
+                                            placeholder={
+                                                SOURCE_COPY.placeholder
+                                            }
+                                            autoGrow
+                                            minRows={2}
+                                            maxRows={8}
+                                        />
+                                        <FieldDescription>
+                                            {SOURCE_COPY.caption}
+                                        </FieldDescription>
+                                    </Field>
 
                                     <Field>
                                         <FieldLabel>

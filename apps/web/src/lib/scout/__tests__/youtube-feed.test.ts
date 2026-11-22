@@ -1,5 +1,7 @@
-import { describe, expect, it } from "vitest";
-import { parseYouTubeFeed } from "@/lib/scout/discovery/youtube";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { ScoutError } from "@/lib/scout/llm";
+import { channelIdFromHtml, listLinkVideos, parseYouTubeFeed } from "@/lib/scout/discovery/youtube";
+import { SOURCE_COPY } from "@/lib/scout/source-copy";
 
 const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/">
@@ -49,5 +51,66 @@ describe("YouTube channel RSS", () => {
     it("returns an empty list for feeds it cannot read", () => {
         expect(parseYouTubeFeed("")).toEqual([]);
         expect(parseYouTubeFeed("<feed></feed>")).toEqual([]);
+    });
+});
+
+describe("channelIdFromHtml", () => {
+    const OWNER = "UCbRP3c757lWg9M-U7TyEkXA";
+    const DECOY = "UCtuO2h6OwDueF7h3p8DYYjQ";
+
+    it("prefers the canonical link over channelId mentions elsewhere on the page", () => {
+        const html = [
+            `<script>{"channelId":"${DECOY}"}</script>`,
+            `<link rel="canonical" href="https://www.youtube.com/channel/${OWNER}">`,
+            `<script>{"externalId":"${DECOY}"}</script>`,
+        ].join("\n");
+        expect(channelIdFromHtml(html)).toBe(OWNER);
+    });
+
+    it("falls back to externalId when there is no canonical link", () => {
+        const html = `{"channelId":"${DECOY}","externalId":"${OWNER}"}`;
+        expect(channelIdFromHtml(html)).toBe(OWNER);
+    });
+
+    it("falls back to the feed URL, then the legacy channelId match", () => {
+        expect(channelIdFromHtml(`href="https://www.youtube.com/feeds/videos.xml?channel_id=${OWNER}"`)).toBe(OWNER);
+        expect(channelIdFromHtml(`{"channelId":"${DECOY}"}`)).toBe(DECOY);
+        expect(channelIdFromHtml(`<a href="/channel/${OWNER}">`)).toBe(OWNER);
+    });
+
+    it("returns null when no channel id is present", () => {
+        expect(channelIdFromHtml("<html><body>no ids here</body></html>")).toBeNull();
+    });
+});
+
+describe("listLinkVideos with a rejected YouTube key", () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        delete process.env.YOUTUBE_API_KEY;
+    });
+
+    it("turns an invalid API key into a ScoutError config failure", async () => {
+        process.env.YOUTUBE_API_KEY = "not-a-real-key";
+        vi.stubGlobal(
+            "fetch",
+            vi.fn(async () =>
+                new Response(JSON.stringify({ error: { message: "API key not valid. Please pass a valid API key." } }), {
+                    status: 400,
+                }),
+            ),
+        );
+
+        let caught: unknown;
+        try {
+            await listLinkVideos({ kind: "video", videoId: "dQw4w9WgXcQ" });
+        } catch (error) {
+            caught = error;
+        }
+
+        expect(caught).toBeInstanceOf(ScoutError);
+        if (caught instanceof ScoutError) {
+            expect(caught.code).toBe("config");
+            expect(caught.message).toBe(SOURCE_COPY.badYouTubeKey);
+        }
     });
 });
