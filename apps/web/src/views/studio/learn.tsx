@@ -480,7 +480,7 @@ export default function LearnPage({
     if (!loaded)
         return (
             <div
-                className="flex flex-col gap-4"
+                className="flex flex-col gap-4 lg:pt-6"
                 role="status"
                 aria-label="Loading"
             >
@@ -524,7 +524,7 @@ export default function LearnPage({
         );
     if (!roadmap)
         return (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 lg:pt-6">
                 <Empty reason="empty">
                     <EmptyHeader>
                         <EmptyTitle>
@@ -561,7 +561,7 @@ export default function LearnPage({
         );
     if (!item)
         return (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 lg:pt-6">
                 <Empty reason="empty">
                     <EmptyHeader>
                         <EmptyTitle>
