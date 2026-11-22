@@ -154,14 +154,14 @@ export default function LearningSidebar() {
                         <Link
                             to="/dashboard"
                             data-slot="nav-brand"
-                            className="flex h-16 shrink-0 items-center gap-2 px-6 text-text-1"
+                            className="mt-2 flex h-12 shrink-0 items-center gap-2 px-6 text-text-1"
                         >
                             <SylloMark />
                             <span className="type-label-lg">Syllo</span>
                         </Link>
                         <nav
                             aria-label="Main navigation"
-                            className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 pb-4"
+                            className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3 pb-4 pt-1"
                         >
                             {groups.map((group) => (
                                 <NavSection key={group.label} label={group.label}>

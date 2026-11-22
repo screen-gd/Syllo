@@ -381,7 +381,7 @@ export default function ReaderPage({
         { value: "finished", label: "Finished" },
     ];
     return (
-        <div className="mx-auto flex w-full max-w-256 flex-col gap-4 lg:max-w-none">
+        <div className="mx-auto flex w-full max-w-256 flex-col gap-4 lg:max-w-none lg:pt-6">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>

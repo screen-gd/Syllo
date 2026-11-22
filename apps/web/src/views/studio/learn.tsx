@@ -805,7 +805,7 @@ export default function LearnPage({
     );
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 lg:pt-6">
             <header className="flex flex-wrap items-center justify-between gap-2">
                 <Breadcrumb className="min-w-0">
                     <BreadcrumbList>
