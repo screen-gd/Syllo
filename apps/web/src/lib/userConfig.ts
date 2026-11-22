@@ -1,4 +1,5 @@
 import { AIProvider, DEFAULT_PROVIDER_MODELS, isAiProvider } from "@/lib/ai-config";
+import type { ScoutAgentStatus } from "@/lib/scout/types";
 
 export type ProviderMap = Record<AIProvider, string>;
 
@@ -7,6 +8,7 @@ export interface UserConfig {
     modelByProvider: ProviderMap;
     provider: AIProvider;
     useCustomKey: boolean;
+    scoutAgent: ScoutAgentStatus["id"] | null;
     theme: "light";
     accentColor: string;
     showProgressNotice: boolean;
@@ -26,11 +28,18 @@ function createProviderMap(defaultValue: string): ProviderMap {
 
 const LEGACY_DEFAULT_ACCENTS = new Set(["#4F7CFF", "#4CB3F0"]);
 
+const SCOUT_AGENT_IDS: ScoutAgentStatus["id"][] = ["opencode", "codex", "claude"];
+
+function isScoutAgentId(value: unknown): value is ScoutAgentStatus["id"] {
+    return typeof value === "string" && SCOUT_AGENT_IDS.some((id) => id === value);
+}
+
 export const DEFAULT_CONFIG: UserConfig = {
     apiKeys: createProviderMap(""),
     modelByProvider: { ...DEFAULT_PROVIDER_MODELS },
     provider: "gemini",
     useCustomKey: false,
+    scoutAgent: null,
     theme: "light",
     accentColor: "#3F4CC4",
     showProgressNotice: true,
@@ -78,6 +87,7 @@ export function getUserConfig(): UserConfig {
             modelByProvider,
             provider,
             useCustomKey: Boolean(parsed.useCustomKey && apiKeys[provider]),
+            scoutAgent: isScoutAgentId(parsed.scoutAgent) ? parsed.scoutAgent : null,
             theme: "light",
             // "#4F7CFF" and "#4CB3F0" were earlier themes' defaults, saved by anyone
             // who opened Settings; treat them as unset so they get the current default.

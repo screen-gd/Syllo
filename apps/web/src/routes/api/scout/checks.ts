@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DEFAULT_PROVIDER_MODELS, isAiProvider } from "@/lib/ai-config";
 import { readJsonBody, scoutBadRequest, scoutFailure, scoutJson } from "@/lib/scout/http";
-import { defaultScoutConfig, ScoutError, type ScoutLlmConfig } from "@/lib/scout/llm";
+import { ScoutError, scoutLlmFromBody } from "@/lib/scout/llm";
 import { getVideoChecks } from "@/lib/scout/video-checks";
 import type { VideoChapterInput } from "@/lib/scout/types";
 import { getYouTubeId } from "@/lib/video-utils";
@@ -31,23 +30,13 @@ export const Route = createFileRoute("/api/scout/checks")({
                         provider?: unknown;
                         model?: unknown;
                         apiKey?: unknown;
+                        agent?: unknown;
                     }>(request);
                     const videoId = typeof body?.url === "string" ? getYouTubeId(body.url) : null;
                     if (!videoId) return scoutBadRequest("Recall questions need a YouTube video.");
 
-                    // The browser key is used for this request only and never stored.
-                    let config: Partial<ScoutLlmConfig> | null = null;
-                    if (typeof body?.apiKey === "string" && body.apiKey.trim()) {
-                        const provider = isAiProvider(body.provider) ? body.provider : defaultScoutConfig().provider;
-                        config = {
-                            provider,
-                            model:
-                                typeof body.model === "string" && body.model.trim()
-                                    ? body.model.trim()
-                                    : DEFAULT_PROVIDER_MODELS[provider],
-                            apiKey: body.apiKey.trim(),
-                        };
-                    }
+                    // The browser choice is used for this request only and never stored.
+                    const config = scoutLlmFromBody(body);
 
                     const duration = Number(body?.durationSeconds);
                     const result = await getVideoChecks({

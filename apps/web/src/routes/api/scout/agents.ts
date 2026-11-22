@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { agentConnections, agentStatuses, researchWithAgent, type AgentId } from "@/lib/scout/agent-runner";
+import { agentConnections, agentStatuses, isAgentId, researchWithAgent } from "@/lib/scout/agent-runner";
 import { readJsonBody, scoutBadRequest, scoutFailure, scoutJson } from "@/lib/scout/http";
 import { addManualResource } from "@/lib/scout/library";
-
-const AGENT_IDS: AgentId[] = ["opencode", "codex", "claude"];
 
 export const Route = createFileRoute("/api/scout/agents")({
     server: {
@@ -29,8 +27,7 @@ export const Route = createFileRoute("/api/scout/agents")({
                     if (goal.length < 3) return scoutBadRequest("Describe what you want to learn first.");
                     if (goal.length > 500) return scoutBadRequest("Keep the goal under 500 characters.");
 
-                    const requested = typeof body?.agent === "string" ? (body.agent as AgentId) : null;
-                    const agentId = requested && AGENT_IDS.includes(requested) ? requested : null;
+                    const agentId = isAgentId(body?.agent) ? body.agent : null;
 
                     const result = await researchWithAgent(goal, agentId);
                     const saved = [];

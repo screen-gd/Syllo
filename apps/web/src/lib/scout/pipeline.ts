@@ -379,7 +379,7 @@ export function registerPipelineHandlers() {
 }
 
 /** Creates a pack and queues discovery without waiting for the next tick. */
-export function startPack(goal: string, llm?: ScoutLlmConfig | null, links?: string[]) {
+export function startPack(goal: string, llm?: Partial<ScoutLlmConfig> | null, links?: string[]) {
     const created = createPack(goal);
     if (llm) rememberScoutLlm(created.id, llm);
     enqueueJob("discover", links && links.length > 0 ? { packId: created.id, links } : { packId: created.id });

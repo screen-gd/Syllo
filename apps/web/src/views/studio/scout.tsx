@@ -10,6 +10,7 @@ import {
     FieldLabel,
 } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
+import { Select } from "@/components/glaze/ui/select";
 import { Textarea } from "@/components/glaze/ui/textarea";
 import {
     Item,
@@ -26,12 +27,14 @@ import PageFrame from "@/components/layout/PageFrame";
 import { LEARNING_LEVELS, type LearningLevel, type ModuleSection, type Roadmap } from "@/types";
 import { LEVEL_LABEL } from "@/lib/ladder";
 import { scoutApi } from "@/lib/scout/api-client";
+import { AGENT_COPY } from "@/lib/scout/agent-copy";
 import { getLastScoutPack, publishScoutPack } from "@/lib/scout/client";
 import { humanDuration } from "@/lib/scout/format";
 import { SOURCE_COPY } from "@/lib/scout/source-copy";
 import { MAX_SOURCE_LINKS, parseSourceLinks } from "@/lib/scout/source-links";
 import type { ScoutPackDetail } from "@/lib/scout/pack";
 import type {
+    ScoutAgentStatus,
     ScoutPack,
     ScoutResource,
     ScoutSettings,
@@ -43,6 +46,7 @@ import {
     getActiveApiKey,
     getActiveModel,
     getUserConfig,
+    saveUserConfig,
 } from "@/lib/userConfig";
 
 const EXAMPLES = [
@@ -83,6 +87,10 @@ export default function ScoutPage() {
     const [startingPoint, setStartingPoint] = useState("");
     const [outcome, setOutcome] = useState("");
     const [links, setLinks] = useState("");
+    const [reader, setReader] = useState<string>(
+        () => getUserConfig().scoutAgent ?? "gemini",
+    );
+    const [agents, setAgents] = useState<ScoutAgentStatus[] | null>(null);
     const [draftRoadmap, setDraftRoadmap] = useState<Roadmap | null>(null);
     const [pack, setPack] = useState<ScoutPackDetail | null>(null);
     const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -168,6 +176,32 @@ export default function ScoutPage() {
             alive = false;
         };
     }, [navigate]);
+
+    // The agent CLIs on this machine are probed once; a failed probe leaves
+    // only the Gemini option in the reader list.
+    useEffect(() => {
+        let alive = true;
+        void scoutApi
+            .getAgents()
+            .then((result) => {
+                if (alive)
+                    setAgents(
+                        result.agents.filter((agent) => agent.available),
+                    );
+            })
+            .catch(() => {
+                if (alive) setAgents([]);
+            });
+        return () => {
+            alive = false;
+        };
+    }, []);
+
+    // A saved agent that is not installed falls back to the Gemini key.
+    useEffect(() => {
+        if (!agents || reader === "gemini") return;
+        if (!agents.some((agent) => agent.id === reader)) setReader("gemini");
+    }, [agents, reader]);
 
     const packId = pack?.id;
     const packStatus = pack?.status;
@@ -290,6 +324,10 @@ export default function ScoutPage() {
         try {
             const config = getUserConfig();
             const apiKey = config.useCustomKey ? getActiveApiKey(config) : "";
+            const chosenAgent =
+                reader === "gemini"
+                    ? null
+                    : (agents ?? []).find((agent) => agent.id === reader)?.id ?? null;
             const result = await scoutApi.start({
                 goal: [
                     clean,
@@ -302,7 +340,8 @@ export default function ScoutPage() {
                     .join("\n"),
                 provider: config.provider,
                 model: getActiveModel(config),
-                apiKey,
+                apiKey: chosenAgent ? undefined : apiKey,
+                agent: chosenAgent ?? "gemini",
                 sources: sourceLines.length > 0 ? sourceLines : undefined,
             });
             setPack(detailOf(result.pack));
@@ -497,6 +536,47 @@ export default function ScoutPage() {
                                         />
                                         <FieldDescription>
                                             {SOURCE_COPY.caption}
+                                        </FieldDescription>
+                                    </Field>
+
+                                    <Field>
+                                        <FieldLabel>
+                                            {AGENT_COPY.readerLabel}
+                                        </FieldLabel>
+                                        <Select
+                                            native
+                                            value={reader}
+                                            onValueChange={(value) => {
+                                                const next = value ?? "gemini";
+                                                setReader(next);
+                                                const chosen =
+                                                    next === "gemini"
+                                                        ? null
+                                                        : (agents ?? []).find(
+                                                              (agent) =>
+                                                                  agent.id ===
+                                                                  next,
+                                                          )?.id ?? null;
+                                                saveUserConfig({
+                                                    ...getUserConfig(),
+                                                    scoutAgent: chosen,
+                                                });
+                                            }}
+                                            items={[
+                                                {
+                                                    value: "gemini",
+                                                    label: AGENT_COPY.readerGemini,
+                                                },
+                                                ...(agents ?? []).map(
+                                                    (agent) => ({
+                                                        value: agent.id,
+                                                        label: agent.label,
+                                                    }),
+                                                ),
+                                            ]}
+                                        />
+                                        <FieldDescription>
+                                            {AGENT_COPY.readerCaption}
                                         </FieldDescription>
                                     </Field>
 

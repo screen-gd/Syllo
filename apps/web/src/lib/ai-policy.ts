@@ -5,7 +5,12 @@ export const FREE_GEMINI_MODELS = [
     "gemini-2.5-flash-lite",
 ] as const;
 
-/** A free-only deployment never falls back to a billable provider or model. */
+/**
+ * A free-only deployment never falls back to a billable provider or model.
+ * A local coding agent runs on the learner's own subscription, is chosen
+ * explicitly, and is never an automatic fallback, so it does not go through
+ * this check.
+ */
 export function assertFreeAi(provider: string, model: string) {
     if (
         provider !== "gemini" ||
