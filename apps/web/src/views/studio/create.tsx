@@ -43,7 +43,7 @@ export default function CreatePage() {
     return (
         <Suspense
             fallback={
-                <div className="flex min-h-dvh items-center justify-center">
+                <div className="flex min-h-dvh items-center justify-center lg:min-h-[calc(100dvh-6rem)]">
                     <SkeletonText lines={3} />
                 </div>
             }

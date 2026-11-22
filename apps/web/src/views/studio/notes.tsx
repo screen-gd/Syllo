@@ -23,7 +23,13 @@ import {
 } from "@/components/glaze/ui/empty-state";
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
-import { Select } from "@/components/glaze/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import {
     SegmentedControl,
     SegmentedControlItem,
@@ -89,6 +95,20 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
         [records, roadmaps],
     );
     const allGroups = useMemo(() => groupNotes(notes), [notes]);
+    const topicItems = [
+        { value: "", label: "No topic" },
+        ...roadmaps.map((roadmap) => ({
+            value: roadmap.id,
+            label: roadmap.title,
+        })),
+    ];
+    const groupItems = [
+        { value: "all", label: "Everything" },
+        ...allGroups.map((group) => ({
+            value: group.id,
+            label: group.title,
+        })),
+    ];
     const visible = notes.filter(
         (note) =>
             (scope === "all" ||
@@ -241,21 +261,29 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                                 </Field>
                                 <div className="flex flex-wrap items-center gap-2">
                                     <Select
-                                        native
-                                        aria-label="Topic"
-                                        className="w-full sm:w-56"
                                         value={draftTopic}
                                         onValueChange={(value) =>
                                             setDraftTopic(value ?? "")
                                         }
-                                        items={[
-                                            { value: "", label: "No topic" },
-                                            ...roadmaps.map((roadmap) => ({
-                                                value: roadmap.id,
-                                                label: roadmap.title,
-                                            })),
-                                        ]}
-                                    />
+                                        items={topicItems}
+                                    >
+                                        <SelectTrigger
+                                            aria-label="Topic"
+                                            className="w-full sm:w-56"
+                                        >
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {topicItems.map((item) => (
+                                                <SelectItem
+                                                    key={item.value}
+                                                    value={item.value}
+                                                >
+                                                    {item.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <Button disabled={!draft.trim()}>
                                         Save note
                                     </Button>
@@ -296,21 +324,29 @@ export default function NotesPage({ roadmapId }: { roadmapId?: string }) {
                             ))}
                         </SegmentedControl>
                         <Select
-                            native
-                            aria-label="Topic or book"
-                            className="w-full sm:w-56"
                             value={groupId}
                             onValueChange={(value) =>
                                 setGroupId(value ?? "all")
                             }
-                            items={[
-                                { value: "all", label: "Everything" },
-                                ...allGroups.map((group) => ({
-                                    value: group.id,
-                                    label: group.title,
-                                })),
-                            ]}
-                        />
+                            items={groupItems}
+                        >
+                            <SelectTrigger
+                                aria-label="Topic or book"
+                                className="w-full sm:w-56"
+                            >
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {groupItems.map((item) => (
+                                    <SelectItem
+                                        key={item.value}
+                                        value={item.value}
+                                    >
+                                        {item.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 )}
 

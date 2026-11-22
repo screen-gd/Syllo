@@ -32,7 +32,13 @@ import {
     ItemGroup,
     ItemTitle,
 } from "@/components/glaze/ui/item";
-import { Select } from "@/components/glaze/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import { Skeleton } from "@/components/glaze/ui/skeleton";
 import { Textarea } from "@/components/glaze/ui/textarea";
 import {
@@ -365,8 +371,17 @@ export default function ReaderPage({
                 </Empty>
             </PageFrame>
         );
+    const tocItems = toc.map((item) => ({
+        value: item.href,
+        label: item.label,
+    }));
+    const statusItems = [
+        { value: "to-read", label: "To read" },
+        { value: "reading", label: "Reading" },
+        { value: "finished", label: "Finished" },
+    ];
     return (
-        <div className="mx-auto flex w-full max-w-256 flex-col gap-4">
+        <div className="mx-auto flex w-full max-w-256 flex-col gap-4 lg:max-w-none">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -419,18 +434,23 @@ export default function ReaderPage({
                 </div>
                 <div className="w-full sm:w-64">
                     <Select
-                        native
-                        aria-label="Table of contents"
-                        placeholder="Contents"
                         value={null}
                         onValueChange={(value) => {
                             if (value) void display(value);
                         }}
-                        items={toc.map((item) => ({
-                            value: item.href,
-                            label: item.label,
-                        }))}
-                    />
+                        items={tocItems}
+                    >
+                        <SelectTrigger aria-label="Table of contents">
+                            <SelectValue>Contents</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                            {tocItems.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
             {error && (
@@ -502,7 +522,6 @@ export default function ReaderPage({
                 <Field>
                     <FieldLabel>Reading status</FieldLabel>
                     <Select
-                        native
                         value={book.status}
                         onValueChange={(value) => {
                             const result = z
@@ -516,12 +535,19 @@ export default function ReaderPage({
                                         : {}),
                                 });
                         }}
-                        items={[
-                            { value: "to-read", label: "To read" },
-                            { value: "reading", label: "Reading" },
-                            { value: "finished", label: "Finished" },
-                        ]}
-                    />
+                        items={statusItems}
+                    >
+                        <SelectTrigger aria-label="Reading status">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {statusItems.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </Field>
             </div>
             <section className="mt-4 flex flex-col gap-3">

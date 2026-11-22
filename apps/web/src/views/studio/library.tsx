@@ -36,7 +36,13 @@ import {
     SegmentedControl,
     SegmentedControlItem,
 } from "@/components/glaze/ui/segmented-control";
-import { Select } from "@/components/glaze/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import { toast } from "@/components/glaze/ui/toast";
 import { importEpub } from "@/lib/personal/books";
 import { personalEntries, usePersonalData } from "@/lib/personal/store";
@@ -61,6 +67,20 @@ export default function LibraryPage() {
     const [importing, setImporting] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const categories = [...new Set(books.map((book) => book.category))].sort();
+    const categoryItems = [
+        { value: "all", label: "All categories" },
+        ...categories.map((value) => ({ value, label: value })),
+    ];
+    const statusItems = [
+        { value: "all", label: "All books" },
+        { value: "reading", label: "Reading" },
+        { value: "to-read", label: "To read" },
+        { value: "finished", label: "Finished" },
+    ];
+    const groupByItems = [
+        { value: "status", label: "Reading status" },
+        { value: "category", label: "Category" },
+    ];
     const filtered = books.filter(
         (book) =>
             (category === "all" || category === book.category) &&
@@ -135,44 +155,57 @@ export default function LibraryPage() {
                 />
                 <div className="sm:w-48">
                     <Select
-                        native
-                        aria-label="Book category"
                         value={category}
                         onValueChange={(value) => setCategory(value ?? "all")}
-                        items={[
-                            { value: "all", label: "All categories" },
-                            ...categories.map((value) => ({
-                                value,
-                                label: value,
-                            })),
-                        ]}
-                    />
+                        items={categoryItems}
+                    >
+                        <SelectTrigger aria-label="Book category">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {categoryItems.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div className="sm:w-44">
                     <Select
-                        native
-                        aria-label="Reading status"
                         value={status}
                         onValueChange={(value) => setStatus(value ?? "all")}
-                        items={[
-                            { value: "all", label: "All books" },
-                            { value: "reading", label: "Reading" },
-                            { value: "to-read", label: "To read" },
-                            { value: "finished", label: "Finished" },
-                        ]}
-                    />
+                        items={statusItems}
+                    >
+                        <SelectTrigger aria-label="Reading status">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {statusItems.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div className="sm:w-44">
                     <Select
-                        native
-                        aria-label="Group books by"
                         value={groupBy}
                         onValueChange={(value) => setGroupBy(value ?? "status")}
-                        items={[
-                            { value: "status", label: "Reading status" },
-                            { value: "category", label: "Category" },
-                        ]}
-                    />
+                        items={groupByItems}
+                    >
+                        <SelectTrigger aria-label="Group books by">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {groupByItems.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
                 <SegmentedControl
                     aria-label="Library view"

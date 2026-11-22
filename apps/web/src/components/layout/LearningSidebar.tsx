@@ -149,7 +149,7 @@ export default function LearningSidebar() {
     }, [pathname]);
     return (
         <>
-            <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-e border-line-faint bg-shell lg:flex">
+            <aside className="hidden h-dvh w-60 shrink-0 flex-col bg-frame lg:flex">
                     <div className="flex min-h-0 flex-1 flex-col">
                         <Link
                             to="/dashboard"
