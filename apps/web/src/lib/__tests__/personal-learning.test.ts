@@ -220,6 +220,7 @@ describe("source anchors and free mode", () => {
         ).toHaveLength(1);
     });
     it("rejects paid providers and models before any request", () => {
+        expect(() => assertFreeAi("gemini", "gemini-3.8-flash")).not.toThrow();
         expect(() => assertFreeAi("gemini", "gemini-2.5-flash")).not.toThrow();
         expect(() => assertFreeAi("gemini", "gemini-2.5-pro")).toThrow();
         expect(() => assertFreeAi("deepseek", "deepseek-chat")).toThrow();

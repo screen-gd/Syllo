@@ -306,6 +306,21 @@ export function isResourceInPack(packId: string, resourceId: string) {
     return Boolean(row);
 }
 
+/**
+ * A video that failed to read is kept in the library with a placeholder
+ * summary and an error; clearing that state lets the next pack retry instead
+ * of reusing a dead cache hit. Successfully read rows stay cached.
+ */
+export function resetUnreadResource(row: ResourceRow): ResourceRow {
+    if ((row.transcript_status === "skipped" || row.transcript_status === "unavailable") && row.error !== null) {
+        getScoutDb()
+            .prepare(`UPDATE resources SET summary = NULL, error = NULL, transcript_status = 'pending', updated_at = ? WHERE id = ?`)
+            .run(nowIso(), row.id);
+        return getResourceRow(row.id) ?? row;
+    }
+    return row;
+}
+
 /** Approving picks is idempotent; only resources already in the pack survive. */
 export function approvePackPicks(packId: string, picks: string[]): string[] {
     const allowed = new Set(packResourceRows(packId).map((row) => row.id));

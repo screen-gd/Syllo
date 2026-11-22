@@ -18,6 +18,7 @@ import {
     latestGoal,
     packProcessingFinished,
     packResourceRows,
+    resetUnreadResource,
     saveResourceExtraction,
     setResourceError,
     toScoutResource,
@@ -93,7 +94,7 @@ async function handleDiscover(_job: JobRow, payload: Record<string, unknown>) {
     }
 
     const rows = discovered.map((item, index) => {
-        const row = upsertDiscoveredResource(item);
+        const row = resetUnreadResource(upsertDiscoveredResource(item));
         attachResourceToPack(packId, row.id, index);
         return row;
     });
