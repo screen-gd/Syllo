@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
     channelVideosPageUrl,
+    discoverYouTubeFromFeeds,
     extractEmbeddedJson,
     lastContinuationToken,
     listLinkVideos,
@@ -22,15 +23,71 @@ function videoRenderer(id: string, title: string, length: string, published: str
     };
 }
 
+/** The shape YouTube serves today: lockupViewModel inside richItemRenderer. */
+function lockupItem(id: string, title: string, duration: string, published: string, creator?: string) {
+    return {
+        richItemRenderer: {
+            content: {
+                lockupViewModel: {
+                    contentId: id,
+                    contentType: "LOCKUP_CONTENT_TYPE_VIDEO",
+                    contentImage: {
+                        thumbnailViewModel: {
+                            overlays: [
+                                {
+                                    thumbnailBottomOverlayViewModel: {
+                                        badges: [{ thumbnailBadgeViewModel: { text: duration } }],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    metadata: {
+                        lockupMetadataViewModel: {
+                            title: { content: title },
+                            metadata: {
+                                contentMetadataViewModel: {
+                                    metadataRows: [
+                                        ...(creator
+                                            ? [{ metadataParts: [{ text: { content: creator } }] }]
+                                            : []),
+                                        {
+                                            metadataParts: [
+                                                {
+                                                    text: { content: "12K" },
+                                                    accessibilityLabel: "12 thousand views",
+                                                    leadingIcon: { name: "PLAY_ARROW_OUTLINED" },
+                                                },
+                                                { text: { content: "3d ago" }, accessibilityLabel: published },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 function channelPageHtml(videoCount: number, continuationToken: string | null) {
     const items: unknown[] = [];
     for (let index = 0; index < videoCount; index++) {
         const id = `video${String(index).padStart(3, "0")}`;
-        items.push({ richItemRenderer: { content: videoRenderer(id, `Episode ${index}`, "12:34", "3 days ago") } });
+        items.push(lockupItem(id, `Episode ${index}`, "12:34", "3 days ago"));
     }
+    // One legacy-renderer entry and non-video entries that must be skipped.
+    items.push({ richItemRenderer: { content: videoRenderer("legacy001", "Legacy episode", "8:00", "1 week ago") } });
     items.push({
         richItemRenderer: {
             content: { reelItemRenderer: { videoId: "short001", headline: { runs: [{ text: "A short" }] } } },
+        },
+    });
+    items.push({
+        richItemRenderer: {
+            content: { lockupViewModel: { contentId: "pod001", contentType: "LOCKUP_CONTENT_TYPE_PODCAST" } },
         },
     });
     if (continuationToken) {
@@ -54,6 +111,38 @@ function channelPageHtml(videoCount: number, continuationToken: string | null) {
         `<script>var ytInitialData = ${JSON.stringify(initialData)};</script>`,
         `<script>ytcfg.set({"INNERTUBE_API_KEY":"TEST_KEY","INNERTUBE_CLIENT_NAME":"WEB","INNERTUBE_CLIENT_VERSION":"9.9","VISITOR_DATA":"visitor"});</script>`,
         `</body></html>`,
+    ].join("\n");
+}
+
+function playlistPageHtml(items: unknown[], continuationToken: string | null) {
+    const contents = [...items];
+    if (continuationToken) {
+        contents.push({
+            continuationItemRenderer: {
+                continuationEndpoint: { continuationCommand: { token: continuationToken } },
+            },
+        });
+    }
+    const initialData = {
+        contents: {
+            twoColumnBrowseResultsRenderer: {
+                tabs: [
+                    {
+                        tabRenderer: {
+                            content: {
+                                sectionListRenderer: {
+                                    contents: [{ itemSectionRenderer: { contents } }],
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    };
+    return [
+        `<html><body><script>var ytInitialData = ${JSON.stringify(initialData)};</script>`,
+        `<script>ytcfg.set({"INNERTUBE_API_KEY":"TEST_KEY","INNERTUBE_CLIENT_NAME":"WEB","INNERTUBE_CLIENT_VERSION":"9.9"});</script></body></html>`,
     ].join("\n");
 }
 
@@ -155,7 +244,7 @@ describe("lastContinuationToken", () => {
             grid: {
                 richGridRenderer: {
                     contents: [
-                        { richItemRenderer: {} },
+                        lockupItem("v1", "Video", "1:00", "1 day ago"),
                         { continuationItemRenderer: { continuationEndpoint: { continuationCommand: { token: "grid" } } } },
                     ],
                 },
@@ -180,11 +269,9 @@ describe("listLinkVideos keyless channel listing", () => {
             onResponseReceivedActions: [
                 {
                     appendContinuationItemsAction: {
-                        continuationItems: Array.from({ length: 5 }, (_, index) => ({
-                            richItemRenderer: {
-                                content: videoRenderer(`older${index}`, `Older ${index}`, "20:00", "2 months ago"),
-                            },
-                        })),
+                        continuationItems: Array.from({ length: 5 }, (_, index) =>
+                            lockupItem(`older${index}`, `Older ${index}`, "20:00", "2 months ago"),
+                        ),
                     },
                 },
             ],
@@ -199,14 +286,16 @@ describe("listLinkVideos keyless channel listing", () => {
         const result = await listLinkVideos({ kind: "channel", value: "@design" });
 
         expect(result.feedOnly).toBe(false);
-        expect(result.videos).toHaveLength(35);
+        expect(result.videos).toHaveLength(36);
         expect(result.videos[0]).toMatchObject({
             kind: "video",
             externalId: "video000",
             title: "Episode 0",
             durationSeconds: 754,
         });
+        expect(result.videos[30]).toMatchObject({ externalId: "legacy001", title: "Legacy episode", creator: "Design Channel" });
         expect(result.videos.some((video) => video.externalId === "short001")).toBe(false);
+        expect(result.videos.some((video) => video.externalId === "pod001")).toBe(false);
         expect(result.videos.some((video) => video.externalId === "feedvideo001")).toBe(false);
     });
 
@@ -242,5 +331,86 @@ describe("listLinkVideos keyless channel listing", () => {
         expect(result.feedOnly).toBe(true);
         expect(result.videos).toHaveLength(1);
         expect(calls.some((url) => url.endsWith("/@design"))).toBe(false);
+    });
+});
+
+describe("listLinkVideos keyless playlist listing", () => {
+    beforeEach(() => {
+        delete process.env.YOUTUBE_API_KEY;
+    });
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        delete process.env.YOUTUBE_API_KEY;
+    });
+
+    it("lists a whole playlist from its page, including each video's channel", async () => {
+        const items = Array.from({ length: 20 }, (_, index) =>
+            lockupItem(`pl${String(index).padStart(3, "0")}`, `Playlist part ${index}`, "9:41", "1 year ago", "Some Creator"),
+        );
+        const continuationPayload = {
+            onResponseReceivedActions: [
+                {
+                    appendContinuationItemsAction: {
+                        continuationItems: Array.from({ length: 10 }, (_, index) =>
+                            lockupItem(`plx${index}`, `Extra part ${index}`, "6:30", "1 year ago", "Other Creator"),
+                        ),
+                    },
+                },
+            ],
+        };
+
+        stubbedFetch([
+            { match: (url) => url.includes("/playlist?list=PLTEST"), body: playlistPageHtml(items, "TOKEN_P") },
+            { match: (url) => url.includes("youtubei/v1/browse"), body: JSON.stringify(continuationPayload) },
+            { match: (url) => url.includes("feeds/videos.xml"), body: feedXml },
+        ]);
+
+        const result = await listLinkVideos({ kind: "playlist", playlistId: "PLTEST" });
+
+        expect(result.feedOnly).toBe(false);
+        expect(result.videos).toHaveLength(30);
+        expect(result.videos[0]).toMatchObject({
+            externalId: "pl000",
+            title: "Playlist part 0",
+            creator: "Some Creator",
+            durationSeconds: 581,
+        });
+        expect(result.videos[20].creator).toBe("Other Creator");
+    });
+
+    it("falls back to the playlist feed when the page scrape fails", async () => {
+        stubbedFetch([
+            { match: (url) => url.includes("/playlist?list=PLTEST"), body: "", status: 404 },
+            { match: (url) => url.includes("feeds/videos.xml"), body: feedXml },
+        ]);
+
+        const result = await listLinkVideos({ kind: "playlist", playlistId: "PLTEST" });
+
+        expect(result.feedOnly).toBe(true);
+        expect(result.videos).toHaveLength(1);
+        expect(result.videos[0].externalId).toBe("feedvideo001");
+    });
+});
+
+describe("discoverYouTubeFromFeeds keyless goal search", () => {
+    beforeEach(() => {
+        delete process.env.YOUTUBE_API_KEY;
+    });
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        delete process.env.YOUTUBE_API_KEY;
+    });
+
+    it("ranks picks from the whole channel, not the 15-item feed", async () => {
+        const calls = stubbedFetch([
+            { match: (url) => url.endsWith("/@design/videos"), body: channelPageHtml(40, null) },
+            { match: (url) => url.includes("feeds/videos.xml"), body: feedXml },
+        ]);
+
+        const videos = await discoverYouTubeFromFeeds({ goal: "typescript", channels: ["@design"], limit: 25 });
+
+        expect(videos.length).toBeGreaterThan(15);
+        expect(videos[0].externalId).toMatch(/^(video|legacy)/);
+        expect(calls.some((url) => url.includes("feeds/videos.xml"))).toBe(false);
     });
 });

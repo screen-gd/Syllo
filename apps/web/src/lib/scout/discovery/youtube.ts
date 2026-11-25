@@ -283,7 +283,7 @@ export async function resolveChannelIdWithoutKey(value: string): Promise<string 
     }
 }
 
-/** RSS-based goal discovery. No API key, no quota, no search.list. */
+/** Keyless goal discovery: channel page scrape first, 15-item feed as fallback. */
 export async function discoverYouTubeFromFeeds(input: {
     goal: string;
     channels: string[];
@@ -293,7 +293,12 @@ export async function discoverYouTubeFromFeeds(input: {
 
     for (const channel of input.channels.slice(0, 6)) {
         try {
-            const channelId = await resolveChannelIdWithoutKey(channel);
+            const scraped = await listChannelVideosFromPage(channel);
+            if (scraped.videos.length > 0) {
+                candidates.push(...scraped.videos.filter(isWithinDurationRange));
+                continue;
+            }
+            const channelId = scraped.channelId ?? (await resolveChannelIdWithoutKey(channel));
             if (!channelId) continue;
 
             const feed = await fetchChannelFeed(channelId);
@@ -506,6 +511,11 @@ async function fetchVideosInOrder(ids: string[]): Promise<DiscoveredResource[]> 
 
 async function listPlaylistVideos(playlistId: string): Promise<{ videos: DiscoveredResource[]; feedOnly: boolean }> {
     if (!getYouTubeApiKey()) {
+        // The playlist page lists the whole list; the playlist feed (15 items)
+        // stays the fallback when the scrape comes back empty.
+        const scraped = await listPlaylistVideosFromPage(playlistId);
+        if (scraped.length > 0) return { videos: scraped.filter(isWithinDurationRange), feedOnly: false };
+
         const response = await fetch(`https://www.youtube.com/feeds/videos.xml?playlist_id=${encodeURIComponent(playlistId)}`, {
             signal: AbortSignal.timeout(15_000),
         });
@@ -669,7 +679,7 @@ function addChannelPageVideo(renderer: Record<string, unknown>, out: Map<string,
     if (!videoId) return;
 
     const durationText = ytText(renderer.lengthText);
-    const publishedText = ytText(renderer.publishedTimeText);
+    const publishedText = ytText(renderer.publishedTimeText) ?? lockupPublishedText(renderer.videoInfo);
     channelPageResource(
         videoId,
         {
@@ -715,11 +725,48 @@ function lockupPublishedText(node: unknown): string | null {
         return null;
     }
     const record = node as Record<string, unknown>;
-    for (const candidate of [record.accessibilityLabel, (record.text as Record<string, unknown> | undefined)?.content]) {
+    const textValue = record.text;
+    for (const candidate of [
+        record.accessibilityLabel,
+        typeof textValue === "string" ? textValue : (textValue as Record<string, unknown> | undefined)?.content,
+    ]) {
         if (typeof candidate === "string" && /\bago\b/i.test(candidate) && relativeTimeToIso(candidate)) return candidate;
     }
     for (const value of Object.values(record)) {
         const found = lockupPublishedText(value);
+        if (found) return found;
+    }
+    return null;
+}
+
+const VIEW_COUNT_TEXT = /^[\d\s.,KMmb]+$/;
+
+/**
+ * Playlist lockups lead their metadata with the channel name; channel grids
+ * omit it. The creator part is plain text: no leadingIcon (views) and no
+ * relative date. Anything shaped like a count or a delimiter is skipped.
+ */
+function lockupCreatorText(node: unknown): string | null {
+    if (!node || typeof node !== "object") return null;
+    if (Array.isArray(node)) {
+        for (const item of node) {
+            const found = lockupCreatorText(item);
+            if (found) return found;
+        }
+        return null;
+    }
+    const record = node as Record<string, unknown>;
+    if (Array.isArray(record.metadataParts)) {
+        for (const part of record.metadataParts as Array<Record<string, unknown>>) {
+            const content = (part.text as Record<string, unknown> | undefined)?.content;
+            if (typeof content !== "string") continue;
+            if (part.leadingIcon || /\bago\b/i.test(content)) continue;
+            const cleaned = content.trim();
+            if (cleaned.length > 1 && !VIEW_COUNT_TEXT.test(cleaned)) return cleaned;
+        }
+    }
+    for (const value of Object.values(record)) {
+        const found = lockupCreatorText(value);
         if (found) return found;
     }
     return null;
@@ -744,6 +791,7 @@ function addChannelPageLockup(lockup: Record<string, unknown>, out: Map<string, 
         videoId,
         {
             title: typeof title === "string" ? title : "Untitled video",
+            creator: lockupCreatorText(metadata),
             durationSeconds: durationText ? parseClockDuration(durationText) : null,
             publishedAt: publishedText ? relativeTimeToIso(publishedText) : null,
         },
@@ -764,7 +812,9 @@ function collectChannelPageVideos(node: unknown, out: Map<string, DiscoveredReso
         return;
     }
     const record = node as Record<string, unknown>;
-    const renderer = (record.videoRenderer ?? record.gridVideoRenderer) as Record<string, unknown> | undefined;
+    const renderer = (record.videoRenderer ?? record.gridVideoRenderer ?? record.playlistVideoRenderer) as
+        | Record<string, unknown>
+        | undefined;
     if (renderer && typeof renderer === "object") {
         addChannelPageVideo(renderer, out);
         return;
@@ -777,11 +827,22 @@ function collectChannelPageVideos(node: unknown, out: Map<string, DiscoveredReso
     for (const value of Object.values(record)) collectChannelPageVideos(value, out, limit);
 }
 
+/** True when a subtree holds at least one collectible video entry. */
+function containsVideoItem(node: unknown): boolean {
+    if (!node || typeof node !== "object") return false;
+    if (Array.isArray(node)) return node.some(containsVideoItem);
+    const record = node as Record<string, unknown>;
+    if (record.videoRenderer || record.gridVideoRenderer || record.playlistVideoRenderer) return true;
+    const lockup = record.lockupViewModel as Record<string, unknown> | undefined;
+    if (lockup && lockup.contentType === "LOCKUP_CONTENT_TYPE_VIDEO") return true;
+    return Object.values(record).some(containsVideoItem);
+}
+
 /**
- * Finds the video grid's "load more" token. Pages carry several
+ * Finds the video list's "load more" token. Pages carry several
  * continuationItemRenderers (reloads, other shelves), so tokens are taken
- * only from inside richGridRenderer subtrees when the page has them; the
- * flat continuation responses have no grid and get the plain search.
+ * only from containers that actually list videos, in document order; flat
+ * continuation responses have no container and get the plain search.
  */
 export function lastContinuationToken(node: unknown): string | null {
     let found: string | null = null;
@@ -802,22 +863,25 @@ export function lastContinuationToken(node: unknown): string | null {
         for (const entry of Object.values(record)) tokenIn(entry);
     };
 
-    const grids: unknown[] = [];
-    const findGrids = (value: unknown): void => {
+    const containers: unknown[] = [];
+    const findVideoLists = (value: unknown): void => {
         if (!value || typeof value !== "object") return;
         if (Array.isArray(value)) {
-            value.forEach(findGrids);
+            value.forEach(findVideoLists);
             return;
         }
         const record = value as Record<string, unknown>;
-        if (record.richGridRenderer && typeof record.richGridRenderer === "object") {
-            grids.push(record.richGridRenderer);
-            return;
+        for (const key of ["richGridRenderer", "playlistVideoListRenderer", "itemSectionRenderer"]) {
+            const container = record[key];
+            if (container && typeof container === "object" && containsVideoItem(container)) {
+                containers.push(container);
+                return;
+            }
         }
-        for (const entry of Object.values(record)) findGrids(entry);
+        for (const entry of Object.values(record)) findVideoLists(entry);
     };
-    findGrids(node);
-    for (const grid of grids) tokenIn(grid);
+    findVideoLists(node);
+    for (const container of containers) tokenIn(container);
     if (!found) tokenIn(node);
     return found;
 }
@@ -877,6 +941,37 @@ async function fetchChannelContinuation(client: InnerTubeClient, token: string):
     }
 }
 
+async function fetchListingPage(pageUrl: string): Promise<string | null> {
+    try {
+        const response = await fetch(pageUrl, { headers: BROWSER_HEADERS, signal: AbortSignal.timeout(20_000) });
+        return response.ok ? await response.text() : null;
+    } catch {
+        return null;
+    }
+}
+
+/** Collects videos from page HTML, then follows grid continuations for more. */
+async function videosFromListingHtml(html: string, pageUrl: string): Promise<DiscoveredResource[]> {
+    const videos = new Map<string, DiscoveredResource>();
+    const initial = extractEmbeddedJson(html, "ytInitialData");
+    let continuation: string | null = null;
+    if (initial) {
+        collectChannelPageVideos(initial, videos, CHANNEL_PAGE_VIDEO_LIMIT);
+        continuation = lastContinuationToken(initial);
+    }
+
+    const client = innerTubeClientFromHtml(html, pageUrl);
+    for (let page = 0; continuation && videos.size < CHANNEL_PAGE_VIDEO_LIMIT && page < CONTINUATION_PAGE_LIMIT; page++) {
+        const before = videos.size;
+        const next = await fetchChannelContinuation(client, continuation);
+        if (!next) break;
+        collectChannelPageVideos(next, videos, CHANNEL_PAGE_VIDEO_LIMIT);
+        continuation = lastContinuationToken(next);
+        if (videos.size === before) break;
+    }
+    return [...videos.values()];
+}
+
 /**
  * Keyless replacement for the uploads playlist: scrape the channel's public
  * /videos page, then follow its own continuation tokens for older videos.
@@ -889,33 +984,17 @@ export async function listChannelVideosFromPage(
     const pageUrl = channelVideosPageUrl(value);
     if (!pageUrl) return { videos: [], channelId: null };
 
-    try {
-        const response = await fetch(pageUrl, { headers: BROWSER_HEADERS, signal: AbortSignal.timeout(20_000) });
-        if (!response.ok) return { videos: [], channelId: null };
-        const html = await response.text();
+    const html = await fetchListingPage(pageUrl);
+    if (!html) return { videos: [], channelId: null };
+    const videos = await videosFromListingHtml(html, pageUrl);
+    return { videos, channelId: channelIdFromHtml(html) };
+}
 
-        const videos = new Map<string, DiscoveredResource>();
-        const initial = extractEmbeddedJson(html, "ytInitialData");
-        let continuation: string | null = null;
-        if (initial) {
-            collectChannelPageVideos(initial, videos, CHANNEL_PAGE_VIDEO_LIMIT);
-            continuation = lastContinuationToken(initial);
-        }
-
-        const client = innerTubeClientFromHtml(html, pageUrl);
-        for (let page = 0; continuation && videos.size < CHANNEL_PAGE_VIDEO_LIMIT && page < CONTINUATION_PAGE_LIMIT; page++) {
-            const before = videos.size;
-            const next = await fetchChannelContinuation(client, continuation);
-            if (!next) break;
-            collectChannelPageVideos(next, videos, CHANNEL_PAGE_VIDEO_LIMIT);
-            continuation = lastContinuationToken(next);
-            if (videos.size === before) break;
-        }
-
-        return { videos: [...videos.values()], channelId: channelIdFromHtml(html) };
-    } catch {
-        return { videos: [], channelId: null };
-    }
+/** Keyless playlist listing: same scrape on the public playlist page. */
+export async function listPlaylistVideosFromPage(playlistId: string): Promise<DiscoveredResource[]> {
+    const pageUrl = `https://www.youtube.com/playlist?list=${encodeURIComponent(playlistId)}`;
+    const html = await fetchListingPage(pageUrl);
+    return html ? videosFromListingHtml(html, pageUrl) : [];
 }
 
 function isWithinDurationRange(video: DiscoveredResource): boolean {
