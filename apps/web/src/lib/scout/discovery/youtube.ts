@@ -975,7 +975,7 @@ async function videosFromListingHtml(html: string, pageUrl: string): Promise<Dis
 /**
  * Keyless replacement for the uploads playlist: scrape the channel's public
  * /videos page, then follow its own continuation tokens for older videos.
- * Fragile by nature — YouTube can change the page shape — so every failure
+ * Fragile by nature, since YouTube can change the page shape, so every failure
  * mode returns what it has and the caller falls back to the 15-item feed.
  */
 export async function listChannelVideosFromPage(
