@@ -516,16 +516,436 @@ async function listPlaylistVideos(playlistId: string): Promise<{ videos: Discove
     return { videos: await fetchVideosInOrder(ids), feedOnly: false };
 }
 
+/* ------------------------------------------------------------------ *
+ * Keyless full-channel listing from the public /videos page
+ * ------------------------------------------------------------------ */
+
+const CHANNEL_PAGE_VIDEO_LIMIT = 200;
+// Each continuation page adds roughly 30 videos; the cap bounds request count.
+const CONTINUATION_PAGE_LIMIT = 8;
+
+const BROWSER_HEADERS = {
+    "user-agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
+    "accept-language": "en-US,en;q=0.8",
+};
+
+/** Builds the channel's /videos URL for a pasted channel link value. */
+export function channelVideosPageUrl(value: string): string | null {
+    const clean = value.trim();
+    const channelId = clean.match(/(?:youtube\.com\/)?channel\/(UC[\w-]{20,})/i)?.[1] ?? clean.match(/^(UC[\w-]{20,})$/)?.[1];
+    if (channelId) return `https://www.youtube.com/channel/${channelId}/videos`;
+
+    const handle = clean.match(/youtube\.com\/@([\w.-]+)/i)?.[1] ?? clean.replace(/^@/, "").match(/^[\w.-]+$/)?.[0];
+    if (handle) return `https://www.youtube.com/@${handle}/videos`;
+
+    // /c/ and /user/ names are not @handles, so keep their own path style.
+    const custom = clean.match(/youtube\.com\/(c|user)\/([\w.-]+)/i);
+    if (custom) return `https://www.youtube.com/${custom[1].toLowerCase()}/${custom[2]}/videos`;
+
+    return null;
+}
+
+/**
+ * Reads a JSON blob embedded in page HTML, like `var ytInitialData = {...};`.
+ * Brace counting is string-aware so `}` and `;` inside values do not cut the
+ * object short the way a regex would.
+ */
+export function extractEmbeddedJson(html: string, marker: string): unknown | null {
+    const markerIndex = html.indexOf(marker);
+    if (markerIndex === -1) return null;
+    const start = html.indexOf("{", markerIndex);
+    if (start === -1) return null;
+
+    let depth = 0;
+    let inString = false;
+    let escaped = false;
+    for (let index = start; index < html.length; index++) {
+        const char = html[index];
+        if (inString) {
+            if (escaped) escaped = false;
+            else if (char === "\\") escaped = true;
+            else if (char === '"') inString = false;
+            continue;
+        }
+        if (char === '"') inString = true;
+        else if (char === "{") depth++;
+        else if (char === "}") {
+            depth--;
+            if (depth === 0) {
+                try {
+                    return JSON.parse(html.slice(start, index + 1));
+                } catch {
+                    return null;
+                }
+            }
+        }
+    }
+    return null;
+}
+
+/** Pulls plain text out of YouTube's runs/simpleText/accessibility shapes. */
+function ytText(node: unknown): string | null {
+    if (!node || typeof node !== "object") return null;
+    const record = node as Record<string, unknown>;
+    if (typeof record.simpleText === "string") return record.simpleText;
+    if (Array.isArray(record.runs)) {
+        const text = record.runs.map((run) => (run as { text?: string }).text ?? "").join("");
+        return text || null;
+    }
+    if (typeof record.content === "string") return record.content;
+    return null;
+}
+
+/** Turns a grid "12:34" or "1:02:34" length label into seconds. */
+export function parseClockDuration(value: string): number | null {
+    const parts = value.trim().split(":").map(Number);
+    if (parts.length < 2 || parts.some((part) => !Number.isFinite(part))) return null;
+    const seconds = parts.reduce((total, part) => total * 60 + part, 0);
+    return seconds > 0 ? seconds : null;
+}
+
+const RELATIVE_UNIT_MS: Record<string, number> = {
+    s: 1_000,
+    sec: 1_000,
+    second: 1_000,
+    seconds: 1_000,
+    m: 60_000,
+    min: 60_000,
+    minute: 60_000,
+    minutes: 60_000,
+    h: 3_600_000,
+    hr: 3_600_000,
+    hour: 3_600_000,
+    hours: 3_600_000,
+    d: 86_400_000,
+    day: 86_400_000,
+    days: 86_400_000,
+    w: 604_800_000,
+    week: 604_800_000,
+    weeks: 604_800_000,
+    mo: 2_592_000_000,
+    month: 2_592_000_000,
+    months: 2_592_000_000,
+    y: 31_536_000_000,
+    yr: 31_536_000_000,
+    year: 31_536_000_000,
+    years: 31_536_000_000,
+};
+
+/**
+ * Grid pages only say "3 weeks ago" (or the compact "7d ago"), so the stored
+ * date is approximate. That is fine: publishedAt is a sort key and stored
+ * metadata, never shown to the learner as an exact date.
+ */
+export function relativeTimeToIso(value: string): string | null {
+    // Longer unit names come first so "months" does not stop at "m".
+    const match = value.match(
+        /(\d+)\s*(seconds?|minutes?|hours?|days?|weeks?|months?|years?|secs?|mins?|hrs?|yrs?|mo|s|m|h|d|w|y)\s*ago/i,
+    );
+    if (!match) return null;
+    const amount = Number(match[1]);
+    const unitMs = RELATIVE_UNIT_MS[match[2].toLowerCase()];
+    if (!Number.isFinite(amount) || !unitMs) return null;
+    return new Date(Date.now() - amount * unitMs).toISOString();
+}
+
+function channelPageResource(videoId: string, fields: Partial<DiscoveredResource>, out: Map<string, DiscoveredResource>): void {
+    if (out.has(videoId)) return;
+    out.set(videoId, {
+        kind: "video",
+        source: "youtube-channel-page",
+        externalId: videoId,
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        title: "Untitled video",
+        thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        ...fields,
+    });
+}
+
+/** Legacy renderer: videoRenderer and gridVideoRenderer payloads. */
+function addChannelPageVideo(renderer: Record<string, unknown>, out: Map<string, DiscoveredResource>): void {
+    const videoId = typeof renderer.videoId === "string" ? renderer.videoId : null;
+    if (!videoId) return;
+
+    const durationText = ytText(renderer.lengthText);
+    const publishedText = ytText(renderer.publishedTimeText);
+    channelPageResource(
+        videoId,
+        {
+            title: ytText(renderer.title) ?? "Untitled video",
+            creator: ytText(renderer.ownerText) ?? ytText(renderer.shortBylineText) ?? null,
+            durationSeconds: durationText ? parseClockDuration(durationText) : null,
+            publishedAt: publishedText ? relativeTimeToIso(publishedText) : null,
+        },
+        out,
+    );
+}
+
+const CLOCK_TEXT = /^\d+(?::\d+)+$/;
+
+/** Finds the duration badge ("8:54") inside a lockupViewModel's overlays. */
+function lockupDurationText(node: unknown): string | null {
+    if (!node || typeof node !== "object") return null;
+    if (Array.isArray(node)) {
+        for (const item of node) {
+            const found = lockupDurationText(item);
+            if (found) return found;
+        }
+        return null;
+    }
+    const record = node as Record<string, unknown>;
+    const badge = record.thumbnailBadgeViewModel as Record<string, unknown> | undefined;
+    if (badge && typeof badge.text === "string" && CLOCK_TEXT.test(badge.text)) return badge.text;
+    for (const value of Object.values(record)) {
+        const found = lockupDurationText(value);
+        if (found) return found;
+    }
+    return null;
+}
+
+/** Finds the "7 days ago" part inside a lockup's metadata rows. */
+function lockupPublishedText(node: unknown): string | null {
+    if (!node || typeof node !== "object") return null;
+    if (Array.isArray(node)) {
+        for (const item of node) {
+            const found = lockupPublishedText(item);
+            if (found) return found;
+        }
+        return null;
+    }
+    const record = node as Record<string, unknown>;
+    for (const candidate of [record.accessibilityLabel, (record.text as Record<string, unknown> | undefined)?.content]) {
+        if (typeof candidate === "string" && /\bago\b/i.test(candidate) && relativeTimeToIso(candidate)) return candidate;
+    }
+    for (const value of Object.values(record)) {
+        const found = lockupPublishedText(value);
+        if (found) return found;
+    }
+    return null;
+}
+
+/**
+ * Current renderer: richItemRenderer wraps a lockupViewModel. Playlists and
+ * shorts share the shape, so only LOCKUP_CONTENT_TYPE_VIDEO counts.
+ */
+function addChannelPageLockup(lockup: Record<string, unknown>, out: Map<string, DiscoveredResource>): void {
+    if (lockup.contentType !== "LOCKUP_CONTENT_TYPE_VIDEO") return;
+    const videoId = typeof lockup.contentId === "string" ? lockup.contentId : null;
+    if (!videoId) return;
+
+    const metadata = (lockup.metadata as Record<string, unknown> | undefined)?.lockupMetadataViewModel as
+        | Record<string, unknown>
+        | undefined;
+    const title = (metadata?.title as Record<string, unknown> | undefined)?.content;
+    const durationText = lockupDurationText(lockup);
+    const publishedText = lockupPublishedText(metadata ?? lockup);
+    channelPageResource(
+        videoId,
+        {
+            title: typeof title === "string" ? title : "Untitled video",
+            durationSeconds: durationText ? parseClockDuration(durationText) : null,
+            publishedAt: publishedText ? relativeTimeToIso(publishedText) : null,
+        },
+        out,
+    );
+}
+
+/**
+ * Walks a ytInitialData or continuation payload and collects every video
+ * renderer, wherever YouTube nested it this month. Shorts render as
+ * reelItemRenderer, shortsLockupViewModel or non-video lockups, which this
+ * ignores on purpose.
+ */
+function collectChannelPageVideos(node: unknown, out: Map<string, DiscoveredResource>, limit: number): void {
+    if (out.size >= limit || !node || typeof node !== "object") return;
+    if (Array.isArray(node)) {
+        for (const item of node) collectChannelPageVideos(item, out, limit);
+        return;
+    }
+    const record = node as Record<string, unknown>;
+    const renderer = (record.videoRenderer ?? record.gridVideoRenderer) as Record<string, unknown> | undefined;
+    if (renderer && typeof renderer === "object") {
+        addChannelPageVideo(renderer, out);
+        return;
+    }
+    const lockup = record.lockupViewModel as Record<string, unknown> | undefined;
+    if (lockup && typeof lockup === "object") {
+        addChannelPageLockup(lockup, out);
+        return;
+    }
+    for (const value of Object.values(record)) collectChannelPageVideos(value, out, limit);
+}
+
+/**
+ * Finds the video grid's "load more" token. Pages carry several
+ * continuationItemRenderers (reloads, other shelves), so tokens are taken
+ * only from inside richGridRenderer subtrees when the page has them; the
+ * flat continuation responses have no grid and get the plain search.
+ */
+export function lastContinuationToken(node: unknown): string | null {
+    let found: string | null = null;
+    const tokenIn = (value: unknown): void => {
+        if (!value || typeof value !== "object") return;
+        if (Array.isArray(value)) {
+            value.forEach(tokenIn);
+            return;
+        }
+        const record = value as Record<string, unknown>;
+        const item = record.continuationItemRenderer as Record<string, unknown> | undefined;
+        if (item && typeof item === "object") {
+            const endpoint = item.continuationEndpoint as Record<string, unknown> | undefined;
+            const command = endpoint?.continuationCommand as Record<string, unknown> | undefined;
+            if (command && typeof command.token === "string") found = command.token;
+            return;
+        }
+        for (const entry of Object.values(record)) tokenIn(entry);
+    };
+
+    const grids: unknown[] = [];
+    const findGrids = (value: unknown): void => {
+        if (!value || typeof value !== "object") return;
+        if (Array.isArray(value)) {
+            value.forEach(findGrids);
+            return;
+        }
+        const record = value as Record<string, unknown>;
+        if (record.richGridRenderer && typeof record.richGridRenderer === "object") {
+            grids.push(record.richGridRenderer);
+            return;
+        }
+        for (const entry of Object.values(record)) findGrids(entry);
+    };
+    findGrids(node);
+    for (const grid of grids) tokenIn(grid);
+    if (!found) tokenIn(node);
+    return found;
+}
+
+interface InnerTubeClient {
+    apiKey: string | null;
+    clientName: string;
+    clientVersion: string;
+    visitorData: string | null;
+    pageUrl: string;
+}
+
+/** Reads the request credentials YouTube itself embeds in the page config. */
+function innerTubeClientFromHtml(html: string, pageUrl: string): InnerTubeClient {
+    return {
+        apiKey: html.match(/"INNERTUBE_API_KEY":"([^"]+)"/)?.[1] ?? null,
+        clientName: html.match(/"INNERTUBE_CLIENT_NAME":"([^"]+)"/)?.[1] ?? "WEB",
+        clientVersion: html.match(/"INNERTUBE_CLIENT_VERSION":"([^"]+)"/)?.[1] ?? "2.20240726.00.00",
+        visitorData: html.match(/"VISITOR_DATA":"([^"]+)"/)?.[1] ?? null,
+        pageUrl,
+    };
+}
+
+/** Fetches the next grid page through YouTube's own internal endpoint. */
+async function fetchChannelContinuation(client: InnerTubeClient, token: string): Promise<unknown | null> {
+    if (!client.apiKey) return null;
+    try {
+        const response = await fetch(`https://www.youtube.com/youtubei/v1/browse?key=${client.apiKey}&prettyPrint=false`, {
+            method: "POST",
+            headers: {
+                ...BROWSER_HEADERS,
+                "content-type": "application/json",
+                origin: "https://www.youtube.com",
+                referer: client.pageUrl,
+                "x-youtube-client-name": "1",
+                "x-youtube-client-version": client.clientVersion,
+            },
+            body: JSON.stringify({
+                context: {
+                    client: {
+                        hl: "en",
+                        gl: "US",
+                        clientName: client.clientName,
+                        clientVersion: client.clientVersion,
+                        platform: "DESKTOP",
+                        originalUrl: client.pageUrl,
+                        ...(client.visitorData ? { visitorData: client.visitorData } : {}),
+                    },
+                },
+                continuation: token,
+            }),
+            signal: AbortSignal.timeout(20_000),
+        });
+        return response.ok ? await response.json() : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Keyless replacement for the uploads playlist: scrape the channel's public
+ * /videos page, then follow its own continuation tokens for older videos.
+ * Fragile by nature — YouTube can change the page shape — so every failure
+ * mode returns what it has and the caller falls back to the 15-item feed.
+ */
+export async function listChannelVideosFromPage(
+    value: string,
+): Promise<{ videos: DiscoveredResource[]; channelId: string | null }> {
+    const pageUrl = channelVideosPageUrl(value);
+    if (!pageUrl) return { videos: [], channelId: null };
+
+    try {
+        const response = await fetch(pageUrl, { headers: BROWSER_HEADERS, signal: AbortSignal.timeout(20_000) });
+        if (!response.ok) return { videos: [], channelId: null };
+        const html = await response.text();
+
+        const videos = new Map<string, DiscoveredResource>();
+        const initial = extractEmbeddedJson(html, "ytInitialData");
+        let continuation: string | null = null;
+        if (initial) {
+            collectChannelPageVideos(initial, videos, CHANNEL_PAGE_VIDEO_LIMIT);
+            continuation = lastContinuationToken(initial);
+        }
+
+        const client = innerTubeClientFromHtml(html, pageUrl);
+        for (let page = 0; continuation && videos.size < CHANNEL_PAGE_VIDEO_LIMIT && page < CONTINUATION_PAGE_LIMIT; page++) {
+            const before = videos.size;
+            const next = await fetchChannelContinuation(client, continuation);
+            if (!next) break;
+            collectChannelPageVideos(next, videos, CHANNEL_PAGE_VIDEO_LIMIT);
+            continuation = lastContinuationToken(next);
+            if (videos.size === before) break;
+        }
+
+        return { videos: [...videos.values()], channelId: channelIdFromHtml(html) };
+    } catch {
+        return { videos: [], channelId: null };
+    }
+}
+
+function isWithinDurationRange(video: DiscoveredResource): boolean {
+    if (!video.durationSeconds) return true;
+    return video.durationSeconds >= MIN_VIDEO_SECONDS && video.durationSeconds <= MAX_VIDEO_SECONDS;
+}
+
 async function listChannelVideos(value: string): Promise<{ videos: DiscoveredResource[]; feedOnly: boolean }> {
     const hasKey = Boolean(getYouTubeApiKey());
 
+    // Without a key, the channel's own /videos page lists the full catalogue.
+    // The RSS feed (latest 15) stays the fallback when the scrape comes back
+    // empty, which is what feedOnly still warns about.
+    if (!hasKey) {
+        const scraped = await listChannelVideosFromPage(value);
+        if (scraped.videos.length > 0) {
+            return { videos: scraped.videos.filter(isWithinDurationRange), feedOnly: false };
+        }
+        const feedChannelId = scraped.channelId ?? (await resolveChannelIdWithoutKey(value));
+        if (!feedChannelId) return { videos: [], feedOnly: true };
+        return { videos: await fetchChannelFeed(feedChannelId), feedOnly: true };
+    }
+
     // For @handles and UC ids the Data API is authoritative, so it goes first;
-    // /c/ and /user/ links and the keyless case rely on the HTML scrape.
+    // /c/ and /user/ links rely on the HTML scrape for the channel id.
     const apiResolvable = value.startsWith("@") || /^UC[\w-]{20,}$/.test(value);
     let channelId: string | null = null;
     let uploadsPlaylistId: string | null = null;
 
-    if (hasKey && apiResolvable) {
+    if (apiResolvable) {
         const info = await resolveChannel(value);
         if (info) {
             channelId = info.channelId;
@@ -533,11 +953,7 @@ async function listChannelVideos(value: string): Promise<{ videos: DiscoveredRes
         }
     }
     if (!channelId) channelId = await resolveChannelIdWithoutKey(value);
-    if (!channelId) return { videos: [], feedOnly: !hasKey };
-
-    if (!hasKey) {
-        return { videos: await fetchChannelFeed(channelId), feedOnly: true };
-    }
+    if (!channelId) return { videos: [], feedOnly: false };
 
     const playlistId = uploadsPlaylistId ?? (await cachedChannel(channelId))?.uploadsPlaylistId ?? null;
     if (!playlistId) return { videos: [], feedOnly: false };
