@@ -12,7 +12,13 @@ import {
 } from "@/components/glaze/ui/empty-state";
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
-import { Select } from "@/components/glaze/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import { SkeletonSwap,
     SkeletonText,
 } from "@/components/glaze/ui/skeleton";
@@ -50,6 +56,14 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
     const [draft, setDraft] = useState<TermDraft | null>(null);
 
     const entries = useMemo(() => collectGlossary(roadmaps), [roadmaps]);
+    const roadmapItems = roadmaps.map((roadmap) => ({
+        value: roadmap.id,
+        label: roadmap.title,
+    }));
+    const topicItems = [
+        { value: "all", label: "All topics" },
+        ...roadmapItems,
+    ];
     const visible = entries.filter(
         (entry) =>
             (topic === "all" || entry.roadmapId === topic) &&
@@ -176,9 +190,6 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
             <div className="flex flex-wrap items-center gap-2">
                 {!draft.id && (
                     <Select
-                        native
-                        aria-label="Topic"
-                        className="w-full sm:w-56"
                         value={draft.roadmapId}
                         onValueChange={(value) =>
                             setDraft({
@@ -186,11 +197,22 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                                 roadmapId: value ?? draft.roadmapId,
                             })
                         }
-                        items={roadmaps.map((roadmap) => ({
-                            value: roadmap.id,
-                            label: roadmap.title,
-                        }))}
-                    />
+                        items={roadmapItems}
+                    >
+                        <SelectTrigger
+                            aria-label="Topic"
+                            className="w-full sm:w-56"
+                        >
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {roadmapItems.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 )}
                 <Button>{draft.id ? "Save" : "Add term"}</Button>
                 <Button
@@ -260,21 +282,29 @@ export default function GlossaryPage({ roadmapId }: { roadmapId?: string }) {
                         />
                         {roadmaps.length > 1 && (
                             <Select
-                                native
-                                aria-label="Topic"
-                                className="w-full sm:w-56"
                                 value={topic}
                                 onValueChange={(value) =>
                                     setTopic(value ?? "all")
                                 }
-                                items={[
-                                    { value: "all", label: "All topics" },
-                                    ...roadmaps.map((roadmap) => ({
-                                        value: roadmap.id,
-                                        label: roadmap.title,
-                                    })),
-                                ]}
-                            />
+                                items={topicItems}
+                            >
+                                <SelectTrigger
+                                    aria-label="Topic"
+                                    className="w-full sm:w-56"
+                                >
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {topicItems.map((item) => (
+                                        <SelectItem
+                                            key={item.value}
+                                            value={item.value}
+                                        >
+                                            {item.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         )}
                     </div>
                 )}

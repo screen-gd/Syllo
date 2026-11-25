@@ -54,6 +54,7 @@ export interface ScoutStartInput {
     provider?: string;
     model?: string;
     apiKey?: string;
+    agent?: ScoutAgentStatus["id"] | "gemini";
     sources?: string[];
 }
 
@@ -74,6 +75,7 @@ export const scoutApi = {
         provider?: string;
         model?: string;
         apiKey?: string;
+        agent?: ScoutAgentStatus["id"] | "gemini";
     }) {
         return request<{ success: true } & VideoChecksResult>("/api/scout/checks", {
             method: "POST",

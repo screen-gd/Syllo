@@ -22,7 +22,13 @@ import {
     SegmentedControl,
     SegmentedControlItem,
 } from "@/components/glaze/ui/segmented-control";
-import { Select } from "@/components/glaze/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import { SkeletonSwap, SkeletonText } from "@/components/glaze/ui/skeleton";
 import WorkspaceLibraryCard from "@/components/workspaces/WorkspaceLibraryCard";
 import PageFrame from "@/components/layout/PageFrame";
@@ -32,6 +38,12 @@ import { useLearningRoadmaps } from "@/hooks/useLearningRoadmaps";
 
 type LibraryFilter = "all" | "in-progress" | "completed";
 type SortMode = "recent" | "title" | "completion";
+
+const sortItems = [
+    { value: "recent", label: "Recent first" },
+    { value: "title", label: "By title" },
+    { value: "completion", label: "By progress" },
+];
 
 export default function WorkspacesPage() {
     const { roadmaps, loaded: mounted } = useLearningRoadmaps();
@@ -130,18 +142,26 @@ export default function WorkspacesPage() {
                     </SegmentedControl>
                     <div className="w-full sm:ms-auto sm:w-44">
                         <Select
-                            native
-                            aria-label="Sort"
                             value={sortMode}
                             onValueChange={(value) =>
                                 setSortMode((value ?? "recent") as SortMode)
                             }
-                            items={[
-                                { value: "recent", label: "Recent first" },
-                                { value: "title", label: "By title" },
-                                { value: "completion", label: "By progress" },
-                            ]}
-                        />
+                            items={sortItems}
+                        >
+                            <SelectTrigger aria-label="Sort">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sortItems.map((item) => (
+                                    <SelectItem
+                                        key={item.value}
+                                        value={item.value}
+                                    >
+                                        {item.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 

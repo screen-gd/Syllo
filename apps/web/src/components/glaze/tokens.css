@@ -40,6 +40,7 @@
 [data-system="glaze"], .glaze {
   /* == Surfaces == */
   --page: #fbfbfa; /* the page, a half step darker than paper: a paper overlay still lifts off it and the grey shell reads as the card | app background, docs preview */
+  --frame: #f1f1f0; /* the app frame behind the sidebar and around the content panel, one step darker than the page so the panel reads | desktop shell frame */
   --paper: #ffffff; /* paper: the panel inside a card, a field, an overlay | panel, input, menu, popover, dialog */
   --shell: #f1f1f0; /* the light grey shell a card's panel sits in, and the footer row on it | card shell, card footer */
   --field: #efefef; /* the one grey field: a well for output, a track | tool call well, switch track, progress track */
@@ -252,6 +253,7 @@
    changes under the fixed dark at 56%; what it dims is the panels and the text. */
 [data-system="glaze"][data-theme="dark"], .glaze[data-theme="dark"], [data-theme="dark"] [data-system="glaze"], [data-theme="dark"] .glaze {
   --page: #0c0c0c;
+  --frame: #060606;
   --paper: #1f1f1f;
   --shell: #161616;
   --field: #2a2a2a;

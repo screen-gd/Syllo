@@ -8,6 +8,7 @@ import {
     PROVIDER_ENV_KEYS,
     type AIProvider,
 } from "@/lib/ai-config";
+import { AgentError, isAgentId, runAgentObject, type AgentId } from "./agent-runner";
 import { getScoutSettings } from "./settings";
 import { hasBudget, monthSpendCents, recordSpend } from "./spend";
 
@@ -15,6 +16,7 @@ export interface ScoutLlmConfig {
     provider: AIProvider;
     model: string;
     apiKey?: string | null;
+    agent?: AgentId | null;
 }
 
 export class ScoutError extends Error {
@@ -45,14 +47,29 @@ function secretStore() {
 export function defaultScoutConfig(): ScoutLlmConfig {
     const envProvider = process.env.SCOUT_PROVIDER?.trim();
     const provider: AIProvider = isAiProvider(envProvider) ? envProvider : "gemini";
+    const envAgent = process.env.SCOUT_AGENT?.trim();
     return {
         provider,
         model: process.env.SCOUT_MODEL?.trim() || DEFAULT_PROVIDER_MODELS[provider],
+        agent: isAgentId(envAgent) ? envAgent : null,
     };
 }
 
-export function rememberScoutLlm(packId: string, config: ScoutLlmConfig) {
-    secretStore().set(packId, { ...config, apiKey: config.apiKey?.trim() || null });
+/**
+ * Holds what the request supplied for the life of a pack: the chosen agent,
+ * a browser key if one was sent, and resolved provider/model defaults. An
+ * env key is looked up per call and never stored here.
+ */
+export function rememberScoutLlm(packId: string, config: Partial<ScoutLlmConfig>) {
+    const base = defaultScoutConfig();
+    const provider = config.provider && isAiProvider(config.provider) ? config.provider : base.provider;
+    const model = config.model?.trim() || (provider === base.provider ? base.model : DEFAULT_PROVIDER_MODELS[provider]);
+    secretStore().set(packId, {
+        provider,
+        model,
+        apiKey: config.apiKey?.trim() || null,
+        agent: config.agent,
+    });
 }
 
 export function recallScoutLlm(packId: string): ScoutLlmConfig | null {
@@ -68,7 +85,44 @@ export function resolveScoutLlm(override?: Partial<ScoutLlmConfig> | null): Scou
     const provider = override?.provider && isAiProvider(override.provider) ? override.provider : base.provider;
     const model = override?.model?.trim() || (provider === base.provider ? base.model : DEFAULT_PROVIDER_MODELS[provider]);
     const apiKey = override?.apiKey?.trim() || process.env[PROVIDER_ENV_KEYS[provider]]?.trim() || "";
-    return { provider, model, apiKey };
+    // An explicit agent choice or a request-supplied key wins; otherwise the
+    // env default applies when no key was supplied.
+    const agent = override?.agent !== undefined
+        ? override.agent
+        : override?.apiKey?.trim()
+            ? null
+            : base.agent;
+    return { provider, model, apiKey, agent };
+}
+
+/**
+ * Turns the optional llm fields on a request body into a config override.
+ * `agent` picks a local coding agent, `agent: "gemini"` means the key path,
+ * and no `agent` field keeps the old key-only behaviour.
+ */
+export function scoutLlmFromBody(
+    body: { provider?: unknown; model?: unknown; apiKey?: unknown; agent?: unknown } | null | undefined,
+): Partial<ScoutLlmConfig> | null {
+    const fromKey = (): Partial<ScoutLlmConfig> | null => {
+        if (typeof body?.apiKey !== "string" || !body.apiKey.trim()) return null;
+        const provider = isAiProvider(body.provider) ? body.provider : defaultScoutConfig().provider;
+        return {
+            provider,
+            model:
+                typeof body.model === "string" && body.model.trim()
+                    ? body.model.trim()
+                    : DEFAULT_PROVIDER_MODELS[provider],
+            apiKey: body.apiKey.trim(),
+        };
+    };
+
+    if (isAgentId(body?.agent)) {
+        return { provider: "gemini", model: DEFAULT_PROVIDER_MODELS.gemini, agent: body.agent };
+    }
+    if (body?.agent === "gemini") {
+        return { ...fromKey(), agent: null };
+    }
+    return fromKey();
 }
 
 export interface ScoutGenerateInput<T> {
@@ -86,7 +140,9 @@ export interface ScoutGenerateResult<T> {
 }
 
 /**
- * Free Gemini generation stops at quota exhaustion, with no provider fallback.
+ * One structured generation. Free Gemini stops at quota exhaustion with no
+ * provider fallback; a chosen local agent reads on the learner's own CLI
+ * subscription instead, skipping the key, policy and quota checks entirely.
  */
 export async function scoutGenerateObject<T>(input: ScoutGenerateInput<T>): Promise<ScoutGenerateResult<T>> {
     const settings = getScoutSettings();
@@ -99,6 +155,30 @@ export async function scoutGenerateObject<T>(input: ScoutGenerateInput<T>): Prom
 
     const stored = input.packId ? recallScoutLlm(input.packId) : null;
     const config = resolveScoutLlm({ ...stored, ...input.config });
+
+    if (config.agent) {
+        try {
+            const object = await runAgentObject({
+                agent: config.agent,
+                system: input.system,
+                prompt: input.prompt,
+                schema: input.schema,
+            });
+            recordSpend({
+                packId: input.packId ?? null,
+                provider: config.agent,
+                model: "cli",
+                inputTokens: 0,
+                outputTokens: 0,
+            });
+            return { object, inputTokens: 0, outputTokens: 0 };
+        } catch (error) {
+            if (error instanceof AgentError) {
+                throw new ScoutError(error.kind === "missing" ? "config" : "provider", error.message);
+            }
+            throw error;
+        }
+    }
 
     if (!config.apiKey) {
         throw new ScoutError(

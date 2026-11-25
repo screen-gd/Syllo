@@ -51,7 +51,8 @@ export function useVideoChecks(input: {
                 durationSeconds,
                 provider: config.provider,
                 model: getActiveModel(config),
-                apiKey: config.useCustomKey ? getActiveApiKey(config) : undefined,
+                apiKey: config.scoutAgent ? undefined : config.useCustomKey ? getActiveApiKey(config) : undefined,
+                agent: config.scoutAgent ?? undefined,
             })
             .then((result) => {
                 if (cancelled) return;

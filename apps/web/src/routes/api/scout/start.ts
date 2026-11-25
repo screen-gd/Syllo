@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DEFAULT_PROVIDER_MODELS, isAiProvider } from "@/lib/ai-config";
 import { readJsonBody, scoutBadRequest, scoutFailure, scoutJson, scoutReady } from "@/lib/scout/http";
-import { defaultScoutConfig, resolveScoutLlm, type ScoutLlmConfig } from "@/lib/scout/llm";
+import { AGENT_COPY } from "@/lib/scout/agent-copy";
+import { probeAgent } from "@/lib/scout/agent-runner";
+import { resolveScoutLlm, scoutLlmFromBody } from "@/lib/scout/llm";
 import { assertFreeAi } from "@/lib/ai-policy";
 import { startPack } from "@/lib/scout/pipeline";
 import { SOURCE_COPY } from "@/lib/scout/source-copy";
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/api/scout/start")({
                         provider?: unknown;
                         model?: unknown;
                         apiKey?: unknown;
+                        agent?: unknown;
                         sources?: unknown;
                     }>(request);
 
@@ -47,24 +49,22 @@ export const Route = createFileRoute("/api/scout/start")({
                         }
                     }
 
-                    // The browser sends its BYO key once. It stays in process
-                    // memory for this pack and is never written to SQLite.
-                    let llm: ScoutLlmConfig | null = null;
-                    if (typeof body?.apiKey === "string" && body.apiKey.trim()) {
-                        const provider = isAiProvider(body.provider) ? body.provider : defaultScoutConfig().provider;
-                        llm = {
-                            provider,
-                            model:
-                                typeof body.model === "string" && body.model.trim()
-                                    ? body.model.trim()
-                                    : DEFAULT_PROVIDER_MODELS[provider],
-                            apiKey: body.apiKey.trim(),
-                        };
+                    // The browser sends its agent choice or BYO key once. The
+                    // choice stays in process memory for this pack and is never
+                    // written to SQLite.
+                    const llm = scoutLlmFromBody(body);
+                    const config = resolveScoutLlm(llm);
+
+                    if (config.agent) {
+                        const status = await probeAgent(config.agent);
+                        if (!status.available) {
+                            return scoutBadRequest(AGENT_COPY.agentMissing(status.label));
+                        }
+                    } else {
+                        assertFreeAi(config.provider, config.model);
+                        if (!config.apiKey) return scoutBadRequest(AGENT_COPY.needsReader);
                     }
 
-                    const config = resolveScoutLlm(llm);
-                    assertFreeAi(config.provider, config.model);
-                    if (!config.apiKey) return scoutBadRequest("Add a free Gemini API key in Settings to use Scout. You can still create a roadmap from your own links without a key.");
                     const pack = startPack(goal, llm, links);
                     return scoutJson({ success: true, pack });
                 } catch (error) {

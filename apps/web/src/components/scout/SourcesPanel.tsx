@@ -9,7 +9,13 @@ import {
 } from "@/components/glaze/ui/collapsible";
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
-import { Select } from "@/components/glaze/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import { Switch } from "@/components/glaze/ui/switch";
 import { Textarea } from "@/components/glaze/ui/textarea";
 import CostMeter from "@/components/scout/CostMeter";
@@ -80,6 +86,10 @@ export default function SourcesPanel({
 
     const activeKind =
         ADD_KINDS.find((item) => item.value === kind) ?? ADD_KINDS[0];
+    const kindItems = ADD_KINDS.map((item) => ({
+        value: item.value,
+        label: item.label,
+    }));
 
     async function run(key: string, task: () => Promise<void>) {
         setWorking(key);
@@ -167,18 +177,29 @@ export default function SourcesPanel({
 
                     <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
                         <Select
-                            native
-                            aria-label="Source kind"
-                            className="col-span-2"
                             value={kind}
                             onValueChange={(next) =>
                                 setKind((next ?? "creator") as ScoutSourceKind)
                             }
-                            items={ADD_KINDS.map((item) => ({
-                                value: item.value,
-                                label: item.label,
-                            }))}
-                        />
+                            items={kindItems}
+                        >
+                            <SelectTrigger
+                                aria-label="Source kind"
+                                className="col-span-2"
+                            >
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {kindItems.map((item) => (
+                                    <SelectItem
+                                        key={item.value}
+                                        value={item.value}
+                                    >
+                                        {item.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                         <Input
                             aria-label="Source value"
                             className="min-w-0"

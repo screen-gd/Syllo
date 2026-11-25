@@ -113,6 +113,7 @@
 
   /* Glaze's own roles. */
   --color-page: var(--page);
+  --color-frame: var(--frame);
   --color-paper: var(--paper);
   --color-shell: var(--shell);
   --color-field: var(--field);

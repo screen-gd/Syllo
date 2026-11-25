@@ -63,6 +63,10 @@ Scout reads captions from your machine, caches source text in `.data/syllo.db`, 
 
 Scout's flow is goal, source review, draft roadmap, then your explicit approval. Review cards are suggestions until kept. You can add URLs manually without an AI key. Optional creator RSS checks are off on a fresh database; if enabled, they run at 03:00 Asia/Dubai while the local worker runs. They only suggest links and do not rewrite approved roadmaps.
 
+## Reading with a local agent
+
+Scout can read sources through a coding agent already installed on this computer: Claude Code (`claude`), Codex (`codex`) or opencode. The agent answers on your own subscription with its default model, so no Gemini key is needed for reading. Choose it in the **Read with** selector on the Scout form, which lists only agents found on this computer, or set `SCOUT_AGENT` on the worker to make one the server default. The choice is explicit per pack and never an automatic fallback. It is held in memory for the running pack, so a worker restart mid-pack falls back to the server default. Goal search without pasted links still uses Gemini for web search even when an agent reads the results.
+
 ## Screen Time focus link
 
 Syllo can start a focus session in the Screen Time app while a Pomodoro focus period runs. Screen Time then blocks your chosen distracting apps and sites. Pausing, resetting, or ending the period stops the session.

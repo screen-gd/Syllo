@@ -21,7 +21,13 @@ import {
 import { Field, FieldLabel } from "@/components/glaze/ui/field";
 import { Input } from "@/components/glaze/ui/input";
 import { Kbd } from "@/components/glaze/ui/kbd";
-import { Select } from "@/components/glaze/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/glaze/ui/select";
 import {
     SegmentedControl,
     SegmentedControlItem,
@@ -100,6 +106,13 @@ export default function ReviewsPage() {
         ]),
     );
     const topics = new Map(roadmaps.map((item) => [item.id, item.title]));
+    const topicItems = [
+        { value: "", label: "No topic" },
+        ...roadmaps.map((roadmap) => ({
+            value: roadmap.id,
+            label: roadmap.title,
+        })),
+    ];
     const sourceTitle = (item: SrsItem) =>
         topics.get(item.roadmapId) ?? books.get(item.roadmapId) ?? "General";
     const needle = query.trim().toLowerCase();
@@ -260,21 +273,26 @@ export default function ReviewsPage() {
             <div className="flex flex-wrap items-center gap-2">
                 {!draft.id && roadmaps.length > 0 && (
                     <Select
-                        native
-                        aria-label="Topic"
-                        className="w-full sm:w-56"
                         value={draft.roadmapId}
                         onValueChange={(value) =>
                             setDraft({ ...draft, roadmapId: value ?? "" })
                         }
-                        items={[
-                            { value: "", label: "No topic" },
-                            ...roadmaps.map((roadmap) => ({
-                                value: roadmap.id,
-                                label: roadmap.title,
-                            })),
-                        ]}
-                    />
+                        items={topicItems}
+                    >
+                        <SelectTrigger
+                            aria-label="Topic"
+                            className="w-full sm:w-56"
+                        >
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {topicItems.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 )}
                 <Button>{draft.id ? "Save" : "Keep card"}</Button>
                 <Button
